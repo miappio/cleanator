@@ -1,0 +1,47 @@
+
+
+@font-face {
+  font-family: "Cleanator";
+  src: url("../font/uppereastside/UpperEastSide.ttf?v=2.0.1") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+h1,
+.btn {
+  font-family: "Cleanator";
+}
+
+body { padding-top: 70px; }
+
+.jumbotron {
+  background-color: rgba(95, 88, 5, 0.25);
+}
+
+.navbar-brand{
+  font-family: "Cleanator";
+  font-size : 2.4em !important;
+  color: rgb(160, 125, 79) !important;
+}
+  /*
+.tabs > a {
+  font-family: "Cleanator";
+  font-size : 1.7em !important;
+  font-weight: bold;
+}
+
+*/
+
+.main-image {
+	background-image:url('../img/background/screen02.jpg');
+	background-repeat:no-repeat;
+	background-position: top center;
+	background-size:cover;
+	z-index:-1;
+  height:400px;
+}
+
+
+.main-description {
+	/*background:white;*/
+}
