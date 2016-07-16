@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+
+
+<div id="modalIndicleanator" class="modal" tabindex="-2" role="dialog" aria-labelledby="modalIndicleanator" aria-hidden="true">
+    <div class="modal-dialog">
+
+
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"
+              ng-click="dashboardModalIndicleanator(true)">
+              <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+            </button>
+            <h4 class="modal-title" id="myModalLabel">Fair indicator</h4>
+          </div>
+
+          <div class="modal-body">
+            <div class="row">
+
+              <div class="col-xs-12" ng-if="dataIndicleanator">
+                <div style="position:relative; width:100%;">
+                  <canvas id="doughnut123"
+                    class="chart chart-doughnut chart-xs"
+                    data="dataIndicleanator"
+                    labels="labelsIndicleanator"
+                    colours="dashboardChartColours"></canvas>
+                  <!--<canvas id="radar" class="chart chart-radar" data="data" labels="labels"></canvas>-->
+                  <img src="images/girl01.gif" style="position: absolute; top: 36%;left: 40%;width: 20%;">
+                </div>
+              </div>
+
+              <!--
+
+
+              <div class="col-xs-12" ng-show="dashboardShowMoreVarTODO">
+                <a class="btn col-xs-8" disabled>&nbsp;</a>
+                <a class="btn btn-link col-xs-4" ng-click="dashboardShowMore()">Show more ...</a>
+              </div>
+
+              <div class="col-xs-12">
+                <ul class="list-group">
+                  <li class="list-group-item list-group-item-danger"
+                    ng-repeat="(historicGroup, historicList) in historicsFiltered = (dashboardHistoricsDone | filter : dashboardSearch | groupBy : 'choreId')">
+
+                    <span class="badge" ng-init="historic = historicList[0]">{{historicList.length}}</span>
+                    <h4 class="list-group-item-heading">{{historic[historicCols.name]}}</h4>
+                  </li
+                </ul>
+              </div>
+            -->
+            </div>
+
+
+            <div class="row">
+              <div class="col-xs-12" ng-if="dataDo">
+                <canvas id="radarDone" class="chart chart-radar chart-xs"
+                data="dataDo" labels="labelsDo"
+                colours="dashboardChartColours"></canvas>
+              </div>
+            </div>
+
+
+            <div class="row well">
+              <div class="col-xs-8">
+                <small>
+                  <i ng-show="(dashboardIndicleanator > -1) && (dashboardIndicleanator < 1)" class="glyphicon glyphicon-heart-empty" style="color:green"> Seems Fair</i>
+                  <i ng-hide="(dashboardIndicleanator > -1) && (dashboardIndicleanator < 1)" class="glyphicon glyphicon-heart-empty" style="color:red"> Seems not Fair</i>
+                  <small><small>({{dashboardIndicleanator}})</small></small>
+                </small>
+              </div>
+              <div  class="col-xs-4">
+                    <a class="btn btn-link col-xs-12" ng-click="dashboardIndicatorShowReset()">Reset</a>
+              </div>
+              <div class="col-xs-12" ng-show="dashboardIndicatorShowResetVar">
+                <a class="btn col-xs-12" disabled><span ng-show="dashboardIndicatorLastResetDate">Last reset: {{dashboardIndicatorLastResetDate}}</span></a>
+                <a class="btn btn-warning col-sm-4 col-sm-offset-4 col-xs-12" data-dismiss="modal"
+                ng-click="dashboardIndicatorReset();dashboardModalIndicleanator(true)">Clean History</a>
+              </div>
+            </div>
+            <div class="row" style="margin-top:40px">
+              <div class="col-xs-12" >
+                <h4>History of
+                  <span ng-show="dashboardSearch.userId == userA._id">{{userA[userCols.firstName]}}</span>
+                  <span ng-show="dashboardSearch.userId == userB._id">{{userB[userCols.firstName]}}</span>
+                </h4>
+                <ul class="list-group">
+                  <li class="list-group-item"
+                  ng-repeat="(historicGroup, historicList) in historicsFiltered = (dashboardHistoricsDone | filter : dashboardSearch | groupBy : 'choreName')">
+
+                    <span class="badge" ng-init="histoFirst = historicList[0]">{{historicList.length}}</span>
+                    <small ng-if="histoFirst" class="list-group-item-heading">{{histoFirst[historicCols.name] | cut:true:30:' ...'}}</small><br>
+                    <small ng-if="histoFirst" style="font-size:10px" class="list-group-item-text">last done : {{dashboardShowLastHistoricDate(histoFirst)}}</small>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+
+          </div>
+
+        </div>
+    </div>
+</div>
+
+<!--
+<div id="modalDoneReport" class="modal" tabindex="-3" role="dialog" aria-labelledby="modalDone" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"
+          ng-click="dashboardModalDone(true)">
+          <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Done report</h4>
+      </div>
+
+      <div class="modal-body">
+        <div class="row">
+
+          <div class="col-xs-12" ng-if="dataDo">
+              <canvas id="radarDone" class="chart chart-radar chart-xs"
+                data="dataDo" labels="labelsDo"
+                colours="dashboardChartColours"></canvas>
+          </div>
+
+          <div class="col-xs-12">
+            <ul class="list-group">
+              <li class="list-group-item list-group-item-success"
+                ng-repeat="(historicGroup, historicList) in historicsFiltered = (dashboardHistoricsDone | filter : dashboardSearch | groupBy : 'choreId')">
+
+                <span class="badge" ng-init="historic = historicList[0]">{{historicList.length}}</span>
+                <h4 class="list-group-item-heading">{{historic[historicCols.name]}}</h4>
+                <p class="list-group-item-text">last done : {{historic[historicCols.actionDoneDate]}}<br>{{historic.description}}</p>
+              </li
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+-->
+
+<div id="modalDone" class="modal" tabindex="-4" role="dialog" aria-labelledby="modalDone" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Done</h4>
+      </div>
+
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-xs-12">
+            <h4>{{dashboardHistoricToConfirm[historicCols.name]}}</h4>
+          </div>
+          <div class="col-xs-12" style="margin-top:20px">
+            <label>Did it in (mn):</label>
+            <div>
+              <mle-input-integer min="0" ng-model="dashboardHistoricToConfirm[historicCols.timeInMn]"></mle-input-integer>
+              <!--
+              <input style="width:100%" class="input-lg" type="number" pattern="\d*" min="0" max="1000"
+              ng-model="dashboardHistoricToConfirm[historicCols.timeInMn]"/>
+            -->
+            </div>
+          </div>
+
+          <div class="col-xs-12" style="padding-top:20px;">
+            <a style="margin-top:20px" class="col-xs-12 col-sm-4 btn btn-lg btn-primary"
+            data-dismiss="modal"
+            ng-click="dashboardTerminateHistoric(dashboardHistoricToConfirm);dashboardModalIndicleanator(true);dashboardComputeChoresToAdd();">
+              Yeahh !
+            </a>
+            <a style="margin-top:20px" class="col-xs-12 col-sm-4 col-sm-offset-4 btn btn-lg btn-default"
+            data-dismiss="modal">
+              Cancel
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

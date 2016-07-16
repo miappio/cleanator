@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+
+<ion-view>
+
+  <ion-nav-buttons side="left">
+        <a class="button button-icon  icon ion-arrow-left-b"
+        ng-click="choreSaveDetail();"
+        ng-href="#/config/category"
+        ng-show="choreToEdit[choreCols.name]"
+        translate></a>
+        <!-- ng-href="#/config/categorychores/{{choreToEdit[choreCols.category]}}" -->
+  </ion-nav-buttons>
+  <ion-nav-buttons side="right">
+        <button class="button button-outline button-assertive" disabled>
+          {{choreToEdit[choreCols.category]}}
+        </button>
+  </ion-nav-buttons>
+<!--
+
+<ion-nav-buttons side="right">
+        <button class="button clear" style="margin-left:20px;" disabled>
+          <img src="{{getChoreCategoryThumbPath(choreToEdit[choreCols.category])}}"class="img-circle" height="30px" />
+        </button>
+  </ion-nav-buttons>  -->
+  <ion-content class="has-footer">
+
+
+      <article class="container">
+      <!--  <div class="row">
+
+          <h3>My chore {{choreId}}</h3>
+          <p>{{choreToEdit}}</p>
+        </div>
+-->
+
+
+            <form class="" name="choreModalChoreForm">
+
+                  <ul class="list">
+
+                    <li class="item item-input">
+                      <label class="input-label" translate>ChoreName</label>
+                      <input type="text" ng-model="choreToEdit[choreCols.name]" placeholder="{{'ChoreName'|translate}}" required>
+                    </li>
+                    <!--
+                    <label class="item item-input item-input item-select">
+                    <span class="input-label">{{'ChoreType'|translate}}</span>
+                    <select class="form-control" ng-model="thumbCategoryObj" ng-options="thumbPath.description for thumbPath in categories  | filter : 'choreCategory'" ng-change="choreCategorySetThumb(thumbCategoryObj)"></select>
+                    </label>
+                    -->
+                    <li class="item item-toggle">
+                       {{'ChorePriority'|translate}}
+                       <span style="color:gray;font-style: italic;padding-left: 30px;" ng-hide="choreToEdit && (choreToEdit[choreCols.priority] == 1)" translate>NotRequired</span>
+                       <span style="color:red;font-style: italic;padding-left: 30px;" ng-show="choreToEdit && (choreToEdit[choreCols.priority] == 1)" translate>Required <i class="icon ion-star"></i></span>
+                       <label class="toggle toggle-assertive">
+                         <input type="checkbox" ng-model="choreToEdit[choreCols.priority]">
+                         <div class="track">
+                           <div class="handle"></div>
+                         </div>
+                       </label>
+                    </li>
+                    <li class="item item-input">
+                      <label class="input-label" translate>ChoreDescription</label>
+                      <textarea ng-model="choreToEdit[choreCols.description]" rows="5" placeholder="{{'ChoreDescription'|translate}}" ></textarea>
+                    </li>
+
+                    <li class="item range range-assertive">
+                      <label class="input-label">
+                        <span translate>ChoreEstimate</span><br>
+                        <small>{{choreToEdit[choreCols.timeInMn]}} <span translate>mn</span></small>
+                      </label>
+                      <input type="range" min="1" max="60" ng-model="choreToEdit[choreCols.timeInMn]">
+                      <i class="icon ion-clock"></i>
+                    </li>
+                    <li class="item range range-assertive">
+                      <label class="input-label">
+                        <span translate>ChoreFrequency</span><br>
+                        <small><span translate>each</span> {{choreToEdit[choreCols.frequencyDays]}} <span translate>day(s)</span></small>
+                      </label>
+                      <input type="range" min="1" max="60" ng-model="choreToEdit[choreCols.frequencyDays]">
+                      <i class="icon ion-stats-bars"></i>
+                    </li>
+
+
+
+                    <li class="item item-avatar" style="border-bottom:0;">
+                      <img ng-src="{{profil[userA[userCols.profilID]].img}}">
+                      {{userA[userCols.firstName]}}
+                      <p translate>affinity for this item</p>
+                    </li>
+                    <li class="item range range-assertive" style="border-top:0;">
+                      <label class="input-label">&nbsp;</label>
+                      <input type="range" min="0" max="100" ng-model="choreToEdit[choreCols.AUserAffinity]">
+                      <i class="icon ion-happy-outline"></i>
+                    </li>
+
+                    <li class="item item-avatar" style="border-bottom:0;">
+                      <img ng-src="{{profil[userB[userCols.profilID]].img}}">
+                      {{userB[userCols.firstName]}}
+                      <p translate>affinity for this item</p>
+                    </li>
+                    <li class="item range range-assertive" style="border-top:0;">
+                      <label class="input-label">&nbsp;</label>
+                      <input type="range" min="0" max="100" ng-model="choreToEdit[choreCols.BUserAffinity]">
+                      <i class="icon ion-happy-outline"></i>
+                    </li>
+
+                </ul>
+
+            </form>
+
+
+      </article>
+
+  </ion-content>
+</ion-view>

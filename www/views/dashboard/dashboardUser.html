@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+
+<!--<div ng-include="'views/dashboard/header.html'"></div>-->
+
+
+<ion-view view-title="{{dashboardViewTitle}}">
+  <ion-nav-buttons side="left">
+        <a class="button button-icon icon ion-gear-b" ng-href="#/config/category"></a>
+  </ion-nav-buttons>
+
+  <div class="tabs tabs-top tabs-dark">
+    <a class="tab-item" ng-click="dashboardSearch.userId = userA._id" ng-class="{'active' : dashboardSearch.userId == userA._id}">
+      {{userA[userCols.firstName]}}
+    </a>
+    <a class="tab-item" disabled style="opacity:1;">
+      <i ng-show="dashboardIndicators.indicPercent[0] < 30" class="icon ion-heart" style="color:red;font-size:70% ;padding-right:20px;"></i>
+      <i ng-show="dashboardIndicators.indicPercent[0] >= 30 && dashboardIndicators.indicPercent[0] <= 60 " class="icon ion-heart" style="color:red;font-size:100%;"></i>
+      <i ng-show="dashboardIndicators.indicPercent[0] > 60" class="icon ion-heart" style="color:red;font-size:70% ;padding-left:20px;"></i>
+      <hr style="
+          top: 10px;
+          position: absolute;
+          width: 20%;
+          left: 40%;
+          z-index: -1;
+          border-color: rgb(131, 131, 131);
+      ">
+    </a>
+    <a class="tab-item" ng-click="dashboardSearch.userId = userB._id" ng-class="{'active' : dashboardSearch.userId == userB._id}">
+    {{userB[userCols.firstName]}}
+    </a>
+</div>
+
+
+
+
+  <ion-content class="has-subheader back-family">
+
+
+    <ion-refresher
+      pulling-text="{{'PullToRefresh'|translate}}"
+      on-refresh="dashboardDataSync()">
+      <div ng-include="'views/commons/computeChore.html'"></div>
+    </ion-refresher>
+
+
+    <div  ng-if="!dashboardInitSpinnerStopped"
+         mle-animateshow="!dashboardInitSpinnerStopped"
+         after-show="afterNavigationInitSpinnerShow()"
+         after-hide="afterNavigationInitSpinnerHide()">
+         <div ng-include="'views/commons/computeChore.html'"></div>
+    </div>
+    <article ng-if="dashboardInitSpinnerStopped">
+
+      <ion-list show-delete="true">
+         <ion-item class="item item-icon-left item-dark" ng-repeat="msg in navErrMsgs track by $index">
+           <ion-delete-button class="ion-close-round" ng-click="navErrMsgs.splice($index,1)"></ion-delete-button>
+           <strong translate>Warning!</strong> {{msg}}
+         </ion-item>
+      </ion-list>
+
+
+
+
+      <div class="padding" style="text-align:center">
+        <h3><span translate>All chores todo for</span>
+          <span ng-show="dashboardSearch.userId == userA._id">{{userA[userCols.firstName]}}</span>
+          <span ng-show="dashboardSearch.userId == userB._id">{{userB[userCols.firstName]}}</span>
+        </h3>
+      </div>
+      <div class="list" >
+        <a class="item item-avatar" ng-href="#/dashboard/indicator/{{dashboardSearch.userId}}" style="border:0">
+          <img ng-src="{{profil[userA[userCols.profilID]].img}}" ng-if="dashboardSearch.userId == userA._id">
+          <img ng-src="{{profil[userB[userCols.profilID]].img}}" ng-if="dashboardSearch.userId == userB._id">
+          <p style="text-align:right;float: right;">
+            <span translate>Report</span>
+            <i class="icon ion-chevron-right"></i>
+          </p>
+        </a>
+      </div>
+
+
+      <h3 class="padding" ng-hide="dashboardHistorics.length" translate>DashboardPleasePullToRefreshYourDashboard</h3>
+
+      <ion-list>
+        <div class="item item-divider">
+          <span ng-bind-html="dashboardDisplayHistoricCalendar()"></span>
+        </div>
+        <label class="item item-input item-select" style="border:0">
+          <div class="input-label" translate>Unforeseen item :</div>
+          <select ng-model="dashboardChoresCategoryFilter" ng-options="cat for cat in dashboardChoresCategoriesToAdd"></select>
+        </label>
+        <label class="item item-input item-select" ng-show="dashboardChoresCategoryFilter"  style="border:0">
+          <div class="input-label"></div>
+          <select ng-model="dashboardToAdd.chore" ng-options="chore.dashboardSelectTitle for chore in dashboardChoresToAdd[dashboardChoresCategoryFilter]"
+                  ng-change="setHistoricToDoNow(dashboardToAdd.chore)"></select>
+        </label>
+
+        <div class="item item-avatar item-button-right" ng-show="dashboardHistoricToDoNow" style="border-top:0">
+
+            <img ng-src="{{getChoreCategoryThumbPath(dashboardHistoricToDoNow[historicCols.category])}}" />
+              <small>{{dashboardHistoricToDoNow[historicCols.timeInMn]}}</small>
+              <small translate>minutes,</small>
+              <small translate>latest item :</small>
+              <small ng-show="dashboardShowLastHistoricDate(dashboardHistoricToDoNow)">{{dashboardShowLastHistoricDate(dashboardHistoricToDoNow)}}</small>
+              <small ng-hide="dashboardShowLastHistoricDate(dashboardHistoricToDoNow)" translate>none</small>
+              <p>{{dashboardHistoricToDoNow[historicCols.description]}}</p>
+              <button class="button button-dark" ng-click="dashboardTerminateHistoricNow(dashboardHistoricToDoNow)"
+                style="margin-top:20px;">
+                <small translate>Terminated</small>
+              </button>
+        </div>
+
+      </ion-list>
+
+
+      <div ng-repeat="(historicGroup, historicList) in (dashboardHistorics| filter : dashboardSearch.userId) | orderBy:'actionTodoDate' | groupBy : 'actionTodoDate'" ng-init="isTodayGroup = dashboardIsItToday(historicGroup)">
+        <ion-list>
+          <ion-item class="item item-divider" ng-hide="isTodayGroup">
+            <span ng-bind-html="dashboardDisplayHistoricCalendar(historicGroup)"></span>
+          </ion-item>
+          <div class="item item-avatar item-button-right" ng-repeat="historic in historicList" ng-hide="historic.tmpBeforeTerminate">
+
+              <img ng-src="{{getChoreCategoryThumbPath(historic[historicCols.category])}}" />
+                {{historic[historicCols.name]}}<br>
+                <small>{{historic[historicCols.timeInMn]}}</small>
+                <small translate>minutes,</small>
+                <small translate>latest item :</small>
+                <small ng-show="dashboardShowLastHistoricDate(historic)">{{dashboardShowLastHistoricDate(historic)}}</small>
+                <small ng-hide="dashboardShowLastHistoricDate(historic)" translate>none</small>
+                <p>{{historic[historicCols.description]}}</p>
+
+<!--
+                <div class="row" style="margin-top:20px">
+                  <a class="btn btn-default col-xs-5" ng-click="dashboardNotForMe(historic)">Not for me</a>
+                  <a class="btn btn-default col-xs-5 col-xs-offset-2" ng-click="dashboardNotForUs(historic)">Not for us</a>
+                </div>
+              -->
+
+
+                  <button ng-show="isTodayGroup" class="button button-dark" ng-click="dashboardTerminateHistoric(historic);"
+                    style="margin-top:20px;">
+                    <small translate>Terminated</small>
+                  </button>
+                  <!--
+                 <label ng-show="isTodayGroup" class="toggle toggle-balanced" ng-click="dashboardTerminateHistoric(historic);">
+                   <input type="checkbox" >
+                   <div class="track">
+                     <div class="handle"></div>
+                   </div>
+                 </label>
+                 ng-click="dashboardTerminateHistoric(dashboardHistoricToConfirm);dashboardModalIndicleanator(true);dashboardComputeChoresToAdd();">
+
+                <ion-option-button class="button-info" translate>
+                  DashboardChoreDone
+                </ion-option-button>
+                -->
+          </div>
+        </ion-list>
+      </div>
+
+    </article>
+
+</ion-content>
+</ion-view>

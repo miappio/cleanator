@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+
+<ion-view >
+  <ion-content class="has-footer">
+
+      <div  ng-if="!userInitSpinnerStopped"
+           mle-animateshow="!userInitSpinnerStopped"
+           after-show="afterNavigationInitSpinnerShow()"
+           after-hide="afterNavigationInitSpinnerHide()">
+           <div ng-include="'views/commons/computeChore.html'"></div>
+      </div>
+
+      <article ng-if="userInitSpinnerStopped">
+
+          <ion-list show-delete="true">
+             <ion-item class="item item-icon-left item-dark" ng-repeat="msg in navErrMsgs track by $index">
+               <ion-delete-button class="ion-close-round" ng-click="navErrMsgs.splice($index,1)"></ion-delete-button>
+               <strong translate>Warning!</strong> {{msg}}
+             </ion-item>
+          </ion-list>
+
+            <button class="button button-block button-clear">
+              <h3 translate>It's time to carry on</h3>
+            </button>
+            <p style="text-align:right" ng-if="navAppInitLevel() > 1">
+              <span translate>TimeAverageAvailable</span> <b>{{userIndicators.indicUsersTimeAvailabity}} <span translate>min / day.</span></b><br>
+              <span translate>Feasibility</span>{{userIndicators.indicChoresFeasibility}}
+              <span class="badge badge-assertive" ng-show="userIndicators.indicChoresFeasibility < 0.4" translate>NotGood</span>
+              <span class="badge badge-energized" ng-show="userIndicators.indicChoresFeasibility >= 0.4 && userIndicators.indicChoresFeasibility < 0.7" translate>NotBad</span>
+              <span class="badge badge-balanced" ng-show="userIndicators.indicChoresFeasibility >= 0.7" translate>Good</span>
+            </p>
+
+            <ul class="list card" ng-if="navAppInitLevel() <= 1">
+              <li class="item card item-icon-left">
+                <i class="icon ion-help"></i>
+                <p translate>GUIDER_WorldwideStats</p>
+              </li>
+            </ul>
+
+
+            <!-- user A -->
+            <ul class="list">
+              <li class="item item-avatar item-button-right">
+                <img ng-src="{{profil[userA[userCols.profilID]].img}}">
+                {{userA[userCols.firstName]}}
+                <p>{{Math.round(userA[userCols.timeInMnPerWeekTodo] / 7)}} <span translate>minutes in average dedicated per day</span></p>
+                <button class="button button-clear" ng-click="toggleUserA = !toggleUserA">
+                  <i class="icon ion-ios-arrow-right" ng-hide="toggleUserA"></i>
+                  <i class="icon ion-ios-arrow-down" ng-show="toggleUserA"></i>
+                </button>
+              </li>
+              <!-- week -->
+              <li class="item range range-positive" ng-show="toggleUserA">
+                <label class="input-label" translate>Monday</label>
+                <input type="range" min="0" max="300" ng-model="userA[userCols.timeInMnPerMond]" ng-change="userSave(userA);">
+                <span>{{userA[userCols.timeInMnPerMond]}} <span translate>mn</span></span>
+              </li>
+              <li class="item range range-positive" ng-show="toggleUserA">
+                <label class="input-label" translate>Tuesday</label>
+                <input type="range" min="0" max="300" ng-model="userA[userCols.timeInMnPerTues]" ng-change="userSave(userA);">
+                <span>{{userA[userCols.timeInMnPerTues]}} <span translate>mn</span></span>
+              </li>
+              <li class="item range range-positive" ng-show="toggleUserA">
+                <label class="input-label" translate>Wednesday</label>
+                <input type="range" min="0" max="300" ng-model="userA[userCols.timeInMnPerWedn]" ng-change="userSave(userA);">
+                <span>{{userA[userCols.timeInMnPerWedn]}} <span translate>mn</span></span>
+              </li>
+              <li class="item range range-positive" ng-show="toggleUserA">
+                <label class="input-label" translate>Thursday</label>
+                <input type="range" min="0" max="300" ng-model="userA[userCols.timeInMnPerThur]" ng-change="userSave(userA);">
+                <span>{{userA[userCols.timeInMnPerThur]}} <span translate>mn</span></span>
+              </li>
+              <li class="item range range-positive" ng-show="toggleUserA">
+                <label class="input-label" translate>Friday</label>
+                <input type="range" min="0" max="300" ng-model="userA[userCols.timeInMnPerFrid]" ng-change="userSave(userA);">
+                <span>{{userA[userCols.timeInMnPerFrid]}} <span translate>mn</span></span>
+              </li>
+              <li class="item range range-positive" ng-show="toggleUserA">
+                <label class="input-label" translate>Saturday</label>
+                <input type="range" min="0" max="300" ng-model="userA[userCols.timeInMnPerSatu]" ng-change="userSave(userA);">
+                <span>{{userA[userCols.timeInMnPerSatu]}} <span translate>mn</span></span>
+              </li>
+              <li class="item range range-positive" ng-show="toggleUserA">
+                <label class="input-label" translate>Sunday</label>
+                <input type="range" min="0" max="300" ng-model="userA[userCols.timeInMnPerSund]" ng-change="userSave(userA);">
+                <span>{{userA[userCols.timeInMnPerSund]}} <span translate>mn</span></span>
+              </li>
+            </ul>
+
+
+            <!-- user B -->
+            <ul class="list">
+              <li class="item item-avatar item-button-right">
+                <img ng-src="{{profil[userB[userCols.profilID]].img}}">
+                {{userB[userCols.firstName]}}
+                <p>{{Math.round(userB[userCols.timeInMnPerWeekTodo] / 7)}} <span translate>minutes in average dedicated per day</span></p>
+                <button class="button button-clear" ng-click="toggleUserB = !toggleUserB">
+                  <i class="icon ion-ios-arrow-right" ng-hide="toggleUserB"></i>
+                  <i class="icon ion-ios-arrow-down" ng-show="toggleUserB"></i>
+                </button>
+              </li>
+              <!-- week -->
+              <li class="item range range-positive" ng-show="toggleUserB">
+                <label class="input-label" translate>Monday</label>
+                <input type="range" min="0" max="300" ng-model="userB[userCols.timeInMnPerMond]" ng-change="userSave(userB);">
+                <span>{{userB[userCols.timeInMnPerMond]}} <span translate>mn</span></span>
+              </li>
+              <li class="item range range-positive" ng-show="toggleUserB">
+                <label class="input-label" translate>Tuesday</label>
+                <input type="range" min="0" max="300" ng-model="userB[userCols.timeInMnPerTues]" ng-change="userSave(userB);">
+                <span>{{userB[userCols.timeInMnPerTues]}} <span translate>mn</span></span>
+              </li>
+              <li class="item range range-positive" ng-show="toggleUserB">
+                <label class="input-label" translate>Wednesday</label>
+                <input type="range" min="0" max="300" ng-model="userB[userCols.timeInMnPerWedn]" ng-change="userSave(userB);">
+                <span>{{userB[userCols.timeInMnPerWedn]}} <span translate>mn</span></span>
+              </li>
+              <li class="item range range-positive" ng-show="toggleUserB">
+                <label class="input-label" translate>Thursday</label>
+                <input type="range" min="0" max="300" ng-model="userB[userCols.timeInMnPerThur]" ng-change="userSave(userB);">
+                <span>{{userB[userCols.timeInMnPerThur]}} <span translate>mn</span></span>
+              </li>
+              <li class="item range range-positive" ng-show="toggleUserB">
+                <label class="input-label" translate>Friday</label>
+                <input type="range" min="0" max="300" ng-model="userB[userCols.timeInMnPerFrid]" ng-change="userSave(userB);">
+                <span>{{userB[userCols.timeInMnPerFrid]}} <span translate>mn</span></span>
+              </li>
+              <li class="item range range-positive" ng-show="toggleUserB">
+                <label class="input-label" translate>Saturday</label>
+                <input type="range" min="0" max="300" ng-model="userB[userCols.timeInMnPerSatu]" ng-change="userSave(userB);">
+                <span>{{userB[userCols.timeInMnPerSatu]}} <span translate>mn</span></span>
+              </li>
+              <li class="item range range-positive" ng-show="toggleUserB">
+                <label class="input-label" translate>Sunday</label>
+                <input type="range" min="0" max="300" ng-model="userB[userCols.timeInMnPerSund]" ng-change="userSave(userB);">
+                <span>{{userA[userCols.timeInMnPerSund]}} <span translate>mn</span></span>
+              </li>
+            </ul>
+
+
+              <div class="item item-button" ng-if="navAppInitLevel() <= 1">
+                        <a class="button button-block icon-right ion-chevron-right button-assertive"
+                         ng-href="#/config/category" ng-click="navSetAppInitLevel(2);" translate>Footer_What</a>
+
+              </div>
+            </ul>
+
+            <div class="row" ><div class="col">&nbsp;</div></div>
+  </article>
+
+</ion-content>
+</ion-view>
+<div ng-include="'views/commons/footer.html'"></div>

@@ -1,0 +1,12 @@
+{
+  "name": "cleanator",
+  "app_id": "cleanator",
+  "gulpStartupTasks": [
+    "sass",
+    "watch"
+  ],
+  "watchPatterns": [
+    "www/**/*",
+    "!www/lib/**/*"
+  ]
+}

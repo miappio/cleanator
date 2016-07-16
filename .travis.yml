@@ -1,0 +1,9 @@
+services:
+- mongodb
+language: node_js
+script: karma run test
+after_success:
+node_js:
+- 6.1.0
+env:
+  global:

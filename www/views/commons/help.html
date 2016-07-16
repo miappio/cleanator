@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+
+<!-- Button trigger modal
+<a class="btn" data-toggle="modal" data-target="#helpModal">
+  <i class="glyphicon glyphicon-question-sign"></i>
+</a>
+-->
+
+<div id="helpModal" class="modal fade">
+    <div class="modal-dialog">
+
+
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="myModalLabel">Help & FAQ</h4>
+            <small>v<span app-version></span>
+          </div>
+
+          <div class="modal-body">
+            <div class="row">
+                <select ng-model="navigStyle" class="form-control input-large" ng-options="style.title for style in navigStyles">
+                  <!--<option value="">-- Choose a theme --</option>-->
+                </select>
+                <br>
+            </div>
+            <div class="row">
+
+                <ul class="nav nav-tabs" id="myHelpTab">
+                  <li ng-class="{active:(helpLang == 'FR')}"><a ng-click="setHelpLang('FR')">Fran&ccedil;ais</a></li>
+                  <li ng-class="{active:(helpLang == 'EN')}"><a ng-click="setHelpLang('EN')">English</a></li>
+                </ul>
+
+                <div class="tab-content">
+                  <div class="tab-pane fade" ng-class="{'in active':(helpLang == 'FR')}">
+                    <h3>Utilisation</h3>
+                    <ol>
+                        <li>Mon aide</li>
+                    </ol>
+                  </div>
+                  <div class="tab-pane fade" ng-class="{'in active':(helpLang == 'EN')}">
+                    <h3>How to use it :</h3>
+                    <ol>
+                        <li>Your help</li>
+                    </ol>
+                  </div>
+                </div>
+
+            </div>
+          </div>
+
+        </div>
+    </div>
+</div>

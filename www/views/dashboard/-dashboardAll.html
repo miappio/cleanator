@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+
+
+<div ng-include="'views/dashboard/header.html'"></div>
+
+<ion-view>
+  <ion-nav-buttons side="left">
+        <a class="button button-icon icon ion-gear-b" ng-href="#/config/category"></a>
+  </ion-nav-buttons>
+  <ion-content class="has-subheader">
+      <!-- ng-if="dashboardHistoricDisplay == 'prior'" -->
+      <ion-refresher
+        pulling-text="{{'PullToRefresh'|translate}}"
+        on-refresh="dashboardComputeHistoricsByWeek()">
+      </ion-refresher>
+
+      <div  ng-if="!dashboardInitSpinnerStopped"
+           mle-animateshow="!dashboardInitSpinnerStopped"
+           after-show="afterNavigationInitSpinnerShow()"
+           after-hide="afterNavigationInitSpinnerHide()">
+           <div ng-include="'views/commons/computeChore.html'"></div>
+      </div>
+
+      <div ng-if="dashboardInitSpinnerStopped">
+
+
+      <article class="container">
+        <div class="row">
+          <div class="col-xs-12  col-sm-offset-1 col-sm-10">
+
+            <div class="row">
+              <a style="border:0" class="btn hero-color-main col-xs-3 col-xs-offset-9"
+                data-toggle="modal" data-target="#modalIndicleanator"
+                ng-click="dashboardModalIndicleanator();navGAClick('report');"
+                translate>
+                Report
+              </a>
+            </div>
+
+            <ion-list show-delete="true">
+               <ion-item class="item item-icon-left item-dark" ng-repeat="msg in navErrMsgs">
+                 <ion-delete-button class="ion-close-round" ng-click="navErrMsgs.splice($index,1)"></ion-delete-button>
+                 <strong translate>Warning!</strong> {{msg}}
+               </ion-item>
+            </ion-list>
+
+    <!--
+            <div class="row" >
+              <div class="page-header col-xs-12">
+                <p ng-show="dashboardSearch.userId == userA._id">Hello {{userA[userCols.firstName]}}. Your fair schedule :</p>
+                <p ng-show="dashboardSearch.userId == userB._id">Hello {{userB[userCols.firstName]}}. Your fair schedule :</p>
+                <p ng-hide="(dashboardHistorics | filter : dashboardSearch).length">Wouaahh. Well done !</p>
+              </div>
+            </div>
+    -->
+
+            <div class="row" id="doItNow">
+              <div class="col-xs-12">
+                <h4>Now :</h4>
+              </div>
+              <div class="col-xs-6">
+                <select ng-model="dashboardChoresCategoryFilter" class="form-control input-large"
+                ng-options="cat for cat in dashboardChoresCategoriesToAdd"></select>
+              </div>
+              <div class="col-xs-6">
+                <select ng-model="dashboardToAdd.chore" class="form-control input-large"
+                ng-options="chore.dashboardSelectTitle for chore in dashboardChoresToAdd[dashboardChoresCategoryFilter]"></select>
+              </div>
+              <div class="panel-group col-xs-12" ng-if="dashboardToAdd.chore">
+                <div id="{{historicGroup}}{{$index}}"
+                  class="panel-collapse collapse in clearfix col-xs-12" style="border: 1px solid lightgray;"
+                  role="tabpanel">
+                  <div class="panel-body">
+                    <p>{{dashboardToAdd.chore[choreCols.description]}}</p>
+                    <h5>Minutes to do it : {{dashboardToAdd.chore[choreCols.timeInMn]}}</h5>
+                    <small>taste for it :
+                      <small ng-show="dashboardSearch.userId == userA._id">{{(100 - Math.round(dashboardToAdd.chore[choreCols.percentAB]))}}%</small>
+                      <small ng-show="dashboardSearch.userId == userB._id">{{(Math.round(dashboardToAdd.chore[choreCols.percentAB]))}}%</small>
+                    </small>
+                    <div class="row">
+                      <div class="col-xs-12">
+                        <small>each {{dashboardToAdd.chore[choreCols.frequencyDays]}} day(s), </small>
+                        <small>last done : {{dashboardShowLastHistoricDateWithChoreId(dashboardToAdd.chore._id)}}</small>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <a class="col-xs-5  btn btn-default"
+                        ng-click="dashboardComputeChoresToAdd()">
+                        Cancel
+                      </a>
+                      <a data-toggle="modal" data-target="#modalDone"
+                        style="" class="col-xs-5 col-xs-offset-2 btn btn-primary"
+                        ng-click="dashboardLaunchModalDone(dashboardToAdd.chore);">
+                        Done
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+
+            <div class="row" ng-if="dashboardHistoricDisplay == 'prior'">
+              <div ng-include="'views/dashboard/dashboardPrior.html'"></div>
+            </div>
+            <div class="row" ng-if="dashboardHistoricDisplay == 'week'">
+              <div ng-include="'views/dashboard/dashboardWeek.html'"></div>
+            </div>
+
+
+
+
+            <div class="row" style="padding-top:60px">
+              <!--<a class="btn btn-default btn-lg col-xs-12"
+              ng-click="dashboardComputeHistoricsByPrior()">
+              Get me more prior tasks
+            </a>-->
+              <a class="btn btn-default btn-lg col-xs-12"
+              ng-click="dashboardComputeHistoricsByWeek()">
+                Get me detailled week
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </article>
+
+
+
+    </div>
+
+
+</ion-content>
+</ion-view>

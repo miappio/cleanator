@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+
+<div id="choreModalChore" class="modal" tabindex="-1" role="dialog" aria-labelledby="choreModalChore" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" ng-click="choreResetEditModal()">
+        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Chore</h4>
+      </div>
+
+      <div class="modal-body" ng-if="choreToEdit">
+        <div class="row">
+
+          <div class="col-xs-12">
+
+              <form class="form-horizontal" name="choreModalChoreForm">
+                <div class="form-group" ng-class="{ 'has-error': choreModalChoreForm.name.$invalid }">
+                  <label class="col-sm-2 control-label">Title</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" ng-model="choreToEdit[choreCols.name]" name="name" required/>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-xs-12 col-sm-2 control-label">Type of chore</label>
+                  <div class="col-xs-10 col-sm-8">
+                    <select class="form-control" ng-model="thumbCategoryObj" ng-options="thumbPath.description for thumbPath in categories  | filter : 'choreCategory'" ng-change="choreCategorySetThumb(thumbCategoryObj)"></select>
+                  </div>
+                  <!--<div class="col-xs-5 col-sm-4">
+                    <select class="form-control" ng-model="thumbChoreObj" ng-options="thumbPath.description for thumbPath in categories | filter : 'choreDescription'" ng-change="choreSetThumb(thumbChoreObj)"></select>
+                  </div>-->
+                  <div class="col-xs-2 col-sm-2" style="position:relative">
+                      <img src="{{getChoreCategoryThumbPath(choreToEdit[choreCols.category])}}"class="img-circle" height="30px" style="position:absolute" />
+                      <!--<img src="{{getChoreThumbPath(choreToEdit[choreCols.choreDescriptionCat])}}"class="img-circle" height="30px" style="position:absolute"/>-->
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Priority</label>
+                  <div class="col-sm-10">
+                    <a class="btn btn-default col-xs-12" ng-click="choreTogglePriority(choreToEdit)">
+                      <i ng-show="choreToEdit[choreCols.priority] == 1" class="glyphicon glyphicon-star"> Required</i>
+                      <i ng-hide="choreToEdit[choreCols.priority] == 1" class="glyphicon glyphicon-star-empty"> Low</i>
+                    </a>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Description</label>
+                  <div class="col-sm-10">
+                    <textarea class="form-control" rows="7" ng-model="choreToEdit[choreCols.description]"/>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Estimate (mn)</label>
+                  <div class="col-sm-10">
+                    <mle-input-integer min="0" ng-model="choreToEdit[choreCols.timeInMn]"></mle-input-integer>
+                    <!--<input type="number" class="form-control" pattern="\d*" min="0" ng-model="choreToEdit[choreCols.timeInMn]"/>
+                  -->
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Frequency (Days)</label>
+                  <div class="col-sm-10">
+                    <mle-input-integer min="0" ng-model="choreToEdit[choreCols.frequencyDays]"></mle-input-integer>
+                    <!--
+                    <input type="number" class="form-control" pattern="\d*" min="0" ng-model="choreToEdit[choreCols.frequencyDays]"/>
+                  -->
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Affinity</label>
+                  <div class="col-sm-10">
+                    <div class="row">
+                      <small class="col-xs-6">
+                        <small>{{userA[userCols.firstName] | cut:true:10:' ...'}} {{(100 - Math.round(choreToEdit[choreCols.percentAB]))}}%</small>
+                      </small>
+                      <small class="col-xs-6" style="text-align:right">
+                        <small>{{(Math.round(choreToEdit[choreCols.percentAB]))}}% {{userB[userCols.firstName] | cut:true:10:' ...'}}</small>
+                      </small>
+                      <div class="col-xs-12">
+                        <input type="range" class="form-control" min="0" max="100"
+                        ng-model="choreToEdit[choreCols.percentAB]"/>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-xs-12" style="margin-top:20px" ng-hide="choreToEdit._id">
+                    <a class="btn btn-default col-xs-4" data-dismiss="modal" ng-click="choreResetEditModal()">Cancel</a>
+                    <a class="btn btn-primary col-xs-4 col-xs-offset-4" data-dismiss="modal" ng-click="saveChore(choreToEdit,true);" ng-disabled="choreModalChoreForm.$invalid">Ok</a>
+                  </div>
+                  <div class="col-xs-12" style="margin-top:20px" ng-show="choreToEdit._id">
+                    <a class="btn btn-primary col-xs-12" data-dismiss="modal" ng-click="saveChore(choreToEdit)" ng-disabled="choreModalChoreForm.$invalid">Ok</a>
+                  </div>
+                  <div class="col-xs-12" style="margin-top:20px" ng-show="choreToEdit._id">
+                    <a class="btn btn-danger col-xs-12" data-dismiss="modal" ng-click="choreDelete(choreToEdit,true)">Delete</a>
+                  </div>
+                </div>
+
+              </form>
+
+
+          </div>
+        </div>
+
+
+
+
+      </div> <!-- modal body -->
+
+    </div>
+  </div>
+</div>

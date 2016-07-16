@@ -1,0 +1,397 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: \n"
+
+#: login/loginIn.html:57
+msgid "01valid.email@required.com"
+msgstr ""
+
+#: chore/categoryChores.html:51
+msgid "AddOneChore.."
+msgstr ""
+
+#: chore/categoryAll.html:33
+msgid "All chores available"
+msgstr ""
+
+#: dashboard/dashboardUser.html:66
+msgid "All chores todo for"
+msgstr ""
+
+#: chore/categoryAll.html:97
+msgid "CatActivate"
+msgstr ""
+
+#: chore/categoryAll.html:51
+#: chore/categoryAll.html:64
+msgid "CatDeactivate"
+msgstr ""
+
+#: user/modals.html:14
+msgid "Changing your email means logout and loosing this Cleanator session"
+msgstr ""
+
+#: chore/categoryChores.html:66
+msgid "ChoreActivate"
+msgstr ""
+
+#: chore/categoryDetail.html:82
+msgid "ChoreAffinity"
+msgstr ""
+
+#: chore/categoryChores.html:38
+msgid "ChoreDeactivate"
+msgstr ""
+
+#: chore/categoryDetail.html:55
+#: chore/categoryDetail.html:56
+#: chore/choreDetail.html:63
+#: chore/choreDetail.html:64
+msgid "ChoreDescription"
+msgstr ""
+
+#: chore/categoryDetail.html:61
+#: chore/choreDetail.html:69
+msgid "ChoreEstimate"
+msgstr ""
+
+#: chore/categoryDetail.html:61
+msgid "ChoreEstimateMn"
+msgstr ""
+
+#: chore/categoryDetail.html:71
+#: chore/choreDetail.html:77
+msgid "ChoreFrequency"
+msgstr ""
+
+#: chore/categoryDetail.html:71
+msgid "ChoreFrequencyDays"
+msgstr ""
+
+#: chore/categoryDetail.html:29
+#: chore/categoryDetail.html:30
+#: chore/choreDetail.html:42
+#: chore/choreDetail.html:43
+msgid "ChoreName"
+msgstr ""
+
+#: chore/categoryDetail.html:42
+#: chore/choreDetail.html:52
+msgid "ChorePriority"
+msgstr ""
+
+#: chore/categoryDetail.html:34
+#: chore/choreDetail.html:47
+msgid "ChoreType"
+msgstr ""
+
+#: dashboard/dashboardIndicator.html:54
+msgid "Clean History"
+msgstr ""
+
+#: dashboard/dashboardUser.html:83
+msgid "DashboardPleasePullToRefreshYourDashboard"
+msgstr ""
+
+#: dashboard/dashboardIndicator.html:18
+msgid "Fair indicator of"
+msgstr ""
+
+#: chore/categoryAll.html:37
+#: user/userCalendar.html:27
+msgid "Feasibility"
+msgstr ""
+
+#: user/userAll.html:57
+msgid "Footer_ButtonWhen"
+msgstr ""
+
+#: commons/footer.html:15
+msgid "Footer_Compute"
+msgstr ""
+
+#: user/userCalendar.html:142
+msgid "Footer_What"
+msgstr ""
+
+#: user/userCalendar.html:124
+#: user/userCalendar.html:74
+msgid "Friday"
+msgstr ""
+
+#: user/userCalendar.html:36
+msgid "GUIDER_WorldwideStats"
+msgstr ""
+
+#: chore/categoryAll.html:40
+#: user/userCalendar.html:30
+msgid "Good"
+msgstr ""
+
+#: chore/categoryAll.html:76
+msgid "GuiderButton_BigJump"
+msgstr ""
+
+#: chore/categoryAll.html:49
+msgid "Guider_Discover and click on all chore categories"
+msgstr ""
+
+#: chore/categoryAll.html:50
+msgid "Guider_Swipe them to unactivate it"
+msgstr ""
+
+#: config/configItems.html:45
+msgid "HEADLINE"
+msgstr ""
+
+#: chore/categoryAll.html:88
+msgid "Here .. all the categories you've deselected (swipe left)..."
+msgstr ""
+
+#: dashboard/dashboardIndicator.html:60
+msgid "History of all done by"
+msgstr ""
+
+#: config/configItems.html:46
+msgid "INTRO_TEXT"
+msgstr ""
+
+#: user/userCalendar.html:23
+msgid "It's time to carry on"
+msgstr ""
+
+#: user/userAll.html:56
+msgid "Level0_You have defined who you are ?d sdsqdqsd sdq sdqsd sds sdsd qsdsdsd qsds dqsdq sdqsdsd azertyuiop qsqsdfghjklm"
+msgstr ""
+
+#: login/loginIn.html:71
+#: user/userAll.html:66
+msgid "LoginLanguage"
+msgstr ""
+
+#: login/loginIn.html:64
+msgid "LoginNewPassword"
+msgstr ""
+
+#: login/loginIn.html:85
+msgid "LoginSignin"
+msgstr ""
+
+#: login/loginIn.html:50
+msgid "LoginWelcome"
+msgstr ""
+
+#: user/modals.html:7
+msgid "ModalUserLogout"
+msgstr ""
+
+#: user/modals.html:18
+msgid "ModalUserWarningLogout"
+msgstr ""
+
+#: user/userCalendar.html:104
+#: user/userCalendar.html:54
+msgid "Monday"
+msgstr ""
+
+#: chore/categoryChores.html:51
+msgid "New Item"
+msgstr ""
+
+#: chore/categoryAll.html:39
+#: user/userCalendar.html:29
+msgid "NotBad"
+msgstr ""
+
+#: chore/categoryAll.html:38
+#: user/userCalendar.html:28
+msgid "NotGood"
+msgstr ""
+
+#: chore/choreDetail.html:53
+msgid "NotRequired"
+msgstr ""
+
+#: dashboard/-dashboardAll.html:13
+#: dashboard/dashboardUser.html:41
+msgid "PullToRefresh"
+msgstr ""
+
+#: dashboard/-dashboardAll.html:32
+#: dashboard/dashboardUser.html:76
+msgid "Report"
+msgstr ""
+
+#: chore/choreDetail.html:54
+msgid "Required <i class=\"icon ion-star\"></i>"
+msgstr ""
+
+#: dashboard/dashboardIndicator.html:50
+msgid "Reset"
+msgstr ""
+
+#: user/userCalendar.html:129
+#: user/userCalendar.html:79
+msgid "Saturday"
+msgstr ""
+
+#: dashboard/dashboardIndicator.html:48
+msgid "Seems Fair"
+msgstr ""
+
+#: dashboard/dashboardIndicator.html:49
+msgid "Seems not Fair"
+msgstr ""
+
+#: user/userCalendar.html:134
+#: user/userCalendar.html:84
+msgid "Sunday"
+msgstr ""
+
+#: user/configTabs.html:19
+msgid "TabWhat"
+msgstr ""
+
+#: user/configTabs.html:14
+msgid "TabWhen"
+msgstr ""
+
+#: user/configTabs.html:9
+msgid "TabWho"
+msgstr ""
+
+#: dashboard/dashboardUser.html:110
+#: dashboard/dashboardUser.html:143
+msgid "Terminated"
+msgstr ""
+
+#: user/userCalendar.html:119
+#: user/userCalendar.html:69
+msgid "Thursday"
+msgstr ""
+
+#: user/userCalendar.html:26
+msgid "TimeAverageAvailable"
+msgstr ""
+
+#: chore/categoryAll.html:36
+msgid "TimeAverageRequired"
+msgstr ""
+
+#: user/userCalendar.html:109
+#: user/userCalendar.html:59
+msgid "Tuesday"
+msgstr ""
+
+#: dashboard/dashboardUser.html:90
+msgid "Unforeseen item :"
+msgstr ""
+
+#: chore/categoryAll.html:83
+#: chore/categoryChores.html:56
+msgid "Unusefull list"
+msgstr ""
+
+#: chore/categoryChores.html:21
+msgid "UsefullChoreList"
+msgstr ""
+
+#: user/modals.html:24
+msgid "UserBackToSession"
+msgstr ""
+
+#: user/userAll.html:80
+msgid "UserEmail"
+msgstr ""
+
+#: user/userAll.html:79
+msgid "UserEmailCouple"
+msgstr ""
+
+#: user/modals.html:19
+msgid "UserLogout"
+msgstr ""
+
+#: user/userAll.html:31
+msgid "UserPseudoA"
+msgstr ""
+
+#: user/userAll.html:43
+msgid "UserPseudoB"
+msgstr ""
+
+#: chore/categoryAll.html:27
+#: chore/categoryChores.html:13
+#: dashboard/-dashboardAll.html:43
+#: dashboard/dashboardUser.html:58
+#: user/userAll.html:18
+#: user/userCalendar.html:18
+msgid "Warning!"
+msgstr ""
+
+#: user/userCalendar.html:114
+#: user/userCalendar.html:64
+msgid "Wednesday"
+msgstr ""
+
+#: chore/choreDetail.html:100
+#: chore/choreDetail.html:89
+msgid "affinity for this item"
+msgstr ""
+
+#: chore/choreDetail.html:78
+msgid "day(s)"
+msgstr ""
+
+#: chore/choreDetail.html:78
+msgid "each"
+msgstr ""
+
+#: login/loginIn.html:34
+msgid "for Better for Dust"
+msgstr ""
+
+#: dashboard/dashboardUser.html:104
+#: dashboard/dashboardUser.html:128
+msgid "latest item :"
+msgstr ""
+
+#: chore/categoryAll.html:36
+#: user/userCalendar.html:26
+msgid "min / day."
+msgstr ""
+
+#: user/userCalendar.html:46
+#: user/userCalendar.html:96
+msgid "minutes in average dedicated per day"
+msgstr ""
+
+#: dashboard/dashboardUser.html:103
+#: dashboard/dashboardUser.html:127
+msgid "minutes,"
+msgstr ""
+
+#: chore/choreDetail.html:70
+#: user/userCalendar.html:106
+#: user/userCalendar.html:111
+#: user/userCalendar.html:116
+#: user/userCalendar.html:121
+#: user/userCalendar.html:126
+#: user/userCalendar.html:131
+#: user/userCalendar.html:136
+#: user/userCalendar.html:56
+#: user/userCalendar.html:61
+#: user/userCalendar.html:66
+#: user/userCalendar.html:71
+#: user/userCalendar.html:76
+#: user/userCalendar.html:81
+#: user/userCalendar.html:86
+msgid "mn"
+msgstr ""
+
+#: dashboard/dashboardUser.html:106
+#: dashboard/dashboardUser.html:130
+msgid "none"
+msgstr ""

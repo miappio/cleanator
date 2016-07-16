@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!--
+<ion-tabs>
+
+  <ion-tab title="{{userA[userCols.firstName]}}" href="#/dashboard-user" >
+  </ion-tab>
+
+  <ion-tab title="{{userB[userCols.firstName]}}" href="#/dashboard-user">
+  </ion-tab>
+
+</ion-tabs>
+
+
+
+
+<nav class="navbar navbar-fixed-top row" role="navigation" style="min-height: 0;border:0;">
+  <div class="col-xs-12">
+
+    <ul class="nav navbar-nav col-xs-12" style="margin:0;padding:0;">
+      <li style="padding:0"
+          ng-class="dashboardIndicleanator > 1 ? 'col-xs-8' : (dashboardIndicleanator >= -1 ? 'col-xs-6' :  'col-xs-4')">
+        <a class="btn"
+          ng-class="{'btn-warning' : dashboardSearch.userId != userA._id, 'btn-default' : dashboardSearch.userId == userA._id, 'btn-lg': dashboardIndicleanator >= -1, 'btn-xs' : dashboardIndicleanator < -1}"
+          style="border:0;"
+          ng-click="dashboardSearch.userId = userA._id; navGAClick('userA');">
+          <span ng-class="{small: dashboardIndicleanator < -1}">{{userA[userCols.firstName] | cut:true:10:' ...'}}</span>
+        </a>
+      </li>
+      <li style="padding:0"
+          ng-class="dashboardIndicleanator > 1 ? 'col-xs-4' : (dashboardIndicleanator >= -1 ? 'col-xs-6' :  'col-xs-8')">
+        <a class="btn"
+          ng-class="{'btn-warning' : dashboardSearch.userId != userB._id, 'btn-default' : dashboardSearch.userId == userB._id, 'btn-lg': dashboardIndicleanator <= 1, 'btn-xs' : dashboardIndicleanator > 1}"
+          style="border:0;"
+          ng-click="dashboardSearch.userId = userB._id; ga('send','pageview','/test-pageviewb');">
+          <span ng-class="{small: dashboardIndicleanator > 1}">{{userB[userCols.firstName] | cut:true:10:' ...'}}</span>
+        </a>
+      </li>
+    </ul>
+
+
+    <div ng-show="(dashboardIndicleanator <= 1) && (dashboardIndicleanator >= -1)" style="position:absolute;width:0;left:50%;">
+      <i class="glyphicon glyphicon-heart hero-color-main" style="font-size:40px;left:-22px;top:0px;"></i>
+    </div>
+    <div ng-show="dashboardIndicleanator > 1" style="position:absolute;width:0;left:66%;">
+      <i ng-show="dashboardIndicleanatorSquare < 5" class="glyphicon glyphicon-heart hero-color-main" style="font-size:30px;left:-18px;top:10px;"></i>
+      <i ng-show="dashboardIndicleanatorSquare >= 5" class="glyphicon glyphicon-heart hero-color-main" style="font-size:20px;left:-12px;top:15px;"></i>
+    </div>
+    <div ng-show="dashboardIndicleanator < -1" style="position:absolute;width:0;left:33.5%;">
+      <i ng-show="dashboardIndicleanatorSquare < 5" class="glyphicon glyphicon-heart hero-color-main" style="font-size:30px;left:-13px;top:10px;"></i>
+      <i ng-show="dashboardIndicleanatorSquare >= 5" class="glyphicon glyphicon-heart hero-color-main" style="font-size:20px;left:-6px;top:15px;"></i>
+    </div>
+
+  </div>
+</nav>
+
+-->
