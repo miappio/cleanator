@@ -3,7 +3,8 @@
   "version": "16.07.01",
   "description": "cleanator",
   "author": "mlefree",
-  "homepage": "http://cleanator.miapp.io",
+  "homepage": "https://miapp.github.io/cleanator",
+  "main": "www/index.html",
   "dependencies": {
   },
   "devDependencies": {
@@ -37,7 +38,7 @@
     "android"
   ],
   "scripts": {
-    "postinstall": "./node_modules/.bin/bower install",
+    "install:bower": "./node_modules/.bin/bower install",
     "test": "./node_modules/.bin/karma start tests/unit-tests.conf.js",
     "test:watch": "./node_modules/.bin/karma start tests/unit-tests.conf.js --no-single-run  --no-auto-watch --reporters progress --browsers PhantomJS",
     "start": "ionic serve"

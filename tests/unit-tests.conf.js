@@ -18,7 +18,7 @@ module.exports = function(config) {
       '../www/lib/ionic/js/ionic.bundle.js',
       '../www/lib/angular-gettext/dist/angular-gettext.js',
       '../www/lib/chance/dist/chance.min.js',
-      '../node_modules/es5-shim/es5-shim.js',
+      //'../node_modules/es5-shim/es5-shim.js',
       '../www/lib/pouchdb/dist/pouchdb.min.js',
       '../www/lib/angular-filter/dist/angular-filter.min.js',
       '../www/lib/Chart.js/Chart.min.js',
@@ -33,7 +33,6 @@ module.exports = function(config) {
       '../www/js/directives/*.js',
       '../www/js/filters/*.js',
       '../www/js/languages/*.js',
-      '../www/js/services/data/*.js',
       '../www/js/services/a4p/*.js',
       '../www/js/services/*.js',
 

@@ -51,7 +51,7 @@ var myAngularApp = angular.module('myAngularApp', [
   $ionicConfigProvider.views.forwardCache(true);
 
 
-
+  /*
   var client = new Miapp.Client({
     orgName:'yourorgname',
     appName:'sandbox',
@@ -59,7 +59,7 @@ var myAngularApp = angular.module('myAngularApp', [
     buildCurl: true // Optional - turn on curl commands, off by default
   });
 
-  /*
+
    When a new user wants to sign up in your app, simply create a form to catch their information, then use the `client.signup` method:
 
    // Method signature: client.signup(username, password, email, name, callback)
