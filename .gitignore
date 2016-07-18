@@ -20,3 +20,4 @@ platforms/
 plugins/
 
 www/lib/**/*.html
+www/lib/**/*.htm
