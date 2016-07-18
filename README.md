@@ -39,10 +39,8 @@ $ npm run text:extract
 ```
 
 
-live https://iocl-mlefree.c9users.io/ ?
-
 # Thanks
 
-@mat_cloud @gandhi @dalai_lama !  :)
-[![miapp.io](https://miapp.io)](https://miapp.io)
+[@miapp.io](https://miapp.io) @mat_cloud @gandhi @dalai_lama !  :)
+
 
