@@ -41,6 +41,6 @@ $ npm run text:extract
 
 # Thanks
 
-[@miapp.io](https://miapp.io) @mat_cloud @gandhi @dalai_lama !  :)
+[@miapp.io](https://miapp.io) @mat_cloud @gandhi @dalai_lama @my_wife !  :)
 
 

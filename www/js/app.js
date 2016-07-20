@@ -4,12 +4,9 @@ var myAngularApp = angular.module('myAngularApp', [
 //  'ngResource',
 //  'angular-gestures',
   'angular.filter',
-//  'ionic-material',
 //  'ngTouch',
     'chart.js',
-//    'chartjs',
-//  'ngAnimate',
-//  'ngSanitize',
+  'srvMiapp',
   'ngLocale',
   'gettext',
   'myAngularApp.config',
@@ -24,8 +21,11 @@ var myAngularApp = angular.module('myAngularApp', [
 
 //angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
-.run(function($ionicPlatform, gettextCatalog) {
+.run(function($ionicPlatform, gettextCatalog, srvMiapp) {
   $ionicPlatform.ready(function() {
+
+    console.log('$ionicPlatform ready');
+
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
@@ -37,6 +37,9 @@ var myAngularApp = angular.module('myAngularApp', [
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
     }
+
+
+    srvMiapp.init('miappcleanator');
   });
 
   //gettextCatalog.currentLanguage = 'en_US';
@@ -49,6 +52,7 @@ var myAngularApp = angular.module('myAngularApp', [
 
   $ionicConfigProvider.tabs.position('top'); // other values: top
   $ionicConfigProvider.views.forwardCache(true);
+
 
 
   /*

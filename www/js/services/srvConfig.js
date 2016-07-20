@@ -2,8 +2,8 @@
 
 angular.module('srvConfig', [])
 
-.factory('srvConfig', function ($log, srvLocalStorage, gettextCatalog) {
-  return new SrvConfig($log,srvLocalStorage, gettextCatalog);
+.factory('srvConfig', function ($log, $q, srvLocalStorage, gettextCatalog, srvMiapp) {
+  return new SrvConfig($log,$q, srvLocalStorage, gettextCatalog, srvMiapp);
 });
 
 
@@ -11,10 +11,12 @@ angular.module('srvConfig', [])
 var SrvConfig = (function() {
 'use strict';
 
-    function Service($log, srvLocalStorage, gettextCatalog) {
+    function Service($log, $q, srvLocalStorage, gettextCatalog, srvMiapp) {
 
-      this.$log = $log;
-      this.$log.log('init');
+        this.$log = $log;
+        this.$q = $q;
+        this.$log.log('init');
+        this.srvMiapp = srvMiapp;
 
       this.localStorage = srvLocalStorage;
       this.gettextCatalog = gettextCatalog;
@@ -46,9 +48,23 @@ var SrvConfig = (function() {
     }
 
     Service.prototype.setUserLoggedIn = function (user) {
-      this.configUserLoggedIn = user;
-      setObjectFromLocalStorage('configUserLoggedIn',this.configUserLoggedIn);
-      //if (this.localStorage) this.localStorage.set('configUserLoggedIn', this.configUserLoggedIn);
+        var defer = this.$q.defer();
+
+        //TODO get userCol ?
+        var login = user.email;
+        var password = user.password;
+
+        if (this.srvMiapp) this.srvMiapp.login(login, password, {})
+            .then(function(user){
+                this.configUserLoggedIn = user;
+                setObjectFromLocalStorage('configUserLoggedIn',this.configUserLoggedIn);
+                defer.resolve(user);
+            })
+            .catch(function(err){
+                defer.reject(err);
+            });
+
+        return defer.promise;
     };
     Service.prototype.getUserLoggedIn = function () {
       var obj = getObjectFromLocalStorage('configUserLoggedIn');

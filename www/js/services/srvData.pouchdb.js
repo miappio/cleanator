@@ -6,8 +6,7 @@ angular.module('srvData.pouchdb', [])
 
 })
 
-.factory('srvData', function (//$rootScope,$q,$resource,$log,$http, appName,appVersion) {
-  $q,$log,$http,$timeout, appName,appVersion) {
+.factory('srvData', function ($q,$log,$http,$timeout, appName,appVersion) {
   return new SrvDataPouchDB($q,$log,$http,$timeout,appName,appVersion);
 });
 

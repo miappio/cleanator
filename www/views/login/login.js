@@ -51,13 +51,23 @@ angular.module('myAngularApp.views.login', [])
 
 	$scope.loginSetLogin = function(user) {
 
-		srvData.setUserLoggedIn(user);
-		srvConfig.setUserLoggedIn(user);
+		srvConfig.setUserLoggedIn(user)
+			.then(function(user){
+
+				//Logged in
+				srvData.setUserLoggedIn(user);
+
+				$ionicNavBarDelegate.showBackButton(true);
+				$scope.navRedirect('/config/couple');
+
+			})
+			.catch(function(err){
+				// Login pb
+				alert("Login PB :"+err);
+			});
 		//$scope.setAppLogin(true);
 		//$scope.navJustLogin();
 
-		$ionicNavBarDelegate.showBackButton(true);
-		$scope.navRedirect('/config/couple');
 	};
 
 	$scope.loginSubmit = function (email, password, validForm) {
@@ -68,28 +78,27 @@ angular.module('myAngularApp.views.login', [])
 		//console.log('pass:'+encryptPass);
 
 
-
-    srvData.User.findOneByEmail(email)
-		.then(function(user){
-			if (password)
-				$scope.loginSetLogin(user);
-			else {
-					console.log('Bad user / password');
-				}
-		})
-		.catch(function(err){
-				// Set a new user
-				var newUser = {};
-				newUser[userCols.email] = email;
-				newUser[userCols.password] = encryptPass;
-			//srvData.User.set(newUser)
-			//.then(function(user){
-				$scope.loginSetLogin(newUser);
-			//})
-			//.catch(function(err){
-			//	alert("Bad login :"+err);
-			//});
-		});
+		srvData.User.findOneByEmail(email)
+			.then(function(user){
+				if (password)
+					return $scope.loginSetLogin(user);
+				else {
+						console.log('Bad user / password');
+					}
+			})
+			.catch(function(err){
+					// Set a new user
+					var newUser = {};
+					newUser[userCols.email] = email;
+					newUser[userCols.password] = encryptPass;
+				//srvData.User.set(newUser)
+				//.then(function(user){
+					return $scope.loginSetLogin(newUser);
+				//})
+				//.catch(function(err){
+				//	alert("Bad login :"+err);
+				//});
+			});
 	};
 
 

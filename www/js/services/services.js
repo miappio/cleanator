@@ -6,5 +6,4 @@ angular.module('myAngularApp.services', [
     'srvAnalytics',
     //,'srvCordova',
     'srvConfig',
-    'srvMiapp',
     'a4p.services']);

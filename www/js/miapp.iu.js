@@ -550,7 +550,7 @@ function doCallback(callback, params, context) {
     var name = "Client", global = this, overwrittenName = global[name], exports;
     var AUTH_ERRORS = [ "auth_expired_session_token", "auth_missing_credentials", "auth_unverified_oath", "expired_token", "unauthorized", "auth_invalid" ];
     Miapp.Client = function(options) {
-        this.URI = options.URI || "https://miapp.io/api/";
+        this.URI = options.URI || "https://miapp.io/api";
         if (options.orgName) {
             this.set("orgName", options.orgName);
         }
@@ -1038,7 +1038,8 @@ function doCallback(callback, params, context) {
         var self = this;
         var options = {
             method: "POST",
-            endpoint: "token",
+            mQuery: true,
+            endpoint: "users",
             body: {
                 username: username,
                 password: password,

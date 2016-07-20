@@ -1,8 +1,4 @@
-
-
-angular.module('srvMiapp', [])
-
-.factory('srvMiapp', function ($log,$q) {
+angular.module('srvMiapp', []).factory('srvMiapp', function ($log,$q) {
   return new SrvMiapp($log,$q);
 });
 
@@ -26,10 +22,10 @@ var SrvMiapp = (function() {
     Service.prototype.init = function (appName) {
 
         this.miappClient = new Miapp.Client({
-            orgName:'miapp',
-            appName:appName,
+            orgName: 'miappio',
+            appName: appName,
             logging: true, // Optional - turn on logging, off by default
-            buildCurl: true // Optional - turn on curl commands, off by default
+            buildCurl: false // Optional - turn on curl commands, off by default
         });
 
     };
@@ -44,18 +40,23 @@ var SrvMiapp = (function() {
         }
 
         this.miappClient.loginMLE(login, password, updateProperties, function (err, user) {
+            console.log('callback done :' + err);
             if (err) {
                 // Error - could not log user in
-                defer.reject(err);
+                return defer.reject(err);
             } else {
                 // Success - user has been logged in
-                defer.resolve(user);
+                this.currentUser = user;
+                setObjectFromLocalStorage('miappCurrentUser',this.currentUser);
+                return defer.resolve(user);
             }
         });
 
         return defer.promise;
     };
 
+
+    /*
     Service.prototype.setAppFirstInitLevel = function (level) {
 
         var obj = getObjectFromLocalStorage('configAppFirstInitLevel');
@@ -64,7 +65,7 @@ var SrvMiapp = (function() {
 
 
         this.configAppFirstInitLevel = level;
-      setObjectFromLocalStorage('configAppFirstInitLevel',this.configAppFirstInitLevel);
+        setObjectFromLocalStorage('configAppFirstInitLevel',this.configAppFirstInitLevel);
     };
     Service.prototype.isAppFirstInitCompleted = function () {
       var level = this.getAppFirstInitLevel();
@@ -73,7 +74,7 @@ var SrvMiapp = (function() {
       return b;
     };
 
-    /*
+    //
      When a new user wants to sign up in your app, simply create a form to catch their information, then use the `client.signup` method:
 
      // Method signature: client.signup(username, password, email, name, callback)

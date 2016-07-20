@@ -3,14 +3,15 @@
 describe('srvMiapp', function () {
 'use strict';
 
-    var log = null, q = null;
+    var log = null, q = null, rootScope = null;
 
     beforeEach(module('myAngularApp'));
     beforeEach(function () {
 
-      inject(function($injector) {
-        log = $injector.get('$log');
-        q = $injector.get('$q');
+      inject(function($injector, _$log_, _$q_, _$rootScope_) {
+        log = _$log_;//$injector.get('$log');
+          q = _$q_;//$injector.get('$q');
+          rootScope = _$rootScope_; //$injector.get('$rootScope');
       });
 
     });
@@ -32,7 +33,7 @@ describe('srvMiapp', function () {
     });
 
 
-    it('should trap error withour initialisation', function (done) {
+    it('should trap error during initialisation', function (done) {
 
         var srv = new SrvMiapp(log, q);
 
@@ -43,15 +44,20 @@ describe('srvMiapp', function () {
 
         srv.login('test','mypassword',upd)
             .then(function(user){
+                console.log('then received');
                 expect(user).toBeUndefined();
                 done();
-            })
-            .catch(function(err){
+            },function(err){
+                console.log('catch received');
                 expect(err).toBe('not initialized');
                 done();
             })
-            .finally(done);
+            .finally(function(){
+                console.log('finally received');
+                done();
+            });
 
+        rootScope.$apply();
     });
 
 
@@ -65,12 +71,24 @@ describe('srvMiapp', function () {
 
         var upd = {};
 
-        srv.login('test','mypassword',upd)
+        var prom = srv.login('test','mypassword',upd);
+
+
+        prom
             .then(function(user){
+                console.log('then. received');
                 expect(user).not.toBeUndefined();
             })
-            .catch(function(err){expect(err).toBeUndefined();})
-            .finally(done);
+            .catch(function(err){
+                console.log('catch. received');
+                expect(err).toBeUndefined();
+            })
+            .finally(function(user){
+                console.log('finally. received');
+                done();
+            });
+
+        setTimeout(function(){rootScope.$apply();},9000);
 
     });
 

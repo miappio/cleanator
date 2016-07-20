@@ -5,7 +5,14 @@ module.exports = function(config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '',
+    basePath: '../',
+
+      plugins: [
+          'karma-jasmine',
+          'karma-coverage',
+          'karma-phantomjs-launcher',
+          'karma-chrome-launcher'
+    ],
 
 
     // frameworks to use
@@ -15,52 +22,76 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      '../www/lib/ionic/js/ionic.bundle.js',
-      '../www/lib/angular-gettext/dist/angular-gettext.js',
-      '../www/lib/chance/dist/chance.min.js',
+      'www/lib/ionic/js/ionic.bundle.js',
+      'www/lib/angular-gettext/dist/angular-gettext.js',
+      'www/lib/chance/dist/chance.min.js',
       //'../node_modules/es5-shim/es5-shim.js',
-      '../www/lib/pouchdb/dist/pouchdb.min.js',
-      '../www/lib/angular-filter/dist/angular-filter.min.js',
-      '../www/lib/Chart.js/Chart.min.js',
-      '../www/lib/angular-chart.js/dist/angular-chart.min.js',
-      '../www/lib/angular-mocks/angular-mocks.js',
+      'www/lib/pouchdb/dist/pouchdb.min.js',
+      'www/lib/angular-filter/dist/angular-filter.min.js',
+      'www/lib/Chart.js/Chart.min.js',
+      'www/lib/angular-chart.js/dist/angular-chart.min.js',
+      'www/lib/angular-mocks/angular-mocks.js',
 
 
-      '../www/js/app.js',
-      '../www/js/miapp.iu.js',
-      '../www/js/miapp.iu.test.js',
-      '../www/js/config/*.js',
-      '../www/js/directives/*.js',
-      '../www/js/filters/*.js',
-      '../www/js/languages/*.js',
-      '../www/js/services/a4p/*.js',
-      '../www/js/services/*.js',
+      'www/js/app.js',
+      'www/js/miapp.iu.js',
+      'www/js/miapp.iu.test.js',
+      'www/js/config/*.js',
+      'www/js/directives/*.js',
+      'www/js/filters/*.js',
+      'www/js/languages/*.js',
+      'www/js/services/a4p/*.js',
+      'www/js/services/*.js',
 
-      '../www/views/*.js',
-      '../www/views/chore/*.js',
-      '../www/views/dashboard/*.js',
-      '../www/views/login/*.js',
-      '../www/views/user/*.js'
+      'www/views/*.js',
+      'www/views/chore/*.js',
+      'www/views/dashboard/*.js',
+      'www/views/login/*.js',
+      'www/views/user/*.js'
 
     ],
 
 
     // list of files to exclude
     exclude: [
-      '../www/**/*.notused'
+      'www/**/*.notused'
     ],
 
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
+      // source files, that you wanna generate coverage for
+      // do not include tests or libraries
+      // (these files will be instrumented by Istanbul)
+        'www/js/**/!(*.test).js': ['coverage'],
+        'www/views/**/!(*.test).js': ['coverage']
     },
 
 
-    // test results reporter to use
-    // possible values: 'dots', 'progress'
-    // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+        // test results reporter to use
+        // possible values: 'dots', 'progress'
+        // available reporters: https://npmjs.org/browse/keyword/karma-reporter
+        reporters: ['progress', 'coverage'],
+
+
+        // optionally, configure the reporter
+        coverageReporter: {
+            // specify a common output directory
+            dir: 'build/coverage',
+            reporters: [
+                // reporters not supporting the `file` property
+                { type: 'html', subdir: 'report-html' },
+                { type: 'lcov', subdir: 'report-lcov' },
+                // reporters supporting the `file` property, use `subdir` to directly
+                // output them in the `dir` directory
+                //{ type: 'cobertura', subdir: '.', file: 'cobertura.txt' },
+                { type: 'lcovonly', subdir: '.', file: 'report-lcovonly.txt' },
+                //{ type: 'teamcity', subdir: '.', file: 'teamcity.txt' },
+                //{ type: 'text', subdir: '.', file: 'text.txt' },
+                //{ type: 'text-summary', subdir: '.', file: 'text-summary.txt' },
+            ]
+        },
 
 
     // web server port
