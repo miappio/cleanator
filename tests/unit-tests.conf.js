@@ -22,32 +22,32 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'www/lib/ionic/js/ionic.bundle.js',
-      'www/lib/angular-gettext/dist/angular-gettext.js',
-      'www/lib/chance/dist/chance.min.js',
-      //'../node_modules/es5-shim/es5-shim.js',
-      'www/lib/pouchdb/dist/pouchdb.min.js',
-      'www/lib/angular-filter/dist/angular-filter.min.js',
-      'www/lib/Chart.js/Chart.min.js',
-      'www/lib/angular-chart.js/dist/angular-chart.min.js',
-      'www/lib/angular-mocks/angular-mocks.js',
+        'www/lib/ionic/js/ionic.bundle.js',
+        'www/lib/angular-gettext/dist/angular-gettext.js',
+        'www/lib/chance/dist/chance.min.js',
+        //'../node_modules/es5-shim/es5-shim.js',
+        'www/lib/pouchdb/dist/pouchdb.min.js',
+        'www/lib/angular-filter/dist/angular-filter.min.js',
+        'www/lib/Chart.js/Chart.min.js',
+        'www/lib/angular-chart.js/dist/angular-chart.min.js',
+        'www/lib/angular-mocks/angular-mocks.js',
+        'www/lib/crypto-js/crypto-js.js',
 
+        'www/js/app.js',
+        'www/js/miapp.iu.js',
+        'www/js/miapp.iu.test.js',
+        'www/js/config/*.js',
+        'www/js/directives/*.js',
+        'www/js/filters/*.js',
+        'www/js/languages/*.js',
+        'www/js/services/a4p/*.js',
+        'www/js/services/*.js',
 
-      'www/js/app.js',
-      'www/js/miapp.iu.js',
-      'www/js/miapp.iu.test.js',
-      'www/js/config/*.js',
-      'www/js/directives/*.js',
-      'www/js/filters/*.js',
-      'www/js/languages/*.js',
-      'www/js/services/a4p/*.js',
-      'www/js/services/*.js',
-
-      'www/views/*.js',
-      'www/views/chore/*.js',
-      'www/views/dashboard/*.js',
-      'www/views/login/*.js',
-      'www/views/user/*.js'
+        'www/views/*.js',
+        'www/views/chore/*.js',
+        'www/views/dashboard/*.js',
+        'www/views/login/*.js',
+        'www/views/user/*.js'
 
     ],
 
@@ -85,11 +85,11 @@ module.exports = function(config) {
                 { type: 'lcov', subdir: 'report-lcov' },
                 // reporters supporting the `file` property, use `subdir` to directly
                 // output them in the `dir` directory
-                //{ type: 'cobertura', subdir: '.', file: 'cobertura.txt' },
-                { type: 'lcovonly', subdir: '.', file: 'report-lcovonly.txt' },
-                //{ type: 'teamcity', subdir: '.', file: 'teamcity.txt' },
-                //{ type: 'text', subdir: '.', file: 'text.txt' },
-                //{ type: 'text-summary', subdir: '.', file: 'text-summary.txt' },
+                // { type: 'cobertura', subdir: '.', file: 'cobertura.txt' },
+                { type: 'lcovonly', subdir: '.', file: 'report-lcovonly.txt' }
+                // { type: 'teamcity', subdir: '.', file: 'teamcity.txt' },
+                // { type: 'text', subdir: '.', file: 'text.txt' },
+                // { type: 'text-summary', subdir: '.', file: 'text-summary.txt' },
             ]
         },
 

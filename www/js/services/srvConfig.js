@@ -2,23 +2,23 @@
 
 angular.module('srvConfig', [])
 
-.factory('srvConfig', function ($log, $q, srvLocalStorage, gettextCatalog, srvMiapp) {
-  return new SrvConfig($log,$q, srvLocalStorage, gettextCatalog, srvMiapp);
+.factory('srvConfig', function ($log, $q, gettextCatalog, srvMiapp) {
+  return new SrvConfig($log,$q, gettextCatalog, srvMiapp);
 });
 
 
 
-var SrvConfig = (function() {
-'use strict';
+var SrvConfig = (function (){
+//'use strict';
 
-    function Service($log, $q, srvLocalStorage, gettextCatalog, srvMiapp) {
+    function service ($log, $q, gettextCatalog, srvMiapp) {
 
         this.$log = $log;
         this.$q = $q;
         this.$log.log('init');
         this.srvMiapp = srvMiapp;
 
-      this.localStorage = srvLocalStorage;
+      //this.localStorage = srvLocalStorage;
       this.gettextCatalog = gettextCatalog;
       //this.configLoggedIn = false;
       this.configUserLoggedIn = null;
@@ -47,31 +47,33 @@ var SrvConfig = (function() {
       this.setConfigLang(lang);
     }
 
-    Service.prototype.setUserLoggedIn = function (user) {
+    service.prototype.setUserLoggedIn = function (user) {
         var defer = this.$q.defer();
 
-        //TODO get userCol ?
         var login = user.email;
         var password = user.password;
 
-        if (this.srvMiapp) this.srvMiapp.login(login, password, {})
-            .then(function(user){
-                this.configUserLoggedIn = user;
-                setObjectFromLocalStorage('configUserLoggedIn',this.configUserLoggedIn);
-                defer.resolve(user);
-            })
-            .catch(function(err){
-                defer.reject(err);
-            });
+        if(this.srvMiapp) {
+            this.srvMiapp.login(login, password, {})
+                .then(function(user){
+                    this.configUserLoggedIn = angular.copy(user);
+                    this.configUserLoggedIn.miappUserId = user._id;
+                    setObjectFromLocalStorage('configUserLoggedIn',this.configUserLoggedIn);
+                    defer.resolve(user);
+                })
+                .catch(function(err){
+                    defer.reject(err);
+                });
+        }
 
         return defer.promise;
     };
-    Service.prototype.getUserLoggedIn = function () {
+    service.prototype.getUserLoggedIn = function () {
       var obj = getObjectFromLocalStorage('configUserLoggedIn');
       this.configUserLoggedIn = obj || null;
       return this.configUserLoggedIn;
     };
-    Service.prototype.isLoggedIn = function () {
+    service.prototype.isLoggedIn = function () {
       var user = this.getUserLoggedIn();
       var b = false;
       if (user) b = true;
@@ -79,16 +81,16 @@ var SrvConfig = (function() {
     };
 
 
-    Service.prototype.getAppFirstInitLevel = function () {
+    service.prototype.getAppFirstInitLevel = function () {
       var obj = getObjectFromLocalStorage('configAppFirstInitLevel');
       this.configAppFirstInitLevel = obj || 0;
       return this.configAppFirstInitLevel;
     };
-    Service.prototype.setAppFirstInitLevel = function (level) {
+    service.prototype.setAppFirstInitLevel = function (level) {
       this.configAppFirstInitLevel = level;
       setObjectFromLocalStorage('configAppFirstInitLevel',this.configAppFirstInitLevel);
     };
-    Service.prototype.isAppFirstInitCompleted = function () {
+    service.prototype.isAppFirstInitCompleted = function () {
       var level = this.getAppFirstInitLevel();
       var b = false;
       if (level == this.configAppFirstInitLevelMax) b = true;
@@ -97,16 +99,16 @@ var SrvConfig = (function() {
 
 
     // @return langs formatted as [{title:'English', code:'en_US'},{}...]
-    Service.prototype.getConfigLangs = function () {
+    service.prototype.getConfigLangs = function () {
       return this.configLangs;
     };
     // @return lang formatted as {title:'English', code:'en_US'}
-    Service.prototype.getConfigLang = function () {
+    service.prototype.getConfigLang = function () {
       var lang = getObjectFromLocalStorage('configLang');
       if (!lang) lang = this.configLangs[0];
       return lang;
     };
-    Service.prototype.setConfigLang = function (lang) {
+    service.prototype.setConfigLang = function (lang) {
       //var langCode = 'en_US';
       var langObj = null;
       for (var i=0; i < this.configLangs.length && !langObj; i++){
@@ -148,5 +150,5 @@ var SrvConfig = (function() {
 
 
 
-    return Service;
+    return service;
 })();

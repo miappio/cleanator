@@ -1,9 +1,10 @@
 {
-  "name": "ioCl",
-  "private": "true",
+  "name": "bowerapp",
+  "private": "false",
   "devDependencies": {
     "ionic": "driftyco/ionic-bower#1.1.1",
-    "angular-mocks": "~1.4.3"
+    "angular-mocks": "~1.4.3",
+    "crypto-js": "^3.1.6"
   },
   "dependencies": {
     "angular-gettext": "latest",

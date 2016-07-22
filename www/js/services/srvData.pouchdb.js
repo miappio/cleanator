@@ -6,29 +6,30 @@ angular.module('srvData.pouchdb', [])
 
 })
 
-.factory('srvData', function ($q,$log,$http,$timeout, appName,appVersion) {
-  return new SrvDataPouchDB($q,$log,$http,$timeout,appName,appVersion);
+.factory('srvData', function ($q,$log,$http,$timeout, srvMiapp) {
+  return new SrvDataPouchDB($q,$log,$http,$timeout, srvMiapp);
 });
 
 
 var SrvDataPouchDB = (function() {
   'use strict';
-  function Service($q,$log,$http,$timeout,appName,appVersion) {
+  function Service($q,$log,$http,$timeout,appName,appVersion, srvMiapp) {
 
       //this.$rootScope = $rootScope;
       this.$q = $q;
       this.$log = $log;
       this.$http = $http;
       this.$timeout = $timeout;
-      this.appName = appName;
-      this.appVersion = appVersion;
+      // todo in srvMiapp this.appName = appName;
+      // todo in srvMiapp this.appVersion = appVersion;
+      this.srvMiapp = srvMiapp;
 
       //this.WS_URL_LOCAL=WS_URL_LOCAL;
       //this.WS_URL_ONLINE=WS_URL_ONLINE;
       //this.currentWSUrl = this.WS_URL_LOCAL;
 
       this.initDone = false;
-      this.dataUserLoggedIn = false;
+      // todo in srvMiap this.dataUserLoggedIn = false;
       this.dataCoupleLoggedIn = false;
       this.dataLastResetDate = null;
       //todo ? this.dataHistoricsDone = [];
@@ -39,11 +40,11 @@ var SrvDataPouchDB = (function() {
       this.choreType    = 'ChoreDocType';
       this.historicType    = 'HistoricDocType';
       this.categoryType    = 'CategoryDocType';
-      this.userColumns = {type:'docType',appVendorId:'app_Id',appVendorVersion:'app_version',appUserId:'appUser_Id',     firstName:'firstname',lastName:'lastname',email:'email',password:'password',timeInMnPerWeekTodo:'timeInMnPerWeekTodo',profilID:'profilID',profilColor:'profilColor',timeInMnPerMond:'timeInMnPerMond',timeInMnPerTues:'timeInMnPerTues',timeInMnPerWedn:'timeInMnPerWedn',timeInMnPerThur:'timeInMnPerThur',timeInMnPerFrid:'timeInMnPerFrid',timeInMnPerSatu:'timeInMnPerSatu',timeInMnPerSund:'timeInMnPerSund',   lastModified:'lastModified'};
-      this.coupleColumns = {type:'docType',appVendorId:'app_Id',appVendorVersion:'app_version',appUserId:'appUser_Id',   name:'coupleName',description:'description',userAId:'userA_id',userBId:'userB_id',lastResetDate:'LastResetDate',  lastModified:'lastModified'};
-      this.choreColumns = {type:'docType',appVendorId:'app_Id',appVendorVersion:'app_version',appUserId:'appUser_Id',    name:'choreName',category:'choreCategoryName',description:'description',percentAB:'percent_AB',AUserAffinity:'AUserAffinity',BUserAffinity:'BUserAffinity',frequencyDays:'frequencyDays',timeInMn:'timeInMn',choreDescriptionCat:'choreDescriptionCat',priority:'priority',priorityComputed:'priorityComputed',lastTimeDone:'lastTimeDone',desactivate:'desactivate', lastModified:'lastModified'};
-      this.historicColumns = {type:'docType',appVendorId:'app_Id',appVendorVersion:'app_version',appUserId:'appUser_Id', name:'choreName',category:'choreCategoryName',description:'description',percentAB:'percent_AB',AUserAffinity:'AUserAffinity',BUserAffinity:'BUserAffinity',frequencyDays:'frequencyDays',timeInMn:'timeInMn',choreDescriptionCat:'choreDescriptionCat',priority:'priority',priorityComputed:'priorityComputed',lastTimeDone:'lastTimeDone',desactivate:'desactivate',choreId:'choreId',userId:'userId',action:'action',actionTodoDate:'actionTodoDate',actionDoneDate:'actionDoneDate',internalWeight:'internalWeight',internalLate:'internalLate', lastModified:'lastModified' };
-      this.categoryColumns = {type:'docType',appVendorId:'app_Id',appVendorVersion:'app_version',appUserId:'appUser_Id', name:'categoryName',description:'description',thumbPath:'thumb',groupName:'group',desactivate:'desactivate',  lastModified:'lastModified'};
+      this.userColumns =        {type:'docType', firstName:'firstname',lastName:'lastname',email:'email',password:'password',timeInMnPerWeekTodo:'timeInMnPerWeekTodo',profilID:'profilID',profilColor:'profilColor',timeInMnPerMond:'timeInMnPerMond',timeInMnPerTues:'timeInMnPerTues',timeInMnPerWedn:'timeInMnPerWedn',timeInMnPerThur:'timeInMnPerThur',timeInMnPerFrid:'timeInMnPerFrid',timeInMnPerSatu:'timeInMnPerSatu',timeInMnPerSund:'timeInMnPerSund',   lastModified:'lastModified'};
+      this.coupleColumns =      {type:'docType', name:'coupleName',description:'description',userAId:'userA_id',userBId:'userB_id',lastResetDate:'LastResetDate',  lastModified:'lastModified'};
+      this.choreColumns =       {type:'docType', name:'choreName',category:'choreCategoryName',description:'description',percentAB:'percent_AB',AUserAffinity:'AUserAffinity',BUserAffinity:'BUserAffinity',frequencyDays:'frequencyDays',timeInMn:'timeInMn',choreDescriptionCat:'choreDescriptionCat',priority:'priority',priorityComputed:'priorityComputed',lastTimeDone:'lastTimeDone',desactivate:'desactivate', lastModified:'lastModified'};
+      this.historicColumns =    {type:'docType', name:'choreName',category:'choreCategoryName',description:'description',percentAB:'percent_AB',AUserAffinity:'AUserAffinity',BUserAffinity:'BUserAffinity',frequencyDays:'frequencyDays',timeInMn:'timeInMn',choreDescriptionCat:'choreDescriptionCat',priority:'priority',priorityComputed:'priorityComputed',lastTimeDone:'lastTimeDone',desactivate:'desactivate',choreId:'choreId',userId:'userId',action:'action',actionTodoDate:'actionTodoDate',actionDoneDate:'actionDoneDate',internalWeight:'internalWeight',internalLate:'internalLate', lastModified:'lastModified' };
+      this.categoryColumns =    {type:'docType', name:'categoryName',description:'description',thumbPath:'thumb',groupName:'group',desactivate:'desactivate',  lastModified:'lastModified'};
       //this.categories = {};
 
       var self = this;
@@ -61,10 +62,6 @@ var SrvDataPouchDB = (function() {
                   var results = response.rows.map(function(r){
                         if (r && r.doc && r.doc[self.userColumns.type] == self.userType) {
                           var user = r.doc;
-                          // mapping ?
-                          //user[userColumns.firstName] = '';
-                          //user[userColumns.lastName] = '';
-                          //user[userColumns.email] = '';
                           users.push(user);
                           return r;
                         }
@@ -553,14 +550,6 @@ var SrvDataPouchDB = (function() {
   };
 
 
-  Service.prototype._dbFilter= function(doc){
-      var dataUserLoggedIn = this.getUserLoggedIn();
-      if (doc.appUser_Id == dataUserLoggedIn.email)
-        return doc;
-      return null;
-  };
-
-
   Service._testConnection = function () {
 
     return true;
@@ -600,41 +589,42 @@ var SrvDataPouchDB = (function() {
       return deferred.promise;
   };
 
-  Service.prototype.isEmpty = function () {
-      var self = this;
-      var deferred = self.$q.defer();
+  /** TODO srvMiapp
+    Service.prototype.isEmpty = function () {
+        var self = this;
+        var deferred = self.$q.defer();
 
-      if (!self.initAlreadyDone()) {
+        if (!self.initAlreadyDone()) {
 
-        //Promise.resolve().then(function() {
-          throw new TypeError("srvData init should be done");
-        //});
-        //return deferred.promise;
-      }
+            //Promise.resolve().then(function() {
+            throw new TypeError("srvData init should be done");
+            //});
+            //return deferred.promise;
+        }
 
-      if (!self.dataUserLoggedIn) {
-        //deferred.resolve(true);
-        //return deferred.promise;
-        throw new TypeError("srvData need a user logged in");
-      }
+        if (!self.dataUserLoggedIn) {
+            //deferred.resolve(true);
+            //return deferred.promise;
+            throw new TypeError("srvData need a user logged in");
+        }
 
-      self.db.allDocs({
-              filter : function(doc){
+        self.db.allDocs({
+            filter : function(doc){
                 if (doc.appUser_Id == self.dataUserLoggedIn.email) return doc;
-              }}).then(function(response) {
+            }}).then(function(response) {
 
-                if (response.total_rows && response.total_rows > 5) return deferred.resolve(false);
-                else self.$timeout(function(){return deferred.resolve(true);},10);
-                //$rootScope.$apply(function(){deferred.resolve(true)});
-                //return deferred.resolve(true);
-              }).catch(function(err){
-                return deferred.reject(err);
-              });
+            if (response.total_rows && response.total_rows > 5) return deferred.resolve(false);
+            else self.$timeout(function(){return deferred.resolve(true);},10);
+            //$rootScope.$apply(function(){deferred.resolve(true)});
+            //return deferred.resolve(true);
+        }).catch(function(err){
+            return deferred.reject(err);
+        });
 
 
-      return deferred.promise;
-  };
-
+        return deferred.promise;
+    };
+*/
 
 
 
@@ -675,6 +665,7 @@ var SrvDataPouchDB = (function() {
   }
 
 
+  /* todo in srvMiapp
   Service.prototype.setUserLoggedIn = function (user) {
     //if (!user) return;
 
@@ -689,6 +680,7 @@ var SrvDataPouchDB = (function() {
       this.dataUserLoggedIn = obj;
       return this.dataUserLoggedIn;
   };
+  */
 
   Service.prototype.setCoupleLoggedIn = function (couple) {
     this.dataCoupleLoggedIn = couple;
@@ -782,12 +774,12 @@ var SrvDataPouchDB = (function() {
   };
 
 
-  Service.prototype.initWithFirstData = function(langOfFile){
+  Service.prototype.initWithFirstData = function(langOfFile, firstUserLoggedIn){
     var i,j, self = this;
     var chanceBaseUser = 2345,chanceBaseCouple = 2645,chanceBaseChore = 2945;//Math.random
     var deferred = self.$q.defer();
 
-    var firstUser = self.getUserLoggedIn();
+    var firstUser = firstUserLoggedIn;
     self.User.set(firstUser).then(function(firstUserUpdated){
       if (!firstUserUpdated) return deferred.reject();
 
@@ -885,6 +877,7 @@ var SrvDataPouchDB = (function() {
     return deferred.promise;
   };
 
+  /*
   Service.prototype.sync = function(){
     var self = this;
     var deferred = self.$q.defer();
@@ -896,7 +889,9 @@ var SrvDataPouchDB = (function() {
     }
 
 
-    self.db.sync('http://51.255.34.37:8080/cltordsdsds sds',{
+    var pouchdbEndpoint = this.srvMiapp.getEndpoint();
+
+    self.db.sync(pouchdbEndpoint,{
 
     //self.db.sync('http://51.255.34.37:8080/cltor',{
     //self.db.sync('http://poupouch.herokuapp.com/cltor',{
@@ -935,6 +930,7 @@ var SrvDataPouchDB = (function() {
 
     return deferred.promise;
   };
+  */
 
   Service.prototype.becarefulClean = function() {
     var self = this;
@@ -1261,7 +1257,7 @@ var SrvDataPouchDB = (function() {
 
   Service.prototype.setFairIndicleanator = function (newValue) {
     this.dataFairIndicleanator = newValue;
-    setObjectFromLocalStorage('dataFairIndicleanator',this.dataUserLoggedIn);
+    setObjectFromLocalStorage('dataFairIndicleanator',newValue);
   };
 
   Service.prototype.getFairIndicleanator = function () {
