@@ -2,7 +2,6 @@
 [![Build Status](https://travis-ci.org/miappio/cleanator.svg?branch=master)](https://travis-ci.org/miappio/cleanator)
 [![Issue Count](https://codeclimate.com/github/miappio/cleanator/badges/issue_count.svg)](https://codeclimate.com/github/miappio/cleanator/issues)
 [![Test Coverage](https://codeclimate.com/github/mlefree/c9_wsk/badges/coverage.svg)](https://codeclimate.com/github/mlefree/c9_wsk/coverage)
-[![Dependency Status](https://gemnasium.com/miappio/cleanator.svg)](https://gemnasium.com/miappio/cleanator)
 
                                               proudly made by miapp.io
                      _|                                    _|            
