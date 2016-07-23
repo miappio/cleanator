@@ -26,7 +26,7 @@ var testSrv = (function() {
 })();
 
 
-describe('a4p', function () {
+describe('a4p global', function () {
 'use strict';
 
     describe('formatError', function () {
