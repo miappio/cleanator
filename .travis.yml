@@ -2,7 +2,7 @@ services:
 - mongodb
 addons:
   code_climate:
-    repo_token: 2cd26ede3ca1d6
+    repo_token: 17e98b743f2f12959f31296199477cce3442ee6b77295a732f111830636e67e2
 language: node_js
 script: npm test
 after_script:
