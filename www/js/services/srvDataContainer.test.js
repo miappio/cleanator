@@ -4,7 +4,7 @@ describe('srvDataContainer', function () {
 'use strict';
 
     var log,q,gettextCatalog,srvData,srvConfig,srvMiapp,timeout,rootScope;
-    var originalTimeout,$httpBackend,filterFilter;
+    var originalTimeout,$httpBackend,filterFilter, pouchDBMock;
 
     var choreRefToCopy = {
       "_id":"choreFakeId",
@@ -63,6 +63,35 @@ describe('srvDataContainer', function () {
 
 
             srvConfig.getUserLoggedIn = function(){ return {email:'mock@user.com', miappUserId : 'myMockedUser'};};
+            srvMiapp.currentUser = {
+                email:'mock@user.com',
+                miappUserId : 'myMockedUser',
+                doc : {
+                    docType : 'UserDocType',
+                    _id:"myMockedUser",
+                    email:'mock@user.com',
+                    miappUserId : 'myMockedUser'
+                }};
+            pouchDBMock = {
+                allDocs: function(filter, callback) {
+                    var response = {};
+                    response.total_rows = 8;
+                    response.rows = [];
+                    for (var i=0; i < response.total_rows;i++) {
+                        response.rows.push(srvMiapp.currentUser);
+                    }
+                    response.rows.push(srvMiapp.currentUser);
+                    return callback(null,response);
+                },
+                sync: function(pouchdbEndpoint,filter) {
+                    var onFn = { on : function(status, callback) {
+                        if (status === 'complete') callback('pouchDBMock is synced...');
+                        return onFn;
+                    }
+                    };
+                    return onFn;
+                }
+            };
         });
 
     });
@@ -118,20 +147,32 @@ describe('srvDataContainer', function () {
     });
 
     it('should catch error with a bad init', function (done) {
-        console.log(srvConfig.getUserLoggedIn());
+
+        srvConfig.getUserLoggedIn = function(){ return null;};
+        srvMiapp.currentUser = null;
         var srv = new SrvDataContainer(log, q, filterFilter, srvData, srvConfig,srvMiapp);
         //console.log(srvConfig.getUserLoggedIn());
-        //expect(srv.isLoggedIn()).toBe(false);
+        expect(srv.isLoggedIn()).toBe(false,'should be not well loggin');
 
-        expect(srv.isLoggedIn()).toBe(true);
+        srv.sync()
+            .then(function(err){ expect(true).toBe(false,'should not pass here : '+err); })
+            .catch(function(err){
+                expect(err).toBe('Need one user logged in.');
 
-        srv.sync().then(function(err){
-            expect(true).toBe(false,'should not be in a normal way '+err);
-        }).catch(function(err){
-            expect(err).toBe('DB search impossible. Need a user logged in. (null )');
-        }).finally(function(err){
-            done();
-        });
+                //Launch another sync with a login but not db
+                srvConfig.getUserLoggedIn = function(){ return {email:'mock@user.com', miappUserId : 'myMockedUser'};};
+                srvMiapp.currentUser = {email:'mock@user.com', miappUserId : 'myMockedUser'};
+                srvData.db = null;
+
+                return srv.sync();
+            })
+            .then(function(err){ expect(true).toBe(false,'should not pass here : '+err);})
+            .catch(function(err){
+                expect(err).toBe('DB search impossible. Need a user logged in. ([object Object])','cause of no valid pouchDB');
+
+            }).finally(function(err){
+                done();
+            });
 
 
         setTimeout(function () {
@@ -141,16 +182,10 @@ describe('srvDataContainer', function () {
     });
 
     it('should bind first data', function (done) {
-        console.log(srvConfig.getUserLoggedIn());
         var srv = new SrvDataContainer(log, q, filterFilter, srvData, srvConfig,srvMiapp);
-        //console.log(srvConfig.getUserLoggedIn());
-        //expect(srv.isLoggedIn()).toBe(false);
-
-        srvConfig.getUserLoggedIn = function(){ return {email:'mock@user.com', miappUserId : 'myMockedUser'};};
         expect(srv.isLoggedIn()).toBe(true);
 
-        //srvData.db = function(){ return {email:'mock@user.com', miappUserId : 'myMockedUser'};};
-        //expect(srv.isLoggedIn()).toBe(true);
+        srv.srvData.db = pouchDBMock;
 
         srv.sync().then(function(err){
             expect(err).toBeUndefined('should not resolve error '+err);

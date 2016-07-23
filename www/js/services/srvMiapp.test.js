@@ -19,6 +19,7 @@ describe('srvMiapp', function () {
     var uriMiappLocal = "http://localhost:3000/api";
     var login = 'miappTest' + generateObjectUniqueId();
     var password = "miappPassword";
+    var mockUser = {email: login, miappUserId : login};
     var updateProperties = {
         age : 4,
         location : 'london'
@@ -192,6 +193,10 @@ describe('srvMiapp', function () {
                     allDocs: function(filter, callback) {
                         var response = {};
                         response.total_rows = 2;
+                        response.rows = [];
+                        for (var i=0; i < response.total_rows;i++) {
+                            response.rows.push(mockUser);
+                        }
                         return callback(null,response);
                     },
                     sync: function(pouchdbEndpoint,filter) {
@@ -203,10 +208,8 @@ describe('srvMiapp', function () {
                         return onFn;
                     }
                 };
-
                 //spyOn(pouchDBMock, 'allDocs');
                 //spyOn(pouchDBMock, 'sync');
-
             });
         });
         afterEach(function () {
@@ -214,31 +217,63 @@ describe('srvMiapp', function () {
             service = null;
         });
 
-
-
-        it('should catch exception without initialisation', function (done) {
-
+        it('should catch exception without login', function (done) {
+            var data = {};
             service.init(appName);
             service.isPouchDBEmpty(pouchDBMock)
-                .then(function (bEmpty) {
-                    //expect(pouchDBMock.allDocs).toHaveBeenCalled();
-                    expect(bEmpty).toBe(false,'should have an empty DB - just init');
-                    return service.syncPouchDb(pouchDBMock);
-                })
-                .then(function (err) {
-                    //expect(pouchDBMock.sync).toHaveBeenCalled();
-                    expect(err).toBe('pouchDBMock is synced...','should sync without any error');
-                })
+                .then(function (ko) { expect(true).toBe(false,'should not be there'); })
                 .catch(function (err) {
-                    expect(err).toBeUndefined('shouldn t catch anything');
+                    expect(err).toBe('DB search impossible. Need a user logged in. (null)');
+                    return service.putInPouchDb(pouchDBMock,data);
+                })
+                .then(function (ko) { expect(true).toBe(false,'should not be there'); })
+                .catch(function (err) {
+                    expect(err).toBe('DB put impossible. Need a user logged in. (null)');
+                    return service.putFirstUserInEmptyPouchDB(pouchDBMock,data);
+                })
+                .then(function (ko) { expect(true).toBe(false,'should not be there'); })
+                .catch(function (err) {
+                    expect(err).toBe('DB put impossible. Need a user logged in. (null)');
                 })
                 .finally(function (user) {
                     done();
                 });
 
-            //var data = {};
-            //service.putInPouchDb(pouchDB,data);
-            //service.putFirstUserInEmptyPouchDB(pouchDB, data);
+            setTimeout(function () {
+                rootScope.$apply();
+            }, 2000);
+
+        });
+
+        it('should test if db is empty or not', function (done) {
+
+            service.init(appName);
+            service.login(login,password,updateProperties)
+                .then(function (user) {
+                    expect(service.currentUser).not.toBe(null);
+                    expect(service.currentUser.email).toBe(login);
+                    return service.isPouchDBEmpty(pouchDBMock);
+                })
+                .then(function (bEmpty) {
+                    expect(bEmpty).toBe(true,'should have an empty DB - just init');
+                    pouchDBMock = {
+                        allDocs: function(filter, callback) {
+                            var response = {};
+                            response.total_rows = 10;
+                            return callback(null,response);
+                        }
+                    };
+                    return service.isPouchDBEmpty(pouchDBMock);
+                })
+                .then(function (bEmpty) {
+                    expect(bEmpty).toBe(false,'should be not empty');
+                })
+                .catch(function (err) {
+                    expect(ture).toBe(false,'Should not catch err: ' + err);
+                })
+                .finally(function (err) {
+                    done();
+                });
 
             setTimeout(function () {
                 rootScope.$apply();
@@ -253,7 +288,6 @@ describe('srvMiapp', function () {
             service.init(appName);
             service.login(login,password,updateProperties)
                 .then(function (user) {
-                    console.log(service.currentUser);
                     expect(service.currentUser).not.toBe(null);
                     expect(service.currentUser.email).toBe(login);
                     return service.isPouchDBEmpty(pouchDBMock);
@@ -265,7 +299,7 @@ describe('srvMiapp', function () {
                 })
                 .then(function (err) {
                     //expect(pouchDBMock.sync).toHaveBeenCalled();
-                    expect(err).toBe('pouchDBMock is synced...','should sync without any error');
+                    expect(err).toBeUndefined('should sync without any error');
                 })
                 .catch(function (err) {
                     expect(err).toBeUndefined('shouldn t catch anything');

@@ -38,33 +38,26 @@ var SrvDataContainer = (function() {
     Service.prototype.sync = function () {
       var self = this;
       var deferred = self.$q.defer();
-
       var lang = self.srvConfig.getConfigLang() ? self.srvConfig.getConfigLang().code : 'en_US';
-
       var userMain = self.srvConfig.getUserLoggedIn();
-      if (!userMain || !userMain.email) {
-        var errMessage = 'Need one user logged in';
-        deferred.reject(errMessage);
-        return deferred.promise;
-      }
-
+      if (!userMain || !userMain.email) return self.$q.reject('Need one user logged in.');
 
       self.srvMiapp.isPouchDBEmpty(self.srvData.db)
           .then(function(isE){
                 if (isE && !self.srvDataNeedFirstSyncForThisUser) {
                     //initAvec première données (fichier en dur)
                     return self.initWithFirstData(lang, userMain);
-                } else {
-                    self.srvDataNeedFirstSyncForThisUser = false;
-                    return self.srvData.sync();
                 }
+
+                self.srvDataNeedFirstSyncForThisUser = false;
+                return self.srvMiapp.syncPouchDb(self.srvData.db);
           })
           .then(function(err) {
-              if (err) return defered.reject(err);
+              if (err) return deferred.reject(err);
               return bindData(self);
           })
           .then(function(err){
-              if (err) return defered.reject(err);
+              if (err) return deferred.reject(err);
               deferred.resolve();
           })
           .catch(function(err){
@@ -379,9 +372,6 @@ var SrvDataContainer = (function() {
         else
             self.srvData.User.findOneByEmail(userMain.email)
             .then(function (user) {
-
-                // we have an User Logged In
-                self.srvData.setUserLoggedIn(user);
 
                 // initialise données depuis bdd
                 bindCouple(self).then(function(couple) {

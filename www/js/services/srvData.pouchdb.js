@@ -95,7 +95,7 @@ var SrvDataPouchDB = (function() {
                             deferred.resolve(r.doc);
                             return r;
                       }
-                      if (!respFound && respTested == respLength) deferred.reject("User not found");
+                      if (!respFound && respTested === respLength) deferred.reject("User not found");
                       return null;
                     });
                   }
@@ -106,17 +106,18 @@ var SrvDataPouchDB = (function() {
           findOneByEmail: function(userEmail) {
             var deferred = self.$q.defer();
             self.db.allDocs({include_docs: true, descending: true}, function(err, response) {
-              if(err){
-                deferred.reject("No doc found "+ err);
-                self.$log.log(err);
-              }
-              if(response){
+
+                if(err || !response || !response.rows){
+                    self.$log.log(err);
+                    return deferred.reject('No doc found : '+ err);
+                }
+
                 var respLength = response.rows.length;
-                if (!respLength) deferred.reject("No user list");
-                else {
-                  var respTested = 0;
-                  var respFound = false;
-                  var results = response.rows.map(function(r){
+                if (!respLength) return deferred.reject("No user list");
+
+                var respTested = 0;
+                var respFound = false;
+                var results = response.rows.map(function (r){
                     respTested++;
                     if (!respFound &&
                       r && r.doc &&
@@ -126,11 +127,10 @@ var SrvDataPouchDB = (function() {
                         deferred.resolve(r.doc);
                         return r;
                     }
-                    if (!respFound && respTested == respLength) deferred.reject("User not found");
+                    if (!respFound && respTested === respLength) deferred.reject("User not found");
                     return null;
-                  });
-                }
-              }
+                });
+
             });
             return deferred.promise;
           },
