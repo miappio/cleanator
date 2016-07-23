@@ -106,7 +106,7 @@ var SrvMiapp = (function() {
         console.log('syncPouchDb ..');
         var pouchdbEndpoint = self.miappClient ? self.miappClient.getEndpoint() : null;
         if (!self.currentUser || !self.currentUser.email || !pouchdbEndpoint || !pouchDB)
-            return deferred.reject('DB sync impossible. Need a user logged in. (' + pouchdbEndpoint + ' -' + self.currentUser.email+' )');
+            return self.$q.reject('DB sync impossible. Need a user logged in. (' + pouchdbEndpoint + ' -' + self.currentUser+' )');
 
         console.log('syncPouchDb call');
         pouchDB.sync(pouchdbEndpoint,{
@@ -140,7 +140,7 @@ var SrvMiapp = (function() {
         var self = this;
         var deferred = self.$q.defer();
         if (!self.currentUser || !self.currentUser.email || !pouchDB)
-            return deferred.reject('DB put impossible. Need a user logged in. (' + self.currentUser.email+' )');
+            return self.$q.reject('DB put impossible. Need a user logged in. (' + self.currentUser+' )');
 
         var loggedUser = self.currentUser;
         data.miappUserId = loggedUser._id;
@@ -186,8 +186,7 @@ var SrvMiapp = (function() {
         var deferred = self.$q.defer();
         console.log('isPouchDBEmpty ..');
         if (!self.currentUser || !self.currentUser.email || !pouchDB)
-            return deferred.reject('DB search impossible. Need a user logged in. (' + self.currentUser.email+' )');
-
+            return self.$q.reject('DB search impossible. Need a user logged in. (' + self.currentUser + ')');
 
         console.log('isPouchDBEmpty call');
         pouchDB.allDocs({
@@ -211,7 +210,7 @@ var SrvMiapp = (function() {
         var self = this;
         var deferred = self.$q.defer();
         if (!self.currentUser || !self.currentUser.email || !pouchDB)
-            return deferred.reject('DB put impossible. Need a user logged in. (' + self.currentUser.email+' )');
+            return self.$q.reject('DB put impossible. Need a user logged in. (' + self.currentUser+' )');
 
         var loggedUser = self.currentUser;
         var firstUserId = null;

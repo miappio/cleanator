@@ -215,6 +215,39 @@ describe('srvMiapp', function () {
         });
 
 
+
+        it('should catch exception without initialisation', function (done) {
+
+            service.init(appName);
+            service.isPouchDBEmpty(pouchDBMock)
+                .then(function (bEmpty) {
+                    //expect(pouchDBMock.allDocs).toHaveBeenCalled();
+                    expect(bEmpty).toBe(false,'should have an empty DB - just init');
+                    return service.syncPouchDb(pouchDBMock);
+                })
+                .then(function (err) {
+                    //expect(pouchDBMock.sync).toHaveBeenCalled();
+                    expect(err).toBe('pouchDBMock is synced...','should sync without any error');
+                })
+                .catch(function (err) {
+                    expect(err).toBeUndefined('shouldn t catch anything');
+                })
+                .finally(function (user) {
+                    done();
+                });
+
+            //var data = {};
+            //service.putInPouchDb(pouchDB,data);
+            //service.putFirstUserInEmptyPouchDB(pouchDB, data);
+
+            setTimeout(function () {
+                rootScope.$apply();
+            }, 2000);
+
+        });
+
+
+
         it('should have an empty db at init with', function (done) {
 
             service.init(appName);

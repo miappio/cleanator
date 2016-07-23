@@ -1,8 +1,8 @@
 # [![Cleanator](https://miappio.github.io/cleanator/img/background/screen02.jpg)](https://miapp.io/app/cleanator/download)
 [![Build Status](https://travis-ci.org/miappio/cleanator.svg?branch=master)](https://travis-ci.org/miappio/cleanator)
-[![Issue Count](https://codeclimate.com/github/mlefree/mia-server/badges/issue_count.svg)](https://codeclimate.com/github/mlefree/mia-server/issues)
-[![Test Coverage](https://codeclimate.com/github/mlefree/mia-server/badges/coverage.svg)](https://codeclimate.com/github/mlefree/mia-server/coverage)
-[![Dependency Status](https://gemnasium.com/mlefree/mia-server.svg)](https://gemnasium.com/mlefree/mia-server)
+[![Issue Count](https://codeclimate.com/github/miappio/cleanator/badges/issue_count.svg)](https://codeclimate.com/github/miappio/cleanator/issues)
+[![Test Coverage](https://codeclimate.com/github/miappio/cleanator/badges/coverage.svg)](https://codeclimate.com/github/miappio/cleanator/coverage)
+[![Dependency Status](https://gemnasium.com/miappio/cleanator.svg)](https://gemnasium.com/miappio/cleanator)
 
                                               proudly made by miapp.io
                      _|                                    _|            
@@ -14,7 +14,7 @@
                                    _|        _|                          
 > :hamburger:  tasty and useful chore organizer for couple.
 
-> [Running](#running) | [Testing](#testing) | [APIs](#apis) | [DevOps](#devops) | [Thanks 2](#thanks)
+> [Running](#running) | [Testing](#testing) | [APIs](#apis) | [DevOps](#devops) | [Thanks!](#thanks)
 
 # Roll up our sleeves 
 
