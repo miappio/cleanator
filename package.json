@@ -50,6 +50,6 @@
     "test": "./node_modules/.bin/karma start tests/unit-tests.conf.js",
     "test:watch": "./node_modules/.bin/karma start tests/unit-tests.conf.js --no-single-run  --no-auto-watch --reporters progress --browsers PhantomJS",
     "start:ionic": "ionic serve",
-    "start": "./node_modules/.bin/http-server ./www/"
+    "start": "./node_modules/.bin/http-server -a 0.0.0.0 ./www/ "
   }
 }
