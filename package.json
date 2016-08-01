@@ -5,7 +5,9 @@
   "author": "mlefree",
   "homepage": "https://miapp.github.io/cleanator",
   "main": "www/index.html",
-  "dependencies": {},
+  "dependencies": {
+    "http-server": "^0.9.0"
+  },
   "devDependencies": {
     "bower": "*",
     "codeclimate-test-reporter": "*",
@@ -23,7 +25,6 @@
     "gulp-rename": "^1.2.0",
     "gulp-sass": "^2.0.4",
     "gulp-util": "^2.2.20",
-    "http-server": "^0.9.0",
     "jasmine-core": "^2.4.1",
     "karma": "^1.1.1",
     "karma-chrome-launcher": "^1.0.1",
@@ -50,6 +51,6 @@
     "test": "./node_modules/.bin/karma start tests/unit-tests.conf.js",
     "test:watch": "./node_modules/.bin/karma start tests/unit-tests.conf.js --no-single-run  --no-auto-watch --reporters progress --browsers PhantomJS",
     "start:ionic": "ionic serve",
-    "start": "./node_modules/.bin/http-server -a 0.0.0.0 ./www/ "
+    "start": "./node_modules/.bin/http-server -a 0.0.0.0 ./www/"
   }
 }
