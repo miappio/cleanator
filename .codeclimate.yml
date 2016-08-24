@@ -13,3 +13,4 @@ exclude_paths:
 - resources/**
 - tpl/**
 - tests/**
+- www/lib/**

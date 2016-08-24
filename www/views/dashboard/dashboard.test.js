@@ -55,7 +55,7 @@ describe('myAngularApp.views.dashboard', function() {
 
       var user = {name:'test',email:'test'};
       srvConfig.setUserLoggedIn(user);
-      srvData.setUserLoggedIn(user);
+      //srvData.setUserLoggedIn(user);
 
       $rootScope.dashboardDataBind();
       //$rootScope.dashboardComputeHistoricsByPrior();
@@ -125,7 +125,7 @@ describe('myAngularApp.views.dashboard', function() {
 
             var user = {name:'test',email:'test'};
             srvConfig.setUserLoggedIn(user);
-            srvData.setUserLoggedIn(user);
+            //srvData.setUserLoggedIn(user);
 
       $rootScope.dashboardDataBind();
       expect($rootScope.dashboardHistorics).toBeDefined();

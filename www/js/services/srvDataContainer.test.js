@@ -3,12 +3,8 @@
 describe('srvDataContainer', function () {
 'use strict';
 
-    var log = null, q = null, gettextCatalog = null, srvData = null, srvConfig;
-    var originalTimeout;
-    var myRootScope = null;
-    var $httpBackend;
-    var timeout = null;
-    var filterFilter = null;
+    var log,q,gettextCatalog,srvData,srvConfig,srvMiapp,timeout,rootScope;
+    var originalTimeout,$httpBackend,filterFilter, pouchDBMock;
 
     var choreRefToCopy = {
       "_id":"choreFakeId",
@@ -46,57 +42,81 @@ describe('srvDataContainer', function () {
     var userA = {_id:'userA',timeInMnPerWeekTodo:200};
     var userB = {_id:'userB',timeInMnPerWeekTodo:300};
 
-
     beforeEach(module('myAngularApp'));
     beforeEach(function () {
 
+        //originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+        //jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
-      originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+        inject(function($injector) {
+            log = $injector.get('$log');
+            q = $injector.get('$q');
+            filterFilter = $injector.get('filterFilter');
+            gettextCatalog = $injector.get('gettextCatalog');
+            srvData = $injector.get('srvData');
+            srvConfig = $injector.get('srvConfig');
+            srvMiapp = $injector.get('srvMiapp');
+            rootScope = $injector.get('$rootScope');
+            timeout = $injector.get('$timeout');
+            $httpBackend = $injector.get('$httpBackend');
+            $httpBackend.whenGET(/views.*/).respond(200, '');
 
-      inject(function($injector) {
-        //$log, $q, srvData, srvConfig
-        log = $injector.get('$log');
-        q = $injector.get('$q');
-        filterFilter = $injector.get('filterFilter');
-        gettextCatalog = $injector.get('gettextCatalog');
-        srvData = $injector.get('srvData');
-        srvConfig = $injector.get('srvConfig');
-        myRootScope = $injector.get('$rootScope');
-        timeout = $injector.get('$timeout');
-        $httpBackend = $injector.get('$httpBackend');
-        $httpBackend.whenGET(/views.*/).respond(200, '');
 
-      });
+            srvConfig.getUserLoggedIn = function(){ return {email:'mock@user.com', miappUserId : 'myMockedUser'};};
+            srvMiapp.currentUser = {
+                email:'mock@user.com',
+                miappUserId : 'myMockedUser',
+                doc : {
+                    docType : 'UserDocType',
+                    _id:"myMockedUser",
+                    email:'mock@user.com',
+                    miappUserId : 'myMockedUser'
+                }};
+            pouchDBMock = {
+                allDocs: function(filter, callback) {
+                    var response = {};
+                    response.total_rows = 8;
+                    response.rows = [];
+                    for (var i=0; i < response.total_rows;i++) {
+                        response.rows.push(srvMiapp.currentUser);
+                    }
+                    response.rows.push(srvMiapp.currentUser);
+                    return callback(null,response);
+                },
+                sync: function(pouchdbEndpoint,filter) {
+                    var onFn = { on : function(status, callback) {
+                        if (status === 'complete') callback('pouchDBMock is synced...');
+                        return onFn;
+                    }
+                    };
+                    return onFn;
+                }
+            };
+        });
 
     });
 
     afterEach(function () {
 
-          //myRootScope.$apply();
+          //rootScope.$apply();
           //  timeout.flush();
-          myRootScope.$digest();
-          jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+          //rootScope.$digest();
+          //jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
     });
 
 
     it('should be correctly initialized', function () {
 
         //var srvConfig = new SrvConfig(log, gettextCatalog);
-        var srv = new SrvDataContainer(log, q, filterFilter, srvData, srvConfig);
+        var srv = new SrvDataContainer(log, q, filterFilter, srvData, srvConfig,srvMiapp);
 
         expect(srv.getChores().length).toBe(0);
-
-        //expect(srv.isLoggedIn()).toBe(false);
-        //expect(a4pAnalytics.mAnalyticsArray.length).toEqual(0);
-        //expect(a4pAnalytics.mAnalyticsFunctionnalitiesArray.length).toEqual(0);
-
     });
 
     it('should compute indicators', function () {
 
         //var srvConfig = new SrvConfig(log, gettextCatalog);
-        var srv = new SrvDataContainer(log, q, filterFilter, srvData, srvConfig);
+        var srv = new SrvDataContainer(log, q, filterFilter, srvData, srvConfig,srvMiapp);
         var indicators = srv.computeIndicators();
         expect(indicators.indicPercent).toEqual([0,0]);
         expect(indicators.indicTimeSpent).toEqual([0,0]);
@@ -126,41 +146,117 @@ describe('srvDataContainer', function () {
 
     });
 
+    it('should catch error with a bad init', function (done) {
+
+        srvConfig.getUserLoggedIn = function(){ return null;};
+        srvMiapp.currentUser = null;
+        var srv = new SrvDataContainer(log, q, filterFilter, srvData, srvConfig,srvMiapp);
+        //console.log(srvConfig.getUserLoggedIn());
+        expect(srv.isLoggedIn()).toBe(false,'should be not well loggin');
+
+        srv.sync()
+            .then(function(err){ expect(true).toBe(false,'should not pass here : '+err); })
+            .catch(function(err){
+                expect(err).toBe('Need one user logged in.');
+
+                //Launch another sync with a login but not db
+                srvConfig.getUserLoggedIn = function(){ return {email:'mock@user.com', miappUserId : 'myMockedUser'};};
+                srvMiapp.currentUser = {email:'mock@user.com', miappUserId : 'myMockedUser'};
+                srvData.db = null;
+
+                return srv.sync();
+            })
+            .then(function(err){ expect(true).toBe(false,'should not pass here : '+err);})
+            .catch(function(err){
+                expect(err).toBe('DB search impossible. Need a user logged in. ([object Object])','cause of no valid pouchDB');
+
+            }).finally(function(err){
+                done();
+            });
 
 
-/*
-    it('should return correct getter', function (done) {
-
-      var srv = new SrvDataContainer(log, q, srvData, srvConfig);
-
-      var user = {name:'test',email:'test'};
-      srvConfig.setUserLoggedIn(user);
-      srvData.setUserLoggedIn(user);
-      expect(srvData.getUserLoggedIn().email).toBe(user.email);
-
-
-      var testEmployee = function(employee) {
-          console.log('sync done');
-            expect(employee.name).toBe(mockEmployee.name);
-            expect(employee.id).toBe(mockEmployee.id);
-      };
-
-      var failTest = function(error) {
-        console.log('sync err:'+error);
-        expect(error).toBeUndefined();
-      };
-
-
-      //srv.sync()
-      //      .then(testEmployee)
-      //      .catch(failTest)
-      //      .finally(done);
-
-      $httpBackend.flush();
-      //myRootScope.$digest();
-        //myRootScope.$apply();
+        setTimeout(function () {
+            rootScope.$apply();
+        }, 2000);
 
     });
-    */
+
+    it('should bind first data', function (done) {
+        var srv = new SrvDataContainer(log, q, filterFilter, srvData, srvConfig,srvMiapp);
+        expect(srv.isLoggedIn()).toBe(true);
+
+        srv.srvData.db = pouchDBMock;
+
+        srv.sync().then(function(err){
+            expect(err).toBeUndefined('should not resolve error '+err);
+        }).catch(function(err){
+            expect(true).toBe(false,'should not catch error : '+err);
+        }).finally(function(err){
+            done();
+        });
+
+
+        setTimeout(function () {
+            rootScope.$apply();
+        }, 2000);
+
+    });
+
+
+
+
+        /*
+
+
+         sync
+         isLoggedIn
+         logout
+         reset
+         getLastResetDate
+         getUserA
+         getCouple
+         getUserB
+         getChores
+         getCategories
+         getHistoricsDone
+         getChoreCategoryName
+         getChoreCategoryThumbPath
+         computeTodoForOneUser
+         computeTodoForAllUsers
+         computeIndicators
+
+            it('should return correct getter', function (done) {
+
+              var srv = new SrvDataContainer(log, q, srvData, srvConfig);
+
+              var user = {name:'test',email:'test'};
+              srvConfig.setUserLoggedIn(user);
+              srvData.setUserLoggedIn(user);
+              expect(srvData.getUserLoggedIn().email).toBe(user.email);
+
+
+              var testEmployee = function(employee) {
+                  console.log('sync done');
+                    expect(employee.name).toBe(mockEmployee.name);
+                    expect(employee.id).toBe(mockEmployee.id);
+              };
+
+              var failTest = function(error) {
+                console.log('sync err:'+error);
+                expect(error).toBeUndefined();
+              };
+
+
+              //srv.sync()
+              //      .then(testEmployee)
+              //      .catch(failTest)
+              //      .finally(done);
+
+              $httpBackend.flush();
+              //rootScope.$digest();
+                //rootScope.$apply();
+
+            });
+            */
 
 });

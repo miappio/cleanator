@@ -13,7 +13,7 @@ function getClient() {
 /*
 	A convenience function that will test for the presence of an API error
 	and run any number of additional tests
- */
+
 function miappTestHarness(err, data, done, tests, ignoreError) {
 	if (!ignoreError) expect(!err, (err)?err.error_description:"unknown");
 	if (tests) {
@@ -1107,5 +1107,6 @@ describe('Miapp', function(){
             })
         });
     });
-    */
+
 });
+   */

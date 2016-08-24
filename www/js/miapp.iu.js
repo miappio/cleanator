@@ -196,7 +196,7 @@ MiappEventable.mixin = function(destObject) {
             }
             return result;
         }
-        function request(m, u, d) {
+        function request(m, u, d, token) {
             var p = new Promise(), timeout;
             self.logger.time(m + " " + u);
             (function(xhr) {
@@ -223,6 +223,11 @@ MiappEventable.mixin = function(destObject) {
                     }
                     xhr.setRequestHeader("Content-Type", "application/json");
                     xhr.setRequestHeader("Accept", "application/json");
+
+                    var token = token;//self.getToken();
+                    console.log('token : ' + token);
+                    //xhr.withCredentials = true;
+                    if (token) xhr.setRequestHeader('Cookie', "miapptoken=" + token);
                 }
                 timeout = setTimeout(function() {
                     xhr.abort();
@@ -442,8 +447,10 @@ function doCallback(callback, params, context) {
             throw new MiappInvalidURIError("The provided endpoint is not valid: " + this.endpoint);
         }
         /* a callback to make the request */
+        var token = null;
+        if (query_params) token = query_params.access_token;
         var request = function() {
-            return Ajax.request(this.method, this.endpoint, this.data);
+            return Ajax.request(this.method, this.endpoint, this.data, token);
         }.bind(this);
         /* a callback to process the response */
         var response = function(err, request) {
@@ -550,7 +557,8 @@ function doCallback(callback, params, context) {
     var name = "Client", global = this, overwrittenName = global[name], exports;
     var AUTH_ERRORS = [ "auth_expired_session_token", "auth_missing_credentials", "auth_unverified_oath", "expired_token", "unauthorized", "auth_invalid" ];
     Miapp.Client = function(options) {
-        this.URI = options.URI || "https://miapp.io/api/";
+        console.log(this);
+        this.URI = options.URI;
         if (options.orgName) {
             this.set("orgName", options.orgName);
         }
@@ -931,6 +939,12 @@ function doCallback(callback, params, context) {
     Miapp.Client.prototype.setToken = function(token) {
         this.set("token", token);
     };
+
+    Miapp.Client.prototype.setEndpoint = function(endpoint) {
+        this.set("endpoint", endpoint);
+    };
+
+
     /*
    *  A public method to get the OAuth token
    *
@@ -941,6 +955,11 @@ function doCallback(callback, params, context) {
     Miapp.Client.prototype.getToken = function() {
         return this.get("token");
     };
+
+    Miapp.Client.prototype.getEndpoint = function() {
+        return this.get("endpoint");
+    };
+
     Miapp.Client.prototype.setObject = function(key, value) {
         if (value) {
             value = JSON.stringify(value);
@@ -1031,6 +1050,73 @@ function doCallback(callback, params, context) {
             doCallback(callback, [ err, response, user ]);
         });
     };
+
+
+
+    Miapp.Client.prototype.loginMLE = function(login, password, updateProperties, callback) {
+        var self = this;
+        var options = {
+            method: "POST",
+            mQuery: true,
+            endpoint: "users",
+            body: {
+                name: login,
+                username: login,
+                email: login,
+                password: password,
+                grant_type: "password"
+            }
+        };
+
+
+        /**
+        .field('name', 'Api Foo bar')
+            .field('username', 'apifoobar')
+            .field('email', 'apifoobar@example.com')
+            .field('password', 'ad3777ef69f1ddaec85d1115d012d5f4')
+            .expect('Content-Type', /json/)
+            .expect(202)
+            .expect(/_id/)
+            .expect(/authToken/)
+            .expect(/endpoint/)
+         */
+
+        self.request(options, function(err, response) {
+            var user = {};
+            if (err) {
+                if (self.logging) console.log("error trying to log user in");
+            } else {
+                var options = {
+                    client: self,
+                    data: { _id : response._id }
+                };
+                user = new Miapp.Entity(options);
+                self.setToken(response.authToken);
+                self.setEndpoint(response.endpoint);
+            }
+            doCallback(callback, [ err, response, user ]);
+        });
+    };
+
+
+    Miapp.Client.prototype.deleteUserMLE = function(userIDToDelete, callback) {
+        var self = this;
+        var options = {
+            method: "DELETE",
+            mQuery: true,
+            endpoint: "users/"+userIDToDelete
+        };
+
+        // 1) userId + (cookie) src && version  && valid token 2) body vide + 204
+        self.request(options, function(err, response) {
+            if (err && self.logging) console.log("error trying to log user in");
+
+            doCallback(callback, [ err, response ]);
+        });
+    };
+
+
+
     Miapp.Client.prototype.reAuthenticateLite = function(callback) {
         var self = this;
         var options = {

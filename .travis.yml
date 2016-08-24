@@ -1,7 +1,12 @@
 services:
 - mongodb
+addons:
+  code_climate:
+    repo_token: 17e98b743f2f12959f31296199477cce3442ee6b77295a732f111830636e67e2
 language: node_js
-script: karma run test
+script: npm test
+after_script:
+- codeclimate-test-reporter < ./build/coverage/report-lcov/lcov.info
 after_success:
 node_js:
 - 6.1.0

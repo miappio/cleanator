@@ -14,7 +14,7 @@ git init
 git config user.name "mlefree"
 git config user.email "mat@mlefree.com"
 
-git remote add upstream "https://$GH_TOKEN@github.com/mlefree/mia-test-serv.git"
+git remote add upstream "https://$GH_TOKEN@github.com/miappio/cleanator.git"
 git fetch upstream
 git reset upstream/_travis
 

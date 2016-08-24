@@ -1,6 +1,6 @@
 /**
- * @license AngularJS v1.5.7
- * (c) 2010-2016 Google, Inc. http://angularjs.org
+ * @license AngularJS v1.2.30
+ * (c) 2010-2014 Google, Inc. http://angularjs.org
  * License: MIT
  */
 (function(window) {'use strict';
@@ -57,7 +57,11 @@ function minErr(module, ErrorConstructor) {
       return match;
     });
 
+<<<<<<< HEAD
     message += '\nhttp://errors.angularjs.org/1.5.7/' +
+=======
+    message = message + '\nhttp://errors.angularjs.org/1.2.30/' +
+>>>>>>> d20fbc74b6145eb9c712457236ad6141c70058ba
       (module ? module + '/' : '') + code;
 
     for (i = SKIP_INDEXES, paramPrefix = '?'; i < templateArgs.length; i++, paramPrefix = '&') {
@@ -2511,11 +2515,19 @@ function toDebugString(obj) {
  * - `codeName` – `{string}` – Code name of the release, such as "jiggling-armfat".
  */
 var version = {
+<<<<<<< HEAD
   full: '1.5.7',    // all of these placeholder strings will be replaced by grunt's
   major: 1,    // package task
   minor: 5,
   dot: 7,
   codeName: 'hexagonal-circumvolution'
+=======
+  full: '1.2.30',    // all of these placeholder strings will be replaced by grunt's
+  major: 1,    // package task
+  minor: 2,
+  dot: 30,
+  codeName: 'patronal-resurrection'
+>>>>>>> d20fbc74b6145eb9c712457236ad6141c70058ba
 };
 
 
@@ -8133,11 +8145,18 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           }
         }
 
-        nodeName = nodeName_(this.$$element);
+        // SVG elements' `nodeName` can be lowercase
+        nodeName = nodeName_(this.$$element).toUpperCase();
 
+<<<<<<< HEAD
         if ((nodeName === 'a' && (key === 'href' || key === 'xlinkHref')) ||
             (nodeName === 'img' && key === 'src')) {
           // sanitize a[href] and img[src] values
+=======
+        // sanitize a[href] and img[src] values
+        if ((nodeName === 'A' && (key === 'href' || key === 'xlinkHref')) ||
+            (nodeName === 'IMG' && key === 'src')) {
+>>>>>>> d20fbc74b6145eb9c712457236ad6141c70058ba
           this[key] = value = $$sanitizeUri(value, key === 'src');
         } else if (nodeName === 'img' && key === 'srcset' && isDefined(value)) {
           // sanitize img[srcset] values
@@ -9648,8 +9667,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       var tag = nodeName_(node);
       // maction[xlink:href] can source SVG.  It's not limited to <maction>.
       if (attrNormalizedName == "xlinkHref" ||
+<<<<<<< HEAD
           (tag == "form" && attrNormalizedName == "action") ||
           (tag != "img" && (attrNormalizedName == "src" ||
+=======
+          (tag == "FORM" && attrNormalizedName == "action") ||
+          // links can be stylesheets or imports, which can run script in the current origin
+          (tag == "LINK" && attrNormalizedName == "href") ||
+          (tag != "IMG" && (attrNormalizedName == "src" ||
+>>>>>>> d20fbc74b6145eb9c712457236ad6141c70058ba
                             attrNormalizedName == "ngSrc"))) {
         return $sce.RESOURCE_URL;
       }
@@ -17147,6 +17173,7 @@ function $RootScopeProvider() {
             listener(newValue, veryOldValue, self);
           }
 
+<<<<<<< HEAD
           // make a copy for the next time a collection is changed
           if (trackVeryOldValue) {
             if (!isObject(newValue)) {
@@ -17167,6 +17194,30 @@ function $RootScopeProvider() {
             }
           }
         }
+=======
+/**
+ * @ngdoc service
+ * @name $rootElement
+ *
+ * @description
+ * The root element of Angular application. This is either the element where {@link
+ * ng.directive:ngApp ngApp} was declared or the element passed into
+ * {@link angular.bootstrap}. The element represent the root element of application. It is also the
+ * location where the applications {@link auto.$injector $injector} service gets
+ * published, it can be retrieved using `$rootElement.injector()`.
+ */
+
+
+// the implementation is in angular.bootstrap
+
+/**
+ * @description
+ * Private service to sanitize uris for links and images. Used by $compile and $sanitize.
+ */
+function $$SanitizeUriProvider() {
+  var aHrefSanitizationWhitelist = /^\s*(https?|ftp|mailto|tel|file):/,
+    imgSrcSanitizationWhitelist = /^\s*((https?|ftp|file):|data:image\/)/;
+>>>>>>> d20fbc74b6145eb9c712457236ad6141c70058ba
 
         return this.$watch(changeDetector, $watchCollectionAction);
       },
