@@ -13,7 +13,7 @@ var gettext = require('gulp-angular-gettext');
 
 var paths = {
   sass: ['./scss/**/*.scss']
-  ,config: ['./package.json']
+  ,config: ['./package.json','./.config.js']
   ,html: ['./www/views/**/*.html']
 };
 
@@ -109,10 +109,14 @@ gulp.task('config-html', function () {
 });
 
 gulp.task('config-www', function () {
-  return gulp.src("./tpl/config/config.js")
-  .pipe(preprocess(({context: { APP_VERSION: require('./package').version, APP_NAME: require('./package').name}})))
-  .pipe(gulp.dest("./www/js/config/"))
-  ;
+  return gulp
+  .src(".config.js")
+  .pipe(preprocess(({context: { 
+        PACKAGE_JSON_VERSION: require('./package').version, 
+        PACKAGE_JSON_NAME: require('./package').name
+    
+    }})))
+  .pipe(gulp.dest("./www/js/config/"));
 });
 
 /**

@@ -62,6 +62,7 @@ var SrvDataContainer = (function() {
           })
           .catch(function(err){
             var errMessage =  err ? err : 'pb with getting first data';
+            self.$log.error(errMessage);
             return deferred.reject(errMessage);
           });
 

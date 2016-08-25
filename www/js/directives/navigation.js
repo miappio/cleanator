@@ -1,6 +1,11 @@
 
 
 angular.module('myAngularApp.directives.navigation', [])
+.directive('appVersion', function(appName, appVersion) {
+      return function(scope, elm, attrs) {
+          elm.text(appName+'.'+appVersion);
+      };
+})
 .directive('mleAnimateshow', function($animate) {
   return {
     scope: {
@@ -19,11 +24,6 @@ angular.module('myAngularApp.directives.navigation', [])
       });
     }
   };
-})
-.directive('appVersion', function(appName, appVersion) {
-      return function(scope, elm, attrs) {
-          elm.text(appName+'.'+appVersion);
-      };
 })
 .directive('mleSvgAnimate',function(version) {
   return {

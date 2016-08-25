@@ -21,7 +21,7 @@ var myAngularApp = angular.module('myAngularApp', [
 
 //angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
-.run(function($ionicPlatform, gettextCatalog, srvMiapp) {
+.run(function($ionicPlatform, gettextCatalog, srvMiapp, miappId, miappSalt, appIsTest, appEndpointTest) {
   $ionicPlatform.ready(function() {
 
     console.log('$ionicPlatform ready');
@@ -39,7 +39,8 @@ var myAngularApp = angular.module('myAngularApp', [
     }
 
 
-    srvMiapp.init('miappcleanator');
+    if (appIsTest && appEndpointTest) srvMiapp.setEndpoint(appEndpointTest);
+    srvMiapp.init(miappId, miappSalt, appIsTest);
   });
 
   //gettextCatalog.currentLanguage = 'en_US';
@@ -48,9 +49,6 @@ var myAngularApp = angular.module('myAngularApp', [
 
 })
 
-<<<<<<< HEAD
-.config(function($stateProvider, $urlRouterProvider,$ionicConfigProvider, srvMiapp) {
-=======
 .config(function($stateProvider, $urlRouterProvider,$ionicConfigProvider) {
 
   $ionicConfigProvider.tabs.position('top'); // other values: top
@@ -139,11 +137,6 @@ var myAngularApp = angular.module('myAngularApp', [
    // Success - user has been logged out
    }
    */
->>>>>>> d20fbc74b6145eb9c712457236ad6141c70058ba
 
-    $ionicConfigProvider.tabs.position('top'); // other values: top
-    $ionicConfigProvider.views.forwardCache(true);
-    
-    srvMiapp.init('cleanator');
 
 });

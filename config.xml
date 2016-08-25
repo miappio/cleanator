@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.apps4pro.iocltorc" version="16.07.01" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.apps4pro.iocltorc" version="16.09.03" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>cleanator</name>
   <description>cleanator</description>
-  <author email="mlefree" href="http://cleanator.miapp.io">mlefree</author>
+  <author email="mlefree" href="https://miapp.github.io/cleanator">mlefree</author>
   <content src="index.html"/>
   <access origin="*"/>
   <preference name="webviewbounce" value="false"/>

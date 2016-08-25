@@ -12,39 +12,45 @@ angular.module('srvMiapp', [])
 var SrvMiapp = (function() {
 'use strict';
 
-    function Service($log, $q,$timeout) {
+    function Service($log, $q) {
 
         this.$log = $log;
         this.$q = $q;
-        this.$timeout = $timeout;
+        //this.$timeout = $timeout;
         this.$log.log('SrvMiapp - init');
 
         this.miappClient = null;
         this.currentUser = null;
 
-        this.miappApp = null;
+        this.miappId = null;
+        this.miappSalt = 'SALT_TOKEN';
         this.miappOrg = null;
         this.miappAppVersion = null;
         this.miappURI = 'https://miapp.io/api';
+        this.miappTestURI = null;
     }
 
 
 
-    Service.prototype.init = function (appName) {
+    Service.prototype.init = function (miappId, miappSalt, istest) {
 
         this.miappClient = new Miapp.Client({
             orgName: 'miappio',
-            appName: appName,
+            appName: miappId,
             logging: true, // Optional - turn on logging, off by default
             buildCurl: false, // Optional - turn on curl commands, off by default
-            URI :this.miappURI
+            URI : this.miappTestURI || this.miappURI
         });
 
 
-        this.miappApp = appName;
+        this.miappId = miappId;
         this.miappOrg = null;
         this.miappAppVersion = null;
 
+    };
+    
+    Service.prototype.setEndpoint = function (endpointURI) {
+        this.miappTestURI = endpointURI + '/api';
     };
 
 
@@ -59,12 +65,13 @@ var SrvMiapp = (function() {
         // TODO encrypting and salt stuff
         var encrypted = CryptoJS.AES.encrypt(password, 'SALT_TOKEN');
         var encrypted_json_str = encrypted.toString();
-        // self.$log.log('miappClient.loginMLE : '+ login+ ' / '+ encrypted_json_str);
+        self.$log.log('miappClient.loginMLE : '+ login+ ' / '+ encrypted_json_str);
 
-        self.miappClient.loginMLE(login,encrypted_json_str,updateProperties,function (err, user) {
+        self.miappClient.loginMLE(self.miappId, login,encrypted_json_str,updateProperties,function (err, user) {
             // self.$log.log('callback done :' + err + ' user:' + user);
             if (err) {
                 // Error - could not log user in
+                self.$log.error('miappClient.loginMLE err : '+ err);
                 return defer.reject(err);
             } else {
                 // Success - user has been logged in
@@ -77,6 +84,9 @@ var SrvMiapp = (function() {
 
         return defer.promise;
     };
+
+    
+    
 
     Service.prototype.deleteUser = function (userIDToDelete) {
         var self = this;

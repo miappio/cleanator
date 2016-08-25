@@ -3,6 +3,7 @@
 .secret
 .DS_Store
 .env
+.config.js
 .editorconfig
 .github-webhook
 *.log

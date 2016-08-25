@@ -1,0 +1,14 @@
+{
+  "name": "_?",
+  "app_id": "_?",
+  "gulpStartupTasks": [
+    "default"
+  ],
+  "watchPatterns": [
+    "www/**/*",
+    "!www/lib/**/*",
+    "scss/**/*.scss",
+    "package.json",
+    ".config.js"
+  ]
+}

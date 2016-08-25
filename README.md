@@ -23,11 +23,23 @@
 $ git clone xxxx
 $ cd xxxxx
 $ npm update
-$ npm install -g cordova ionic
+$ npm install -g cordova ionic gulp
 $ npm install
-$ ionic serve
 
-$ karma start tests/unit-tests.conf.js
+$ cp .config.example.js .config.js
+
+$ gulp watch
+$ npm start 
+
+?
+$ ionic serve --port $PORT --nolivereload  --address $IP
+```
+
+### Testing
+
+
+```bash
+$ npm test
 
 $ git add .
 $ git commit -am "my commit..."

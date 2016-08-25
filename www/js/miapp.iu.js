@@ -224,9 +224,9 @@ MiappEventable.mixin = function(destObject) {
                     xhr.setRequestHeader("Content-Type", "application/json");
                     xhr.setRequestHeader("Accept", "application/json");
 
-                    var token = token;//self.getToken();
+                    //var token = token;//self.getToken();
                     console.log('token : ' + token);
-                    //xhr.withCredentials = true;
+                    xhr.withCredentials = true;
                     if (token) xhr.setRequestHeader('Cookie', "miapptoken=" + token);
                 }
                 timeout = setTimeout(function() {
@@ -943,6 +943,15 @@ function doCallback(callback, params, context) {
     Miapp.Client.prototype.setEndpoint = function(endpoint) {
         this.set("endpoint", endpoint);
     };
+    
+    Miapp.Client.prototype.setUserId = function(userId) {
+        this.set("userid", userId);
+    };
+    Miapp.Client.prototype.setAppId = function(appId) {
+        this.set("miappid", appId);
+    };
+    
+    
 
 
     /*
@@ -958,6 +967,13 @@ function doCallback(callback, params, context) {
 
     Miapp.Client.prototype.getEndpoint = function() {
         return this.get("endpoint");
+    };
+    
+    Miapp.Client.prototype.getUserId = function() {
+        return this.get("userid");
+    };
+    Miapp.Client.prototype.getAppId = function() {
+        return this.get("miappid");
     };
 
     Miapp.Client.prototype.setObject = function(key, value) {
@@ -1052,9 +1068,50 @@ function doCallback(callback, params, context) {
     };
 
 
-
-    Miapp.Client.prototype.loginMLE = function(login, password, updateProperties, callback) {
+    Miapp.Client.prototype.authMLE = function(callback) {
         var self = this;
+        var userId = self.getUserId();
+        var appId = self.getAppId();
+        
+        
+        // var cookieToken = Token.encryptTokenData('apifootoken');
+        // request(app).post('/api/auth').set('Cookie', 'miapptoken=' + cookieToken)
+        
+        var options = {
+            method: "POST",
+            mQuery: true,
+            endpoint: "auth",
+            body: {
+                userId: userId,
+                appId: appId,
+                userSrc: 'miapp_fwk'
+            }
+        };
+
+
+        self.request(options, function(err, response) {
+            var user = {};
+            if (err) {
+                if (self.logging) console.log("error trying to auth user in");
+            } else {
+                var options = {
+                    client: self,
+                    data: { _id : userId }
+                };
+                user = new Miapp.Entity(options);
+                self.setToken(response.authToken);
+                self.setEndpoint(response.endpoint);
+            }
+            doCallback(callback, [ err, response, user ]);
+        });
+    };
+
+
+    Miapp.Client.prototype.loginMLE = function(appid, login, password, updateProperties, callback) {
+        var self = this;
+        
+        self.setAppId(appid);
+            
         var options = {
             method: "POST",
             mQuery: true,
@@ -1069,20 +1126,8 @@ function doCallback(callback, params, context) {
         };
 
 
-        /**
-        .field('name', 'Api Foo bar')
-            .field('username', 'apifoobar')
-            .field('email', 'apifoobar@example.com')
-            .field('password', 'ad3777ef69f1ddaec85d1115d012d5f4')
-            .expect('Content-Type', /json/)
-            .expect(202)
-            .expect(/_id/)
-            .expect(/authToken/)
-            .expect(/endpoint/)
-         */
-
         self.request(options, function(err, response) {
-            var user = {};
+            /*var user = {};
             if (err) {
                 if (self.logging) console.log("error trying to log user in");
             } else {
@@ -1094,7 +1139,11 @@ function doCallback(callback, params, context) {
                 self.setToken(response.authToken);
                 self.setEndpoint(response.endpoint);
             }
-            doCallback(callback, [ err, response, user ]);
+            doCallback(callback, [ err, response, user ]);*/
+            
+                self.setToken(password); //FIX //TODO resolve double auth
+                self.setUserId(response._id);
+            return self.authMLE(callback);
         });
     };
 
