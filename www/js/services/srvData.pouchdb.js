@@ -13,7 +13,7 @@ angular.module('srvData.pouchdb', [])
 
 var SrvDataPouchDB = (function() {
   'use strict';
-  function Service($q,$log,$http,$timeout,appName,appVersion, srvMiapp) {
+  function Service($q,$log,$http,$timeout,srvMiapp) {
 
       //this.$rootScope = $rootScope;
       this.$q = $q;
@@ -113,7 +113,7 @@ var SrvDataPouchDB = (function() {
                 }
 
                 var respLength = response.rows.length;
-                if (!respLength) return deferred.reject("No user list");
+                if (!respLength) return deferred.reject("No user list_");
 
                 var respTested = 0;
                 var respFound = false;
@@ -137,35 +137,10 @@ var SrvDataPouchDB = (function() {
           set: function(user) {
               var deferred = self.$q.defer();
 
-              var loggedUser = self.getUserLoggedIn();
-              var firstUserId = null;
-              if (loggedUser) firstUserId = loggedUser[self.userColumns.email];
-              if (!firstUserId) firstUserId = user[self.userColumns.email];
-              user[self.userColumns.appUserId] = firstUserId;
-              user[self.userColumns.appVendorId] = self.appName;
-              user[self.userColumns.appVendorVersion] = self.appVersion;
-
               user[self.userColumns.type] = self.userType;
               user[self.userColumns.lastModified] = new Date();
-
-              var appUserId = user._id;
-              if (!appUserId)
-                //appUserId = self.appName.charAt(0)+self.userType.substring(0,4)+firstUserId.substring(0,4)+'_'+new Date().toISOString()+'';
-                appUserId = generateObjectUniqueId(self.appName,self.userType, firstUserId);
-
-              var updatedUser = user;
-              //updatedUser._id = appUserId;
-              delete updatedUser._id;
-              self.db.put(updatedUser, appUserId, function(err, response) {
-                if (response && response.ok && response.id && response.rev) {
-                  updatedUser._id = response.id;
-                  updatedUser._rev = response.rev;
-                  console.log("updatedUser: "+updatedUser._id+" - "+updatedUser._rev);
-                  return deferred.resolve(updatedUser);
-                }
-                return deferred.reject(err);
-              });
-              return deferred.promise;
+             
+              return self.srvMiap.putInPouchDb(self.db, user);
           },
           lastModified:function() {
               return new Date();
@@ -252,32 +227,11 @@ var SrvDataPouchDB = (function() {
           set: function(couple) {
               var deferred = self.$q.defer();
 
-              var loggedUser = self.getUserLoggedIn();
-              var appUserId = loggedUser ? loggedUser[self.userColumns.email] : null;
-              couple[self.coupleColumns.appUserId] = appUserId;
-              couple[self.coupleColumns.appVendorId] = self.appName;
-              couple[self.coupleColumns.appVendorVersion] = self.appVersion;
               couple[self.coupleColumns.type] = self.coupleType;
               couple[self.coupleColumns.lastModified] = new Date();
               var name = couple[self.coupleColumns.name];
 
-              var appCoupleId = couple._id;
-              if (!appCoupleId)
-                //appCoupleId = self.appName.charAt(0)+self.coupleType.substring(0,4)+name.substring(0,4)+'_'+new Date().toISOString()+'';
-                appCoupleId = generateObjectUniqueId(self.appName,self.coupleType, name);
-
-              var updatedCouple = couple;
-              //updatedCouple._id = appCoupleId;
-              delete updatedCouple._id;
-              self.db.put(updatedCouple, appCoupleId, function(err, response) {
-                if (response && response.ok && response.id && response.rev) {
-                  updatedCouple._id = response.id;
-                  updatedCouple._rev = response.rev;
-                  return deferred.resolve(updatedCouple);
-                }
-                return deferred.reject(err);
-              });
-              return deferred.promise;
+              return self.srvMiap.putInPouchDb(self.db, couple);
           },
           lastModified:function() {
               return new Date();
@@ -312,31 +266,11 @@ var SrvDataPouchDB = (function() {
         set: function(category) {
           var deferred = self.$q.defer();
 
-          var loggedUser = self.getUserLoggedIn();
-          var appUserId = loggedUser ? loggedUser[self.userColumns.email] : null;
-          category[self.categoryColumns.appUserId] = appUserId;
-          category[self.categoryColumns.appVendorId] = self.appName;
-          category[self.categoryColumns.appVendorVersion] = self.appVersion;
           category[self.categoryColumns.type] = self.categoryType;
           category[self.categoryColumns.lastModified] = new Date();
-          var name = category[self.categoryColumns.name];
           category[self.categoryColumns.desactivate] = category[self.categoryColumns.desactivate] ? category[self.categoryColumns.desactivate] : false;
-
-          var appCategoryId = category._id;
-          if (!appCategoryId) appCategoryId = generateObjectUniqueId(self.appName,self.categoryType, name);
-
-          var updatedCategory = category;
-          //updatedCouple._id = appCoupleId;
-          delete updatedCategory._id;
-          self.db.put(updatedCategory, appCategoryId, function(err, response) {
-            if (response && response.ok && response.id && response.rev) {
-              updatedCategory._id = response.id;
-              updatedCategory._rev = response.rev;
-              return deferred.resolve(updatedCategory);
-            }
-            return deferred.reject(err);
-          });
-          return deferred.promise;
+          
+          return self.srvMiap.putInPouchDb(self.db, category);
         },
         applyToLinkedChores: function(category,fnToApply) {
          //NO defered ? var deferred = self.$q.defer();
@@ -418,35 +352,11 @@ var SrvDataPouchDB = (function() {
           set: function(chore) {
               var deferred = self.$q.defer();
 
-              var loggedUser = self.getUserLoggedIn();
-              var appUserId = loggedUser ? loggedUser[self.userColumns.email] : null;
-              chore[self.choreColumns.appUserId] = appUserId;
-              chore[self.choreColumns.appVendorId] = self.appName;
-              chore[self.choreColumns.appVendorVersion] = self.appVersion;
               chore[self.choreColumns.type] = self.choreType;
               chore[self.choreColumns.lastModified] = new Date();
-              var name = chore[self.choreColumns.name] ? chore[self.choreColumns.name] : "New Item";
               chore[self.choreColumns.desactivate] = chore[self.categoryColumns.desactivate] ? chore[self.choreColumns.desactivate] : false;
 
-              var appChoreId = chore._id;
-              if (!appChoreId)
-                //appChoreId = self.appName.charAt(0)+self.choreType.substring(0,4)+name.substring(0,4)+'_'+new Date().toISOString()+'';
-                appChoreId = generateObjectUniqueId(self.appName,self.choreType, name);
-
-              var updatedChore = chore;
-              //updatedChore._id = appChoreId;
-              //updatedChore._deleted = true;
-
-              delete updatedChore._id;
-              self.db.put(updatedChore, appChoreId, function(err, response) {
-                if (response && response.ok && response.id && response.rev) {
-                  updatedChore._id = response.id;
-                  updatedChore._rev = response.rev;
-                  return deferred.resolve(updatedChore);
-                }
-                return deferred.reject(err);
-              });
-              return deferred.promise;
+              return self.srvMiap.putInPouchDb(self.db, chore);
           },
           remove: function(chore) {
               var deferred = self.$q.defer();
@@ -503,37 +413,11 @@ var SrvDataPouchDB = (function() {
           set: function(historic) {
             var deferred = self.$q.defer();
 
-            var loggedUser = self.getUserLoggedIn();
-            var appUserId = loggedUser ? loggedUser[self.userColumns.email] : null;
-
-
-            //name:'historicName',description:'description',choreId:'choreId', userId:'userId', action:'action',actionDate:'actionDate',lastModified:'lastModified'};
-
-            historic[self.historicColumns.appUserId] = appUserId;
-            historic[self.historicColumns.appVendorId] = self.appName;
-            historic[self.historicColumns.appVendorVersion] = self.appVersion;
             historic[self.historicColumns.type] = self.historicType;
             historic[self.historicColumns.lastModified] = new Date();
-            var name = historic[self.historicColumns.name];
             historic[self.historicColumns.desactivate] = historic[self.historicColumns.desactivate] ? historic[self.historicColumns.desactivate] : false;
-
-            var appHistoricId = historic._id;
-            if (!appHistoricId)
-              //appHistoricId = self.appName.charAt(0)+self.historicType.substring(0,4)+name.substring(0,4)+'_'+new Date().toISOString()+'';
-              appHistoricId = generateObjectUniqueId(self.appName,self.historicType, name);
-
-            var updatedHistoric = historic;
-            //updatedHistoric._id = appHistoricId;
-            delete updatedHistoric._id;
-            self.db.put(updatedHistoric, appHistoricId, function(err, response) {
-              if (response && response.ok && response.id && response.rev) {
-                updatedHistoric._id = response.id;
-                updatedHistoric._rev = response.rev;
-                return deferred.resolve(updatedHistoric);
-              }
-              return deferred.reject(err);
-            });
-            return deferred.promise;
+            
+            return self.srvMiap.putInPouchDb(self.db, historic);
           },
           lastModified:function() {
             return new Date();
@@ -682,7 +566,12 @@ var SrvDataPouchDB = (function() {
       return this.dataUserLoggedIn;
   };
   */
-
+  
+  Service.prototype.putFirstUserInEmptyPouchDB = function (user) {
+    if (!this.db) this.$q.reject('data need initialisation');
+    return this.srvMiapp.putFirstUserInEmptyPouchDB(this.db, user);
+  };
+  
   Service.prototype.setCoupleLoggedIn = function (couple) {
     this.dataCoupleLoggedIn = couple;
   };

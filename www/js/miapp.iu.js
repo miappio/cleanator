@@ -226,8 +226,9 @@ MiappEventable.mixin = function(destObject) {
 
                     //var token = token;//self.getToken();
                     console.log('token : ' + token);
-                    xhr.withCredentials = true;
-                    if (token) xhr.setRequestHeader('Cookie', "miapptoken=" + token);
+                    //MLE ? xhr.withCredentials = true;
+                    //MLE ? if (token) xhr.setRequestHeader('Cookie', "miapptoken=" + token);
+                    //if (token) xhr.setRequestHeader('X-CSRF-Token', token);
                 }
                 timeout = setTimeout(function() {
                     xhr.abort();

@@ -3,7 +3,7 @@
 [![Issue Count](https://codeclimate.com/github/miappio/cleanator/badges/issue_count.svg)](https://codeclimate.com/github/miappio/cleanator/issues)
 [![Test Coverage](https://codeclimate.com/github/mlefree/c9_wsk/badges/coverage.svg)](https://codeclimate.com/github/mlefree/c9_wsk/coverage)
 
-                                              proudly made by miapp.io
+                                              proudly supported by miapp.io
                      _|                                    _|            
      _|_|_|  _|_|          _|_|_|  _|_|_|    _|_|_|              _|_|    
      _|    _|    _|  _|  _|    _|  _|    _|  _|    _|      _|  _|    _|  

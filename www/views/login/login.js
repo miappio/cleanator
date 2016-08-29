@@ -17,7 +17,7 @@ angular.module('myAngularApp.views.login', [])
 
 })
 
-.controller('LoginCtrl', function ($scope,$http, $q, $location, $ionicHistory,$ionicNavBarDelegate, srvConfig, srvData, srvMiapp) {
+.controller('LoginCtrl', function ($scope,$http, $q, $location, $ionicHistory,$ionicNavBarDelegate, srvConfig, srvData) {
 	'use strict';
 
 
@@ -33,14 +33,13 @@ angular.module('myAngularApp.views.login', [])
 	$scope.loginSetLogin = function(user) {
 
 		srvConfig.setUserLoggedIn(user)
-			.then(function(user){
+            .then(function(user){
 
 				$ionicNavBarDelegate.showBackButton(true);
 				$scope.navRedirect('/config/couple');
 
 			})
 			.catch(function(err){
-
 				alert("Login PB :"+err);
 			});
 
@@ -49,6 +48,9 @@ angular.module('myAngularApp.views.login', [])
 	$scope.loginSignupANewUser = function(newUser) {
 
 		srvConfig.setUserLoggedIn(newUser)
+			.then(function(user){
+				return srvData.putFirstUserInEmptyPouchDB(user);
+            })
 			.then(function(user) {
 				return $scope.navDataSync();
 			})

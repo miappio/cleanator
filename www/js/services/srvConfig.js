@@ -56,6 +56,7 @@ var SrvConfig = (function (){
         if(this.srvMiapp) {
             this.srvMiapp.login(login, password, {})
                 .then(function(user){
+                  
                     this.configUserLoggedIn = angular.copy(user);
                     this.configUserLoggedIn.miappUserId = user._id;
                     setObjectFromLocalStorage('configUserLoggedIn',this.configUserLoggedIn);
@@ -128,7 +129,7 @@ var SrvConfig = (function (){
 
       var jsonObj = JSON.stringify(object);
       // Retrieve the object from storage
-      localStorage.setItem(id,jsonObj);
+      window.localStorage.setItem(id,jsonObj);
 
       //console.log('retrievedObject: ', JSON.parse(retrievedObject));
       return jsonObj;
@@ -138,7 +139,7 @@ var SrvConfig = (function (){
       if(typeof(Storage) === "undefined") return null;
 
       // Retrieve the object from storage
-      var retrievedObject = localStorage.getItem(id);
+      var retrievedObject = window.localStorage.getItem(id);
       var obj = JSON.parse(retrievedObject);
 
       //console.log('retrievedObject: ', JSON.parse(retrievedObject));
