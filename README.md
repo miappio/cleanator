@@ -50,6 +50,14 @@ $ npm run text:extract
 ```
 
 
+### DevOps
+
+    cd ~/.ssh
+    mkdir key_backup
+    cp id_rsa* key_backup
+    ssh-keygen -t rsa -C "your_email@example.com"
+    cat id_rsa.pub
+
 # Thanks
 
 [@miapp.io](https://miapp.io) @mat_cloud @gandhi @dalai_lama @my_wife !  :)
