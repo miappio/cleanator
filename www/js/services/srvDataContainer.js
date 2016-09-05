@@ -131,7 +131,7 @@ var SrvDataContainer = (function() {
         var deferred = self.$q.defer();
 
         var firstUser = firstUserLoggedIn;
-        self.User.set(firstUser).then(function(firstUserUpdated){
+        self.srvData.User.set(firstUser).then(function(firstUserUpdated){
             if (!firstUserUpdated) return deferred.reject();
 
             var fileLang = langOfFile || 'fr';

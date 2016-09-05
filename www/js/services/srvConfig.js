@@ -17,6 +17,7 @@ var SrvConfig = (function (){
         this.$q = $q;
         this.$log.log('init');
         this.srvMiapp = srvMiapp;
+        this.srvMiappInitDone = false;
 
       //this.localStorage = srvLocalStorage;
       this.gettextCatalog = gettextCatalog;
@@ -53,18 +54,27 @@ var SrvConfig = (function (){
         var login = user.email;
         var password = user.password;
 
-        if(this.srvMiapp) {
+        if(this.srvMiapp && !this.srvMiappInitDone) {
             this.srvMiapp.login(login, password, {})
                 .then(function(user){
                   
                     this.configUserLoggedIn = angular.copy(user);
                     this.configUserLoggedIn.miappUserId = user._id;
                     setObjectFromLocalStorage('configUserLoggedIn',this.configUserLoggedIn);
+                    
+                    this.srvMiappInitDone = true;
+        
                     defer.resolve(user);
                 })
                 .catch(function(err){
                     defer.reject(err);
                 });
+        }
+        else {
+          this.configUserLoggedIn = angular.copy(user);
+          this.configUserLoggedIn.miappUserId = user._id;
+          setObjectFromLocalStorage('configUserLoggedIn',this.configUserLoggedIn);
+          return this.$q.resolve(this.configUserLoggedIn);
         }
 
         return defer.promise;

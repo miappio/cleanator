@@ -140,7 +140,7 @@ var SrvDataPouchDB = (function() {
               user[self.userColumns.type] = self.userType;
               user[self.userColumns.lastModified] = new Date();
              
-              return self.srvMiap.putInPouchDb(self.db, user);
+              return self.srvMiapp.putInPouchDb(self.db, user);
           },
           lastModified:function() {
               return new Date();
@@ -231,7 +231,7 @@ var SrvDataPouchDB = (function() {
               couple[self.coupleColumns.lastModified] = new Date();
               var name = couple[self.coupleColumns.name];
 
-              return self.srvMiap.putInPouchDb(self.db, couple);
+              return self.srvMiapp.putInPouchDb(self.db, couple);
           },
           lastModified:function() {
               return new Date();
@@ -270,7 +270,7 @@ var SrvDataPouchDB = (function() {
           category[self.categoryColumns.lastModified] = new Date();
           category[self.categoryColumns.desactivate] = category[self.categoryColumns.desactivate] ? category[self.categoryColumns.desactivate] : false;
           
-          return self.srvMiap.putInPouchDb(self.db, category);
+          return self.srvMiapp.putInPouchDb(self.db, category);
         },
         applyToLinkedChores: function(category,fnToApply) {
          //NO defered ? var deferred = self.$q.defer();
@@ -356,7 +356,7 @@ var SrvDataPouchDB = (function() {
               chore[self.choreColumns.lastModified] = new Date();
               chore[self.choreColumns.desactivate] = chore[self.categoryColumns.desactivate] ? chore[self.choreColumns.desactivate] : false;
 
-              return self.srvMiap.putInPouchDb(self.db, chore);
+              return self.srvMiapp.putInPouchDb(self.db, chore);
           },
           remove: function(chore) {
               var deferred = self.$q.defer();
@@ -417,7 +417,7 @@ var SrvDataPouchDB = (function() {
             historic[self.historicColumns.lastModified] = new Date();
             historic[self.historicColumns.desactivate] = historic[self.historicColumns.desactivate] ? historic[self.historicColumns.desactivate] : false;
             
-            return self.srvMiap.putInPouchDb(self.db, historic);
+            return self.srvMiapp.putInPouchDb(self.db, historic);
           },
           lastModified:function() {
             return new Date();
@@ -569,6 +569,8 @@ var SrvDataPouchDB = (function() {
   
   Service.prototype.putFirstUserInEmptyPouchDB = function (user) {
     if (!this.db) this.$q.reject('data need initialisation');
+    user[this.userColumns.type] = this.userType;
+    user[this.userColumns.lastModified] = new Date();
     return this.srvMiapp.putFirstUserInEmptyPouchDB(this.db, user);
   };
   

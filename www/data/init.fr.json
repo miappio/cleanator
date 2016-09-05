@@ -1,0 +1,691 @@
+{
+  "version": "Cleanator150524FR",
+  "users": [
+    {
+      "firstname": "Moi",
+      "lastname": "??",
+      "timeInMnPerWeekTodo": 210
+    },
+    {
+      "firstname": "Toi",
+      "lastname": "??",
+      "timeInMnPerWeekTodo": 210
+    }
+  ],
+  "categories": [
+    {
+      "group": "choreCategory",
+      "categoryName": "01_Chambre",
+      "description": "Chambre",
+      "thumb": "img/categories/bedroom.png"
+    },
+    {
+      "group": "choreCategory",
+      "categoryName": "02_Cuisine",
+      "description": "Cuisine",
+      "thumb": "img/categories/kitchen.png"
+    },
+    {
+      "group": "choreCategory",
+      "categoryName": "03_Salon",
+      "description": "Salon",
+      "thumb": "img/categories/livingroom.png"
+    },
+    {
+      "group": "choreCategory",
+      "categoryName": "04_Famille",
+      "description": "Famille",
+      "thumb": "img/categories/familly.png"
+    },
+    {
+      "group": "choreCategory",
+      "categoryName": "05_Linge",
+      "description": "Linge",
+      "thumb": "img/categories/laundry.png"
+    },
+    {
+      "group": "choreCategory",
+      "categoryName": "06_Salle_de_bain",
+      "description": "Salle de bain",
+      "thumb": "img/categories/bathroom.png"
+    },
+    {
+      "group": "choreCategory",
+      "categoryName": "07_Maison",
+      "description": "Divers",
+      "thumb": "img/categories/house.png"
+    },
+    {
+      "group": "choreCategory",
+      "categoryName": "08_WC",
+      "description": "WC",
+      "thumb": "img/categories/wc.png"
+    },
+    {
+      "group": "choreCategory",
+      "categoryName": "09_Exterieur",
+      "description": "Exterieur",
+      "thumb": "img/categories/garden.png"
+    }
+  ],
+  "couples": [
+    {
+      "coupleName": "Les chouchous",
+      "description": "Nous"
+    }
+  ],
+  "chores": [
+    {
+      "choreName": "Retourner les matelas",
+      "choreCategory": "01_Chambre",
+      "description": "Retourner les matelas",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 180,
+      "timeInMn": 5,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Nettoyer les bacs à jouets",
+      "choreCategory": "01_Chambre",
+      "description": "Nettoyer les bacs à jouets",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 90,
+      "timeInMn": 15,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Nettoyer le dessus des armoires",
+      "choreCategory": "01_Chambre",
+      "description": "Nettoyer le dessus des armoires",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 60,
+      "timeInMn": 10,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Faire les lits, aérer les chambres, ranger ce qui traine",
+      "choreCategory": "01_Chambre",
+      "description": "Faire les lits, aérer les chambres, ranger ce qui traine",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 1,
+      "timeInMn": 10,
+      "choreDescriptionCat": "choreVide",
+      "priority": 1,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Vider et sortir la poubelle",
+      "choreCategory": "02_Cuisine",
+      "description": "Vider et sortir la poubelle",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 3,
+      "timeInMn": 5,
+      "choreDescriptionCat": "choreVide",
+      "priority": 1,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Nettoyer portes des placards",
+      "choreCategory": "02_Cuisine",
+      "description": "Nettoyer portes des placards",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 60,
+      "timeInMn": 10,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Nettoyer paroi four, micro-onde, frigo",
+      "choreCategory": "02_Cuisine",
+      "description": "Nettoyer paroi four, micro-onde, frigo",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 30,
+      "timeInMn": 10,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Nettoyer mur devant les plaques",
+      "choreCategory": "02_Cuisine",
+      "description": "Nettoyer mur devant les plaques",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 3,
+      "timeInMn": 2,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Nettoyer intérieur micro-ondes",
+      "choreCategory": "02_Cuisine",
+      "description": "Nettoyer intérieur micro-ondes",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 7,
+      "timeInMn": 5,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Nettoyer intérieur frigo",
+      "choreCategory": "02_Cuisine",
+      "description": "Nettoyer intérieur frigo",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 90,
+      "timeInMn": 15,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Nettoyer intérieur four",
+      "choreCategory": "02_Cuisine",
+      "description": "Nettoyer intérieur four",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 90,
+      "timeInMn": 10,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Nettoyer intérieur des placards",
+      "choreCategory": "02_Cuisine",
+      "description": "Nettoyer intérieur des placards",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 120,
+      "timeInMn": 10,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Nettoyer dessus des placards",
+      "choreCategory": "02_Cuisine",
+      "description": "Nettoyer dessus des placards",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 120,
+      "timeInMn": 10,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Mettre et débarasser table repas du soir",
+      "choreCategory": "02_Cuisine",
+      "description": "Mettre et débarasser table petit déjeuner",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 1,
+      "timeInMn": 10,
+      "choreDescriptionCat": "choreVide",
+      "priority": 1,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Mettre et débarasser table repas du midi",
+      "choreCategory": "02_Cuisine",
+      "description": "Mettre et débarasser la table du repas du soir",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 1,
+      "timeInMn": 10,
+      "choreDescriptionCat": "choreVide",
+      "priority": 1,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Mettre et débarasser table petit déjeuner",
+      "choreCategory": "02_Cuisine",
+      "description": "Mettre et débarasser la table du repas de midi",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 1,
+      "timeInMn": 10,
+      "choreDescriptionCat": "choreVide",
+      "priority": 1,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Dégivrer congélateur",
+      "choreCategory": "02_Cuisine",
+      "description": "Dégivrer congélateur",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 360,
+      "timeInMn": 20,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Nettoyer le dessus des meubles haut",
+      "choreCategory": "03_Salon",
+      "description": "Nettoyer le dessus des meubles haut",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 90,
+      "timeInMn": 10,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Préparer vêtements pour le lendemain",
+      "choreCategory": "04_Famille",
+      "description": "Préparer vêtements pour le lendemain",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 1,
+      "timeInMn": 5,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Faire les devoirs",
+      "choreCategory": "04_Famille",
+      "description": "Faire les devoirs",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 1,
+      "timeInMn": 15,
+      "choreDescriptionCat": "choreVide",
+      "priority": 1,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Faire le repas du midi",
+      "choreCategory": "04_Famille",
+      "description": "Faire le repas du midi",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 1,
+      "timeInMn": 15,
+      "choreDescriptionCat": "choreVide",
+      "priority": 1,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Faire le repas du soir",
+      "choreCategory": "04_Famille",
+      "description": "Faire le repas du soir",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 1,
+      "timeInMn": 15,
+      "choreDescriptionCat": "choreVide",
+      "priority": 1,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Changer / vider la littière",
+      "choreCategory": "04_Famille",
+      "description": "Changer / vider la littière",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 7,
+      "timeInMn": 5,
+      "choreDescriptionCat": "choreVide",
+      "priority": 1,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Repasser le linge",
+      "choreCategory": "05_Linge",
+      "description": "Repasser le linge",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 7,
+      "timeInMn": 120,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Ranger le linge",
+      "choreCategory": "05_Linge",
+      "description": "Ranger le linge",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 7,
+      "timeInMn": 10,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Lancer une machine",
+      "choreCategory": "05_Linge",
+      "description": "Lancer une machine",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 2,
+      "timeInMn": 5,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Etendre le linge",
+      "choreCategory": "05_Linge",
+      "description": "Etendre le linge",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 2,
+      "timeInMn": 10,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Déhousser canapé et lancer machine avec les housses",
+      "choreCategory": "05_Linge",
+      "description": "Déhousser canapé et lancer machine avec les housses",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 360,
+      "timeInMn": 15,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Cirer les chaussures",
+      "choreCategory": "05_Linge",
+      "description": "Cirer les chaussures",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 60,
+      "timeInMn": 15,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Changer les lits enfants et lancer machine avec les draps",
+      "choreCategory": "05_Linge",
+      "description": "Changer les lits enfants et lancer machine avec les draps",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 15,
+      "timeInMn": 10,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Changer le lit parents et lancer machine avec les draps",
+      "choreCategory": "05_Linge",
+      "description": "Changer le lit parents et lancer machine avec les draps",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 180,
+      "timeInMn": 10,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Nettoyer le mobilier ",
+      "choreCategory": "06_Salle_de_bain",
+      "description": "Nettoyer le mobilier ",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 15,
+      "timeInMn": 10,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Nettoyer lavabo et robinets",
+      "choreCategory": "06_Salle_de_bain",
+      "description": "Nettoyer lavabo et robinets",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 3,
+      "timeInMn": 5,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Nettoyer / détartrer baignoire ou douche et pommeau, robinet",
+      "choreCategory": "06_Salle_de_bain",
+      "description": "Nettoyer et détartrer baignoire ou douche et pommeau, robinet",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 15,
+      "timeInMn": 15,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Vider les poubelles",
+      "choreCategory": "07_Maison",
+      "description": "Vider les poubelles",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 7,
+      "timeInMn": 5,
+      "choreDescriptionCat": "choreVide",
+      "priority": 1,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Nettoyer les poubelles",
+      "choreCategory": "07_Maison",
+      "description": "Vider et nettoyer les poubelles",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 130,
+      "timeInMn": 10,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Serpillère sols",
+      "choreCategory": "07_Maison",
+      "description": "Serpillère sols",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 15,
+      "timeInMn": 10,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Poussière rapide dans la maison",
+      "choreCategory": "07_Maison",
+      "description": "Poussière rapide",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 7,
+      "timeInMn": 10,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Poussiere de fond (au dessus des meubles...)",
+      "choreCategory": "07_Maison",
+      "description": "Poussiere de fond (au dessus des meubles...)",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 60,
+      "timeInMn": 30,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Nettoyer les traces sur les portes / interrupteurs",
+      "choreCategory": "07_Maison",
+      "description": "Nettoyer les traces sur les portes / interrupteurs",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 120,
+      "timeInMn": 10,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Nettoyer les mirroirs",
+      "choreCategory": "07_Maison",
+      "description": "Nettoyer les mirroirs",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 15,
+      "timeInMn": 15,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Laver les vitres",
+      "choreCategory": "07_Maison",
+      "description": "Laver les vitres",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 60,
+      "timeInMn": 45,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Enlever les toiles d'araignées",
+      "choreCategory": "07_Maison",
+      "description": "Enlever les toiles d'araignées",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 120,
+      "timeInMn": 15,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Dépoussiérer les lampes",
+      "choreCategory": "07_Maison",
+      "description": "Dépoussiérer les lampes",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 30,
+      "timeInMn": 5,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Aspirateur rapide",
+      "choreCategory": "07_Maison",
+      "description": "Aspirateur rapide",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 2,
+      "timeInMn": 10,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Aspirateur de fond (plinthes, sous les tapis, sous les meubles)",
+      "choreCategory": "07_Maison",
+      "description": "Aspirateur de fond (plinthes, sous les tapis, sous les meubles)",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 30,
+      "timeInMn": 20,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Serpillère sol",
+      "choreCategory": "08_WC",
+      "description": "Serpillère sol",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 7,
+      "timeInMn": 5,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Désinfecter, récurer et nettoyer les toilettes",
+      "choreCategory": "08_WC",
+      "description": "Désinfecter, récurer et nettoyer les toilettes",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 7,
+      "timeInMn": 5,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Passer tondeuse",
+      "choreCategory": "09_Exterieur",
+      "description": "Passer tondeuse",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 21,
+      "timeInMn": 30,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Nettoyer table de jardin et chaises",
+      "choreCategory": "09_Exterieur",
+      "description": "Nettoyer table de jardin et chaises",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 7,
+      "timeInMn": 5,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    },
+    {
+      "choreName": "Balayer balcon terrasse",
+      "choreCategory": "09_Exterieur",
+      "description": "Balayer balcon terrasse",
+      "percent_AB": 50,
+      "action": "Todo",
+      "frequencyDays": 15,
+      "timeInMn": 10,
+      "choreDescriptionCat": "choreVide",
+      "priority": 5,
+      "priorityComputed": 5
+    }
+  ]
+}
