@@ -1,0 +1,30 @@
+{
+  "name": "miappio-sdk",
+  "version": "1.0.9",
+  "main": "dist/miapp.io.js",
+  "ignore": [
+    "**/.*",
+    "src",
+    "node_modules",
+    "bower_components",
+    "test",
+    "Gruntfile.js"
+  ],
+  "dependencies": {
+    "angular": ">=1.2.0"
+  },
+  "devDependencies": {
+  },
+  "homepage": "https://github.com/miappio/miappio-sdk",
+  "authors": [
+    "mlefree <mat@mlefree.com>"
+  ],
+  "description": "miapp.io client SDK",
+  "keywords": [
+    "miapp.io",
+    "angular",
+    "mobile",
+    "integration"
+  ],
+  "license": "MIT"
+}

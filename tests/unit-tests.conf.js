@@ -22,7 +22,11 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-        'www/lib/ionic/js/ionic.bundle.js',
+        'node_modules/angular/angular.js',
+
+        //'www/lib/ionic/js/ionic.bundle.js',
+        'node_modules/angular-mocks/angular-mocks.js',
+
         'www/lib/angular-gettext/dist/angular-gettext.js',
         'www/lib/chance/dist/chance.min.js',
         //'../node_modules/es5-shim/es5-shim.js',
@@ -30,17 +34,14 @@ module.exports = function(config) {
         'www/lib/angular-filter/dist/angular-filter.min.js',
         'www/lib/Chart.js/Chart.min.js',
         'www/lib/angular-chart.js/dist/angular-chart.min.js',
-        'www/lib/angular-mocks/angular-mocks.js',
         'www/lib/crypto-js/crypto-js.js',
+        'www/lib/miappio-sdk/dist/miapp.io.js',
 
-        'www/js/app.js',
-        'www/js/miapp.iu.js',
-        'www/js/miapp.iu.test.js',
+        'www/js/*.js',
         'www/js/config/*.js',
         'www/js/directives/*.js',
         'www/js/filters/*.js',
         'www/js/languages/*.js',
-        'www/js/services/a4p/*.js',
         'www/js/services/*.js',
 
         'www/views/*.js',

@@ -4,12 +4,14 @@
     {
       "firstname": "Me",
       "lastname": "??",
-      "timeInMnPerWeekTodo": 210
+      "timeInMnPerWeekTodo": 210,
+      "profilID":0
     },
     {
       "firstname": "Love partner",
       "lastname": "??",
-      "timeInMnPerWeekTodo": 210
+      "timeInMnPerWeekTodo": 210,
+      "profilID":3
     }
   ],
   "couples": [
@@ -24,55 +26,64 @@
       "group" : "choreCategory",
       "categoryName": "01_Chambre",
       "description": "Bedroom",
-      "thumb": "img/categories/bedroom.png"
+      "thumb": "img/categories/bedroom.png",
+      "desactivate" : false
     },
     {
       "group" : "choreCategory",
       "categoryName": "02_Cuisine",
       "description": "Kitchen",
-      "thumb": "img/categories/kitchen.png"
+      "thumb": "img/categories/kitchen.png",
+      "desactivate" : false
     },
     {
       "group" : "choreCategory",
       "categoryName": "03_Salon",
       "description": "Living room",
-      "thumb": "img/categories/livingroom.png"
+      "thumb": "img/categories/livingroom.png",
+      "desactivate" : false
     },
     {
       "group" : "choreCategory",
       "categoryName": "04_Famille",
       "description": "Family",
-      "thumb": "img/categories/familly.png"
+      "thumb": "img/categories/familly.png",
+      "desactivate" : false
     },
     {
       "group" : "choreCategory",
       "categoryName": "05_Linge",
       "description": "Laundry",
-      "thumb": "img/categories/laundry.png"
+      "thumb": "img/categories/laundry.png",
+      "desactivate" : false
     },
     {
       "group" : "choreCategory",
       "categoryName": "06_Salle_de_bain",
       "description": "Bathroom",
-      "thumb": "img/categories/bathroom.png"
+      "thumb": "img/categories/bathroom.png",
+      "desactivate" : false
     },
     {
       "group" : "choreCategory",
       "categoryName": "07_Maison",
       "description": "Various",
-      "thumb": "img/categories/house.png"
+      "thumb": "img/categories/house.png",
+      "desactivate" : false
     },
     {
       "group" : "choreCategory",
       "categoryName": "08_WC",
       "description": "WC",
-      "thumb": "img/categories/wc.png"
+      "thumb": "img/categories/wc.png",
+      "desactivate" : false
     },
     {
       "group" : "choreCategory",
       "categoryName": "09_Exterieur",
       "description": "Exterior",
-      "thumb": "img/categories/garden.png"
+      "thumb": "img/categories/garden.png",
+      "desactivate" : false
     },
 
 
@@ -238,7 +249,7 @@
   "chores": [
     {
       "choreName": "Change / clean litterbox",
-      "choreCategory": "04_Famille",
+      "choreCategoryName": "04_Famille",
       "description": "Change / clean litterbox",
       "percent_AB": 50,
       "action": "Todo",
@@ -246,11 +257,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "Animaux",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Vacuum thoroughly (plinths, under carpets, underneath furniture ...)",
-      "choreCategory": "01_Chambre",
+      "choreCategoryName": "01_Chambre",
       "description": "Vacuum thoroughly (plinths, under carpets, underneath furniture ...)",
       "percent_AB": 50,
       "action": "Todo",
@@ -258,11 +270,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "Aspirateur",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Vacuum thoroughly (plinths, under carpets, underneath furniture ...)",
-      "choreCategory": "02_Cuisine",
+      "choreCategoryName": "02_Cuisine",
       "description": "Vacuum thoroughly (plinths, under carpets, underneath furniture ...)",
       "percent_AB": 50,
       "action": "Todo",
@@ -270,11 +283,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "Aspirateur",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Vacuum thoroughly (plinths, under carpets, underneath furniture ...)",
-      "choreCategory": "03_Salon",
+      "choreCategoryName": "03_Salon",
       "description": "Vacuum thoroughly (plinths, under carpets, underneath furniture ...)",
       "percent_AB": 50,
       "action": "Todo",
@@ -282,11 +296,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "Aspirateur",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Vacuum rapid",
-      "choreCategory": "03_Salon",
+      "choreCategoryName": "03_Salon",
       "description": "Vacuum rapid",
       "percent_AB": 50,
       "action": "Todo",
@@ -294,11 +309,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "Aspirateur",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Vacuum thoroughly (plinths, under carpets, underneath furniture ...)",
-      "choreCategory": "06_Salle_de_bain",
+      "choreCategoryName": "06_Salle_de_bain",
       "description": "Vacuum thoroughly (plinths, under carpets, underneath furniture ...)",
       "percent_AB": 50,
       "action": "Todo",
@@ -306,11 +322,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "Aspirateur",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Vacuum rapid",
-      "choreCategory": "06_Salle_de_bain",
+      "choreCategoryName": "06_Salle_de_bain",
       "description": "Vacuum rapid",
       "percent_AB": 50,
       "action": "Todo",
@@ -318,11 +335,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "Aspirateur",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Vacuum thoroughly (plinths, under carpets, underneath furniture ...)",
-      "choreCategory": "07_Maison",
+      "choreCategoryName": "07_Maison",
       "description": "Vacuum thoroughly (plinths, under carpets, underneath furniture ...)",
       "percent_AB": 50,
       "action": "Todo",
@@ -330,11 +348,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "Aspirateur",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Vacuum rapid",
-      "choreCategory": "07_Maison",
+      "choreCategoryName": "07_Maison",
       "description": "Vacuum rapid",
       "percent_AB": 50,
       "action": "Todo",
@@ -342,11 +361,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "Aspirateur",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Vacuum rapid",
-      "choreCategory": "08_WC",
+      "choreCategoryName": "08_WC",
       "description": "Vacuum rapid",
       "percent_AB": 50,
       "action": "Todo",
@@ -354,11 +374,12 @@
       "timeInMn": 2,
       "choreDescriptionCat": "Aspirateur",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Clean and descale bath / shower and shower head, faucet",
-      "choreCategory": "06_Salle_de_bain",
+      "choreCategoryName": "06_Salle_de_bain",
       "description": "Clean and descale bath / shower and shower head, faucet",
       "percent_AB": 50,
       "action": "Todo",
@@ -366,11 +387,12 @@
       "timeInMn": 15,
       "choreDescriptionCat": "Baignoire",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Mop floors if wooden or tiled",
-      "choreCategory": "01_Chambre",
+      "choreCategoryName": "01_Chambre",
       "description": "Mop floors if wooden or tiled",
       "percent_AB": 50,
       "action": "Todo",
@@ -378,11 +400,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "Balai",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Mop floors",
-      "choreCategory": "02_Cuisine",
+      "choreCategoryName": "02_Cuisine",
       "description": "Mop floors",
       "percent_AB": 50,
       "action": "Todo",
@@ -390,11 +413,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "Balai",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Mop floors if wooden or tiled",
-      "choreCategory": "03_Salon",
+      "choreCategoryName": "03_Salon",
       "description": "Mop floors if wooden or tiled",
       "percent_AB": 50,
       "action": "Todo",
@@ -402,11 +426,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "Balai",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Mop floor",
-      "choreCategory": "06_Salle_de_bain",
+      "choreCategoryName": "06_Salle_de_bain",
       "description": "Mop floor",
       "percent_AB": 50,
       "action": "Todo",
@@ -414,11 +439,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "Balai",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Mop floor",
-      "choreCategory": "08_WC",
+      "choreCategoryName": "08_WC",
       "description": "Mop floor",
       "percent_AB": 50,
       "action": "Todo",
@@ -426,11 +452,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "Balai",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Sweep up balcony terrace",
-      "choreCategory": "09_Exterieur",
+      "choreCategoryName": "09_Exterieur",
       "description": "Sweep up balcony terrace",
       "percent_AB": 50,
       "action": "Todo",
@@ -438,11 +465,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "Balai",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Shine the shoes",
-      "choreCategory": "05_Linge",
+      "choreCategoryName": "05_Linge",
       "description": "Shine the shoes",
       "percent_AB": 50,
       "action": "Todo",
@@ -450,11 +478,12 @@
       "timeInMn": 15,
       "choreDescriptionCat": "typeCirage",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Homework with children",
-      "choreCategory": "04_Famille",
+      "choreCategoryName": "04_Famille",
       "description": "Homework with children",
       "percent_AB": 50,
       "action": "Todo",
@@ -462,11 +491,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "typeDevoir",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Clean the oven interior",
-      "choreCategory": "02_Cuisine",
+      "choreCategoryName": "02_Cuisine",
       "description": "Clean the oven interior",
       "percent_AB": 50,
       "action": "Todo",
@@ -474,11 +504,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "typeFour",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Clean the oven walls, microwave, fridge",
-      "choreCategory": "02_Cuisine",
+      "choreCategoryName": "02_Cuisine",
       "description": "Clean the oven walls, microwave, fridge",
       "percent_AB": 50,
       "action": "Todo",
@@ -486,11 +517,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "typeFour",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Remove your couch and launch the washing machine",
-      "choreCategory": "05_Linge",
+      "choreCategoryName": "05_Linge",
       "description": "Remove your couch and launch the washing machine",
       "percent_AB": 50,
       "action": "Todo",
@@ -498,11 +530,12 @@
       "timeInMn": 15,
       "choreDescriptionCat": "typeCanape",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Clean the toy bins",
-      "choreCategory": "01_Chambre",
+      "choreCategoryName": "01_Chambre",
       "description": "Clean the toy bins",
       "percent_AB": 50,
       "action": "Todo",
@@ -510,11 +543,12 @@
       "timeInMn": 15,
       "choreDescriptionCat": "typeJouet",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Clean sink and taps",
-      "choreCategory": "06_Salle_de_bain",
+      "choreCategoryName": "06_Salle_de_bain",
       "description": "Clean sink and taps",
       "percent_AB": 50,
       "action": "Todo",
@@ -522,11 +556,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "typeLavabo",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Prepare clothes for the next day",
-      "choreCategory": "04_Famille",
+      "choreCategoryName": "04_Famille",
       "description": "Prepare clothes for the next day",
       "percent_AB": 50,
       "action": "Todo",
@@ -534,11 +569,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "typeLinge",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Extending the machine",
-      "choreCategory": "05_Linge",
+      "choreCategoryName": "05_Linge",
       "description": "Extending the machine",
       "percent_AB": 50,
       "action": "Todo",
@@ -546,11 +582,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "typeLinge",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Store the machine-wash",
-      "choreCategory": "05_Linge",
+      "choreCategoryName": "05_Linge",
       "description": "Store the machine-wash",
       "percent_AB": 50,
       "action": "Todo",
@@ -558,11 +595,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "typeLinge",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "bathroom linen",
-      "choreCategory": "08_WC",
+      "choreCategoryName": "08_WC",
       "description": "bathroom linen",
       "percent_AB": 50,
       "action": "Todo",
@@ -570,11 +608,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "typeLinge",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Making beds, ventilate the rooms, which drags store",
-      "choreCategory": "01_Chambre",
+      "choreCategoryName": "01_Chambre",
       "description": "Making beds, ventilate the rooms, which drags store",
       "percent_AB": 50,
       "action": "Todo",
@@ -582,11 +621,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "typeLit",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Return mattresses",
-      "choreCategory": "01_Chambre",
+      "choreCategoryName": "01_Chambre",
       "description": "Return mattresses",
       "percent_AB": 50,
       "action": "Todo",
@@ -594,11 +634,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "typeLit",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Change the parent bed and launch the washing machine",
-      "choreCategory": "05_Linge",
+      "choreCategoryName": "05_Linge",
       "description": "Change the parent bed and launch the washing machine",
       "percent_AB": 50,
       "action": "Todo",
@@ -606,11 +647,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "typeLit",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Change the children bed and launch the washing machine",
-      "choreCategory": "05_Linge",
+      "choreCategoryName": "05_Linge",
       "description": "Change the children bed and launch the washing machine",
       "percent_AB": 50,
       "action": "Todo",
@@ -618,11 +660,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "typeLit",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Start a machine",
-      "choreCategory": "05_Linge",
+      "choreCategoryName": "05_Linge",
       "description": "Start a machine",
       "percent_AB": 50,
       "action": "Todo",
@@ -630,11 +673,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "typeMachineLinge",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Clean inside microwave",
-      "choreCategory": "02_Cuisine",
+      "choreCategoryName": "02_Cuisine",
       "description": "Clean inside microwave",
       "percent_AB": 50,
       "action": "Todo",
@@ -642,11 +686,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "typeMicroOnde",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Clean the top of the cabinets",
-      "choreCategory": "01_Chambre",
+      "choreCategoryName": "01_Chambre",
       "description": "Clean the top of the cabinets",
       "percent_AB": 50,
       "action": "Todo",
@@ -654,11 +699,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "typePlacard",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Clean top of cupboards",
-      "choreCategory": "02_Cuisine",
+      "choreCategoryName": "02_Cuisine",
       "description": "Clean top of cupboards",
       "percent_AB": 50,
       "action": "Todo",
@@ -666,11 +712,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "typePlacard",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Clean inside cupboards",
-      "choreCategory": "02_Cuisine",
+      "choreCategoryName": "02_Cuisine",
       "description": "Clean inside cupboards",
       "percent_AB": 50,
       "action": "Todo",
@@ -678,11 +725,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "typePlacard",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Clean closet doors",
-      "choreCategory": "02_Cuisine",
+      "choreCategoryName": "02_Cuisine",
       "description": "Clean closet doors",
       "percent_AB": 50,
       "action": "Todo",
@@ -690,11 +738,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "typePlacard",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Clean the top of high furniture",
-      "choreCategory": "03_Salon",
+      "choreCategoryName": "03_Salon",
       "description": "Clean the top of high furniture",
       "percent_AB": 50,
       "action": "Todo",
@@ -702,11 +751,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "typePlacard",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Furniture cleaning",
-      "choreCategory": "06_Salle_de_bain",
+      "choreCategoryName": "06_Salle_de_bain",
       "description": "Furniture cleaning",
       "percent_AB": 50,
       "action": "Todo",
@@ -714,11 +764,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "typePlacard",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Empty and take out the trash",
-      "choreCategory": "02_Cuisine",
+      "choreCategoryName": "02_Cuisine",
       "description": "Empty and take out the trash",
       "percent_AB": 50,
       "action": "Todo",
@@ -726,11 +777,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "typePoubelle",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Empty and clean the trash",
-      "choreCategory": "07_Maison",
+      "choreCategoryName": "07_Maison",
       "description": "Empty and clean the trash",
       "percent_AB": 50,
       "action": "Todo",
@@ -738,11 +790,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "typePoubelle",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Empty trash",
-      "choreCategory": "07_Maison",
+      "choreCategoryName": "07_Maison",
       "description": "Empty trash",
       "percent_AB": 50,
       "action": "Todo",
@@ -750,11 +803,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "typePoubelle",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Background dust (above furniture ...)",
-      "choreCategory": "01_Chambre",
+      "choreCategoryName": "01_Chambre",
       "description": "Background dust (above furniture ...)",
       "percent_AB": 50,
       "action": "Todo",
@@ -762,11 +816,12 @@
       "timeInMn": 15,
       "choreDescriptionCat": "typePoussiere",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Quick dust",
-      "choreCategory": "01_Chambre",
+      "choreCategoryName": "01_Chambre",
       "description": "Quick dust",
       "percent_AB": 50,
       "action": "Todo",
@@ -774,11 +829,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "typePoussiere",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Background dust (above furniture ...)",
-      "choreCategory": "02_Cuisine",
+      "choreCategoryName": "02_Cuisine",
       "description": "Background dust (above furniture ...)",
       "percent_AB": 50,
       "action": "Todo",
@@ -786,11 +842,12 @@
       "timeInMn": 15,
       "choreDescriptionCat": "typePoussiere",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Quick dust",
-      "choreCategory": "02_Cuisine",
+      "choreCategoryName": "02_Cuisine",
       "description": "Quick dust",
       "percent_AB": 50,
       "action": "Todo",
@@ -798,11 +855,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "typePoussiere",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Background dust (above furniture ...)",
-      "choreCategory": "03_Salon",
+      "choreCategoryName": "03_Salon",
       "description": "Background dust (above furniture ...)",
       "percent_AB": 50,
       "action": "Todo",
@@ -810,11 +868,12 @@
       "timeInMn": 15,
       "choreDescriptionCat": "typePoussiere",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Quick dust",
-      "choreCategory": "03_Salon",
+      "choreCategoryName": "03_Salon",
       "description": "Quick dust",
       "percent_AB": 50,
       "action": "Todo",
@@ -822,11 +881,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "typePoussiere",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Background dust (above furniture ...)",
-      "choreCategory": "06_Salle_de_bain",
+      "choreCategoryName": "06_Salle_de_bain",
       "description": "Background dust (above furniture ...)",
       "percent_AB": 50,
       "action": "Todo",
@@ -834,11 +894,12 @@
       "timeInMn": 15,
       "choreDescriptionCat": "typePoussiere",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Quick dust",
-      "choreCategory": "06_Salle_de_bain",
+      "choreCategoryName": "06_Salle_de_bain",
       "description": "Quick dust",
       "percent_AB": 50,
       "action": "Todo",
@@ -846,11 +907,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "typePoussiere",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Dust off the lights",
-      "choreCategory": "03_Salon",
+      "choreCategoryName": "03_Salon",
       "description": "Dust off the lights",
       "percent_AB": 50,
       "action": "Todo",
@@ -858,11 +920,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "typePoussiereAmpoule",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Clean dining room table and chairs",
-      "choreCategory": "03_Salon",
+      "choreCategoryName": "03_Salon",
       "description": "Clean dining room table and chairs",
       "percent_AB": 50,
       "action": "Todo",
@@ -870,11 +933,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "typeRecurer",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Disinfecting , scouring and cleaning toilets",
-      "choreCategory": "08_WC",
+      "choreCategoryName": "08_WC",
       "description": "Disinfecting , scouring and cleaning toilets",
       "percent_AB": 50,
       "action": "Todo",
@@ -882,11 +946,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "typeRecurer",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Clean garden table and chairs",
-      "choreCategory": "09_Exterieur",
+      "choreCategoryName": "09_Exterieur",
       "description": "Clean garden table and chairs",
       "percent_AB": 50,
       "action": "Todo",
@@ -894,11 +959,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "typeRecurer",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Defrost old fridges and freezers",
-      "choreCategory": "02_Cuisine",
+      "choreCategoryName": "02_Cuisine",
       "description": "Defrost old fridges and freezers",
       "percent_AB": 50,
       "action": "Todo",
@@ -906,11 +972,12 @@
       "timeInMn": 20,
       "choreDescriptionCat": "typeRefrigerateur",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Clean refrigerator interior",
-      "choreCategory": "02_Cuisine",
+      "choreCategoryName": "02_Cuisine",
       "description": "Clean refrigerator interior",
       "percent_AB": 50,
       "action": "Todo",
@@ -918,11 +985,12 @@
       "timeInMn": 15,
       "choreDescriptionCat": "typeRefrigerateur",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Ironing clothes",
-      "choreCategory": "05_Linge",
+      "choreCategoryName": "05_Linge",
       "description": "Ironing clothes",
       "percent_AB": 50,
       "action": "Todo",
@@ -930,11 +998,12 @@
       "timeInMn": 120,
       "choreDescriptionCat": "typeRepassage",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Make lunch",
-      "choreCategory": "02_Cuisine",
+      "choreCategoryName": "02_Cuisine",
       "description": "Make lunch",
       "percent_AB": 50,
       "action": "Todo",
@@ -942,11 +1011,12 @@
       "timeInMn": 20,
       "choreDescriptionCat": "typeTable",
       "priority": 1,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Make dinner",
-      "choreCategory": "02_Cuisine",
+      "choreCategoryName": "02_Cuisine",
       "description": "Make dinner",
       "percent_AB": 50,
       "action": "Todo",
@@ -954,11 +1024,12 @@
       "timeInMn": 20,
       "choreDescriptionCat": "typeTable",
       "priority": 1,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Set and clear the breakfast table ",
-      "choreCategory": "02_Cuisine",
+      "choreCategoryName": "02_Cuisine",
       "description": "Set and clear the breakfast table ",
       "percent_AB": 50,
       "action": "Todo",
@@ -966,11 +1037,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "typeTable",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Set and clear the lunch table",
-      "choreCategory": "02_Cuisine",
+      "choreCategoryName": "02_Cuisine",
       "description": "Set and clear the lunch table",
       "percent_AB": 50,
       "action": "Todo",
@@ -978,11 +1050,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "typeTable",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Set and clear the dinner table",
-      "choreCategory": "02_Cuisine",
+      "choreCategoryName": "02_Cuisine",
       "description": "Set and clear the dinner table",
       "percent_AB": 50,
       "action": "Todo",
@@ -990,11 +1063,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "typeTable",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Make the meal",
-      "choreCategory": "04_Famille",
+      "choreCategoryName": "04_Famille",
       "description": "Make the meal",
       "percent_AB": 50,
       "action": "Todo",
@@ -1002,11 +1076,12 @@
       "timeInMn": 20,
       "choreDescriptionCat": "typeTable",
       "priority": 1,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Clean traces on doors / switches",
-      "choreCategory": "01_Chambre",
+      "choreCategoryName": "01_Chambre",
       "description": "Clean traces on doors / switches",
       "percent_AB": 50,
       "action": "Todo",
@@ -1014,11 +1089,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "typeTache",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Clean wall in front of the baking trays",
-      "choreCategory": "02_Cuisine",
+      "choreCategoryName": "02_Cuisine",
       "description": "Clean wall in front of the baking trays",
       "percent_AB": 50,
       "action": "Todo",
@@ -1026,11 +1102,12 @@
       "timeInMn": 2,
       "choreDescriptionCat": "typeTache",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Clean traces on doors / switches",
-      "choreCategory": "03_Salon",
+      "choreCategoryName": "03_Salon",
       "description": "Clean traces on doors / switches",
       "percent_AB": 50,
       "action": "Todo",
@@ -1038,11 +1115,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "typeTache",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Clean traces on doors / switches",
-      "choreCategory": "06_Salle_de_bain",
+      "choreCategoryName": "06_Salle_de_bain",
       "description": "Clean traces on doors / switches",
       "percent_AB": 50,
       "action": "Todo",
@@ -1050,11 +1128,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "typeTache",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Clean traces on doors / switches",
-      "choreCategory": "08_WC",
+      "choreCategoryName": "08_WC",
       "description": "Clean traces on doors / switches",
       "percent_AB": 50,
       "action": "Todo",
@@ -1062,11 +1141,12 @@
       "timeInMn": 5,
       "choreDescriptionCat": "typeTache",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Remove cobwebs",
-      "choreCategory": "07_Maison",
+      "choreCategoryName": "07_Maison",
       "description": "Remove cobwebs",
       "percent_AB": 50,
       "action": "Todo",
@@ -1074,11 +1154,12 @@
       "timeInMn": 15,
       "choreDescriptionCat": "typeToileAraignee",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Skip mower",
-      "choreCategory": "09_Exterieur",
+      "choreCategoryName": "09_Exterieur",
       "description": "Skip mower",
       "percent_AB": 50,
       "action": "Todo",
@@ -1086,11 +1167,12 @@
       "timeInMn": 20,
       "choreDescriptionCat": "typeTondeuse",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Washing windows",
-      "choreCategory": "01_Chambre",
+      "choreCategoryName": "01_Chambre",
       "description": "Washing windows",
       "percent_AB": 50,
       "action": "Todo",
@@ -1098,11 +1180,12 @@
       "timeInMn": 15,
       "choreDescriptionCat": "typeVitre",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Washing windows",
-      "choreCategory": "02_Cuisine",
+      "choreCategoryName": "02_Cuisine",
       "description": "Washing windows",
       "percent_AB": 50,
       "action": "Todo",
@@ -1110,11 +1193,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "typeVitre",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Washing windows",
-      "choreCategory": "03_Salon",
+      "choreCategoryName": "03_Salon",
       "description": "Washing windows",
       "percent_AB": 50,
       "action": "Todo",
@@ -1122,11 +1206,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "typeVitre",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Wash windows",
-      "choreCategory": "06_Salle_de_bain",
+      "choreCategoryName": "06_Salle_de_bain",
       "description": "Wash windows",
       "percent_AB": 50,
       "action": "Todo",
@@ -1134,11 +1219,12 @@
       "timeInMn": 10,
       "choreDescriptionCat": "typeVitre",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     },
     {
       "choreName": "Clean mirrors",
-      "choreCategory": "07_Maison",
+      "choreCategoryName": "07_Maison",
       "description": "Clean mirrors",
       "percent_AB": 50,
       "action": "Todo",
@@ -1146,7 +1232,8 @@
       "timeInMn": 15,
       "choreDescriptionCat": "typeVitre",
       "priority": 5,
-      "priorityComputed": 5
+      "priorityComputed": 5,
+      "desactivate" : false
     }
   ]
 }
