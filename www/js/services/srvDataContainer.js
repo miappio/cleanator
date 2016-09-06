@@ -2,8 +2,8 @@
 
 angular.module('srvDataContainer', ['srvData.pouchdb'])
 
-.factory('srvDataContainer', function ($log, $q, filterFilter, srvData, srvConfig, srvMiapp) {
-  return new SrvDataContainer($log, $q, filterFilter, srvData, srvConfig, srvMiapp);
+.factory('srvDataContainer', function ($log, $q, $http, filterFilter, srvData, srvConfig, srvMiapp) {
+  return new SrvDataContainer($log, $q, $http, filterFilter, srvData, srvConfig, srvMiapp);
 });
 
 
@@ -11,9 +11,10 @@ angular.module('srvDataContainer', ['srvData.pouchdb'])
 var SrvDataContainer = (function() {
 'use strict';
 
-    function Service($log, $q, filterFilter, srvData, srvConfig, srvMiapp) {
+    function Service($log, $q, $http, filterFilter, srvData, srvConfig, srvMiapp) {
         this.$log = $log;
         this.$q = $q;
+        this.$http = $http;
         this.filterFilter = filterFilter;
 
         this.srvData = srvData;
@@ -120,7 +121,8 @@ var SrvDataContainer = (function() {
     };
 
     Service.prototype.putInDB = function (dataModel, dataToPut) {
-        return dataModel.put(dataToPut);
+        //return dataModel.put(dataToPut);
+        return dataModel.set(dataToPut);
     };
 
 
@@ -130,74 +132,81 @@ var SrvDataContainer = (function() {
         var chanceBaseUser = 2345,chanceBaseCouple = 2645,chanceBaseChore = 2945;//Math.random
         var deferred = self.$q.defer();
 
-        var firstUser = firstUserLoggedIn;
-        self.srvData.User.set(firstUser).then(function(firstUserUpdated){
-            if (!firstUserUpdated) return deferred.reject();
+        self.srvMiapp.login(firstUserLoggedIn.email, firstUserLoggedIn.password)
+            .then(function(firstUserUpdated){
+                return self.srvMiapp.putFirstUserInEmptyPouchDB(self.srvData.db, firstUserUpdated);
+            })
+            .then(function(firstUserUpdated){
+                return self.srvData.User.set(firstUserUpdated);
+            })
+            .then(function(firstUserUpdated){
 
-            var fileLang = langOfFile || 'fr';
-            self.$http.get('data/init.'+fileLang+'.json')
-                .success(function(data) {
-                    if (!data | !data.chores) return deferred.reject();
+                if (!firstUserUpdated) return deferred.reject();
 
-                    // Users first init
-                    //if (data.users && data.users.length >= 2) {
+                var fileLang = langOfFile || 'fr';
+                self.$http.get('data/init.'+fileLang+'.json')
+                    .success(function(data) {
+                        if (!data | !data.chores) return deferred.reject();
 
-                    var users = data.users;
-                    var userA = {}, userB = {};
-                    angular.extend(userA, firstUserUpdated);
-                    angular.extend(userA, users[0]);
-                    angular.extend(userB, users[1]);
+                        // Users first init
+                        //if (data.users && data.users.length >= 2) {
 
-                    self.putInDB(self.srvData.User,userA)
-                        .then(function(newUserA) {
-                            return self.putInDB(self.srvData.User, userB);
-                        })
-                        .then(function(newUserB){
-                            var couple = {};
-                            var chanceCouple = new Chance(chanceBaseCouple+i);
-                            couple[self.coupleColumns.name] = chanceCouple.sentence({words: 2});
-                            couple[self.coupleColumns.description] = chanceCouple.sentence({words: 5});
+                        var users = data.users;
+                        var userA = {}, userB = {};
+                        angular.extend(userA, firstUserUpdated);
+                        angular.extend(userA, users[0]);
+                        angular.extend(userB, users[1]);
 
-                            couple[self.coupleColumns.userAId] = firstUserUpdated._id;
-                            couple[self.coupleColumns.userBId] = newUserB._id;
-                            if (!firstUserUpdated._id || !newUserB._id) return deferred.reject("no couple available.");
+                        self.putInDB(self.srvData.User,userA)
+                            .then(function(newUserA) {
+                                return self.putInDB(self.srvData.User, userB);
+                            })
+                            .then(function(newUserB){
+                                var couple = {};
+                                var chanceCouple = new Chance(chanceBaseCouple+i);
+                                couple[self.coupleCols.name] = chanceCouple.sentence({words: 2});
+                                couple[self.coupleCols.description] = chanceCouple.sentence({words: 5});
 
-                            return self.putInDB(self.srvData.Couple,couple);
-                        })
-                        .then(function(coupleSaved) {
+                                couple[self.coupleCols.userAId] = firstUserUpdated._id;
+                                couple[self.coupleCols.userBId] = newUserB._id;
+                                if (!firstUserUpdated._id || !newUserB._id) return deferred.reject("no couple available.");
 
-                            // Categories first init
-                            var categories = data.categories;
-                            var categoriesLength = categories.length;
-                            var promiseArray = [];
-                            for (i = 0; i < categoriesLength; i++) {
-                                var category = categories[i];
-                                promiseArray.push(self.putInDB(self.srvData.Category, category));
-                            }
-                            return self.$q.all(promiseArray);
-                        })
-                        .then(function(allCategories){
-                            var chores = data.chores;
-                            var choresLength = chores.length;
-                            var promiseArray = [];
-                            for (j = 0; j < choresLength; j++) {
-                                var chore = chores[j];
-                                promiseArray.push(self.putInDB(self.srvData.Chore,chore));
-                            }
-                            return self.$q.all(promiseArray);
-                        })
-                        .then(function(allChores){
-                            return deferred.resolve(data.chores);
-                        })
-                        .catch(function(err){
-                            var msg = "first data creation pb : " + (err.message ? err.message : err);
-                            return deferred.reject(msg);
-                        });
+                                return self.putInDB(self.srvData.Couple,couple);
+                            })
+                            .then(function(coupleSaved) {
 
-                })
-                .error(function(data) {
-                    return deferred.reject(data);
-                });
+                                // Categories first init
+                                var categories = data.categories;
+                                var categoriesLength = categories.length;
+                                var promiseArray = [];
+                                for (i = 0; i < categoriesLength; i++) {
+                                    var category = categories[i];
+                                    promiseArray.push(self.putInDB(self.srvData.Category, category));
+                                }
+                                return self.$q.all(promiseArray);
+                            })
+                            .then(function(allCategories){
+                                var chores = data.chores;
+                                var choresLength = chores.length;
+                                var promiseArray = [];
+                                for (j = 0; j < choresLength; j++) {
+                                    var chore = chores[j];
+                                    promiseArray.push(self.putInDB(self.srvData.Chore,chore));
+                                }
+                                return self.$q.all(promiseArray);
+                            })
+                            .then(function(allChores){
+                                return deferred.resolve(data.chores);
+                            })
+                            .catch(function(err){
+                                var msg = "first data creation pb : " + (err.message ? err.message : err);
+                                return deferred.reject(msg);
+                            });
+
+                    })
+                    .error(function(data) {
+                        return deferred.reject(data);
+                    });
 
             })
             .catch(function(err){

@@ -267,9 +267,9 @@ describe('srvMiapp', function () {
                 })
                 .then(function (bEmpty) {
                     expect(bEmpty).toBe(false,'should be not empty');
-                })
+                }) 
                 .catch(function (err) {
-                    expect(ture).toBe(false,'Should not catch err: ' + err);
+                    expect(true).toBe(false,'Should not catch err: ' + err);
                 })
                 .finally(function (err) {
                     done();

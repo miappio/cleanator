@@ -226,7 +226,7 @@ var SrvMiapp = (function() {
         var self = this;
         var deferred = self.$q.defer();
         self.$log.log('isPouchDBEmpty ..');
-        if (!self.currentUser || !self.currentUser.email || !pouchDB) {
+        if (!pouchDB) {//if (!self.currentUser || !self.currentUser.email || !pouchDB) {
             var error = 'DB search impossible. Need a user logged in. (' + self.currentUser + ')';
             self.$log.error(error);
             return self.$q.reject(error);
@@ -235,6 +235,7 @@ var SrvMiapp = (function() {
         self.$log.log('isPouchDBEmpty call');
         pouchDB.allDocs({
                 filter : function(doc){
+                    if (!self.currentUser) return doc;
                     if (doc.miappUserId == self.currentUser._id) return doc;
                 }
             },function(err, response) {

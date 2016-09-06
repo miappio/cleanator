@@ -15,37 +15,23 @@ var SrvConfig = (function (){
 
         this.$log = $log;
         this.$q = $q;
-        this.$log.log('init');
+        this.$log.log('srvConfig - init');
         this.srvMiapp = srvMiapp;
         this.srvMiappInitDone = false;
 
-      //this.localStorage = srvLocalStorage;
-      this.gettextCatalog = gettextCatalog;
-      //this.configLoggedIn = false;
-      this.configUserLoggedIn = null;
-      //this.configAppFirstInitDone = false;
-      this.configAppFirstInitLevel = 0;
-      this.configAppFirstInitLevelMax = 3;
+        this.gettextCatalog = gettextCatalog;
+        this.configUserLoggedIn = null;
+        this.configAppFirstInitLevel = 0;
+        this.configAppFirstInitLevelMax = 3;
 
-      // this.configUsersColors = [
-      //   { id:"#333333",
-      //     fill:"rgba(133,33,33,0.2)",
-      //     stroke:"rgba(133,33,33,0.6)",
-      //     hightlight:"rgba(133,133,33,1)"},
-      //     {id:"#696969",
-      //     fill:"rgba(69,69,169,0.2)",
-      //     stroke:"rgba(69,69,169,0.4)",
-      //     hightlight:"rgba(19,109,169,0.8)"}
-      // ];
-
-      // Init lang
-      this.configLangs =  [
-                            {title:'English', code:'en_US'},
-                            {title:'Français', code:'fr_FR'}
-                            //{title:'Espagnol', code:'es_ES'}
-                          ];
-      var lang = this.getConfigLang() ? this.getConfigLang().code : 'en_US';
-      this.setConfigLang(lang);
+        // Init lang
+        this.configLangs =  [
+                        {title:'English', code:'en_US'},
+                        {title:'Français', code:'fr_FR'}
+                        //{title:'Espagnol', code:'es_ES'}
+                      ];
+        var lang = this.getConfigLang() ? this.getConfigLang().code : 'en_US';
+        this.setConfigLang(lang);
     }
 
     service.prototype.setUserLoggedIn = function (user) {
