@@ -1,14 +1,12 @@
-services:
-- mongodb
-addons:
-  code_climate:
-    repo_token: 17e98b743f2f12959f31296199477cce3442ee6b77295a732f111830636e67e2
 language: node_js
-script: npm test
-after_script:
-- codeclimate-test-reporter < ./build/coverage/report-lcov/lcov.info
+install:
+ - npm install -g codecov
+script:
+ - npm test
+ - codecov
 after_success:
+ - bash <(curl -s https://codecov.io/bash)
 node_js:
-- 6.1.0
+ - 6.1.0
 env:
   global:
