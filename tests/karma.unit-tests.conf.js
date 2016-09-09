@@ -22,23 +22,25 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-        'node_modules/angular/angular.js',
 
-        //'www/lib/ionic/js/ionic.bundle.js',
-        'node_modules/angular-mocks/angular-mocks.js',
+        'www/lib/ionic/js/ionic.bundle.js',
+        'www/lib/angular-mocks/angular-mocks.js',
+        // 'node_modules/angular/angular.js',
+        //'node_modules/angular-mocks/angular-mocks.js',
 
         'www/lib/angular-gettext/dist/angular-gettext.js',
-        'www/lib/chance/dist/chance.min.js',
-        //'../node_modules/es5-shim/es5-shim.js',
         'www/lib/pouchdb/dist/pouchdb.min.js',
         'www/lib/angular-filter/dist/angular-filter.min.js',
+        'www/lib/chance/dist/chance.min.js',
+        //'../node_modules/es5-shim/es5-shim.js',
         'www/lib/Chart.js/Chart.min.js',
         'www/lib/angular-chart.js/dist/angular-chart.min.js',
         'www/lib/crypto-js/crypto-js.js',
         'www/lib/miappio-sdk/dist/miapp.io.js',
 
-        'www/js/*.js',
-        'www/js/config/*.js',
+        'www/js/app.js',
+        'www/js/app.test.js',
+        '.config.example.js',
         'www/js/directives/*.js',
         'www/js/filters/*.js',
         'www/js/languages/*.js',
@@ -48,14 +50,17 @@ module.exports = function(config) {
         'www/views/chore/*.js',
         'www/views/dashboard/*.js',
         'www/views/login/*.js',
-        'www/views/user/*.js'
+        'www/views/user/*.js',
+
+        // fixtures
+        {pattern: 'www/data/*.json', watched: true, served: true, included: false}
 
     ],
 
 
     // list of files to exclude
     exclude: [
-      'www/**/*.notused'
+      'www/**/*.notused*'
     ],
 
 

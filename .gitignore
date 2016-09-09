@@ -21,3 +21,4 @@ plugins/
 
 www/lib/**/*.html
 www/lib/**/*.htm
+.config.test.js

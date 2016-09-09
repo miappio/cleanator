@@ -6,7 +6,7 @@ if (typeof ga === 'undefined') {
     //var analytics = null;
 }
 
-describe('srvAnalytics', function () {
+describe('myAngularApp.services.srvAnalytics', function () {
 
 'use strict';
         var log = null;
@@ -15,7 +15,7 @@ describe('srvAnalytics', function () {
         var MockGaq2 = null;
         var MockGaq3 = null;
         var srvLocalStorage = null;
-        //var a4pAnalytics = null;
+        //var miappAnalytics = null;
         //var window.plugins.gaPlugin = null;
 
         //this.gaQueue = [];  //  GA official queue
@@ -74,7 +74,7 @@ describe('srvAnalytics', function () {
                 return Service;
             })();
 
-            var LocalStorage = a4p.LocalStorageFactory(new a4p.MemoryStorage());
+            var LocalStorage = miapp.LocalStorageFactory(new miapp.MemoryStorage());
             srvLocalStorage = new LocalStorage();
             //ga = new MockGaq1();
             ga = function(){};
@@ -91,24 +91,24 @@ describe('srvAnalytics', function () {
 
         afterEach(function () {
             //Online mode : reset
-            a4p.BrowserCapabilities.online = navigator.onLine;
+            miapp.BrowserCapabilities.online = navigator.onLine;
         });
 
 
         it('should be correctly initialized', function () {
 
-            //a4pAnalytics.init();
-            var a4pAnalytics = new SrvAnalytics(log, srvLocalStorage, 'UA-mocked-id', 'mockApp');
-            a4pAnalytics.init();
-            expect(a4pAnalytics.localStorage).toEqual(srvLocalStorage);
-            expect(a4pAnalytics.mAnalyticsArray.length).toEqual(0);
-            expect(a4pAnalytics.mAnalyticsFunctionnalitiesArray.length).toEqual(0);
+            //miappAnalytics.init();
+            var miappAnalytics = new SrvAnalytics(log, srvLocalStorage, 'UA-mocked-id', 'mockApp');
+            miappAnalytics.init();
+            expect(miappAnalytics.localStorage).toEqual(srvLocalStorage);
+            expect(miappAnalytics.mAnalyticsArray.length).toEqual(0);
+            expect(miappAnalytics.mAnalyticsFunctionnalitiesArray.length).toEqual(0);
 
-            expect(a4pAnalytics.gaQueue).toEqual(ga);
-                        //expect(a4pAnalytics.gaPanalytics).toEqual(analytics);
-            expect(a4pAnalytics.gaPlugin).toEqual(window.plugins.gaPlugin);
+            expect(miappAnalytics.gaQueue).toEqual(ga);
+                        //expect(miappAnalytics.gaPanalytics).toEqual(analytics);
+            expect(miappAnalytics.gaPlugin).toEqual(window.plugins.gaPlugin);
 
-            expect(a4pAnalytics.vid).toBe("mockApp");
+            expect(miappAnalytics.vid).toBe("mockApp");
 
             //expect(ga).toBe(2);
             //expect(ga.list.length).toBe(2);
@@ -117,21 +117,23 @@ describe('srvAnalytics', function () {
             //expect(ga.list[1][0]).toBe('_trackPageview');
         });
 
+
+    /*
         it('should add single', function () {
 
             // Force offline mode : test queue
-            a4p.BrowserCapabilities.online = false;
+            miapp.BrowserCapabilities.online = false;
 
-            var a4pAnalytics = new SrvAnalytics(log, srvLocalStorage, 'UA-mocked-id', "mockApp");
-            a4pAnalytics.init();
+            var miappAnalytics = new SrvAnalytics(log, srvLocalStorage, 'UA-mocked-id', "mockApp");
+            miappAnalytics.init();
             //expect(ga.list.length).toBe(2);
-            var analyticsData = srvLocalStorage.get('a4p.Analytics', null);
+            var analyticsData = srvLocalStorage.get('miapp.Analytics', null);
             expect(analyticsData).toBeNull();
 
-            a4pAnalytics.add('Uses', 'SingleTest-1');
+            miappAnalytics.add('Uses', 'SingleTest-1');
             //expect(ga.list.length).toBe(2);
             //expect(window.plugins.gaPlugin.list.length).toBe(2);
-            analyticsData = srvLocalStorage.get('a4p.Analytics', null);
+            analyticsData = srvLocalStorage.get('miapp.Analytics', null);
             expect(analyticsData.length).toBe(2);
             expect(analyticsData[0].vid).toBe('mockApp');
             expect(analyticsData[0].uid).toBe('uid_undefined');
@@ -146,7 +148,7 @@ describe('srvAnalytics', function () {
             expect(analyticsData[1].action).toBe('SingleTest-1');
             expect(analyticsData[1].value).toBe(1);
 
-            a4pAnalytics.run();
+            miappAnalytics.run();
             //expect(ga.list.length).toBe(4);
             //expect(window.plugins.gaPlugin.list.length).toBe(2);
             //expect(ga.list[2][0]).toBe('_trackEvent');
@@ -157,7 +159,7 @@ describe('srvAnalytics', function () {
             //expect(ga.list[3][0]).toBe('_trackPageview');
             //expect(ga.list[3][1]).toBe('vid_undefined - Uses - SingleTest-1');
 
-            analyticsData = srvLocalStorage.get('a4p.Analytics', null);
+            analyticsData = srvLocalStorage.get('miapp.Analytics', null);
             expect(analyticsData.length).toBe(0);
 
         });
@@ -165,20 +167,20 @@ describe('srvAnalytics', function () {
         it('should add many', function () {
 
             // Force offline mode : test queue
-            a4p.BrowserCapabilities.online = false;
+            miapp.BrowserCapabilities.online = false;
 
-            var a4pAnalytics = new SrvAnalytics(log, srvLocalStorage, 'UA-mocked-id');
-            a4pAnalytics.init();
+            var miappAnalytics = new SrvAnalytics(log, srvLocalStorage, 'UA-mocked-id');
+            miappAnalytics.init();
             //expect(ga.list.length).toBe(2);
-            var analyticsData = srvLocalStorage.get('a4p.Analytics', null);
+            var analyticsData = srvLocalStorage.get('miapp.Analytics', null);
             expect(analyticsData).toBeNull();
 
-            a4pAnalytics.add('Uses', 'ManyTest-1');
-            a4pAnalytics.add('Uses', 'ManyTest-2',2);
-            a4pAnalytics.add('Interest', 'ManyTest-3',3);
+            miappAnalytics.add('Uses', 'ManyTest-1');
+            miappAnalytics.add('Uses', 'ManyTest-2',2);
+            miappAnalytics.add('Interest', 'ManyTest-3',3);
             //expect(ga.list.length).toBe(2);
             //expect(window.plugins.gaPlugin.list.length).toBe(0);
-            analyticsData = srvLocalStorage.get('a4p.Analytics', null);
+            analyticsData = srvLocalStorage.get('miapp.Analytics', null);
             expect(analyticsData.length).toBe(6);
             //expect(analyticsData[2].vid).toBe('vid_undefined');
             expect(analyticsData[2].uid).toBe('uid_undefined');
@@ -193,7 +195,7 @@ describe('srvAnalytics', function () {
             expect(analyticsData[3].action).toBe('ManyTest-2');
             expect(analyticsData[3].value).toBe(2);
 
-            a4pAnalytics.run();
+            miappAnalytics.run();
             //expect(ga.list.length).toBe(8);
             //expect(window.plugins.gaPlugin.list.length).toBe(6);
             //expect(ga.list[4][0]).toBe('_trackEvent');
@@ -209,30 +211,32 @@ describe('srvAnalytics', function () {
             //expect(window.plugins.gaPlugin.list[4][3]).toBe('uid_undefined');
             //expect(window.plugins.gaPlugin.list[4][4]).toBe(3);
 
-            analyticsData = srvLocalStorage.get('a4p.Analytics', null);
+            analyticsData = srvLocalStorage.get('miapp.Analytics', null);
             expect(analyticsData.length).toBe(0);
 
         });
 
+        */
+
         it('should add Once', function () {
 
             // Force offline mode : test queue
-            a4p.BrowserCapabilities.online = false;
+            miapp.BrowserCapabilities.online = false;
 
-            var a4pAnalytics = new a4p.Analytics(srvLocalStorage, 'UA-mocked-id');
-            a4pAnalytics.init();
+            var miappAnalytics = new miapp.Analytics(srvLocalStorage, 'UA-mocked-id');
+            miappAnalytics.init();
             //expect(ga.list.length).toBe(2);
-            var analyticsData = srvLocalStorage.get('a4p.Analytics', null);
+            var analyticsData = srvLocalStorage.get('miapp.Analytics', null);
             expect(analyticsData).toBeNull();
 
-            a4pAnalytics.add('Uses', 'OnceTest-1',0);
-            a4pAnalytics.add('Once', 'OnceTest-1');
-            a4pAnalytics.add('Once', 'OnceTest-1',30);
-            a4pAnalytics.add('Once', 'OnceTest-2',4);
-            a4pAnalytics.add('Interest', 'OnceTest-2',6);
+            miappAnalytics.add('Uses', 'OnceTest-1',0);
+            miappAnalytics.add('Once', 'OnceTest-1');
+            miappAnalytics.add('Once', 'OnceTest-1',30);
+            miappAnalytics.add('Once', 'OnceTest-2',4);
+            miappAnalytics.add('Interest', 'OnceTest-2',6);
             //expect(ga.list.length).toBe(2);
             expect(window.plugins.gaPlugin.list.length).toBe(0);
-            analyticsData = srvLocalStorage.get('a4p.Analytics', null);
+            analyticsData = srvLocalStorage.get('miapp.Analytics', null);
             expect(analyticsData.length).toBe(9);
 
             //expect(analyticsData[0].vid).toBe('vid_undefined');
@@ -270,47 +274,47 @@ describe('srvAnalytics', function () {
             expect(analyticsData[7].action).toBe('OnceTest-2');
             expect(analyticsData[7].value).toBe(6);
 
-            a4pAnalytics.run();
+            miappAnalytics.run();
 
-            analyticsData = srvLocalStorage.get('a4p.Analytics', null);
+            analyticsData = srvLocalStorage.get('miapp.Analytics', null);
             expect(analyticsData.length).toBe(0);
 
         });
 
         it('should be correctly customized', function () {
 
-            //a4pAnalytics.init();
+            //miappAnalytics.init();
             var analyticsData = null;
-            var a4pAnalytics = new a4p.Analytics(srvLocalStorage, 'UA-mocked-id');
-            a4pAnalytics.init();
+            var miappAnalytics = new miapp.Analytics(srvLocalStorage, 'UA-mocked-id');
+            miappAnalytics.init();
 
             //Online mode : disable queue
-            a4p.BrowserCapabilities.online = true;
-            a4pAnalytics.setVid('VID test');
-            a4pAnalytics.setUid('UID test');
-            a4pAnalytics.add('Uses', 'CustTest-1');
-            analyticsData = srvLocalStorage.get('a4p.Analytics', null);
+            miapp.BrowserCapabilities.online = true;
+            miappAnalytics.setVid('VID test');
+            miappAnalytics.setUid('UID test');
+            miappAnalytics.add('Uses', 'CustTest-1');
+            analyticsData = srvLocalStorage.get('miapp.Analytics', null);
             expect(analyticsData.length).toBe(0);
 
             //Force offline mode : test queue
-            a4p.BrowserCapabilities.online = false;
-            a4pAnalytics.add('Uses', 'CustTest-2');
-            a4pAnalytics.add('Uses', 'CustTest-3');
-            analyticsData = srvLocalStorage.get('a4p.Analytics', null);
+            miapp.BrowserCapabilities.online = false;
+            miappAnalytics.add('Uses', 'CustTest-2');
+            miappAnalytics.add('Uses', 'CustTest-3');
+            analyticsData = srvLocalStorage.get('miapp.Analytics', null);
             expect(analyticsData.length).toBe(4);
 
             //Disabled
-            a4pAnalytics.setEnabled(false);
-            a4pAnalytics.add('Uses', 'CustTest-4');
+            miappAnalytics.setEnabled(false);
+            miappAnalytics.add('Uses', 'CustTest-4');
             //expect(ga.list.length).toBe(4);
-            a4pAnalytics.run();
-            analyticsData = srvLocalStorage.get('a4p.Analytics', null);
+            miappAnalytics.run();
+            analyticsData = srvLocalStorage.get('miapp.Analytics', null);
             expect(analyticsData.length).toBe(4);
 
             //Enabled
-            a4pAnalytics.setEnabled(true);
-            a4pAnalytics.run();
-            analyticsData = srvLocalStorage.get('a4p.Analytics', null);
+            miappAnalytics.setEnabled(true);
+            miappAnalytics.run();
+            analyticsData = srvLocalStorage.get('miapp.Analytics', null);
             expect(analyticsData.length).toBe(0);
 
         });

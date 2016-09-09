@@ -204,14 +204,18 @@ var SrvDataPouchDB = (function() {
               self.db.allDocs({include_docs: true, descending: true}, function(err, response) {
                 if(err){ self.$log.log(err); }
                 if(response){
-                  var responseLength = response.rows.length;
-                  if (responseLength <= 0) return deferred.reject("No couple found");
-                  var responseComputed = 0;
-                  var results = response.rows.map(function(r){
+                    var responseLength = response.rows.length;
+                    if (responseLength <= 0) return deferred.reject("No couple found");
+                    var responseComputed = 0;
+                    console.log('srvData.pouchdb.Couple.findOne results: '+response.rows.length);
+                    var results = response.rows.map(function(r){
                         // Get the first couple //TODO criterias ??
-                        if ((r && r.doc && r.doc[self.coupleColumns.type] == self.coupleType) &&
-                            (r.doc[self.coupleColumns.userAId] == user._id || r.doc[self.coupleColumns.userBId] == user._id) &&
-                            (!couple)) {
+                        var isCouple = (r && r.doc && r.doc[self.coupleColumns.type] == self.coupleType);
+                        var isOwnBy = (r && r.doc && (r.doc[self.coupleColumns.userAId] == user._id || r.doc[self.coupleColumns.userBId] == user._id));
+                        if (isCouple) console.log('srvData.pouchdb.Couple.findOne isCouple: '+r.doc[self.coupleColumns.userAId]+' == '+ user._id), console.log(r.doc);
+                        if (isOwnBy) console.log('srvData.pouchdb.Couple.findOne isOwnBy: '+r.doc);
+
+                        if (!couple && isCouple && isOwnBy) {
                           couple = r.doc;
                           deferred.resolve(couple);
                           return r;
@@ -219,7 +223,7 @@ var SrvDataPouchDB = (function() {
                         responseComputed++;
                         if (responseComputed == responseLength) deferred.reject(couple);
                         return null;
-                  });
+                    });
                 }
               });
               return deferred.promise;
@@ -582,16 +586,17 @@ var SrvDataPouchDB = (function() {
   Service.prototype.getUserAFromCouple = function (couple) {
       var self = this;
       var deferred = self.$q.defer();
-
-      //var user = null;
+      if (!couple) return self.$q.reject(null);
       var userId = couple.userA_id;
+      console.log('srvData.pouchdb.getUserAFromCouple : '+userId);
 
-      this.db.get(userId).then(function(resp) {
+      self.db.get(userId).then(function(resp) {
         //if (err) return deferred.reject(err);
+        console.log('srvData.pouchdb.getUserAFromCouple resp : '+resp);
         if (resp) {
-          return deferred.resolve(resp);
+            return deferred.resolve(resp);
         }
-        else return deferred.reject("Not found");
+        else return deferred.reject(null);
       });
 
       return deferred.promise;
@@ -600,16 +605,17 @@ var SrvDataPouchDB = (function() {
   Service.prototype.getUserBFromCouple = function (couple) {
       var self = this;
       var deferred = self.$q.defer();
-
-      //var user = null;
+      if (!couple) return self.$q.reject(null);
       var userId = couple.userB_id;
+      console.log('srvData.pouchdb.getUserBFromCouple : '+userId);
 
-      this.db.get(userId).then(function(resp) {
+      self.db.get(userId).then(function(resp) {
+        console.log('srvData.pouchdb.getUserBFromCouple resp : '+resp);
         //if (err) return deferred.reject(err);
         if (resp) {
-          return deferred.resolve(resp);
+            return deferred.resolve(resp);
         }
-        else return deferred.reject("Not found");
+        else return deferred.reject(null);
       });
 
       return deferred.promise;

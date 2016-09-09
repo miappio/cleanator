@@ -34,33 +34,47 @@ var SrvConfig = (function (){
         this.setConfigLang(lang);
     }
 
+
+
+    service.prototype.logout = function () {
+
+        this.configUserLoggedIn = null;
+        var ret = removeObjectFromLocalStorage('configUserLoggedIn');
+    }
     service.prototype.setUserLoggedIn = function (user) {
-        var defer = this.$q.defer();
+        var self = this;
+        var defer = self.$q.defer();
 
         var login = user.email;
         var password = user.password;
+        self.$log.log('srvConfig.setUserLoggedIn : '+user.email);
 
-        if(this.srvMiapp && !this.srvMiappInitDone) {
-            this.srvMiapp.login(login, password, {})
-                .then(function(user){
-                  
-                    this.configUserLoggedIn = angular.copy(user);
-                    this.configUserLoggedIn.miappUserId = user._id;
-                    setObjectFromLocalStorage('configUserLoggedIn',this.configUserLoggedIn);
-                    
-                    this.srvMiappInitDone = true;
-        
-                    defer.resolve(user);
+        var mergeAndStoreUser = function(userToMerge){
+            if (!self.configUserLoggedIn) self.configUserLoggedIn = angular.copy(userToMerge);
+            for (var attrname in userToMerge) { self.configUserLoggedIn[attrname] = userToMerge[attrname]; }
+            if (userToMerge._id) self.configUserLoggedIn.miappUserId = userToMerge._id;
+            setObjectFromLocalStorage('configUserLoggedIn',self.configUserLoggedIn);
+        };
+
+        if(self.srvMiapp && !self.srvMiappInitDone) {
+            self.$log.log('srvConfig.setUserLoggedIn with srvMiapp');
+            self.srvMiapp.login(login, password, {})
+                .then(function(miappUser){
+
+                    self.$log.log('srvConfig.setUserLoggedIn srvMiapp received: '+ miappUser.email);
+                    for (var attrname in user) { miappUser[attrname] = user[attrname]; }
+                    mergeAndStoreUser(user);
+                    self.srvMiappInitDone = true;
+                    defer.resolve(self.configUserLoggedIn);
                 })
                 .catch(function(err){
                     defer.reject(err);
                 });
         }
         else {
-          this.configUserLoggedIn = angular.copy(user);
-          this.configUserLoggedIn.miappUserId = user._id;
-          setObjectFromLocalStorage('configUserLoggedIn',this.configUserLoggedIn);
-          return this.$q.resolve(this.configUserLoggedIn);
+            self.$log.log('srvConfig.setUserLoggedIn standalone');
+            mergeAndStoreUser(user);
+            return self.$q.resolve(self.configUserLoggedIn);
         }
 
         return defer.promise;
@@ -127,19 +141,25 @@ var SrvConfig = (function (){
       // Retrieve the object from storage
       window.localStorage.setItem(id,jsonObj);
 
-      //console.log('retrievedObject: ', JSON.parse(retrievedObject));
+      //self.$log.log('retrievedObject: ', JSON.parse(retrievedObject));
       return jsonObj;
     }
 
     function getObjectFromLocalStorage(id){
-      if(typeof(Storage) === "undefined") return null;
+        if(typeof(Storage) === "undefined") return null;
 
-      // Retrieve the object from storage
-      var retrievedObject = window.localStorage.getItem(id);
-      var obj = JSON.parse(retrievedObject);
+        // Retrieve the object from storage
+        var retrievedObject = window.localStorage.getItem(id);
+        var obj = JSON.parse(retrievedObject);
 
-      //console.log('retrievedObject: ', JSON.parse(retrievedObject));
-      return obj;
+        //self.$log.log('retrievedObject: ', JSON.parse(retrievedObject));
+        return obj;
+    }
+    function removeObjectFromLocalStorage(id){
+        if(typeof(Storage) === "undefined") return null;
+
+        // Retrieve the object from storage and remove it
+        return window.localStorage.removeItem(id);
     }
 
 

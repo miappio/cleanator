@@ -37,37 +37,42 @@ var SrvDataContainer = (function() {
     }
 
     Service.prototype.sync = function () {
-      var self = this;
-      var deferred = self.$q.defer();
-      var lang = self.srvConfig.getConfigLang() ? self.srvConfig.getConfigLang().code : 'en_US';
-      var userMain = self.srvConfig.getUserLoggedIn();
-      if (!userMain || !userMain.email) return self.$q.reject('Need one user logged in.');
+        var self = this;
+        var deferred = self.$q.defer();
+        var lang = self.srvConfig.getConfigLang() ? self.srvConfig.getConfigLang().code : 'en_US';
+        var userMain = self.srvConfig.getUserLoggedIn();
+        if (!userMain || !userMain.email) return self.$q.reject('Need one user logged in.');
 
-      self.srvMiapp.isPouchDBEmpty(self.srvData.db)
-          .then(function(isE){
+        self.$log.log('srvDataContainer.sync');
+        self.srvMiapp.isPouchDBEmpty(self.srvData.db)
+            .then(function(isE){
+                self.$log.log('srvDataContainer.sync isPouchDBEmpty: '+isE);
                 if (isE && !self.srvDataNeedFirstSyncForThisUser) {
-                    //initAvec première données (fichier en dur)
+                    self.$log.log('srvDataContainer.sync isPouchDBEmpty: initAvec première données (fichier en dur)');
                     return self.initWithFirstData(lang, userMain);
                 }
 
+                self.$log.log('srvDataContainer.sync syncPouchDb');
                 self.srvDataNeedFirstSyncForThisUser = false;
                 return self.srvMiapp.syncPouchDb(self.srvData.db);
-          })
-          .then(function(err) {
-              if (err) return deferred.reject(err);
-              return bindData(self);
-          })
-          .then(function(err){
-              if (err) return deferred.reject(err);
-              deferred.resolve();
-          })
-          .catch(function(err){
-            var errMessage =  err ? err : 'pb with getting first data';
-            self.$log.error(errMessage);
-            return deferred.reject(errMessage);
-          });
+            })
+            .then(function(err) {
+                if (err) return deferred.reject(err);
+                self.$log.log('srvDataContainer.sync bindData');
+                return bindData(self);
+            })
+            .then(function(err){
+                if (err) return deferred.reject(err);
+                self.$log.log('srvDataContainer.sync resolved');
+                deferred.resolve();
+            })
+            .catch(function(err){
+                var errMessage =  err ? err : 'pb with getting first data';
+                self.$log.error(errMessage);
+                return deferred.reject(errMessage);
+            });
 
-      return deferred.promise;
+        return deferred.promise;
     };
 
 
@@ -78,9 +83,8 @@ var SrvDataContainer = (function() {
       return loggedIn;
     };
     Service.prototype.logout = function (is) {
-      this.srvData.setUserLoggedIn(null);
       this.srvData.becarefulClean();
-      this.srvConfig.setUserLoggedIn(null);
+      this.srvConfig.logout();
       this.srvConfig.setAppFirstInitLevel(0);
       this.srvDataNeedFirstSyncForThisUser = true;
     };
@@ -132,48 +136,64 @@ var SrvDataContainer = (function() {
         var chanceBaseUser = 2345,chanceBaseCouple = 2645,chanceBaseChore = 2945;//Math.random
         var deferred = self.$q.defer();
 
+        self.$log.log('srvDataContainer.initWithFirstData '+langOfFile+' firstUserLoggedIn._id: '+firstUserLoggedIn._id);
         self.srvMiapp.login(firstUserLoggedIn.email, firstUserLoggedIn.password)
             .then(function(firstUserUpdated){
+                self.$log.log('srvDataContainer.initWithFirstData logged: '+firstUserUpdated._id);
+                angular.extend(firstUserUpdated, firstUserLoggedIn);
                 return self.srvMiapp.putFirstUserInEmptyPouchDB(self.srvData.db, firstUserUpdated);
             })
-            .then(function(firstUserUpdated){
-                return self.srvData.User.set(firstUserUpdated);
+            .then(function(firstUserPut){
+                self.$log.log('srvDataContainer.initWithFirstData firstUserPut: '+firstUserPut._id);
+                return self.srvData.User.set(firstUserPut);
             })
-            .then(function(firstUserUpdated){
+            .then(function(firstUserReUpdated){
+                if (!firstUserReUpdated) return deferred.reject();
 
-                if (!firstUserUpdated) return deferred.reject();
+                self.$log.log('srvDataContainer.initWithFirstData user ready: '+firstUserReUpdated._id);
 
                 var fileLang = langOfFile || 'fr';
-                self.$http.get('data/init.'+fileLang+'.json')
+                var fileURI = 'data/init.'+fileLang+'.json';
+                self.$log.log('srvDataContainer.initWithFirstData ready to init : '+fileURI);
+                self.$http.get(fileURI)
                     .success(function(data) {
-                        if (!data | !data.chores) return deferred.reject();
+
+                        self.$log.log('srvDataContainer.initWithFirstData data/init read :' +data);
+                        self.$log.log(data);
+                        if (!data || !data.chores) return deferred.reject();
 
                         // Users first init
                         //if (data.users && data.users.length >= 2) {
 
                         var users = data.users;
+
+                        self.$log.log(users);
                         var userA = {}, userB = {};
-                        angular.extend(userA, firstUserUpdated);
+                        angular.extend(userA, firstUserReUpdated);
                         angular.extend(userA, users[0]);
                         angular.extend(userB, users[1]);
 
                         self.putInDB(self.srvData.User,userA)
                             .then(function(newUserA) {
+                                self.$log.log('srvDataContainer.initWithFirstData put A :' +newUserA.email);
                                 return self.putInDB(self.srvData.User, userB);
                             })
                             .then(function(newUserB){
+                                self.$log.log('srvDataContainer.initWithFirstData put B :' +newUserB.firstname);
                                 var couple = {};
                                 var chanceCouple = new Chance(chanceBaseCouple+i);
                                 couple[self.coupleCols.name] = chanceCouple.sentence({words: 2});
                                 couple[self.coupleCols.description] = chanceCouple.sentence({words: 5});
 
-                                couple[self.coupleCols.userAId] = firstUserUpdated._id;
+                                couple[self.coupleCols.userAId] = firstUserReUpdated._id;
                                 couple[self.coupleCols.userBId] = newUserB._id;
-                                if (!firstUserUpdated._id || !newUserB._id) return deferred.reject("no couple available.");
+                                if (!firstUserReUpdated._id || !newUserB._id) return deferred.reject("no couple available.");
 
                                 return self.putInDB(self.srvData.Couple,couple);
                             })
                             .then(function(coupleSaved) {
+                                self.$log.log('srvDataContainer.initWithFirstData coupleSaved :' +coupleSaved.name);
+                                self.$log.log(coupleSaved);
 
                                 // Categories first init
                                 var categories = data.categories;
@@ -186,6 +206,7 @@ var SrvDataContainer = (function() {
                                 return self.$q.all(promiseArray);
                             })
                             .then(function(allCategories){
+                                self.$log.log('srvDataContainer.initWithFirstData allCategories :' +allCategories.length);
                                 var chores = data.chores;
                                 var choresLength = chores.length;
                                 var promiseArray = [];
@@ -196,7 +217,8 @@ var SrvDataContainer = (function() {
                                 return self.$q.all(promiseArray);
                             })
                             .then(function(allChores){
-                                return deferred.resolve(data.chores);
+                                self.$log.log('srvDataContainer.initWithFirstData allChores :' + allChores.length);
+                                return deferred.resolve();
                             })
                             .catch(function(err){
                                 var msg = "first data creation pb : " + (err.message ? err.message : err);
@@ -205,11 +227,13 @@ var SrvDataContainer = (function() {
 
                     })
                     .error(function(data) {
+                        self.$log.log('srvDataContainer.initWithFirstData data/init reject: '+data);
                         return deferred.reject(data);
                     });
 
             })
             .catch(function(err){
+                self.$log.log('srvDataContainer.initWithFirstData login reject: '+err);
                 return deferred.reject(err);
             });
         return deferred.promise;
@@ -264,7 +288,7 @@ var SrvDataContainer = (function() {
         var deferred = self.$q.defer();
 
         if (!self.userA || !self.userB) {
-          deferred.reject('not initialized');
+          deferred.reject('data not initialized');
           return deferred.promise;
         }
 
@@ -303,7 +327,7 @@ var SrvDataContainer = (function() {
         var deferred = self.$q.defer();
 
         if (!self.userA || !self.userB) {
-          deferred.reject('not initialized');
+          deferred.reject('data not initialized...');
           return deferred.promise;
         }
 
@@ -375,46 +399,45 @@ var SrvDataContainer = (function() {
 
     var bindData = function(self) {
 
+        self.$log.log('srvDataContainer.bindData');
         var deferred = self.$q.defer();
         var userMain = self.srvConfig.getUserLoggedIn();
         if (!userMain || !userMain.email)
             deferred.reject("Need one logged in user");
-        else
-            self.srvData.User.findOneByEmail(userMain.email)
-            .then(function (user) {
+        else {
 
-                // initialise données depuis bdd
-                bindCouple(self).then(function(couple) {
-                    bindCategories(self).then(function(categories) {
-                      bindChores(self).then(function(chores) {
-                        bindHistoricsDone(self).then(function(historics){
-                          deferred.resolve(); //OK
-                        }).catch(function(err){
-                          var errMessage = err ? err : 'pb with getting historics';
-                          deferred.reject(errMessage);
-                        });
-                      }).catch(function(err){
-                        var errMessage = err ? err : 'pb with getting chores';
-                        deferred.reject(errMessage);
-                      });
-                    }).catch(function(err){
-                      var errMessage = err ? err : 'pb with getting categories';
-                      deferred.reject(errMessage);
-                    });
-                }).catch(function(err){
-                var errMessage = err ? err : 'pb with getting couple';
-                deferred.reject(errMessage);
+            self.$log.log('srvDataContainer.bindData findOneByEmail: ' + userMain.email);
+            self.srvData.User.findOneByEmail(userMain.email)
+                .then(function (user) {
+                    self.$log.log('srvDataContainer.bindData user:'+user.email);
+                    return bindCouple(self);
+                })
+                .then(function (couple) {
+                    self.$log.log('srvDataContainer.bindData couple:'+couple);
+                    return bindCategories(self);
+                })
+                .then(function (categories) {
+                    self.$log.log('srvDataContainer.bindData categories:'+categories.length);
+                    return bindChores(self);
+                })
+                .then(function (chores) {
+                    self.$log.log('srvDataContainer.bindData chores:'+chores.length);
+                    return bindHistoricsDone(self);
+                })
+                .then(function (historics) {
+                    self.$log.log('srvDataContainer.bindData historics:'+historics.length);
+                    return deferred.resolve(); //OK
+                }).catch(function (err) {
+                    var errMessage = err ? err : 'pb with getting data';
+                    return deferred.reject(errMessage);
                 });
-            })
-            .catch(function (err) {
-            var errMessage = err ? err : 'pb with getting main user';
-            deferred.reject(errMessage);
-            });
+        }
 
         return deferred.promise;
     };
 
 
+    /*
     var bindUserLoggedIn = function(self) {
         //var self = this;
         var deferred = self.$q.defer();
@@ -434,7 +457,7 @@ var SrvDataContainer = (function() {
 
         return deferred.promise;
       };
-
+*/
 
     var bindCouple = function(self) {
         //var self = this;

@@ -2,3 +2,5 @@
 .configjs
 config.js
 .config.js
+config.test.js
+.config.test.js

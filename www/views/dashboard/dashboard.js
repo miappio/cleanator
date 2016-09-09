@@ -87,16 +87,23 @@ angular.module('myAngularApp.views.dashboard', [])
 	// Spinner
 	$scope.dashboardInitSpinnerStopped = false;
 	$scope.afterNavigationInitSpinnerShow = function() {
-		$timeout(function() {
-			if (!srvDataContainer.isLoggedIn())
-        $scope.dashboardStopSpinnerWithMessage();
-      else
-        $scope.navDataSync().then(function(msg){
-          $scope.dashboardDataBind().then(function(){
-            $scope.dashboardStopSpinnerWithMessage(msg);
-          });
-        });
-  },2000);
+        $timeout(function() {
+            if (!srvConfig.isLoggedIn())
+                $scope.dashboardStopSpinnerWithMessage();
+            else {
+                $scope.navDataSync()
+                    .then(function(err) {
+                        if (err) return $scope.dashboardStopSpinnerWithMessage(err);
+                        return $scope.dashboardDataBind();
+                    })
+                    .then(function(err){
+                        return $scope.dashboardStopSpinnerWithMessage(err);
+                    })
+                    .catch(function(err){
+                        return $scope.dashboardStopSpinnerWithMessage(err);
+                    });
+            }
+        },2000);
 	};
 
   $scope.dashboardStopSpinnerWithMessage = function(msg) {
@@ -116,49 +123,56 @@ angular.module('myAngularApp.views.dashboard', [])
 		$scope.dashboardShowMoreVar = !$scope.dashboardShowMoreVar;
 	};
 
-  // indicators
-  $scope.dashboardIndicators = {};
-  $scope.dashboardIndicatorsCompute = function() {
+    // indicators
+    $scope.dashboardIndicators = {};
+    $scope.dashboardIndicatorsCompute = function() {
     $scope.dashboardIndicators = srvDataContainer.computeIndicators();
-  };
+    };
 
 
 
 
-	// Synchronise DB
-	$scope.dashboardDataSync = function() {
+    // Synchronise DB
+    $scope.dashboardDataSync = function() {
 
-      $scope.navDataSync().then(function(msg){
-        $scope.dashboardDataBind().then(function(){
-          $scope.dashboardStopSpinnerWithMessage(msg);
-          // Stop the ion-refresher from spinning
-          $scope.$broadcast('scroll.refreshComplete');
+      $scope.navDataSync()
+          .then(function(msg) {
+              return $scope.dashboardDataBind();
+          })
+          .then(function(msg) {
+              return $scope.dashboardStopSpinnerWithMessage(msg);
+          })
+          .catch(function(err){
+                return $scope.dashboardStopSpinnerWithMessage(err);
+          })
+          .finally(function(msg){
+              // Stop the ion-refresher from spinning
+              $scope.$broadcast('scroll.refreshComplete');
+          });
+    };
+
+    // Recherche données en BdD :
+    $scope.dashboardDataBind = function() {
+        var deferred = $q.defer();
+        var self = this;
+
+        // Computes Chores
+        var promises = [];
+        $scope.dashboardComputeChoresToAdd();
+        promises.push($scope.dashboardComputeHistoricsByWeek());
+        //promises.push($scope.dashboardComputeHistoricsDone());
+        // execute as promises
+        $q.all(promises).then(function(result) {
+            //$scope.dashboardComputeIndicleanators();
+            $scope.dashboardIndicatorsCompute();
+            return deferred.resolve();
+        })
+        .catch(function (msg) {
+          return deferred.reject(msg);
         });
-      });
-	};
 
-  // Recherche données en BdD :
-  $scope.dashboardDataBind = function() {
-    var deferred = $q.defer();
-    var self = this;
-
-    // Computes Chores
-    var promises = [];
-    $scope.dashboardComputeChoresToAdd();
-    promises.push($scope.dashboardComputeHistoricsByWeek());
-    //promises.push($scope.dashboardComputeHistoricsDone());
-    // execute as promises
-    $q.all(promises).then(function(result) {
-        //$scope.dashboardComputeIndicleanators();
-        $scope.dashboardIndicatorsCompute();
-        return deferred.resolve();
-    })
-    .catch(function (msg) {
-      return deferred.reject(msg);
-		});
-
-    return deferred.promise;
-  };
+        return deferred.promise;
+    };
 
 
 
@@ -333,33 +347,37 @@ angular.module('myAngularApp.views.dashboard', [])
 	};
 
 	$scope.dashboardNotForUs = function(historic) {
-		if (!historic) return;
+        if (!historic) return;
 
-		var self = this;
-		var deferred = $q.defer();
-		var choreId = historic[$scope.historicCols.choreId];
-		var choreToChange = null;
-		// retrieve chore
-		for (var i = 0; (i <  $scope.chores.length) && !choreToChange; i++){
-			var c = $scope.chores[i];
-			if (c._id == choreId) choreToChange = c;
-		}
+        var self = this;
+        //var deferred = $q.defer();
+        var choreId = historic[$scope.historicCols.choreId];
+        var choreToChange = null;
+        // retrieve chore
+        for (var i = 0; (i < $scope.chores.length) && !choreToChange; i++) {
+            var c = $scope.chores[i];
+            if (c._id == choreId) choreToChange = c;
+        }
 
-		// retrieve Historic in List
-		var hi = $scope.dashboardHistorics.indexOf(historic);
-		if (hi >= 0) {
-			// remove from list
-			$scope.dashboardHistorics.splice(hi,1);
-		}
+        // retrieve Historic in List
+        var hi = $scope.dashboardHistorics.indexOf(historic);
+        if (hi >= 0) {
+            // remove from list
+            $scope.dashboardHistorics.splice(hi, 1);
+        }
 
-		// change chore timeInMn
-		if (choreToChange) choreToChange[$scope.choreCols.timeInMn] = 0;
+        // change chore timeInMn
+        if (choreToChange) choreToChange[$scope.choreCols.timeInMn] = 0;
 
-		// Save chore & Sync db
-		srvData.Chore.set(choreToChange).then(function(choreSaved){
-			srvData.sync().then(function(msg){console.log('pb sync : '+msg);})
+        // Save chore & Sync db
+        srvData.Chore.set(choreToChange)
+            .then(function (choreSaved) {
+                return srvData.sync();
+            })
+            .then(function (msg) {
+                console.log('pb sync : ' + msg);
+            })
 			.catch(function(msg){$scope.dashboardErrorMsg = msg;});
-		}).catch(function(msg){$scope.dashboardErrorMsg = msg;});
 	};
 
   //
@@ -519,7 +537,7 @@ angular.module('myAngularApp.views.dashboard', [])
 
 
     $scope.dashboardIndicatorsInit = function() {
-        if (!srvDataContainer.isLoggedIn() || !$scope.userA) return $scope.navRedirect('/dashboard/user/a');
+        if (!srvConfig.isLoggedIn() || !$scope.userA) return $scope.navRedirect('/dashboard/user/a');
 
         // Set the userId
         $scope.dashboardIndicatorsSearch.userId = $stateParams.userId;

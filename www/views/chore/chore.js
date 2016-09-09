@@ -506,7 +506,7 @@ function padInteger(num, size) {
 	$scope.afterNavigationInitSpinnerShow = function() {
 		$scope.navInit();
 		$timeout(function() {
-        if (srvDataContainer.isLoggedIn()){
+        if (srvConfig.isLoggedIn()){
           $scope.categoryDataSync();
         }
         else {

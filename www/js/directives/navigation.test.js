@@ -1,5 +1,5 @@
 // describe keyword is used to define a test suite (group of tests)
-describe('navigation directive', function() {
+describe('myAngularApp.directives.navigation', function() {
 
     // declare some global vars to be used in the tests
     var elm,        // our directive jqLite element
