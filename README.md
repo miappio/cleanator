@@ -1,7 +1,7 @@
 # [![Cleanator](https://miappio.github.io/cleanator/img/background/screen02.jpg)](https://miapp.io/app/cleanator/download)
 [![Build Status](https://travis-ci.org/miappio/cleanator.svg?branch=master)](https://travis-ci.org/miappio/cleanator)
-[![Issue Count](https://codeclimate.com/github/miappio/cleanator/badges/issue_count.svg)](https://codeclimate.com/github/miappio/cleanator/issues)
-[![Test Coverage](https://codeclimate.com/github/mlefree/c9_wsk/badges/coverage.svg)](https://codeclimate.com/github/mlefree/c9_wsk/coverage)
+[![codecov](https://codecov.io/gh/miappio/cleanator/branch/master/graph/badge.svg)](https://codecov.io/gh/miappio/cleanator)
+
 
                                               proudly supported by miapp.io
                      _|                                    _|            
