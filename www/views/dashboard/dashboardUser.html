@@ -85,6 +85,7 @@
       <ion-list>
         <div class="item item-divider">
           <span ng-bind-html="dashboardDisplayHistoricCalendar()"></span>
+          testtt<span class="badge badge-balanced">{{dashboardAvailability(historicGroup, dashboardSearch.userId)}}<span translate>mn</span></span>
         </div>
         <label class="item item-input item-select" style="border:0">
           <div class="input-label" translate>Unforeseen item :</div>
@@ -118,6 +119,7 @@
         <ion-list>
           <ion-item class="item item-divider" ng-hide="isTodayGroup">
             <span ng-bind-html="dashboardDisplayHistoricCalendar(historicGroup)"></span>
+            testtt<span class="badge badge-balanced">{{dashboardAvailability(historicGroup, dashboardSearch.userId)}}<span translate>mn</span></span>
           </ion-item>
           <div class="item item-avatar item-button-right" ng-repeat="historic in historicList" ng-hide="historic.tmpBeforeTerminate">
 

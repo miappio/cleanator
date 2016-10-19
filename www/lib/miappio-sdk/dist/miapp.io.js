@@ -4174,13 +4174,13 @@ var SrvMiapp = (function() {
         var self = this;
         var defer = self.$q.defer();
 
-        if ((!self.miappClient || !CryptoJS) && !self.miappIsTest) {
+        if ((!self.miappClient ) && !self.miappIsTest) {
             return self.$q.reject('miappnot initialized');
         }
 
         // TODO encrypting and salt stuff
-        var encrypted = CryptoJS.AES.encrypt(password, 'SALT_TOKEN');
-        var encrypted_json_str = encrypted.toString();
+        var encrypted = password; //CryptoJS.AES.encrypt(password, 'SALT_TOKEN');
+        var encrypted_json_str = password;
         self.$log.log('miappClient.loginMLE : '+ login+ ' / '+ encrypted_json_str);
         
         if (self.miappIsTest) {

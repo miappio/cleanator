@@ -4,7 +4,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: \n"
 
-#: login/loginIn.html:57
+#: login/loginIn.html:62
 msgid "01valid.email@required.com"
 msgstr ""
 
@@ -104,7 +104,7 @@ msgstr ""
 msgid "Feasibility"
 msgstr ""
 
-#: user/userAll.html:57
+#: user/userAll.html:70
 msgid "Footer_ButtonWhen"
 msgstr ""
 
@@ -162,24 +162,24 @@ msgstr ""
 msgid "It's time to carry on"
 msgstr ""
 
-#: user/userAll.html:56
-msgid "Level0_You have defined who you are ?d sdsqdqsd sdq sdqsd sds sdsd qsdsdsd qsds dqsdq sdqsdsd azertyuiop qsqsdfghjklm"
+#: user/userAll.html:69
+msgid "Level0_You’ve set your profiles ? Ready for the next part : setting all the chores you have to deal with."
 msgstr ""
 
-#: login/loginIn.html:71
-#: user/userAll.html:66
+#: login/loginIn.html:78
+#: user/userAll.html:80
 msgid "LoginLanguage"
 msgstr ""
 
-#: login/loginIn.html:64
+#: login/loginIn.html:71
 msgid "LoginNewPassword"
 msgstr ""
 
-#: login/loginIn.html:85
+#: login/loginIn.html:93
 msgid "LoginSignin"
 msgstr ""
 
-#: login/loginIn.html:50
+#: login/loginIn.html:52
 msgid "LoginWelcome"
 msgstr ""
 
@@ -302,11 +302,11 @@ msgstr ""
 msgid "UserBackToSession"
 msgstr ""
 
-#: user/userAll.html:80
+#: user/userAll.html:95
 msgid "UserEmail"
 msgstr ""
 
-#: user/userAll.html:79
+#: user/userAll.html:93
 msgid "UserEmailCouple"
 msgstr ""
 
@@ -314,11 +314,11 @@ msgstr ""
 msgid "UserLogout"
 msgstr ""
 
-#: user/userAll.html:31
+#: user/userAll.html:41
 msgid "UserPseudoA"
 msgstr ""
 
-#: user/userAll.html:43
+#: user/userAll.html:55
 msgid "UserPseudoB"
 msgstr ""
 
@@ -326,7 +326,7 @@ msgstr ""
 #: chore/categoryChores.html:13
 #: dashboard/-dashboardAll.html:43
 #: dashboard/dashboardUser.html:58
-#: user/userAll.html:18
+#: user/userAll.html:19
 #: user/userCalendar.html:18
 msgid "Warning!"
 msgstr ""
@@ -334,6 +334,10 @@ msgstr ""
 #: user/userCalendar.html:114
 #: user/userCalendar.html:64
 msgid "Wednesday"
+msgstr ""
+
+#: user/userAll.html:28
+msgid "Who are you ?"
 msgstr ""
 
 #: chore/choreDetail.html:100
@@ -349,7 +353,7 @@ msgstr ""
 msgid "each"
 msgstr ""
 
-#: login/loginIn.html:34
+#: login/loginIn.html:36
 msgid "for Better for Dust"
 msgstr ""
 

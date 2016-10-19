@@ -437,14 +437,15 @@ function padInteger(num, size) {
 
 })
 
-.controller('CategoryListCtrl', function ($scope, $ionicListDelegate,$ionicHistory,srvData, srvConfig) {
+.controller('CategoryListCtrl', function ($scope, $log,$window,$ionicListDelegate,$ionicHistory,srvData, srvConfig) {
 
     $scope.showDelete = false;
     $scope.showReorder = false;
     $scope.canSwipe = true;
     $scope.categoryFilter = {group : "choreCategory"};
-    $scope.catFirstSwipeNotDone = $scope.navAppInitLevel() <= 2 ? true : false;
 
+    var done = $window.localStorage.getItem('catFirstSwipeNotDone');
+    $scope.catFirstSwipeNotDone = (!done && $scope.navAppInitLevel() <= 2) ? true : false;
 
     $scope.catDeactivate = function(category) {
         $ionicHistory.clearCache();
@@ -457,11 +458,15 @@ function padInteger(num, size) {
         });
 
         // Save category
-        srvData.Category.set(category).finally(function(){
-            // close buttons
-            $ionicListDelegate.closeOptionButtons();
-            $scope.$emit("category.changed");
-        });
+        srvData.Category.set(category)
+            .then(function(){
+                // close buttons
+                $ionicListDelegate.closeOptionButtons();
+                $scope.$emit("category.changed");
+            })
+            .catch(function(err){
+                $log.error(err);
+            });
     };
     $scope.catActivate = function(category) {
       $ionicHistory.clearCache();
@@ -471,15 +476,20 @@ function padInteger(num, size) {
             eachChore.desactivate = false;
             srvData.Chore.set(eachChore);
         });
-      srvData.Category.set(category).finally(function(){
-          // close buttons
-          $ionicListDelegate.closeOptionButtons();
-          $scope.$emit("category.changed");
-      });
+      srvData.Category.set(category)
+          .then(function(){
+              // close buttons
+              $ionicListDelegate.closeOptionButtons();
+              $scope.$emit("category.changed");
+          })
+          .catch(function(err){
+              $log.error(err);
+          });
     };
 
     $scope.catFirstSwipeDone = function(){
-      $scope.catFirstSwipeNotDone = false;
+        $scope.catFirstSwipeNotDone = false;
+        $window.localStorage.setItem('catFirstSwipeNotDone',$scope.catFirstSwipeNotDone);
     };
 
 

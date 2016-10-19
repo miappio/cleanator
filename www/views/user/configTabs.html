@@ -3,23 +3,31 @@ Create tabs with an icon and label, using the tabs-positive style.
 Each tab's child <ion-nav-view> directive will have its own
 navigation history that also transitions its views in and out.
 -->
-<ion-tabs class="tabs-dark">
-
+<ion-tabs class="tabs-dark" ng-if="navAppInitLevel() == 0">
+  <!-- disabled="navHiddenWho" -->
+  <ion-tab title="{{'TabWhoDetailled'|translate}}" href="#/config/couple" >
+    <ion-nav-view name="config-couple"></ion-nav-view>
+  </ion-tab>
+</ion-tabs>
+<ion-tabs class="tabs-dark" ng-if="navAppInitLevel() == 1">
+  <ion-tab title="{{'TabWhenDetailled'|translate}}" href="#/config/cal" >
+    <ion-nav-view name="config-cal"></ion-nav-view>
+  </ion-tab>
+</ion-tabs>
+<ion-tabs class="tabs-dark" ng-if="navAppInitLevel() == 2">
+  <ion-tab title="{{'TabWhatDetailled'|translate}}" href="#/config/category" >
+    <ion-nav-view name="config-category"></ion-nav-view>
+  </ion-tab>
+</ion-tabs>
+<ion-tabs class="tabs-dark" ng-if="navAppInitLevel() > 2">
   <!-- disabled="navHiddenWho" -->
   <ion-tab title="{{'TabWho'|translate}}" href="#/config/couple" >
     <ion-nav-view name="config-couple"></ion-nav-view>
   </ion-tab>
-
-  <!--  disabled="navHiddenWhen"-->
   <ion-tab title="{{'TabWhen'|translate}}" href="#/config/cal" >
     <ion-nav-view name="config-cal"></ion-nav-view>
   </ion-tab>
-
-  <!-- disabled="navHiddenWhat" -->
   <ion-tab title="{{'TabWhat'|translate}}" href="#/config/category" >
     <ion-nav-view name="config-category"></ion-nav-view>
   </ion-tab>
-
-
-
 </ion-tabs>

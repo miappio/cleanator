@@ -9,7 +9,7 @@ var sh = require('shelljs');
 var cheerio = require('gulp-cheerio');
 var preprocess = require('gulp-preprocess');
 var gettext = require('gulp-angular-gettext');
-var bump = require('gulp-bump');
+//var bump = require('gulp-bump');
 
 
 

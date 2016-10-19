@@ -7,7 +7,8 @@
   "main": "www/index.html",
   "dependencies": {
     "gulp-bump": "^2.4.0",
-    "http-server": "^0.9.0"
+    "http-server": "^0.9.0",
+    "webcrypto-jwt": "^0.2.1"
   },
   "devDependencies": {
     "bower": "*",

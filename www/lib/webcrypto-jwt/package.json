@@ -1,0 +1,87 @@
+{
+  "_args": [
+    [
+      {
+        "name": "webcrypto-jwt",
+        "raw": "webcrypto-jwt",
+        "rawSpec": "",
+        "scope": null,
+        "spec": "latest",
+        "type": "tag"
+      },
+      "/Users/mat/Documents/workspace/labs/cleanator_master"
+    ]
+  ],
+  "_from": "webcrypto-jwt@latest",
+  "_id": "webcrypto-jwt@0.2.1",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/webcrypto-jwt",
+  "_nodeVersion": "0.10.26",
+  "_npmUser": {
+    "email": "albertopose@gmail.com",
+    "name": "pose"
+  },
+  "_npmVersion": "2.4.1",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "webcrypto-jwt",
+    "raw": "webcrypto-jwt",
+    "rawSpec": "",
+    "scope": null,
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/webcrypto-jwt/-/webcrypto-jwt-0.2.1.tgz",
+  "_shasum": "2a030f4bb62cdab9381c549f60e6180f236d0d9b",
+  "_shrinkwrap": null,
+  "_spec": "webcrypto-jwt",
+  "_where": "/Users/mat/Documents/workspace/labs/cleanator_master",
+  "author": {
+    "email": "albertopose@gmail.com",
+    "name": "Alberto Pose"
+  },
+  "bugs": {
+    "url": "https://github.com/pose/webcrypto-jwt/issues"
+  },
+  "dependencies": {},
+  "description": "JSON Web Tokens (JWT) verify/sign implementation using W3C Web Cryptography (crypto.subtle).",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "2a030f4bb62cdab9381c549f60e6180f236d0d9b",
+    "tarball": "https://registry.npmjs.org/webcrypto-jwt/-/webcrypto-jwt-0.2.1.tgz"
+  },
+  "gitHead": "993b17d4b9046b4c4b6ce0fe0f6349696d76b904",
+  "homepage": "https://github.com/pose/webcrypto-jwt",
+  "keywords": [
+    "jwt",
+    "jsonwebtoken",
+    "w3c",
+    "webcrypto",
+    "crypto",
+    "crypto.subtle"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "maintainers": [
+    {
+      "email": "albertopose@gmail.com",
+      "name": "pose"
+    }
+  ],
+  "name": "webcrypto-jwt",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/pose/webcrypto-jwt.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.2.1"
+}

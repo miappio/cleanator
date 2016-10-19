@@ -45,6 +45,7 @@ angular.module('myAngularApp.views.user', [])
   //$scope.userAllTasksNb = 0;
   //$scope.userAllTasksTime = 0;
   $scope.userIndicators = {};
+  $scope.userSaved = false;
 
   $scope.userInitSpinnerStopped = false;
   $scope.afterNavigationInitSpinnerShow = function() {
@@ -60,6 +61,7 @@ angular.module('myAngularApp.views.user', [])
                     // save all userS
                     if ($scope.userA) $scope.userSave($scope.userA);
                     if ($scope.userB) $scope.userSave($scope.userB);
+                    $scope.userSaved = false;
                 });
             });
         }
@@ -119,10 +121,11 @@ angular.module('myAngularApp.views.user', [])
     // store & save user data
     srvData.User.set(user)
     .then(function(userSaved){
-      console.log("user saved");
-      $scope.userSaveEnable[uid] = true;
-      //indicators
-      $scope.userIndicators = srvDataContainer.computeIndicators();
+        if (!$scope.userSaved) console.log("user saved");
+        $scope.userSaved = true;
+        $scope.userSaveEnable[uid] = true;
+        //indicators
+        $scope.userIndicators = srvDataContainer.computeIndicators();
     })
     .catch(function(err){$scope.userSaveEnable[uid] = true;});
   };

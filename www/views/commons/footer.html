@@ -5,17 +5,25 @@
     <!--  <div class="bar bar-footer">
         <button class="button button-clear pull-right">Right</button>
       </div> -->
-<footer class="bar bar-footer bar-dark bar-dark-light" ng-if="navAppInitLevel() > 1">
-      <div class="h1 title">
-        <!--<a class="button button-clear" ng-href="#/config/category" ng-if="navAppInitLevel() == 0" ng-click="navSetAppInitLevel(1);" translate>Footer_What</a>
-        <a class="button button-clear" ng-href="#/config/cal" ng-if="navAppInitLevel() == 1" ng-click="navSetAppInitLevel(2);" translate>Footer_When</a>
-
-        <a class="button button-clear" ng-href="#/dashboard/user/{{userA._id}}" ng-if="navAppInitLevel() == 2" ng-click="navSetAppInitLevel(3);" translate>Footer_BigJump</a>
-        -->
-        <a class="button button-clear" ng-href="#/dashboard/user/{{userA._id}}" ng-click="navSetAppInitLevel(3);" translate>Footer_Compute</a>
-      </div>
-      <span style="float:right;font-size:8px;opacity:0.2"><span app-version></span> - {{navAppInitLevel()}}</span>
+<footer class="bar bar-footer bar-assertive" ng-if="navAppInitLevel() == 1">
+    <div class="h1 title">
+        <a class="button button-clear" ng-href="#/dashboard/user/{{userA._id}}" ng-click="navSetAppInitLevel(3);" translate>Footer_ComputeDetailled</a>
+    </div>
+    <span style="float:right;font-size:8px;opacity:0.2"><span app-version></span> - {{navAppInitLevel()}}</span>
 </footer>
+<footer class="bar bar-footer bar-dark bar-dark-light" ng-if="navAppInitLevel() > 2">
+      <div class="h1 title">
+        <a class="button button-clear" ng-href="#/dashboard/user/{{userA._id}}" translate>Footer_Compute</a>
+      </div>
+      <span style="float:right;font-size:8px;opacity:0.2"><span app-version></span></span>
+</footer>
+
+
+<!--<a class="button button-clear" ng-href="#/config/category" ng-if="navAppInitLevel() == 0" ng-click="navSetAppInitLevel(1);" translate>Footer_What</a>
+<a class="button button-clear" ng-href="#/config/cal" ng-if="navAppInitLevel() == 1" ng-click="navSetAppInitLevel(2);" translate>Footer_When</a>
+
+<a class="button button-clear" ng-href="#/dashboard/user/{{userA._id}}" ng-if="navAppInitLevel() == 2" ng-click="navSetAppInitLevel(3);" translate>Footer_BigJump</a>
+-->
     <!--
 
     <a class="button button-clear" ng-href="#/config/chore">Left</a>
