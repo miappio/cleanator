@@ -569,7 +569,7 @@ var SrvDataPouchDB = (function() {
       this.dataUserLoggedIn = obj;
       return this.dataUserLoggedIn;
   };
-  */
+
   
   Service.prototype.putFirstUserInEmptyPouchDB = function (user) {
     if (!this.db) this.$q.reject('data need initialisation');
@@ -580,7 +580,7 @@ var SrvDataPouchDB = (function() {
   
   Service.prototype.setCoupleLoggedIn = function (couple) {
     this.dataCoupleLoggedIn = couple;
-  };
+  };*/
 
 
   Service.prototype.getUserAFromCouple = function (couple) {

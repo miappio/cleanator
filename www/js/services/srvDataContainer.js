@@ -227,13 +227,13 @@ var SrvDataContainer = (function() {
 
                     })
                     .error(function(data) {
-                        self.$log.log('srvDataContainer.initWithFirstData data/init reject: '+data);
+                        self.$log.error('srvDataContainer.initWithFirstData data/init reject: '+data);
                         return deferred.reject(data);
                     });
 
             })
             .catch(function(err){
-                self.$log.log('srvDataContainer.initWithFirstData login reject: '+err);
+                self.$log.error('srvDataContainer.initWithFirstData login reject: '+err);
                 return deferred.reject(err);
             });
         return deferred.promise;

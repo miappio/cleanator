@@ -4133,28 +4133,31 @@ var SrvMiapp = (function() {
         this.$log.log('SrvMiapp - init');
 
         this.miappClient = null;
-        this.currentUser = null;
+        this.currentUser = getObjectFromLocalStorage('miappCurrentUser') || null;
 
         this.miappId = null;
         this.miappSalt = 'SALT_TOKEN';
         this.miappOrg = null;
         this.miappAppVersion = null;
-        this.miappURI = 'https://miapp.io/api';
-        this.miappTestURI = null;
+        //this.miappTestURI = null;
+
+        this.miappIsOffline = getObjectFromLocalStorage('miappIsOffline') || false;
+        this.miappURI = getObjectFromLocalStorage('miappURI') || 'https://miapp.io/api';
+        this.miappDBURI = getObjectFromLocalStorage('miappURI') || 'https://couchdb_notfound';
     }
 
 
 
-    Service.prototype.init = function (miappId, miappSalt, istest) {
+    Service.prototype.init = function (miappId, miappSalt, isOffline) {
 
-        this.miappIsTest = (istest == true) ? true : false;
-        if (!this.miappIsTest) {
+        this.miappIsOffline = (typeof isOffline === 'undefined') ? this.miappIsOffline : isOffline;
+        if (!this.miappIsOffline) {
             this.miappClient = new Miapp.Client({
                 orgName: 'miappio',
                 appName: miappId,
                 logging: true, // Optional - turn on logging, off by default
                 buildCurl: false, // Optional - turn on curl commands, off by default
-                URI : this.miappTestURI || this.miappURI
+                URI : this.miappURI
             });
         }
 
@@ -4164,9 +4167,24 @@ var SrvMiapp = (function() {
         this.miappAppVersion = null;
 
     };
-    
-    Service.prototype.setEndpoint = function (endpointURI) {
-        this.miappTestURI = endpointURI + '/api';
+
+    Service.prototype.setAuthEndpoint = function (endpointURI) {
+        this.miappURI = endpointURI;
+        setObjectFromLocalStorage('miappURI',this.miappURI);
+    };
+    Service.prototype.setDBEndpoint = function (endpointURI) {
+        this.miappDBURI = endpointURI;
+        setObjectFromLocalStorage('miappDBURI',this.miappDBURI);
+    };
+    Service.prototype.setOffline = function (b) {
+        this.miappIsOffline = (b == true) ? true : false;
+        setObjectFromLocalStorage('miappIsOffline',this.miappIsOffline);
+    };
+
+
+    Service.prototype.isLogin = function () {
+        if (self.currentUser) return false;
+        return true;
     };
 
 
@@ -4174,16 +4192,27 @@ var SrvMiapp = (function() {
         var self = this;
         var defer = self.$q.defer();
 
-        if ((!self.miappClient ) && !self.miappIsTest) {
-            return self.$q.reject('miappnot initialized');
+        if ((!self.miappClient ) && !self.miappIsOffline) { //|| !CryptoJS
+            return self.$q.reject('miappServ not initialized');
         }
 
         // TODO encrypting and salt stuff
-        var encrypted = password; //CryptoJS.AES.encrypt(password, 'SALT_TOKEN');
+        //var encrypted = CryptoJS.AES.encrypt(password, 'SALT_TOKEN');
+        //var encrypted_json_str = encrypted.toString();
         var encrypted_json_str = password;
         self.$log.log('miappClient.loginMLE : '+ login+ ' / '+ encrypted_json_str);
+
+
+
+        if (self.currentUser) {
+            // Not a pb recheck
+            if (self.currentUser.email === login && self.currentUser.password === encrypted_json_str)
+                return self.$q.resolve(self.currentUser);
+            //return self.$q.reject('miappServ already login');
+            self.currentUser = null;
+        }
         
-        if (self.miappIsTest) {
+        if (self.miappIsOffline) {
             var testUser = {};
             self.currentUser = testUser;
             self.currentUser.email = login;
@@ -4211,18 +4240,26 @@ var SrvMiapp = (function() {
     };
 
     
+    Service.prototype.logoff = function () {
+        var self = this;
+        
+        if (!self.currentUser) return self.$q.reject('miappServ not login');
+        
+        return self.deleteUser(self.currentUser._id);
+    };
+
     
 
     Service.prototype.deleteUser = function (userIDToDelete) {
         var self = this;
         var defer = self.$q.defer();
         
-        if (self.miappIsTest) {
+        if (self.miappIsOffline) {
             return self.$q.resolve(null);
         }
 
         if (!self.miappClient) {
-            return self.$q.reject('not initialized');
+            return self.$q.reject('miappServ not initialized');
         }
         
 
@@ -4248,11 +4285,13 @@ var SrvMiapp = (function() {
         var deferred = self.$q.defer();
         self.$log.log('syncPouchDb ..');
         
-        if (self.miappIsTest) {
+        if (self.miappIsOffline) {
             return self.$q.resolve();
         }
-        
-        var pouchdbEndpoint = self.miappClient ? self.miappClient.getEndpoint() : null;
+
+        var pouchdbEndpoint = self.miappDBURI;
+        var getendpoint = self.miappClient ? self.miappClient.getEndpoint() : null
+        if (!pouchdbEndpoint && getendpoint) pouchdbEndpoint = getendpoint;
         if (!self.currentUser || !self.currentUser.email || !pouchdbEndpoint || !pouchDB)
             return self.$q.reject('DB sync impossible. Need a user logged in. (' + pouchdbEndpoint + ' -' + self.currentUser+')');
 
@@ -4368,9 +4407,8 @@ var SrvMiapp = (function() {
         var self = this;
         var deferred = self.$q.defer();
         if (!firstUser || !self.currentUser || !self.currentUser.email || !pouchDB)
-            return self.$q.reject('DB put impossible. Need a user logged in. (' + self.currentUser+')');
+            return self.$q.reject('DB put impossible. Need a user logged in. (' + self.currentUser+')_');
 
-        var loggedUser = self.currentUser;
         var firstUserId = firstUser._id;
         if (!firstUserId) firstUserId = self.currentUser._id;
         if (!firstUserId) firstUserId = generateObjectUniqueId(self.appName,'user');
@@ -4379,11 +4417,17 @@ var SrvMiapp = (function() {
         firstUser.miappOrgId = self.appName;
         firstUser.miappAppVersion = self.appVersion;
         delete firstUser._id;
+
         pouchDB.put(firstUser, firstUserId, function(err, response) {
             if (response && response.ok && response.id && response.rev) {
                 firstUser._id = response.id;
                 firstUser._rev = response.rev;
                 self.$log.log("firstUser: "+firstUser._id+" - "+firstUser._rev);
+
+                // TODO simply login -> putFirstUserInEmptyPouchDB
+                self.currentUser = firstUser;
+                setObjectFromLocalStorage('miappCurrentUser',self.currentUser);
+
                 return deferred.resolve(firstUser);
             }
             return deferred.reject(err);
@@ -4743,7 +4787,7 @@ MiappEventable.mixin = function(destObject) {
                     xhr.setRequestHeader("Accept", "application/json");
 
                     //var token = token;//self.getToken();
-                    console.log('token : ' + token);
+                    console.log('TODO token : ' + token);
                     //MLE ? xhr.withCredentials = true;
                     //MLE ? if (token) xhr.setRequestHeader('Cookie', "miapptoken=" + token);
                     //if (token) xhr.setRequestHeader('X-CSRF-Token', token);

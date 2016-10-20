@@ -50,8 +50,9 @@
                     -->
                     <li class="item item-toggle">
                        {{'ChorePriority'|translate}}
-                       <span style="color:gray;font-style: italic;padding-left: 30px;" ng-hide="choreToEdit && (choreToEdit[choreCols.priority] == 1)" translate>NotRequired</span>
-                       <span style="color:red;font-style: italic;padding-left: 30px;" ng-show="choreToEdit && (choreToEdit[choreCols.priority] == 1)" translate>Required <i class="icon ion-star"></i></span>
+                        <!--
+                       <span style="color:red;font-style: italic;padding-left: 20px;" ng-show="choreToEdit && (choreToEdit[choreCols.priority] == 1)"><i class="icon ion-star"></i></span>
+                       -->
                        <label class="toggle toggle-assertive">
                          <input type="checkbox" ng-model="choreToEdit[choreCols.priority]">
                          <div class="track">
@@ -69,7 +70,7 @@
                         <span translate>ChoreEstimate</span><br>
                         <small>{{choreToEdit[choreCols.timeInMn]}} <span translate>mn</span></small>
                       </label>
-                      <input type="range" min="1" max="60" ng-model="choreToEdit[choreCols.timeInMn]">
+                      <input type="range" min="1" max="120" ng-model="choreToEdit[choreCols.timeInMn]">
                       <i class="icon ion-clock"></i>
                     </li>
                     <li class="item range range-assertive">

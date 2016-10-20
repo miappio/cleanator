@@ -38,7 +38,7 @@
 
               <div class="item item-body" ng-show="toggleStats">
                 <p ng-if="navAppInitLevel() <= 1" translate>GUIDER_WorldwideStats Do you that the average of time dedicated to home chore is 200 hours by week ?</p>
-                <p ng-if="navAppInitLevel() > 1">
+                <p>
                   <span translate>TimeAverageAvailable</span>
                   <span>{{userIndicators.indicUsersTimeAvailabity}}</span>
                   <span translate>min / day.</span>
@@ -55,7 +55,7 @@
               <li class="item item-avatar item-button-right" ng-click="toggleUserA = !toggleUserA">
                 <img ng-src="{{profil[userA[userCols.profilID]].img}}">
                 {{userA[userCols.firstName]}}
-                <p>{{Math.round(userA[userCols.timeInMnPerWeekTodo] / 7)}} <span translate>minutes in average dedicated per day</span></p>
+                <p>{{Math.round(userA[userCols.timeInMnPerWeekTodo] / 7)}} <span translate>minutes av./day</span></p>
                 <button class="button button-clear">
                   <i class="icon ion-ios-arrow-right" ng-hide="toggleUserA"></i>
                   <i class="icon ion-ios-arrow-down" ng-show="toggleUserA"></i>
@@ -105,7 +105,7 @@
               <li class="item item-avatar item-button-right" ng-click="toggleUserB = !toggleUserB">
                 <img ng-src="{{profil[userB[userCols.profilID]].img}}">
                 {{userB[userCols.firstName]}}
-                <p>{{Math.round(userB[userCols.timeInMnPerWeekTodo] / 7)}} <span translate>minutes in average dedicated per day</span></p>
+                <p>{{Math.round(userB[userCols.timeInMnPerWeekTodo] / 7)}} <span translate>minutes av./day</span></p>
                 <button class="button button-clear" >
                   <i class="icon ion-ios-arrow-right" ng-hide="toggleUserB"></i>
                   <i class="icon ion-ios-arrow-down" ng-show="toggleUserB"></i>

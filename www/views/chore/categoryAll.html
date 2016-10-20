@@ -37,13 +37,19 @@
                     <h2 ng-if="navAppInitLevel() <= 2" translate>All chores</h2>
                     <p ng-if="navAppInitLevel() <= 2" translate>WorldWideStats</p>
 
-                    <span class="badge badge-assertive" ng-show="categoryIndicators.indicChoresFeasibility < 0.4"
-                          translate>NotGood</span>
-                    <span class="badge badge-energized"
-                          ng-show="categoryIndicators.indicChoresFeasibility >= 0.4 && categoryIndicators.indicChoresFeasibility < 0.7"
-                          translate>NotBad</span>
-                    <span class="badge badge-balanced" ng-show="categoryIndicators.indicChoresFeasibility >= 0.7"
-                          translate>Good</span>
+                    <div ng-if="navAppInitLevel() <= 2">
+
+                        <span class="badge badge-balanced">{{categoryIndicators.indicChoresTimeRequired * 7}} <span translate>min / week ?</span></span>
+                    </div>
+                    <div ng-if="navAppInitLevel() > 2">
+                        <span class="badge badge-assertive" ng-show="categoryIndicators.indicChoresFeasibility < 0.4"
+                              translate>NotGood</span>
+                        <span class="badge badge-energized"
+                              ng-show="categoryIndicators.indicChoresFeasibility >= 0.4 && categoryIndicators.indicChoresFeasibility < 0.7"
+                              translate>NotBad</span>
+                        <span class="badge badge-balanced" ng-show="categoryIndicators.indicChoresFeasibility >= 0.7"
+                              translate>Good</span>
+                    </div>
 
                 </div>
 
@@ -68,7 +74,7 @@
                     <p translate>Guider_Discover and click on all chore categories</p>
                     <p translate>Guider_Swipe them to unactivate it</p>
                     <ion-option-button class="button-info" ng-click="catFirstSwipeDone()" translate>
-                        CatDeactivate
+                        CatIGotIt
                     </ion-option-button>
                 </ion-item>
 

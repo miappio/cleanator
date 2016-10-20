@@ -15,7 +15,7 @@ angular.module('myAngularApp.views.login', [])
 
     })
 
-    .controller('LoginCtrl', function ($scope, $log, $http, $q, $location, $ionicHistory, $ionicNavBarDelegate, srvConfig, srvData) {
+    .controller('LoginCtrl', function ($scope, $log, $http, $q, $location, $ionicHistory, $ionicNavBarDelegate, srvConfig, srvData, srvMiapp) {
         'use strict';
 
 
@@ -46,12 +46,6 @@ angular.module('myAngularApp.views.login', [])
         $scope.loginSignupANewUser = function (newUser) {
 
             srvConfig.setUserLoggedIn(newUser)
-                .then(function (userAuthorized) {
-                    return srvData.putFirstUserInEmptyPouchDB(userAuthorized);
-                })
-                .then(function (userUpdated) {
-                    return srvConfig.setUserLoggedIn(userUpdated);
-                })
                 .then(function (userStored) {
                     return $scope.navDataSync();
                 })
@@ -82,7 +76,7 @@ angular.module('myAngularApp.views.login', [])
                     return $scope.loginSetLogin(user);
                 })
                 .catch(function (err) {
-                    $log.log(err);
+                    $log.error(err);
                     var newUser = {};
                     newUser.email = email;
                     newUser.password = password; //encryptPass;

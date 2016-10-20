@@ -2,8 +2,8 @@
 
 angular.module('srvConfig', [])
 
-.factory('srvConfig', function ($log, $q, gettextCatalog, srvMiapp) {
-  return new SrvConfig($log,$q, gettextCatalog, srvMiapp);
+.factory('srvConfig', function ($log, $q, gettextCatalog, srvMiapp, srvData) {
+  return new SrvConfig($log,$q, gettextCatalog, srvMiapp, srvData);
 });
 
 
@@ -11,13 +11,14 @@ angular.module('srvConfig', [])
 var SrvConfig = (function (){
 //'use strict';
 
-    function service ($log, $q, gettextCatalog, srvMiapp) {
+    function service ($log, $q, gettextCatalog, srvMiapp, srvData) {
 
         this.$log = $log;
         this.$q = $q;
         this.$log.log('srvConfig - init');
         this.srvMiapp = srvMiapp;
         this.srvMiappInitDone = false;
+        this.srvData = srvData;
 
         this.gettextCatalog = gettextCatalog;
         this.configUserLoggedIn = null;
@@ -65,7 +66,14 @@ var SrvConfig = (function (){
                     for (var attrname in user) { miappUser[attrname] = user[attrname]; }
                     mergeAndStoreUser(user);
                     self.srvMiappInitDone = true;
+                    return self.srvMiapp.putFirstUserInEmptyPouchDB(self.srvData.db, self.configUserLoggedIn);
+                })
+                .then(function(miappUser){
+
+                    for (var attrname in user) { miappUser[attrname] = user[attrname]; }
+                    mergeAndStoreUser(miappUser);
                     defer.resolve(self.configUserLoggedIn);
+
                 })
                 .catch(function(err){
                     defer.reject(err);

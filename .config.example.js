@@ -13,7 +13,7 @@ var configModule = angular.module('myAngularApp.config', [])
     // for your test
     .constant("appIsTest", true)
     .constant("appForceOffline", true)
-    .constant("appEndpointTest", "https://xxxxx")
+    //.constant("appEndpointTest", "https://xxxxx")
 
     // from google analytics
     .constant("appGAID","UA-xxxxx");

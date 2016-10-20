@@ -8,6 +8,7 @@ function ctrlNavigation(  $scope,$log,$location,$state, $anchorScroll,$timeout,$
   //NO factory pattern:  $scope.srvDataContainer = srvDataContainer;
   //NO $scope.srvConfig = srvConfig;
   $scope.Math = window.Math;
+  //this.$log = $log;
 
   // apply utility
   $scope.safeApply = function(fn) {
@@ -141,18 +142,28 @@ function ctrlNavigation(  $scope,$log,$location,$state, $anchorScroll,$timeout,$
     var self = this;
     var deferred = $q.defer();
     var errMessage = null;
-    if (srvDataContainer)
+    if (srvDataContainer) {
       srvDataContainer.sync()
-      .catch(function(err){errMessage = err;})
-      .finally(function(){
-        $scope.userA = srvDataContainer.getUserA();
-        $scope.couple = srvDataContainer.getCouple();
-        $scope.userB = srvDataContainer.getUserB();
-        $scope.chores = srvDataContainer.getChores();
-        $scope.categories = srvDataContainer.getCategories();
-        //$scope.historics = srvDataContainer.getHistorics();
-        deferred.resolve(errMessage);
-      });
+          .catch(function(err){
+            $log.log('Maybe a first sync failed because we need to check remote before');
+            $log.error(err);
+            //errMessage = err;
+            return srvDataContainer.sync();
+          })
+          .catch(function(err){
+            errMessage = err;
+          })
+          .finally(function(){
+            $scope.userA = srvDataContainer.getUserA();
+            $scope.couple = srvDataContainer.getCouple();
+            $scope.userB = srvDataContainer.getUserB();
+            $scope.chores = srvDataContainer.getChores();
+            $scope.categories = srvDataContainer.getCategories();
+            //$scope.historics = srvDataContainer.getHistorics();
+            deferred.resolve(errMessage);
+          });
+    }
+
     return deferred.promise;
   };
 

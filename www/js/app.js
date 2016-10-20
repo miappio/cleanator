@@ -30,7 +30,8 @@ angular.module('myAngularApp', [
 
     })
 
-    .run(function($ionicPlatform, gettextCatalog, srvMiapp, miappId, miappSalt, appIsTest, appEndpointTest, appForceOffline) {
+    .run(function($ionicPlatform, gettextCatalog, srvMiapp, miappId, miappSalt, appForceOffline, appAuthEndpoint, appCouchDBEndpoint) {
+
 
         //console.log('myAngularApp run');
         $ionicPlatform.ready(function() {
@@ -49,7 +50,8 @@ angular.module('myAngularApp', [
             }
 
             //miapp.io
-            if (appIsTest && appEndpointTest) srvMiapp.setEndpoint(appEndpointTest);
+            if (appAuthEndpoint) srvMiapp.setAuthEndpoint(appAuthEndpoint);
+            if (appCouchDBEndpoint) srvMiapp.setDBEndpoint(appCouchDBEndpoint);
             srvMiapp.init(miappId, miappSalt, appForceOffline);
 
         });
