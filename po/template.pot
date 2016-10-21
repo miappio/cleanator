@@ -8,7 +8,7 @@ msgstr ""
 msgid "01valid.email@required.com"
 msgstr ""
 
-#: chore/categoryChores.html:51
+#: chore/categoryChores.html:55
 msgid "AddOneChore.."
 msgstr ""
 
@@ -36,7 +36,7 @@ msgstr ""
 msgid "Changing your email means logout and loosing this Cleanator session"
 msgstr ""
 
-#: chore/categoryChores.html:66
+#: chore/categoryChores.html:70
 msgid "ChoreActivate"
 msgstr ""
 
@@ -44,7 +44,7 @@ msgstr ""
 msgid "ChoreAffinity"
 msgstr ""
 
-#: chore/categoryChores.html:38
+#: chore/categoryChores.html:42
 msgid "ChoreDeactivate"
 msgstr ""
 
@@ -195,7 +195,7 @@ msgstr ""
 msgid "Monday"
 msgstr ""
 
-#: chore/categoryChores.html:51
+#: chore/categoryChores.html:55
 msgid "New Item"
 msgstr ""
 
@@ -290,11 +290,11 @@ msgid "Unforeseen item :"
 msgstr ""
 
 #: chore/categoryAll.html:110
-#: chore/categoryChores.html:56
+#: chore/categoryChores.html:60
 msgid "Unusefull list"
 msgstr ""
 
-#: chore/categoryChores.html:21
+#: chore/categoryChores.html:23
 msgid "UsefullChoreList"
 msgstr ""
 
@@ -322,12 +322,7 @@ msgstr ""
 msgid "UserPseudoB"
 msgstr ""
 
-#: chore/categoryAll.html:28
-#: chore/categoryChores.html:13
 #: dashboard/-dashboardAll.html:43
-#: dashboard/dashboardUser.html:58
-#: user/userAll.html:19
-#: user/userCalendar.html:18
 msgid "Warning!"
 msgstr ""
 

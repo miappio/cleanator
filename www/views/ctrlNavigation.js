@@ -151,7 +151,10 @@ function ctrlNavigation(  $scope,$log,$location,$state, $anchorScroll,$timeout,$
             return srvDataContainer.sync();
           })
           .catch(function(err){
+            // second & real error : need to be offline ?
             errMessage = err;
+
+
           })
           .finally(function(){
             $scope.userA = srvDataContainer.getUserA();

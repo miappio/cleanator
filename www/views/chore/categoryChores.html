@@ -1,49 +1,53 @@
 <!DOCTYPE html>
 
 <ion-view view-title="">
-  <ion-nav-buttons side="left">
+    <ion-nav-buttons side="left">
         <a class="button button-icon icon ion-arrow-left-b" ng-href="#/config/category"></a>
-  </ion-nav-buttons>
-  <ion-content class="has-footer">
-    <article>
+    </ion-nav-buttons>
+    <ion-content class="has-footer">
+        <article>
 
-           <ion-list show-delete="true">
-              <ion-item class="item item-icon-left item-dark" ng-repeat="msg in navErrMsgs">
-                <ion-delete-button class="ion-close-round" ng-click="navErrMsgs.splice($index,1)"></ion-delete-button>
-                <strong translate>Warning!</strong> {{msg}}
-              </ion-item>
-           </ion-list>
+            <ion-list show-delete="true">
+                <ion-item class="item item-icon-left item-dark"
+                          ng-repeat="msg in navErrMsgs">
+                    <ion-delete-button class="ion-close-round"
+                                       ng-click="navErrMsgs.splice($index,1)"></ion-delete-button>
+                    <span style="white-space: normal">{{msg}}</span>
+                </ion-item>
+            </ion-list>
 
-          <div class="list" >
-            <a class="item item-avatar" ng-href="#/config/category" style="border:0">
-              <img ng-src="{{categoryChoresCategoryThumb}}">
-              {{categoryChoresCategoryName}} ({{(categoryChores | filter:{desactivate: false}).length}})
-              <p translate>UsefullChoreList</p>
-            </a>
-          </div>
+            <div class="list">
+                <a class="item item-avatar" ng-href="#/config/category" style="border:0">
+                    <img ng-src="{{categoryChoresCategoryThumb}}">
+                    {{categoryChoresCategoryName}} ({{(categoryChores | filter:{desactivate: false}).length}})
+                    <p translate>UsefullChoreList</p>
+                </a>
+            </div>
 
-          <ion-list ng-controller="ChoresListCtrl"
-                        show-delete="showDelete"
-                        show-reorder="showReorder"
-                        can-swipe="canSwipe">
-                <ion-item ng-repeat="chore in categoryChores | orderBy  : ['priority'] : false  | filter:{desactivate: false}"
-                          class="item"
-                          ng-href="#/chore/{{chore._id}}" >
+            <ion-list ng-controller="ChoresListCtrl"
+                      show-delete="showDelete"
+                      show-reorder="showReorder"
+                      can-swipe="canSwipe">
+                <ion-item
+                        ng-repeat="chore in categoryChores | orderBy  : ['priority'] : false  | filter:{desactivate: false}"
+                        class="item"
+                        ng-href="#/chore/{{chore._id}}">
 
 
-                            <section id="{{chore._id}}"></section>
-                            {{chore[choreCols.name]}}
-                            <span class="badge" ng-show="{{chore[choreCols.priority] < 3}}"><i class="ion-icon ion-star"></i></span>
+                    <section id="{{chore._id}}"></section>
+                    {{chore[choreCols.name]}}
+                    <span class="badge" ng-show="{{chore[choreCols.priority] < 3}}"><i
+                            class="ion-icon ion-star"></i></span>
 
-                            <ion-option-button class="button-info" ng-click="choreDeactivate(chore)" translate>
-                              ChoreDeactivate
-                            </ion-option-button>
-                            <ion-delete-button class="ion-minus-circled"
-                                               ng-click="choreDelete(chore)">
-                            </ion-delete-button>
-                            <ion-reorder-button class="ion-navicon"
-                                                on-reorder="choreReorderItem(chore, $fromIndex, $toIndex)">
-                            </ion-reorder-button>
+                    <ion-option-button class="button-info" ng-click="choreDeactivate(chore)" translate>
+                        ChoreDeactivate
+                    </ion-option-button>
+                    <ion-delete-button class="ion-minus-circled"
+                                       ng-click="choreDelete(chore)">
+                    </ion-delete-button>
+                    <ion-reorder-button class="ion-navicon"
+                                        on-reorder="choreReorderItem(chore, $fromIndex, $toIndex)">
+                    </ion-reorder-button>
 
                 </ion-item>
                 <ion-item class="item item-icon-left" ng-click="categoryChoresChoreAdd(categoryChoresCategoryId)">
@@ -52,146 +56,146 @@
                 </ion-item>
             </ion-list>
 
-            <button class="button button-block button-dark button-clear"  style="margin-top: 40px;">
-              <span translate>Unusefull list</span>
+            <button class="button button-block button-dark button-clear" style="margin-top: 40px;">
+                <span translate>Unusefull list</span>
             </button>
             <ion-list ng-controller="ChoresListCtrl" can-swipe="canSwipe">
-               <ion-item ng-repeat="chore in categoryChores | filter:{desactivate: true}"
+                <ion-item ng-repeat="chore in categoryChores | filter:{desactivate: true}"
                           class="item item-stable"
-                          ng-href="#/chore/{{chore._id}}" >
+                          ng-href="#/chore/{{chore._id}}">
 
 
-                            <section id="{{chore._id}}"></section>
-                            {{chore[choreCols.name]}}
-                             <ion-option-button class="button-info" ng-click="choreActivate(chore)" translate>
-                              ChoreActivate
-                            </ion-option-button>
-                            <ion-delete-button class="ion-minus-circled"
-                                               ng-click="choreDelete(chore)">
-                            </ion-delete-button>
-                            <ion-reorder-button class="ion-navicon"
-                                                on-reorder="choreReorderItem(chore, $fromIndex, $toIndex)">
-                            </ion-reorder-button>
+                    <section id="{{chore._id}}"></section>
+                    {{chore[choreCols.name]}}
+                    <ion-option-button class="button-info" ng-click="choreActivate(chore)" translate>
+                        ChoreActivate
+                    </ion-option-button>
+                    <ion-delete-button class="ion-minus-circled"
+                                       ng-click="choreDelete(chore)">
+                    </ion-delete-button>
+                    <ion-reorder-button class="ion-navicon"
+                                        on-reorder="choreReorderItem(chore, $fromIndex, $toIndex)">
+                    </ion-reorder-button>
 
-              </ion-item>
-          </ion-list>
+                </ion-item>
+            </ion-list>
 
-          <!--
-          <div class="padding">
-            <button class="button button-block button-positive" ng-click="choreAdd(categoryChoresCategoryId)"><i class="ion-icon ion-plus"></i></button>
-          </div>
-
-
-
-              <div class="panel panel-default" ng-repeat="chore in choreList">
-                <div class="panel-heading btn"
-                  ng-class="{'panel-heading-off' : chore[choreCols.timeInMn] <= 0}"
-                  style="border: 0;width: 100%;text-align: left;"
-                  role="tab"
-                  id="heading{{choreGroup}}{{$index}}"
-                  data-toggle="collapse" data-parent="#accordion{{choreGroup}}" data-target="#{{choreGroup}}{{$index}}" aria-expanded="false">
-                  <h4 class="panel-title">
-                    <div style="position:relative">
-                      <img src="{{getChoreCategoryThumbPath(choreGroup)}}"class="img-circle" height="30px" style="position:absolute" />
-                    </div>
-                    <a class="collapsed" style="padding-left:40px">
-                      <small class="visible-xs-inline" style="color:wheat">{{chore[choreCols.name]}}</small>
-                      <span class="hidden-xs">{{chore[choreCols.name]}}</span>
-                    </a>
-                  </h4>
-                </div>
-                <div id="{{choreGroup}}{{$index}}" class="panel-collapse collapse">
-                  <div class="panel-body">
-
-                    <form class="form-horizontal">
-                          <div class="form-group">
-                            <div class="col-xs-8">
-                                <p class="lead">{{chore[choreCols.description]}}</p>
-                            </div>
-                            <div class="col-xs-4">
-                              <a class="btn btn-default col-xs-12"
-                                  data-toggle="modal" data-target="#choreModalChore"
-                                  ng-click="choreEdit(chore)">Edit</a>
-                            </div>
-                          </div>
-
-
-                          <div class="form-group">
-                            <label class="col-xs-4 control-label">Estimate (mn)</label>
-                            <div class="col-xs-4">
-                                <input class="form-control" type="number" pattern="\d*" min="0" max="1000" ng-model="chore[choreCols.timeInMn]" readonly/>
-                            </div>
-                            <div class="col-xs-4">
-                              <a  class="btn btn-link col-xs-12"
-                                  ng-click="chore[choreCols.timeInMn] = 0;saveChore(chore)"
-                                  data-toggle="collapse" data-parent="#accordion{{choreGroup}}" data-target="#{{choreGroup}}{{$index}}" aria-expanded="false">
-                                  Not for us
-                              </a>
-                            </div>
-                          </div>
-
-
-                          <div class="form-group">
-                            <label class="col-xs-4 control-label">Frequency (Days)</label>
-                            <div class="col-xs-4">
-                              <input class="form-control" type="number" pattern="\d*" min="0" ng-model="chore[choreCols.frequencyDays]" readonly/>
-                            </div>
-                            <div class="col-xs-4">
-                              <a class="btn btn-link col-xs-12" disabled>
-                                <i ng-show="chore[choreCols.priority] == 1" class="glyphicon glyphicon-star"></i>
-                                <i ng-hide="chore[choreCols.priority] == 1" class="glyphicon glyphicon-star-empty"></i>
-                              </a>
-                            </div>
-                          </div>
-
-                          <div class="form-group">
-                            <label class="col-xs-4 control-label">Affinity for this chore</label>
-                            <div class="col-xs-8">
-                              <div class="row">
-                                <small class="col-xs-6 text-left">
-                                  <small>{{userA[userCols.firstName]}} {{(100 - Math.round(chore[choreCols.percentAB]))}}%</small>
-                                </small>
-                                <small class="col-xs-6 text-right">
-                                  <small>{{(Math.round(chore[choreCols.percentAB]))}}% {{userB[userCols.firstName]}}</small>
-                                </small>
-                                <div class="col-xs-12">
-
-                                    <div class="item range range-positive">
-                                      <i class="icon ion-ios-sunny-outline"></i>
-                                      <input class="form-control" type="range" min="0" max="100"
-                                        ng-model="chore[choreCols.percentAB]" ng-change='saveChore(chore)'/>
-                                      <i class="icon ion-ios-sunny"></i>
-                                    </div>
-
-                                </div>
-
-
-
-                              </div>
-                            </div>
-                          </div>
-
-
-                          <div class="form-group">
-                            <label class="col-xs-4 control-label">Last time it was done</label>
-                            <div class="col-xs-8">{{getDateText(chore[choreCols.lastTimeDone])}}</div>
-                          </div>
-
-                    </form>
-
-                  </div>
-                </div>
-              </div>
+            <!--
+            <div class="padding">
+              <button class="button button-block button-positive" ng-click="choreAdd(categoryChoresCategoryId)"><i class="ion-icon ion-plus"></i></button>
             </div>
 
 
-          </div>
-          </div>
-        -->
 
-    </article>
+                <div class="panel panel-default" ng-repeat="chore in choreList">
+                  <div class="panel-heading btn"
+                    ng-class="{'panel-heading-off' : chore[choreCols.timeInMn] <= 0}"
+                    style="border: 0;width: 100%;text-align: left;"
+                    role="tab"
+                    id="heading{{choreGroup}}{{$index}}"
+                    data-toggle="collapse" data-parent="#accordion{{choreGroup}}" data-target="#{{choreGroup}}{{$index}}" aria-expanded="false">
+                    <h4 class="panel-title">
+                      <div style="position:relative">
+                        <img src="{{getChoreCategoryThumbPath(choreGroup)}}"class="img-circle" height="30px" style="position:absolute" />
+                      </div>
+                      <a class="collapsed" style="padding-left:40px">
+                        <small class="visible-xs-inline" style="color:wheat">{{chore[choreCols.name]}}</small>
+                        <span class="hidden-xs">{{chore[choreCols.name]}}</span>
+                      </a>
+                    </h4>
+                  </div>
+                  <div id="{{choreGroup}}{{$index}}" class="panel-collapse collapse">
+                    <div class="panel-body">
 
-  </ion-content>
+                      <form class="form-horizontal">
+                            <div class="form-group">
+                              <div class="col-xs-8">
+                                  <p class="lead">{{chore[choreCols.description]}}</p>
+                              </div>
+                              <div class="col-xs-4">
+                                <a class="btn btn-default col-xs-12"
+                                    data-toggle="modal" data-target="#choreModalChore"
+                                    ng-click="choreEdit(chore)">Edit</a>
+                              </div>
+                            </div>
+
+
+                            <div class="form-group">
+                              <label class="col-xs-4 control-label">Estimate (mn)</label>
+                              <div class="col-xs-4">
+                                  <input class="form-control" type="number" pattern="\d*" min="0" max="1000" ng-model="chore[choreCols.timeInMn]" readonly/>
+                              </div>
+                              <div class="col-xs-4">
+                                <a  class="btn btn-link col-xs-12"
+                                    ng-click="chore[choreCols.timeInMn] = 0;saveChore(chore)"
+                                    data-toggle="collapse" data-parent="#accordion{{choreGroup}}" data-target="#{{choreGroup}}{{$index}}" aria-expanded="false">
+                                    Not for us
+                                </a>
+                              </div>
+                            </div>
+
+
+                            <div class="form-group">
+                              <label class="col-xs-4 control-label">Frequency (Days)</label>
+                              <div class="col-xs-4">
+                                <input class="form-control" type="number" pattern="\d*" min="0" ng-model="chore[choreCols.frequencyDays]" readonly/>
+                              </div>
+                              <div class="col-xs-4">
+                                <a class="btn btn-link col-xs-12" disabled>
+                                  <i ng-show="chore[choreCols.priority] == 1" class="glyphicon glyphicon-star"></i>
+                                  <i ng-hide="chore[choreCols.priority] == 1" class="glyphicon glyphicon-star-empty"></i>
+                                </a>
+                              </div>
+                            </div>
+
+                            <div class="form-group">
+                              <label class="col-xs-4 control-label">Affinity for this chore</label>
+                              <div class="col-xs-8">
+                                <div class="row">
+                                  <small class="col-xs-6 text-left">
+                                    <small>{{userA[userCols.firstName]}} {{(100 - Math.round(chore[choreCols.percentAB]))}}%</small>
+                                  </small>
+                                  <small class="col-xs-6 text-right">
+                                    <small>{{(Math.round(chore[choreCols.percentAB]))}}% {{userB[userCols.firstName]}}</small>
+                                  </small>
+                                  <div class="col-xs-12">
+
+                                      <div class="item range range-positive">
+                                        <i class="icon ion-ios-sunny-outline"></i>
+                                        <input class="form-control" type="range" min="0" max="100"
+                                          ng-model="chore[choreCols.percentAB]" ng-change='saveChore(chore)'/>
+                                        <i class="icon ion-ios-sunny"></i>
+                                      </div>
+
+                                  </div>
+
+
+
+                                </div>
+                              </div>
+                            </div>
+
+
+                            <div class="form-group">
+                              <label class="col-xs-4 control-label">Last time it was done</label>
+                              <div class="col-xs-8">{{getDateText(chore[choreCols.lastTimeDone])}}</div>
+                            </div>
+
+                      </form>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+            </div>
+            </div>
+          -->
+
+        </article>
+
+    </ion-content>
 </ion-view>
 <div ng-include="'views/commons/footer.html'"></div>
 

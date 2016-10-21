@@ -4306,7 +4306,8 @@ var SrvMiapp = (function() {
                 deferred.resolve();
             })
             .on('error', function (err) {
-                self.$log.log("db error : "+err);
+                self.$log.error("db error, we set db temporary offline : "+err);
+                self.miappIsOffline =true;
                 deferred.reject(err);
             }).on('change', function (info) {
                 self.$log.log("db change : "+ info);
@@ -4315,7 +4316,8 @@ var SrvMiapp = (function() {
             }).on('active', function () {
                 self.$log.log("db activate");
             }).on('denied', function (info) {
-                self.$log.log("db denied : "+info);
+                self.$log.error("db denied, we set db temporary offline : "+info);
+                self.miappIsOffline =true;
                 deferred.reject("db denied : "+info);
             });
 

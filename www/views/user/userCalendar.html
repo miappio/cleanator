@@ -15,7 +15,7 @@
           <ion-list show-delete="true">
              <ion-item class="item item-icon-left item-dark" ng-repeat="msg in navErrMsgs track by $index">
                <ion-delete-button class="ion-close-round" ng-click="navErrMsgs.splice($index,1)"></ion-delete-button>
-               <strong translate>Warning!</strong> {{msg}}
+               <span style="white-space: normal">{{msg}}</span>
              </ion-item>
           </ion-list>
 
