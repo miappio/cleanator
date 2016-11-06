@@ -1,19 +1,18 @@
 {
   "name": "miappio-sdk",
-  "version": "1.0.11",
+  "version": "1.0.35",
   "description": "miapp.io client SDK",
-  "main": "dist/miapp.io.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "./node_modules/.bin/grunt default; npm run test-karma-dist",
+    "test": "./node_modules/.bin/grunt default; ./node_modules/.bin/karma start test/karma.dist-tests.conf.js",
     "bump": "./node_modules/.bin/grunt bump",
     "postpublish": "",
     "test-mocha": "./node_modules/.bin/mocha -R dot ./test/test-*.js",
     "test-karma": "./node_modules/.bin/karma start test/karma.unit-tests.conf.js",
     "test-karma-dist": "./node_modules/.bin/karma start test/karma.dist-tests.conf.js",
-    "test-karma-watch": "./node_modules/.bin/karma start test/karma.unit-tests.conf.js --no-single-run  --no-auto-watch --reporters progress --browsers PhantomJS"
+    "test-karma-watch": "./node_modules/.bin/karma start test/karma.unit-tests.conf.js --no-single-run  --auto-watch --reporters progress --browsers PhantomJS"
   },
   "repository": {
     "type": "git",
@@ -34,20 +33,23 @@
   "devDependencies": {
     "angular": "^1.5.8",
     "angular-mocks": "^1.5.8",
-    "grunt": "^1.0.1",
-    "grunt-bump": "^0.8.0",
-    "grunt-cli": "^1.2.0",
+    "grunt": "*",
+    "grunt-bump": "*",
+    "grunt-cli": "*",
     "grunt-contrib-concat": "*",
-    "grunt-contrib-uglify": "^2.0.0",
-    "jasmine-core": "^2.4.1",
-    "karma": "^1.1.1",
-    "karma-chrome-launcher": "^1.0.1",
-    "karma-coverage": "^1.1.0",
+    "grunt-contrib-uglify": "*",
+    "grunt-typescript-project": "*",
+    "jasmine-core": "*",
+    "karma": "*",
+    "karma-chrome-launcher": "*",
+    "karma-coverage": "*",
     "karma-html-reporter": "*",
-    "karma-jasmine": "^1.0.2",
+    "karma-jasmine": "*",
     "karma-jasmine-html-reporter-livereload": "*",
-    "karma-phantomjs-launcher": "^1.0.1"
+    "karma-phantomjs-launcher": "*",
+    "typescript": "^2.0.6"
   },
   "dependencies": {
+    "pouchdb": "^6.0.7"
   }
 }

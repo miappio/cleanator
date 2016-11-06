@@ -24,6 +24,24 @@ $ npm install
 
 ```
 
+init = function (miappId, miappSalt, isOffline) 
+
+setEndpoint = function (endpointURI) 
+setOffline = function (b) {
+
+login = function (login, password, updateProperties) {
+
+logoff = function () {
+
+syncPouchDb = function(pouchDB){
+
+putFirstUserInEmptyPouchDB = function (pouchDB, firstUser) {
+    
+isPouchDBEmpty = function (pouchDB) {
+
+.putInPouchDb = function(pouchDB, data){
+
+
 ### Testing
 
 
