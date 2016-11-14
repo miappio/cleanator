@@ -4,6 +4,7 @@
 .DS_Store
 .env
 .config.js
+.config.test.js
 .editorconfig
 .github-webhook
 *.log
@@ -21,4 +22,3 @@ plugins/
 
 www/lib/**/*.html
 www/lib/**/*.htm
-.config.test.js

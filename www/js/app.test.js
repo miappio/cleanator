@@ -8,17 +8,17 @@ describe('myAngularApp', function () {
     describe('fakeApp injection', function () {
 
         angular.module('myFakeApp', [
-            'srvMiapp',
+            'MiappService',
             'miapp.services'
         ])
             .value('version', 'v1.0.1')
             .config(function () {
                 //console.log('myAngularApp config');
             })
-            .run(function (srvMiapp) {
+            .run(function (MiappService) {
                 //console.log('myAngularApp run');
                 //if (appIsTest && appEndpointTest) srvMiapp.setEndpoint(appEndpointTest);
-                srvMiapp.init('miappId', 'miappSalt', true);
+                MiappService.init('miappId', 'miappSalt', true);
             });
 
         beforeEach(module('myFakeApp'));
@@ -63,7 +63,7 @@ describe('myAngularApp', function () {
         it('should a Miapp Service been injected', function () {
 
             inject(function ($injector) {
-                var srvInjected = $injector.get('srvMiapp');
+                var srvInjected = $injector.get('MiappService');
                 expect(srvInjected).toBeDefined();
 
             });
@@ -75,12 +75,12 @@ describe('myAngularApp', function () {
                 var miappId = $injector.get('miappId');
                 expect(miappId).toBe('xxxxxx');
 
-                var appIsTest = $injector.get('appIsTest');
-                expect(appIsTest).toBe(true);
+                //var appIsTest = $injector.get('appIsTest');
+                //expect(appIsTest).toBe(true);
                 var appForceOffline = $injector.get('appForceOffline');
                 expect(appForceOffline).toBe(true);
-                var appEndpointTest = $injector.get('appEndpointTest');
-                expect(appEndpointTest).toBe('https://xxxxx');
+                var appAuthEndpoint = $injector.get('appAuthEndpoint');
+                expect(appAuthEndpoint).toBe('https://xxxx');
 
 
 

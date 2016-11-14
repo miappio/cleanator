@@ -1,25 +1,17 @@
-
-
 describe('myAngularApp.services.srvConfig', function () {
-'use strict';
+    'use strict';
 
 
-    describe('basics', function () {
+    describe('basics - new srvConfig', function () {
 
 
-        var log, q, gettextCatalog,srvMiapp,rootScope,httpBackend,timeout;
-        //beforeEach(module('myAngularApp'));
+        var log, q, gettextCatalog, srvMiapp, rootScope, httpBackend, timeout;
         beforeEach(function () {
-            inject(function ($injector, _$log_, _$q_, _$rootScope_){//, _gettextCatalog_, _srvMiapp_) {
+            inject(function ($injector, _$log_, _$q_, _$rootScope_) {//, _gettextCatalog_, _srvMiapp_) {
                 log = _$log_;//$injector.get('$log');
                 q = _$q_;//$injector.get('$q');
-                rootScope = _$rootScope_; //$injector.get('$rootScope');
-
-                //gettextCatalog = _gettextCatalog_;
-                //srvMiapp = _srvMiapp_;
+                rootScope = _$rootScope_;
             });
-
-
             window.localStorage.removeItem('configUserLoggedIn');
 
         });
@@ -31,13 +23,13 @@ describe('myAngularApp.services.srvConfig', function () {
 
         it('should be correctly initialized', function () {
 
-            var srv = new SrvConfig(log,q,null,null);
+            var srv = new SrvConfig(log, q, null, null);
 
             // Login
-            expect(srv.configUserLoggedIn).toBe(null,'because of no login launched before.');
+            expect(srv.configUserLoggedIn).toBe(null, 'because of no login launched before.');
             var userStored = window.localStorage.getItem('configUserLoggedIn');
             expect(userStored).toBe(null, 'because of no login launched before.');
-            expect(srv.isLoggedIn()).toBe(false,'because of no login launched before.');
+            expect(srv.isLoggedIn()).toBe(false, 'because of no login launched before.');
 
             // Lang
 
@@ -45,7 +37,7 @@ describe('myAngularApp.services.srvConfig', function () {
 
         it('should return basic setters/getters', function () {
 
-            var srv = new SrvConfig(log,q,null,null);
+            var srv = new SrvConfig(log, q, null, null);
 
             // App Level
             srv.setAppFirstInitLevel(0);
@@ -67,85 +59,90 @@ describe('myAngularApp.services.srvConfig', function () {
     });
 
 
-    describe('login', function () {
+    describe('login - injected srvConfig', function () {
 
 
-        var log, q, rootScope, srvConfig, $httpBackend, $timeout;
+        var log, q, rootScope, srvConfig, srvDataContainer, miappService, $httpBackend, $timeout;
         var uriMiappLocal = "http://localhost:3000/api";
 
         beforeEach(module('myAngularApp'));
         beforeEach(function () {
 
             inject(function ($injector) {
-                log = $injector.get('$log');
+                log = console;//$injector.get('$log');
                 q = $injector.get('$q');
                 srvConfig = $injector.get('srvConfig');
+                miappService = $injector.get('MiappService');
+                srvDataContainer = $injector.get('srvDataContainer');
+                srvConfig.$log = log;
                 rootScope = $injector.get('$rootScope');
 
                 $httpBackend = $injector.get('$httpBackend');
                 $httpBackend.whenGET(/views\/*/).respond(200);
 
                 $timeout = $injector.get('$timeout');
-                //rootScope.$apply();
-                //httpBackend.flush();
-                //srvMiapp.miappURI = uriMiappLocal;
 
             });
 
         });
-        beforeEach(function(){
-            $httpBackend.flush();
-            srvConfig.logout();
-        })
+        beforeEach(function () {
+            return $httpBackend.flush();
+        });
 
         afterEach(function () {
-            //$httpBackend.verifyNoOutstandingExpectation();
-            //$httpBackend.verifyNoOutstandingRequest();
-            //$httpBackend.flush();
         });
 
 
         it('should be correctly injected', function () {
-            expect(srvConfig.isLoggedIn()).toBe(false,'cause app');
+            expect(srvConfig.isLoggedIn()).toBe(false, 'cause app');
         });
 
         it('should async log a new user', function (done) {
 
             //$httpBackend.flush();
-            var user = { _id : 'pouchdb_id', email: 'my@test.user', password: 'my.password'};
-            srvConfig.setUserLoggedIn(user)
-                .then(function (user) {
+            var user = {_id: 'pouchdb_id', email: 'my@test.user', password: 'my.password'};
 
-                    //console.log('recieved user: '+user.email);
-                    expect(srvConfig.isLoggedIn()).toBe(true);
-                    expect(srvConfig.getUserLoggedIn().email).toBe(user.email);
-                    expect(srvConfig.getUserLoggedIn().miappUserId).toBe(user._id);
-                    expect(srvConfig.getUserLoggedIn().miappUserId).toBe('pouchdb_id','mock user stored');
+            srvConfig.setUserLoggedIn(user);
+            expect(srvConfig.isLoggedIn()).toBe(true);
+            expect(srvConfig.getUserLoggedIn().email).toBe(user.email);
+            expect(srvConfig.getUserLoggedIn()._id).toBe(user._id);
+            done();
+        });
+
+
+        it('should remove all db', function (done) {
+
+            //$httpBackend.flush();
+            srvDataContainer.logout()
+                .then(function (err) {
+                    console.log('db destroy');
+                    expect(err).toBeUndefined(err);
                     done();
                 })
                 .catch(function (err) {
-                    if (err.errors) { // validation errors
-                        for (var field in err.errors) {
-                            console.log('field:' + field);
-                        }
-                    } else if (err.message) { // should be execution error without err.errors
-                        for (var field in err.message) {
-                            console.log('field:' + field);
-                        }
-                    }
-
-                    expect(err).toBe('no error ?', err);
+                    expect(err).toBe('no error supposed to be catched', err);
                     done();
                 });
 
-            //rootScope.$digest();
-            //$httpBackend.flush();
-            //setTimeout(function () {
-              //  rootScope.$apply();
-                $timeout.flush(500);
-
-            //}, 2000);
-
+            //$timeout.flush(200);
+            setTimeout(function () {
+                rootScope.$apply();
+                setTimeout(function () {
+                    rootScope.$apply();
+                    setTimeout(function () {
+                        rootScope.$apply();
+                        setTimeout(function () {
+                            rootScope.$apply();
+                            setTimeout(function () {
+                                rootScope.$apply();
+                                setTimeout(function () {
+                                    rootScope.$apply();
+                                }, 200);
+                            }, 200);
+                        }, 200);
+                    }, 200);
+                }, 200);
+            }, 200);
 
         });
     });

@@ -1,7 +1,5 @@
-
-
 // Usefull
-var miappBlockMove = function (evt,stopBubble) {
+var miappBlockMove = function (evt, stopBubble) {
     'use strict';
     //console.log('miappBlockMove');
     // All but scrollable element = .c4p-container-scroll-y
@@ -21,7 +19,7 @@ var miappBlockMove = function (evt,stopBubble) {
 
 var miappAllowMove = function (e) {
     //console.log('miappAllowMove');
-    return true ;
+    return true;
 };
 
 
@@ -54,21 +52,21 @@ var Camera;
  * @namespace
  */
 
- var miapp;
- if (!miapp) miapp = {};
+var miapp;
+if (!miapp) miapp = {};
 
 // A consistent way to create a unique ID which will never overflow.
 
-miapp.uid  = ['0', '0', '0'];
+miapp.uid = ['0', '0', '0'];
 miapp.idStr = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 miapp.idNext = {
-    '0':1, '1':2, '2':3, '3':4, '4':5, '5':6, '6':7, '7':8, '8':9, '9':10,
-    'A':11, 'B':12, 'C':13, 'D':14, 'E':15, 'F':16, 'G':17, 'H':18, 'I':19, 'J':20,
-    'K':21, 'L':22, 'M':23, 'N':24, 'O':25, 'P':26, 'Q':27, 'R':28, 'S':29, 'T':30,
-    'U':31, 'V':32, 'W':33, 'X':34, 'Y':35, 'Z':0
+    '0': 1, '1': 2, '2': 3, '3': 4, '4': 5, '5': 6, '6': 7, '7': 8, '8': 9, '9': 10,
+    'A': 11, 'B': 12, 'C': 13, 'D': 14, 'E': 15, 'F': 16, 'G': 17, 'H': 18, 'I': 19, 'J': 20,
+    'K': 21, 'L': 22, 'M': 23, 'N': 24, 'O': 25, 'P': 26, 'Q': 27, 'R': 28, 'S': 29, 'T': 30,
+    'U': 31, 'V': 32, 'W': 33, 'X': 34, 'Y': 35, 'Z': 0
 };
 
-miapp.nextUid = function() {
+miapp.nextUid = function () {
     var index = miapp.uid.length;
     while (index) {
         index--;
@@ -82,17 +80,17 @@ miapp.nextUid = function() {
     return miapp.uid.join('');
 };
 
-miapp.getUid = function() {
+miapp.getUid = function () {
     return miapp.uid.join('');
 };
 
-miapp.initUid = function(seed) {
+miapp.initUid = function (seed) {
     if (miapp.isUndefined(seed)) {
-        miapp.uid  = ['0', '0', '0'];
+        miapp.uid = ['0', '0', '0'];
         return;
     }
     seed = seed.toUpperCase();
-    miapp.uid  = [];
+    miapp.uid = [];
     for (var i = 0, n = seed.length; i < n; i++) {
         var c = seed.charAt(i);
         if (miapp.isDefined(miapp.idNext[c])) {
@@ -110,7 +108,7 @@ miapp.initUid = function(seed) {
  * @param obj
  * @returns {boolean}
  */
-miapp.isUndefined = function(obj) {
+miapp.isUndefined = function (obj) {
     return (typeof(obj) == 'undefined');
 };
 
@@ -120,7 +118,7 @@ miapp.isUndefined = function(obj) {
  * @param obj
  * @returns {boolean}
  */
-miapp.isDefined = function(obj) {
+miapp.isDefined = function (obj) {
     return (typeof(obj) != 'undefined');
 };
 
@@ -130,7 +128,7 @@ miapp.isDefined = function(obj) {
  * @param obj
  * @returns {boolean}
  */
-miapp.isUndefinedOrNull = function(obj) {
+miapp.isUndefinedOrNull = function (obj) {
     return (typeof(obj) == 'undefined') || (obj === null);
 };
 
@@ -140,7 +138,7 @@ miapp.isUndefinedOrNull = function(obj) {
  * @param obj
  * @returns {boolean}
  */
-miapp.isDefinedAndNotNull = function(obj) {
+miapp.isDefinedAndNotNull = function (obj) {
     return (typeof(obj) != 'undefined') && (obj !== null);
 };
 
@@ -154,13 +152,13 @@ miapp.isDefinedAndNotNull = function(obj) {
  * @param obj
  * @returns {boolean}
  */
-miapp.isEmptyOrFalse = function(obj) {
+miapp.isEmptyOrFalse = function (obj) {
     'use strict';
     switch (typeof(obj)) {
         case 'object' :
             /*for (var key in obj) {
-                if (hasOwnProperty.call(obj, key)) return false;
-            }*/
+             if (hasOwnProperty.call(obj, key)) return false;
+             }*/
             // Object.getOwnPropertyNames throw exception on null object
             if (obj === null) return true;
             if (Object.getOwnPropertyNames(obj).length === 0) return true;
@@ -192,12 +190,12 @@ miapp.isEmptyOrFalse = function(obj) {
  * @param obj
  * @returns {boolean}
  */
-miapp.isTrueOrNonEmpty = function(obj) {
+miapp.isTrueOrNonEmpty = function (obj) {
     switch (typeof(obj)) {
         case 'object' :
             /*for (var key in obj) {
-                if (hasOwnProperty.call(obj, key)) return false;
-            }*/
+             if (hasOwnProperty.call(obj, key)) return false;
+             }*/
             // Object.getOwnPropertyNames throw exception on null object
             if (obj === null) return false;
             if (Object.getOwnPropertyNames(obj).length === 0) return false;
@@ -232,18 +230,18 @@ miapp.isTrueOrNonEmpty = function(obj) {
  */
 miapp.safeApply = function (scope, expr, beforeFct, afterFct) {
 
-    if (beforeFct) miapp.safeApply(scope,beforeFct);
+    if (beforeFct) miapp.safeApply(scope, beforeFct);
 
     // Check scope.$root.$$phase because it is always true during any $apply(), while scope.$$phase is NOT always true
     if (scope.$root && scope.$root.$$phase) {
         // Queue in scope.$root, because in scope it will not be evaluated in $digest()
         // scope.$digest() is not executed, ONLY $rootScope.$digest() is executed.
         console.log('safeApply - scope.$root outside the $digest');
-        scope.$root.$evalAsync(function() {
+        scope.$root.$evalAsync(function () {
             scope.$eval(expr);
         });
     }
-    else if (scope.$treeScope && scope.$treeScope.$apply){
+    else if (scope.$treeScope && scope.$treeScope.$apply) {
         console.log('safeApply - scope.$treeScope for callback');
         scope.$treeScope.$apply(expr);
     }
@@ -256,7 +254,7 @@ miapp.safeApply = function (scope, expr, beforeFct, afterFct) {
         expr();
     }
 
-    if (afterFct) miapp.safeApply(scope,afterFct);
+    if (afterFct) miapp.safeApply(scope, afterFct);
 };
 
 /**
@@ -266,7 +264,7 @@ miapp.safeApply = function (scope, expr, beforeFct, afterFct) {
 miapp.promiseWakeupNb = 0; // number of simultaneous active httpPromise
 miapp.promiseWakeupTimeout = null;
 miapp.promiseWakeup = function (scope, httpPromise, fctOnHttpSuccess, fctOnHttpError) {
-    var promiseWakeupOnHttpSuccess = function(response) {
+    var promiseWakeupOnHttpSuccess = function (response) {
         //miapp.InternalLog.log("miapp.promiseWakeup.tick", "promiseWakeupOnHttpSuccess?");
         miapp.promiseWakeupNb--;
         // Keep tick function active until all httpPromise end
@@ -278,7 +276,7 @@ miapp.promiseWakeup = function (scope, httpPromise, fctOnHttpSuccess, fctOnHttpE
         }
         fctOnHttpSuccess(response);
     };
-    var promiseWakeupOnHttpError = function(response) {
+    var promiseWakeupOnHttpError = function (response) {
         //miapp.InternalLog.log("miapp.promiseWakeup.tick", "promiseWakeupOnHttpError?");
         miapp.promiseWakeupNb--;
         // Keep tick function active until all httpPromise end
@@ -290,6 +288,7 @@ miapp.promiseWakeup = function (scope, httpPromise, fctOnHttpSuccess, fctOnHttpE
         }
         fctOnHttpError(response);
     };
+
     function tick() {
         if (miapp.promiseWakeupNb > 0) {
             //miapp.InternalLog.log("miapp.promiseWakeup.tick", "scope.$apply");
@@ -301,6 +300,7 @@ miapp.promiseWakeup = function (scope, httpPromise, fctOnHttpSuccess, fctOnHttpE
             //miapp.InternalLog.log("miapp.promiseWakeup.tick", "ignored");
         }
     }
+
     // Launch only one tick function if many httpPromise occur
     if (miapp.promiseWakeupNb === 0) {
         //miapp.InternalLog.log("miapp.promiseWakeup.tick", "start");
@@ -316,7 +316,7 @@ function openChildBrowser(url, extension, onLocationChange, onClose) {
 
     //miapp.InternalLog.log('openChildBrowser', url+' extension:'+extension);
     var closeChildBrowserAfterLocationChange = false;// To NOT call onClose() if onLocationChange() has been called
-    if (!window.device){
+    if (!window.device) {
         // Chrome case
         // We can not bind on window events because Salesforce page modify/erase our event bindings.
         miapp.InternalLog.log('openChildBrowser', 'window.open');
@@ -385,38 +385,37 @@ function openChildBrowser(url, extension, onLocationChange, onClose) {
         };
         setTimeout(new_window_tracker, 100);
         return;
-  }
-  else {
+    }
+    else {
         miapp.InternalLog.log('openChildBrowser', 'cordova : window.open');
         var target = '_blank';
         if (extension != 'url' && window.device.platform === "Android") target = '_system';
-        var ref = window.open(url, target,'location=no' );//'_blank', 'location=yes');'_system','location=no'
-        ref.addEventListener('loadstart', function(e){
-          miapp.InternalLog.log('openChildBrowser', 'loadstart '+e.url);
+        var ref = window.open(url, target, 'location=no');//'_blank', 'location=yes');'_system','location=no'
+        ref.addEventListener('loadstart', function (e) {
+            miapp.InternalLog.log('openChildBrowser', 'loadstart ' + e.url);
         });
-        ref.addEventListener('loadstop', function(e){
-          miapp.InternalLog.log('openChildBrowser', 'loadstop '+e.url);
-          if (typeof e.url == "string" && e.url.indexOf("about:blank") >= 0) {
-              closeChildBrowserAfterLocationChange = true;
-              if (onLocationChange) onLocationChange();
-              ref.close();
-          }
+        ref.addEventListener('loadstop', function (e) {
+            miapp.InternalLog.log('openChildBrowser', 'loadstop ' + e.url);
+            if (typeof e.url == "string" && e.url.indexOf("about:blank") >= 0) {
+                closeChildBrowserAfterLocationChange = true;
+                if (onLocationChange) onLocationChange();
+                ref.close();
+            }
         });
-        ref.addEventListener('loaderror', function(e){
-          miapp.InternalLog.log('openChildBrowser', 'loaderror '+e.url);
+        ref.addEventListener('loaderror', function (e) {
+            miapp.InternalLog.log('openChildBrowser', 'loaderror ' + e.url);
         });
-        ref.addEventListener('exit', function(e){
-          miapp.InternalLog.log('openChildBrowser', 'exit '+e.url);
-          if(!closeChildBrowserAfterLocationChange){
-            if (onClose) onClose();
-          }
+        ref.addEventListener('exit', function (e) {
+            miapp.InternalLog.log('openChildBrowser', 'exit ' + e.url);
+            if (!closeChildBrowserAfterLocationChange) {
+                if (onClose) onClose();
+            }
         });
-  }
+    }
 }
 
-function closeWindow()
-{
-   window.close();
+function closeWindow() {
+    window.close();
 }
 
 function isArray(obj) {
@@ -437,24 +436,30 @@ function isArray(obj) {
     return false;
 }
 
-function updateImage(source,img) {
-  if (img && img != '/.')
-    source.src = img;
-  else
-    source.src = "./img/broken.png";
+function updateImage(source, img) {
+    if (img && img != '/.')
+        source.src = img;
+    else
+        source.src = "./img/broken.png";
 
-  source.onerror = "";
-  return true;
+    source.onerror = "";
+    return true;
 }
 
-function ImgError(source, img){
+function ImgError(source, img) {
 
-    setTimeout(function() {updateImage(source,img);}, 10000);
+    setTimeout(function () {
+        updateImage(source, img);
+    }, 10000);
     return false;
 }
 
-function getErrorObject(){
-    try { throw Error(''); } catch(err) { return err; }
+function getErrorObject() {
+    try {
+        throw Error('');
+    } catch (err) {
+        return err;
+    }
 }
 
 function miappExportJson(input, maxDepth) {
@@ -462,23 +467,23 @@ function miappExportJson(input, maxDepth) {
     for (key in input) {
         if (!input.hasOwnProperty(key)) continue;
         if (key != 'Contact' && key != 'Attendee' && key != 'Account' &&
-           key != 'Opportunity' && key != 'Event' && key != 'Document') continue;
+            key != 'Opportunity' && key != 'Event' && key != 'Document') continue;
         type = key;
         if (first) {
             first = false;
         } else {
             str += ',\n';
         }
-        str +='\t' + '\"' + key + '\":[\n';
+        str += '\t' + '\"' + key + '\":[\n';
 
         if (typeof input[key] === "object") {
             if (maxDepth > 0) {
-                str += miappExportJsonObject('\t\t', input[key], maxDepth-1, type);
+                str += miappExportJsonObject('\t\t', input[key], maxDepth - 1, type);
             }
         }
-        str +='\t' + ']';
+        str += '\t' + ']';
     }
-    str +='\n}\n';
+    str += '\n}\n';
 
     return str;
 }
@@ -497,9 +502,9 @@ function miappExportJsonObject(offset, input, maxDepth, type) {
                 if (maxDepth == 2) {
                     str += offset + '{\n';
                 } else {
-                    str += offset + '\"' +key+ '\":{';
+                    str += offset + '\"' + key + '\":{';
                 }
-                str += miappExportJsonObject(offset + '\t', input[key], maxDepth-1, type);
+                str += miappExportJsonObject(offset + '\t', input[key], maxDepth - 1, type);
 
                 if (maxDepth == 2) {
                     str += offset + '}';
@@ -512,18 +517,18 @@ function miappExportJsonObject(offset, input, maxDepth, type) {
                 input[key] = input[key].replace(/\r/ig, ' ').replace(/\n/ig, ' ');
             }
             if (maxDepth === 0) {
-                str += '\"' +key + '\":\"' + input[key] + '\"';
+                str += '\"' + key + '\":\"' + input[key] + '\"';
             } else {
-                str += offset + '\"' +key + '\":\"' + input[key] + '\"';
+                str += offset + '\"' + key + '\":\"' + input[key] + '\"';
             }
 
         }
     }
-    if(maxDepth == 1 && type == 'Document'){
-      str += ',\n' + offset +'\"url\":\"img/samples/docs/' + input.name + '\"';
+    if (maxDepth == 1 && type == 'Document') {
+        str += ',\n' + offset + '\"url\":\"img/samples/docs/' + input.name + '\"';
     }
-    if(maxDepth !== 0){
-      str +='\n';
+    if (maxDepth !== 0) {
+        str += '\n';
     }
 
     return str;
@@ -540,10 +545,10 @@ function logEvent(e) {
     status = cacheStatusValues[cache.status];
     type = e.type;
     message = 'CACHE online: ' + online;
-    message+= ', event: ' + type;
-    message+= ', status: ' + status;
+    message += ', event: ' + type;
+    message += ', status: ' + status;
     if (type == 'error' && bCon) {
-        message+= ' (prolly a syntax error in manifest)';
+        message += ' (prolly a syntax error in manifest)';
     }
     miapp.InternalLog.log(message);
 }
@@ -573,117 +578,114 @@ function checkCache() {
 //  }, false);
 //}
 
-	if(cache) {
+    if (cache) {
 
-		cacheStatusValues[0] = 'uncached';
-		cacheStatusValues[1] = 'idle';
-		cacheStatusValues[2] = 'checking';
-		cacheStatusValues[3] = 'downloading';
-		cacheStatusValues[4] = 'updateready';
-		cacheStatusValues[5] = 'obsolete';
+        cacheStatusValues[0] = 'uncached';
+        cacheStatusValues[1] = 'idle';
+        cacheStatusValues[2] = 'checking';
+        cacheStatusValues[3] = 'downloading';
+        cacheStatusValues[4] = 'updateready';
+        cacheStatusValues[5] = 'obsolete';
 
-		cache.addEventListener('cached', logEvent, false);
-		cache.addEventListener('checking', logEvent, false);
-		cache.addEventListener('downloading', logEvent, false);
-		cache.addEventListener('error', logEvent, false);
-		cache.addEventListener('noupdate', logEvent, false);
-		cache.addEventListener('obsolete', logEvent, false);
-		cache.addEventListener('progress', logEvent, false);
-		cache.addEventListener('updateready', logEvent, false);
-	}
+        cache.addEventListener('cached', logEvent, false);
+        cache.addEventListener('checking', logEvent, false);
+        cache.addEventListener('downloading', logEvent, false);
+        cache.addEventListener('error', logEvent, false);
+        cache.addEventListener('noupdate', logEvent, false);
+        cache.addEventListener('obsolete', logEvent, false);
+        cache.addEventListener('progress', logEvent, false);
+        cache.addEventListener('updateready', logEvent, false);
+    }
 
 }
 
 function checkConnection() {
 
     var bCon = false;
-    miapp.InternalLog.log('checkConnection','launched');
+    miapp.InternalLog.log('checkConnection', 'launched');
     /*
-        if (!navigator.onLine) used or not ?
-    var networkState = navigator.connection.type;
+     if (!navigator.onLine) used or not ?
+     var networkState = navigator.connection.type;
 
-    var states = {};
-    states[Connection.UNKNOWN]  = 'Unknown connection';
-    states[Connection.ETHERNET] = 'Ethernet connection';
-    states[Connection.WIFI]     = 'WiFi connection';
-    states[Connection.CELL_2G]  = 'Cell 2G connection';
-    states[Connection.CELL_3G]  = 'Cell 3G connection';
-    states[Connection.CELL_4G]  = 'Cell 4G connection';
-    states[Connection.CELL]     = 'Cell generic connection';
-    states[Connection.NONE]     = 'No network connection';
+     var states = {};
+     states[Connection.UNKNOWN]  = 'Unknown connection';
+     states[Connection.ETHERNET] = 'Ethernet connection';
+     states[Connection.WIFI]     = 'WiFi connection';
+     states[Connection.CELL_2G]  = 'Cell 2G connection';
+     states[Connection.CELL_3G]  = 'Cell 3G connection';
+     states[Connection.CELL_4G]  = 'Cell 4G connection';
+     states[Connection.CELL]     = 'Cell generic connection';
+     states[Connection.NONE]     = 'No network connection';
 
-    alert('Connection type: ' + states[networkState]);
+     alert('Connection type: ' + states[networkState]);
 
 
-	if (navigator.network && navigator.network.connection && !navigator.network.connection.type) return false;
+     if (navigator.network && navigator.network.connection && !navigator.network.connection.type) return false;
 
-	if (!navigator.network || !navigator.network.connection){
-		if (navigator.onLine) {
-            miapp.InternalLog.log('checkConnection','without cordova but online');
-			return true;
-		}
-        else {
-            miapp.InternalLog.log('checkConnection','without cordova but online');
-            return false;
-        }
-	}
+     if (!navigator.network || !navigator.network.connection){
+     if (navigator.onLine) {
+     miapp.InternalLog.log('checkConnection','without cordova but online');
+     return true;
+     }
+     else {
+     miapp.InternalLog.log('checkConnection','without cordova but online');
+     return false;
+     }
+     }
 
-    var networkState = navigator.network.connection.type;
+     var networkState = navigator.network.connection.type;
 
-    var states = {};
-    states[Connection.UNKNOWN]  = 'Unknown connection';
-    states[Connection.ETHERNET] = 'Ethernet connection';
-    states[Connection.WIFI]     = 'WiFi connection';
-    states[Connection.CELL_2G]  = 'Cell 2G connection';
-    states[Connection.CELL_3G]  = 'Cell 3G connection';
-    states[Connection.CELL_4G]  = 'Cell 4G connection';
-    states[Connection.NONE]     = 'No network connection';
+     var states = {};
+     states[Connection.UNKNOWN]  = 'Unknown connection';
+     states[Connection.ETHERNET] = 'Ethernet connection';
+     states[Connection.WIFI]     = 'WiFi connection';
+     states[Connection.CELL_2G]  = 'Cell 2G connection';
+     states[Connection.CELL_3G]  = 'Cell 3G connection';
+     states[Connection.CELL_4G]  = 'Cell 4G connection';
+     states[Connection.NONE]     = 'No network connection';
 
-    miapp.InternalLog.log('checkConnection','Connection type: ' + states[networkState]);
-    bCon = (networkState != Connection.NONE);
-    return bCon;
+     miapp.InternalLog.log('checkConnection','Connection type: ' + states[networkState]);
+     bCon = (networkState != Connection.NONE);
+     return bCon;
      */
 
-     if (!navigator.connection || !navigator.connection.type){
+    if (!navigator.connection || !navigator.connection.type) {
         if (miapp.BrowserCapabilities && miapp.BrowserCapabilities.online) {
             bCon = true;
         }
         else if (!miapp.BrowserCapabilities) {
             bCon = navigator.onLine;
         }
-        miapp.InternalLog.log('checkConnection','without Cordova but online ? '+bCon);
+        miapp.InternalLog.log('checkConnection', 'without Cordova but online ? ' + bCon);
     }
     else {
 
         var networkState = navigator.connection.type;
         var states = {};
-        states[Connection.UNKNOWN]  = 'Unknown connection';
+        states[Connection.UNKNOWN] = 'Unknown connection';
         states[Connection.ETHERNET] = 'Ethernet connection';
-        states[Connection.WIFI]     = 'WiFi connection';
-        states[Connection.CELL_2G]  = 'Cell 2G connection';
-        states[Connection.CELL_3G]  = 'Cell 3G connection';
-        states[Connection.CELL_4G]  = 'Cell 4G connection';
-        states[Connection.CELL]     = 'Cell generic connection';
-        states[Connection.NONE]     = 'No network connection';
-        miapp.InternalLog.log('checkConnection','Cordova Connection type: ' + states[networkState]);
+        states[Connection.WIFI] = 'WiFi connection';
+        states[Connection.CELL_2G] = 'Cell 2G connection';
+        states[Connection.CELL_3G] = 'Cell 3G connection';
+        states[Connection.CELL_4G] = 'Cell 4G connection';
+        states[Connection.CELL] = 'Cell generic connection';
+        states[Connection.NONE] = 'No network connection';
+        miapp.InternalLog.log('checkConnection', 'Cordova Connection type: ' + states[networkState]);
         bCon = (networkState != Connection.NONE);
     }
     return bCon;
 }
 
 
+function getUrlVars(ihref) {
+    var href = ihref;
+    if (miapp.isUndefined(href) || !href) href = window.location.href;
 
-function getUrlVars(ihref)
-{
-	var href = ihref;
-	if(miapp.isUndefined(href) || !href) href = window.location.href;
-
-    miapp.InternalLog.log('getUrlVars','href:'+href);
+    miapp.InternalLog.log('getUrlVars', 'href:' + href);
 
     var vars = [], hash;
     var hashes = href.slice(href.indexOf('#') + 1).split('&');
-    for(var i = 0; i < hashes.length; i++)
-    {
+    for (var i = 0; i < hashes.length; i++) {
         hash = hashes[i].split('=');
         vars.push(hash[0]);
         vars[hash[0]] = hash[1];
@@ -691,130 +693,153 @@ function getUrlVars(ihref)
     return vars;
 }
 
-function SHA256(s){
+function SHA256(s) {
 
     if (s.length === 0) return '';
-	var chrsz   = 8;
-	var hexcase = 0;
+    var chrsz = 8;
+    var hexcase = 0;
 
-	function safe_add (x, y) {
-		var lsw = (x & 0xFFFF) + (y & 0xFFFF);
-		var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
-		return (msw << 16) | (lsw & 0xFFFF);
-	}
+    function safe_add(x, y) {
+        var lsw = (x & 0xFFFF) + (y & 0xFFFF);
+        var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
+        return (msw << 16) | (lsw & 0xFFFF);
+    }
 
-	function S (X, n) { return ( X >>> n ) | (X << (32 - n)); }
-	function R (X, n) { return ( X >>> n ); }
-	function Ch(x, y, z) { return ((x & y) ^ ((~x) & z)); }
-	function Maj(x, y, z) { return ((x & y) ^ (x & z) ^ (y & z)); }
-	function Sigma0256(x) { return (S(x, 2) ^ S(x, 13) ^ S(x, 22)); }
-	function Sigma1256(x) { return (S(x, 6) ^ S(x, 11) ^ S(x, 25)); }
-	function Gamma0256(x) { return (S(x, 7) ^ S(x, 18) ^ R(x, 3)); }
-	function Gamma1256(x) { return (S(x, 17) ^ S(x, 19) ^ R(x, 10)); }
+    function S(X, n) {
+        return ( X >>> n ) | (X << (32 - n));
+    }
 
-	function core_sha256 (m, l) {
-		var K = new Array(0x428A2F98, 0x71374491, 0xB5C0FBCF, 0xE9B5DBA5, 0x3956C25B, 0x59F111F1, 0x923F82A4, 0xAB1C5ED5, 0xD807AA98, 0x12835B01, 0x243185BE, 0x550C7DC3, 0x72BE5D74, 0x80DEB1FE, 0x9BDC06A7, 0xC19BF174, 0xE49B69C1, 0xEFBE4786, 0xFC19DC6, 0x240CA1CC, 0x2DE92C6F, 0x4A7484AA, 0x5CB0A9DC, 0x76F988DA, 0x983E5152, 0xA831C66D, 0xB00327C8, 0xBF597FC7, 0xC6E00BF3, 0xD5A79147, 0x6CA6351, 0x14292967, 0x27B70A85, 0x2E1B2138, 0x4D2C6DFC, 0x53380D13, 0x650A7354, 0x766A0ABB, 0x81C2C92E, 0x92722C85, 0xA2BFE8A1, 0xA81A664B, 0xC24B8B70, 0xC76C51A3, 0xD192E819, 0xD6990624, 0xF40E3585, 0x106AA070, 0x19A4C116, 0x1E376C08, 0x2748774C, 0x34B0BCB5, 0x391C0CB3, 0x4ED8AA4A, 0x5B9CCA4F, 0x682E6FF3, 0x748F82EE, 0x78A5636F, 0x84C87814, 0x8CC70208, 0x90BEFFFA, 0xA4506CEB, 0xBEF9A3F7, 0xC67178F2);
-		var HASH = new Array(0x6A09E667, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A, 0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19);
-		var W = new Array(64);
-		var a, b, c, d, e, f, g, h, i, j;
-		var T1, T2;
+    function R(X, n) {
+        return ( X >>> n );
+    }
 
-		m[l >> 5] |= 0x80 << (24 - l % 32);
-		m[((l + 64 >> 9) << 4) + 15] = l;
+    function Ch(x, y, z) {
+        return ((x & y) ^ ((~x) & z));
+    }
 
-		for ( i = 0; i<m.length; i+=16 ) {
-			a = HASH[0];
-			b = HASH[1];
-			c = HASH[2];
-			d = HASH[3];
-			e = HASH[4];
-			f = HASH[5];
-			g = HASH[6];
-			h = HASH[7];
+    function Maj(x, y, z) {
+        return ((x & y) ^ (x & z) ^ (y & z));
+    }
 
-			for ( j = 0; j<64; j++) {
-				if (j < 16) W[j] = m[j + i];
-				else W[j] = safe_add(safe_add(safe_add(Gamma1256(W[j - 2]), W[j - 7]), Gamma0256(W[j - 15])), W[j - 16]);
+    function Sigma0256(x) {
+        return (S(x, 2) ^ S(x, 13) ^ S(x, 22));
+    }
 
-				T1 = safe_add(safe_add(safe_add(safe_add(h, Sigma1256(e)), Ch(e, f, g)), K[j]), W[j]);
-				T2 = safe_add(Sigma0256(a), Maj(a, b, c));
+    function Sigma1256(x) {
+        return (S(x, 6) ^ S(x, 11) ^ S(x, 25));
+    }
 
-				h = g;
-				g = f;
-				f = e;
-				e = safe_add(d, T1);
-				d = c;
-				c = b;
-				b = a;
-				a = safe_add(T1, T2);
-			}
+    function Gamma0256(x) {
+        return (S(x, 7) ^ S(x, 18) ^ R(x, 3));
+    }
 
-			HASH[0] = safe_add(a, HASH[0]);
-			HASH[1] = safe_add(b, HASH[1]);
-			HASH[2] = safe_add(c, HASH[2]);
-			HASH[3] = safe_add(d, HASH[3]);
-			HASH[4] = safe_add(e, HASH[4]);
-			HASH[5] = safe_add(f, HASH[5]);
-			HASH[6] = safe_add(g, HASH[6]);
-			HASH[7] = safe_add(h, HASH[7]);
-		}
-		return HASH;
-	}
+    function Gamma1256(x) {
+        return (S(x, 17) ^ S(x, 19) ^ R(x, 10));
+    }
 
-	function str2binb (str) {
-		var bin = Array();
-		var mask = (1 << chrsz) - 1;
-		for(var i = 0; i < str.length * chrsz; i += chrsz) {
-			bin[i>>5] |= (str.charCodeAt(i / chrsz) & mask) << (24 - i%32);
-		}
-		return bin;
-	}
+    function core_sha256(m, l) {
+        var K = new Array(0x428A2F98, 0x71374491, 0xB5C0FBCF, 0xE9B5DBA5, 0x3956C25B, 0x59F111F1, 0x923F82A4, 0xAB1C5ED5, 0xD807AA98, 0x12835B01, 0x243185BE, 0x550C7DC3, 0x72BE5D74, 0x80DEB1FE, 0x9BDC06A7, 0xC19BF174, 0xE49B69C1, 0xEFBE4786, 0xFC19DC6, 0x240CA1CC, 0x2DE92C6F, 0x4A7484AA, 0x5CB0A9DC, 0x76F988DA, 0x983E5152, 0xA831C66D, 0xB00327C8, 0xBF597FC7, 0xC6E00BF3, 0xD5A79147, 0x6CA6351, 0x14292967, 0x27B70A85, 0x2E1B2138, 0x4D2C6DFC, 0x53380D13, 0x650A7354, 0x766A0ABB, 0x81C2C92E, 0x92722C85, 0xA2BFE8A1, 0xA81A664B, 0xC24B8B70, 0xC76C51A3, 0xD192E819, 0xD6990624, 0xF40E3585, 0x106AA070, 0x19A4C116, 0x1E376C08, 0x2748774C, 0x34B0BCB5, 0x391C0CB3, 0x4ED8AA4A, 0x5B9CCA4F, 0x682E6FF3, 0x748F82EE, 0x78A5636F, 0x84C87814, 0x8CC70208, 0x90BEFFFA, 0xA4506CEB, 0xBEF9A3F7, 0xC67178F2);
+        var HASH = new Array(0x6A09E667, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A, 0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19);
+        var W = new Array(64);
+        var a, b, c, d, e, f, g, h, i, j;
+        var T1, T2;
 
-	function Utf8Encode(string) {
-		if (string.length === 0) return string;
+        m[l >> 5] |= 0x80 << (24 - l % 32);
+        m[((l + 64 >> 9) << 4) + 15] = l;
+
+        for (i = 0; i < m.length; i += 16) {
+            a = HASH[0];
+            b = HASH[1];
+            c = HASH[2];
+            d = HASH[3];
+            e = HASH[4];
+            f = HASH[5];
+            g = HASH[6];
+            h = HASH[7];
+
+            for (j = 0; j < 64; j++) {
+                if (j < 16) W[j] = m[j + i];
+                else W[j] = safe_add(safe_add(safe_add(Gamma1256(W[j - 2]), W[j - 7]), Gamma0256(W[j - 15])), W[j - 16]);
+
+                T1 = safe_add(safe_add(safe_add(safe_add(h, Sigma1256(e)), Ch(e, f, g)), K[j]), W[j]);
+                T2 = safe_add(Sigma0256(a), Maj(a, b, c));
+
+                h = g;
+                g = f;
+                f = e;
+                e = safe_add(d, T1);
+                d = c;
+                c = b;
+                b = a;
+                a = safe_add(T1, T2);
+            }
+
+            HASH[0] = safe_add(a, HASH[0]);
+            HASH[1] = safe_add(b, HASH[1]);
+            HASH[2] = safe_add(c, HASH[2]);
+            HASH[3] = safe_add(d, HASH[3]);
+            HASH[4] = safe_add(e, HASH[4]);
+            HASH[5] = safe_add(f, HASH[5]);
+            HASH[6] = safe_add(g, HASH[6]);
+            HASH[7] = safe_add(h, HASH[7]);
+        }
+        return HASH;
+    }
+
+    function str2binb(str) {
+        var bin = Array();
+        var mask = (1 << chrsz) - 1;
+        for (var i = 0; i < str.length * chrsz; i += chrsz) {
+            bin[i >> 5] |= (str.charCodeAt(i / chrsz) & mask) << (24 - i % 32);
+        }
+        return bin;
+    }
+
+    function Utf8Encode(string) {
+        if (string.length === 0) return string;
 
 
-		string = string.replace(/\r\n/g,"\n");
-		var utftext = "";
+        string = string.replace(/\r\n/g, "\n");
+        var utftext = "";
 
-		for (var n = 0; n < string.length; n++) {
+        for (var n = 0; n < string.length; n++) {
 
-			var c = string.charCodeAt(n);
+            var c = string.charCodeAt(n);
 
-			if (c < 128) {
-				utftext += String.fromCharCode(c);
-			}
-			else if((c > 127) && (c < 2048)) {
-				utftext += String.fromCharCode((c >> 6) | 192);
-				utftext += String.fromCharCode((c & 63) | 128);
-			}
-			else {
-				utftext += String.fromCharCode((c >> 12) | 224);
-				utftext += String.fromCharCode(((c >> 6) & 63) | 128);
-				utftext += String.fromCharCode((c & 63) | 128);
-			}
+            if (c < 128) {
+                utftext += String.fromCharCode(c);
+            }
+            else if ((c > 127) && (c < 2048)) {
+                utftext += String.fromCharCode((c >> 6) | 192);
+                utftext += String.fromCharCode((c & 63) | 128);
+            }
+            else {
+                utftext += String.fromCharCode((c >> 12) | 224);
+                utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+                utftext += String.fromCharCode((c & 63) | 128);
+            }
 
-		}
+        }
 
-		return utftext;
-	}
+        return utftext;
+    }
 
-	function binb2hex (binarray) {
-		var hex_tab = hexcase ? "0123456789ABCDEF" : "0123456789abcdef";
-		var str = "";
-		for(var i = 0; i < binarray.length * 4; i++) {
-			str += hex_tab.charAt((binarray[i>>2] >> ((3 - i%4)*8+4)) & 0xF) +
-			hex_tab.charAt((binarray[i>>2] >> ((3 - i%4)*8  )) & 0xF);
-		}
-		return str;
-	}
+    function binb2hex(binarray) {
+        var hex_tab = hexcase ? "0123456789ABCDEF" : "0123456789abcdef";
+        var str = "";
+        for (var i = 0; i < binarray.length * 4; i++) {
+            str += hex_tab.charAt((binarray[i >> 2] >> ((3 - i % 4) * 8 + 4)) & 0xF) +
+                hex_tab.charAt((binarray[i >> 2] >> ((3 - i % 4) * 8  )) & 0xF);
+        }
+        return str;
+    }
 
-	s = Utf8Encode(s);
-	return binb2hex(core_sha256(str2binb(s), s.length * chrsz));
+    s = Utf8Encode(s);
+    return binb2hex(core_sha256(str2binb(s), s.length * chrsz));
 
 }
 
-var miappTranslateDatesToPxSize = function(date_start, date_end, totalSize) {
+var miappTranslateDatesToPxSize = function (date_start, date_end, totalSize) {
     var date1 = date_start;
     if (typeof date1 == 'string') date1 = miappDateParse(date_start);
     if (!date1) return totalSize;// date_start is invalid
@@ -833,12 +858,12 @@ var miappTranslateDatesToPxSize = function(date_start, date_end, totalSize) {
     return Math.round(days * totalSize);
 };
 
-var miappTranslateDateToPx = function(date, totalSize) {
+var miappTranslateDateToPx = function (date, totalSize) {
     var date1 = date;
     if (typeof date1 == 'string') date1 = miappDateParse(date);
     if (!date1) return 0;// date is invalid
 
-    var days = (date1.getHours()*60 + date1.getMinutes()) / 1440;
+    var days = (date1.getHours() * 60 + date1.getMinutes()) / 1440;
 
     return Math.round(days * totalSize);
 };
@@ -851,7 +876,7 @@ var miappTranslateDateToPx = function(date, totalSize) {
  * @param f
  * @returns {Function}
  */
-miapp.not = function(f) {
+miapp.not = function (f) {
     return function () {
         var result = f.apply(this, arguments);
         return !result;
@@ -866,8 +891,8 @@ miapp.not = function(f) {
  * @returns {Function}
  */
 // Contrast this with the map() function from earlier.
-miapp.mapper = function(f) {
-    return function(a) {
+miapp.mapper = function (f) {
+    return function (a) {
         return map(a, f);
     };
 };
@@ -878,26 +903,26 @@ miapp.mapper = function(f) {
  * @param f idempotent function keyed on its arguments string representations
  * @returns {Function}
  */
-miapp.memoize = function(f) {
+miapp.memoize = function (f) {
     var cache = {}; // Value cache stored in the closure.
     return function () {
         // Create a string version of the arguments to use as a cache key.
         var key = arguments.length + Array.prototype.join.call(arguments, ",");
         if (key in cache) return cache.key;
         else {
-          cache.key = f.apply(this, arguments);
-          return cache.key;
+            cache.key = f.apply(this, arguments);
+            return cache.key;
         }
     };
 };
 
 /*
-// Note that when we write a recursive function that we will be memoizing,
-// we typically want to recurse to the memoized version, not the original.
-var factorial = miapp.memoize(function(n) {
-    return (n <= 1) ? 1 : n * factorial(n-1);
-});
-factorial(5) // => 120. Also caches values for 4, 3, 2 and 1.
+ // Note that when we write a recursive function that we will be memoizing,
+ // we typically want to recurse to the memoized version, not the original.
+ var factorial = miapp.memoize(function(n) {
+ return (n <= 1) ? 1 : n * factorial(n-1);
+ });
+ factorial(5) // => 120. Also caches values for 4, 3, 2 and 1.
  */
 
 // Helper functions
@@ -912,7 +937,7 @@ factorial(5) // => 120. Also caches values for 4, 3, 2 and 1.
  * @param p
  * @returns {*}
  */
-miapp.extend = function(o, p) {
+miapp.extend = function (o, p) {
     for (var prop in p) { // For all props in p.
         o[prop] = p[prop]; // Add the property to o.
     }
@@ -929,7 +954,7 @@ miapp.extend = function(o, p) {
  * @param p
  * @returns {*}
  */
-miapp.merge = function(o, p) {
+miapp.merge = function (o, p) {
     for (var prop in p) { // For all props in p.
         if (o.hasOwnProperty(prop)) continue; // Except those already in o.
         o[prop] = p[prop]; // Add the property to o.
@@ -945,7 +970,7 @@ miapp.merge = function(o, p) {
  * @param p
  * @returns {*}
  */
-miapp.restrict = function(o, p) {
+miapp.restrict = function (o, p) {
     for (var prop in o) { // For all props in o
         if (!(prop in p)) delete o[prop]; // Delete if not in p
     }
@@ -960,7 +985,7 @@ miapp.restrict = function(o, p) {
  * @param p
  * @returns {*}
  */
-miapp.subtract = function(o, p) {
+miapp.subtract = function (o, p) {
     for (var prop in p) { // For all props in p
         delete o[prop]; // Delete from o (deleting a nonexistent prop is harmless)
     }
@@ -976,7 +1001,7 @@ miapp.subtract = function(o, p) {
  * @param p
  * @returns {*}
  */
-miapp.union = function(o, p) {
+miapp.union = function (o, p) {
     return miapp.extend(miapp.extend({}, o), p);
 };
 
@@ -988,7 +1013,7 @@ miapp.union = function(o, p) {
  * @param p
  * @returns {*}
  */
-miapp.intersection = function(o, p) {
+miapp.intersection = function (o, p) {
     return miapp.restrict(miapp.extend({}, o), p);
 };
 
@@ -998,7 +1023,7 @@ miapp.intersection = function(o, p) {
  * @param o
  * @returns {Array}
  */
-miapp.keys = function(o) {
+miapp.keys = function (o) {
     if (typeof o !== "object") throw new TypeError();
     var result = [];
     for (var prop in o) {
@@ -1018,14 +1043,15 @@ miapp.keys = function(o) {
  * @param props
  * @returns {*}
  */
-miapp.create = function(proto, props) {
+miapp.create = function (proto, props) {
     if (proto === null) throw new TypeError();
     if (Object.create) {
         return Object.create(proto, props);
     }
     var t = typeof proto;
     if (t !== "object" && t !== "function") throw new TypeError();
-    function F() {} // dummy constructor function.
+    function F() {
+    } // dummy constructor function.
     F.prototype = proto;
     var o = new F();
     return miapp.extend(o, props);
@@ -1037,7 +1063,7 @@ miapp.create = function(proto, props) {
  * @param x
  * @returns {boolean}
  */
-miapp.even = function(x) {
+miapp.even = function (x) {
     return x % 2 === 0;
 };
 
@@ -1058,7 +1084,7 @@ miapp.odd = miapp.not(miapp.even);
  * @param t thisObject as second argument in Array.forEach()
  * @returns {boolean}
  */
-miapp.foreach = function(a, f, t) {
+miapp.foreach = function (a, f, t) {
     try {
         a.forEach(f, t);
     } catch (e) {
@@ -1069,11 +1095,10 @@ miapp.foreach = function(a, f, t) {
 miapp.foreach.break = new Error("StopIteration");
 
 
-
 /**
-* @fileOverview Analytics functions
-*
-**/
+ * @fileOverview Analytics functions
+ *
+ **/
 
 
 
@@ -1084,25 +1109,25 @@ var miapp;
 if (!miapp) miapp = {};
 
 function successHandler(data) {
-    miapp.InternalLog.log('Analytics', "initialization success : "+data);
+    miapp.InternalLog.log('Analytics', "initialization success : " + data);
 }
 function errorHandler(data) {
-    miapp.InternalLog.log('Analytics', "initialization pb : "+data);
+    miapp.InternalLog.log('Analytics', "initialization pb : " + data);
 }
 
 
-miapp.Analytics = (function() {
+miapp.Analytics = (function () {
     'use strict';
 
     var mAnalyticsLS = 'miapp.Analytics';
     var mAnalyticsFunctionnalitiesLS = 'miapp.Analytics.functionalities';
 
 
-	function Analytics(localStorage, googleAnalytics_UA_ID) {
+    function Analytics(localStorage, googleAnalytics_UA_ID) {
 
         this.localStorage = null;
         if (miapp.isDefined(localStorage) && localStorage)
-          this.localStorage = localStorage;
+            this.localStorage = localStorage;
 
         this.mAnalyticsArray = [];
         this.mAnalyticsFunctionnalitiesArray = [];
@@ -1121,31 +1146,33 @@ miapp.Analytics = (function() {
         this.gaQueue = null;// GA official queue
         this.gaPanalytics = null; // used ? todelete ?
         this.gaPlugin = null; // GAPlugin queue
-	}
+    }
 
     // Public API
-    Analytics.prototype.init = function() {
+    Analytics.prototype.init = function () {
         if (this.initDone) return;
 
         // GA Official queue
-        if(typeof _gaq !== 'undefined') {
-          miapp.InternalLog.log('Analytics', 'googleAnalytics official launched.');
-          this.gaQueue = _gaq || [];
-          this.gaQueue.push(['_setAccount', this.googleAnalytics_UA_ID]);
-          this.gaQueue.push(['_trackPageview']);
+        if (typeof _gaq !== 'undefined') {
+            miapp.InternalLog.log('Analytics', 'googleAnalytics official launched.');
+            this.gaQueue = _gaq || [];
+            this.gaQueue.push(['_setAccount', this.googleAnalytics_UA_ID]);
+            this.gaQueue.push(['_trackPageview']);
         }
-        else {miapp.InternalLog.log('Analytics', 'googleAnalytics not defined.');}
+        else {
+            miapp.InternalLog.log('Analytics', 'googleAnalytics not defined.');
+        }
 
         // Plugin ? used ?
         /*if(typeof analytics !== 'undefined') {
-            console.log('srvAnalytics', "GA analytics? launched.");
-            this.gaPanalytics = analytics;
-            analytics.startTrackerWithId(this.googleAnalytics_UA_ID);
-        }*/
+         console.log('srvAnalytics', "GA analytics? launched.");
+         this.gaPanalytics = analytics;
+         analytics.startTrackerWithId(this.googleAnalytics_UA_ID);
+         }*/
 
         // GAPlugin
         if (typeof window.plugins !== 'undefined') {
-            if(typeof window.plugins.gaPlugin !== 'undefined') {
+            if (typeof window.plugins.gaPlugin !== 'undefined') {
                 miapp.InternalLog.log('Analytics', "GAPlugin launched.");
                 this.gaPlugin = window.plugins.gaPlugin;
                 this.gaPlugin.init(successHandler, errorHandler, this.googleAnalytics_UA_ID, 10);
@@ -1156,19 +1183,19 @@ miapp.Analytics = (function() {
     };
 
     /*Analytics.prototype.setDemo = function(isDemo) {
-        this.isDemo = isDemo;
-    };*/
+     this.isDemo = isDemo;
+     };*/
 
-    Analytics.prototype.setVid = function(vid) {
+    Analytics.prototype.setVid = function (vid) {
         this.vid = vid;
         miapp.InternalLog.log('Analytics', 'set vid ' + this.vid);
     };
-    Analytics.prototype.setUid = function(uid) {
+    Analytics.prototype.setUid = function (uid) {
         miapp.InternalLog.log('Analytics', 'set uid ' + uid);
         if (!uid || uid === '') return;
         this.uid = uid;
     };
-    Analytics.prototype.setEnabled = function(enable) {
+    Analytics.prototype.setEnabled = function (enable) {
         this.bEnabled = (enable === true);
         miapp.InternalLog.log('Analytics', 'set enabled ' + this.bEnabled);
     };
@@ -1187,7 +1214,7 @@ miapp.Analytics = (function() {
     // 1)  category - This is the type of event you are sending :
     //          this.vid(14XXX - VERSION) + category(Once, Uses, Interest)
 
-    Analytics.prototype.add = function(category, action, value) {
+    Analytics.prototype.add = function (category, action, value) {
 
         if (!this.bEnabled || !category || !action) return;
 
@@ -1205,20 +1232,20 @@ miapp.Analytics = (function() {
 
         //Store event & view
         var paramEvent = {
-            vid : this.vid,
-            uid : this.uid,
-            type : 'event',
+            vid: this.vid,
+            uid: this.uid,
+            type: 'event',
             category: category,
-            action : action,
-            value : value || 1
+            action: action,
+            value: value || 1
         };
         var paramView = {
-            vid : this.vid,
-            uid : this.uid,
-            type : 'view',
+            vid: this.vid,
+            uid: this.uid,
+            type: 'view',
             category: category,
-            action : action,
-            value : value || 1
+            action: action,
+            value: value || 1
         };
 
         // Push arr into message queue to be stored in local storage
@@ -1230,60 +1257,59 @@ miapp.Analytics = (function() {
 
         // online, we launch events
         if (checkConnection()) this.run();
-	};
+    };
 
-	Analytics.prototype.run = function() {
+    Analytics.prototype.run = function () {
 
-      if (!this.bEnabled) return;
-      miapp.InternalLog.log('Analytics', 'run - pushing ' + this.mAnalyticsArray.length + ' elements');
-      //if (this.uuid == '') {
-      //    this.uuid = (window.device) ? window.device.uuid : window.location.hostname;
-      //}
-      var bOK = true;
+        if (!this.bEnabled) return;
+        miapp.InternalLog.log('Analytics', 'run - pushing ' + this.mAnalyticsArray.length + ' elements');
+        //if (this.uuid == '') {
+        //    this.uuid = (window.device) ? window.device.uuid : window.location.hostname;
+        //}
+        var bOK = true;
 
-      try {
-            for(var i=0; i<this.mAnalyticsArray.length; i++) {
-                    var param = this.mAnalyticsArray[i];
-                    if(param.type == 'view') {
-                        // this.vid(14XXX - VERSION) + category(Once, Uses, Interest) + action(Login, Contact Creation, Meeting Show ...)
-                        var url = '' + this.vid + ' - ' + param.category + ' - ' + param.action;
-                        miapp.InternalLog.log('Analytics', 'track view ' + url);
-                        if (this.gaQueue) this.gaQueue.push(['_trackPageview', url]);
-                        if (this.gaPanalytics) this.gaPanalytics.trackView(url);
-                        if (this.gaPlugin) this.gaPlugin.trackPage( successHandler, errorHandler, url);
-                    } else  // if(param.type == 'event')
-                    {
-                        // cat : this.vid(14XXX - VERSION) + category(Once, Uses, Interest)
-                        // act : category(Once, Uses, Interest) + action(Login, Contact Creation, Meeting Show ...)
-                        var cat = this.vid +' - '+ param.category;
-                        var act = param.category +' - '+ param.action;
-                        var lab = param.uid;
-                        var val = param.value;
-                        miapp.InternalLog.log('Analytics', 'track event ' + cat + ', ' + act + ', ' + lab + ', ' + val);
-                        if (this.gaQueue) this.gaQueue.push(['_trackEvent', cat, act, lab, val]);
-                        //this.gaPanalytics.trackEvent(param.category, param.action, param.mode);
-                        if (this.gaPanalytics) this.gaPanalytics.trackEvent(cat, act, lab, val);
-                        if (this.gaPlugin) this.gaPlugin.trackEvent(successHandler, errorHandler, cat, act, lab, val);
-                    }
+        try {
+            for (var i = 0; i < this.mAnalyticsArray.length; i++) {
+                var param = this.mAnalyticsArray[i];
+                if (param.type == 'view') {
+                    // this.vid(14XXX - VERSION) + category(Once, Uses, Interest) + action(Login, Contact Creation, Meeting Show ...)
+                    var url = '' + this.vid + ' - ' + param.category + ' - ' + param.action;
+                    miapp.InternalLog.log('Analytics', 'track view ' + url);
+                    if (this.gaQueue) this.gaQueue.push(['_trackPageview', url]);
+                    if (this.gaPanalytics) this.gaPanalytics.trackView(url);
+                    if (this.gaPlugin) this.gaPlugin.trackPage(successHandler, errorHandler, url);
+                } else  // if(param.type == 'event')
+                {
+                    // cat : this.vid(14XXX - VERSION) + category(Once, Uses, Interest)
+                    // act : category(Once, Uses, Interest) + action(Login, Contact Creation, Meeting Show ...)
+                    var cat = this.vid + ' - ' + param.category;
+                    var act = param.category + ' - ' + param.action;
+                    var lab = param.uid;
+                    var val = param.value;
+                    miapp.InternalLog.log('Analytics', 'track event ' + cat + ', ' + act + ', ' + lab + ', ' + val);
+                    if (this.gaQueue) this.gaQueue.push(['_trackEvent', cat, act, lab, val]);
+                    //this.gaPanalytics.trackEvent(param.category, param.action, param.mode);
+                    if (this.gaPanalytics) this.gaPanalytics.trackEvent(cat, act, lab, val);
+                    if (this.gaPlugin) this.gaPlugin.trackEvent(successHandler, errorHandler, cat, act, lab, val);
+                }
             }
         }
-        catch(e) {
-              miapp.ErrorLog.log('Analytics', ' run pb : ' + miapp.formatError(e));
-              bOK = false;
+        catch (e) {
+            miapp.ErrorLog.log('Analytics', ' run pb : ' + miapp.formatError(e));
+            bOK = false;
         }
 
         if (bOK) {
-          this.mAnalyticsArray = [];
-          if (this.localStorage) {
-                    this.localStorage.set(mAnalyticsLS, this.mAnalyticsArray);
-                }
+            this.mAnalyticsArray = [];
+            if (this.localStorage) {
+                this.localStorage.set(mAnalyticsLS, this.mAnalyticsArray);
+            }
         }
 
-	};
+    };
 
     return Analytics;
 })();
-
 
 
 // Namespace miapp
@@ -1291,7 +1317,7 @@ var miapp;
 if (!miapp) miapp = {};
 
 miapp.Base64 = (function () {
-'use strict';
+    'use strict';
 
     var Base64 = {};
 
@@ -1418,11 +1444,11 @@ miapp.Base64 = (function () {
 
     function uint6ToB64(nUint6) {
         return nUint6 < 26 ?
-            nUint6 + 65
+        nUint6 + 65
             : nUint6 < 52 ?
-            nUint6 + 71
+        nUint6 + 71
             : nUint6 < 62 ?
-            nUint6 - 4
+        nUint6 - 4
             : nUint6 === 62 ?
             43
             : nUint6 === 63 ?
@@ -1433,11 +1459,11 @@ miapp.Base64 = (function () {
 
     function b64ToUint6(nChr) {
         return nChr > 64 && nChr < 91 ?
-            nChr - 65
+        nChr - 65
             : nChr > 96 && nChr < 123 ?
-            nChr - 71
+        nChr - 71
             : nChr > 47 && nChr < 58 ?
-            nChr + 4
+        nChr + 4
             : nChr === 43 ?
             62
             : nChr === 47 ?
@@ -1582,17 +1608,15 @@ miapp.BrowserCapabilities = (function (navigator, window, document) {
 var miapp;
 if (!miapp) miapp = {};
 
-miapp.Json = (function($)
-{
+miapp.Json = (function ($) {
     'use strict';
 
-    if(!(Object.toJSON || window.JSON)){
+    if (!(Object.toJSON || window.JSON)) {
         throw new Error("Object.toJSON or window.JSON needs to be loaded before miapp.Json!");
     }
 
     // Constructor
-    function Json()
-    {
+    function Json() {
         this.version = "0.1";
     }
 
@@ -1604,7 +1628,7 @@ miapp.Json = (function($)
      * Do not use $.param() which causes havoc in ANGULAR.
      * See http://victorblog.com/2012/12/20/make-angularjs-http-service-behave-like-jquery-ajax/
      */
-    Json.uriEncode = function(obj) {
+    Json.uriEncode = function (obj) {
         var query = '';
         var name, value, fullSubName, subName, subValue, innerObj, i;
 
@@ -1638,14 +1662,14 @@ miapp.Json = (function($)
     /**
      * Encodes object to JSON string
      */
-    Json.object2String = angular.toJSON || Object.toJSON || (window.JSON && (JSON.encode || JSON.stringify));
+    Json.object2String = Object.toJSON || (window.JSON && (JSON.encode || JSON.stringify));
 
     /**
      * Decodes object from JSON string
      */
-    Json.string2Object = angular.fromJson || (window.JSON && (JSON.decode || JSON.parse)) || function(str){
-        return String(str).evalJSON();
-    };
+    Json.string2Object = (window.JSON && (JSON.decode || JSON.parse)) || function (str) {
+            return String(str).evalJSON();
+        };
 
     // The public API for this module is the constructor function.
     // We need to export that function from this private namespace so that
@@ -1665,7 +1689,7 @@ function miappDumpData(input, maxDepth) {
         if (input instanceof Array) {
             if (maxDepth > 0) {
                 str += "[\n";
-                str += miappDumpArray("  ", input, maxDepth-1);
+                str += miappDumpArray("  ", input, maxDepth - 1);
                 str += "]\n";
             } else {
                 str += "[Array]\n";
@@ -1673,7 +1697,7 @@ function miappDumpData(input, maxDepth) {
         } else {
             if (maxDepth > 0) {
                 str += "{\n";
-                str += miappDumpObject("  ", input, maxDepth-1);
+                str += miappDumpObject("  ", input, maxDepth - 1);
                 str += "}\n";
             } else {
                 str += "[" + typeof(input) + "]\n";
@@ -1687,12 +1711,12 @@ function miappDumpData(input, maxDepth) {
 
 function miappDumpArray(offset, input, maxDepth) {
     var str = "";
-    for (var key = 0,nb = input.length; key<nb; key++) {
+    for (var key = 0, nb = input.length; key < nb; key++) {
         if (typeof input[key] === "object") {
             if (input[key] instanceof Array) {
                 if (maxDepth > 0) {
                     str += offset + key + " : [\n";
-                    str += miappDumpArray(offset + "  ", input[key], maxDepth-1);
+                    str += miappDumpArray(offset + "  ", input[key], maxDepth - 1);
                     str += offset + "]\n";
                 } else {
                     str += offset + key + " : [Array]\n";
@@ -1700,7 +1724,7 @@ function miappDumpArray(offset, input, maxDepth) {
             } else {
                 if (maxDepth > 0) {
                     str += offset + key + " : {\n";
-                    str += miappDumpObject(offset + "  ", input[key], maxDepth-1);
+                    str += miappDumpObject(offset + "  ", input[key], maxDepth - 1);
                     str += offset + "}\n";
                 } else {
                     str += offset + key + " : [" + typeof(input[key]) + "]\n";
@@ -1721,7 +1745,7 @@ function miappDumpObject(offset, input, maxDepth) {
             if (input[key] instanceof Array) {
                 if (maxDepth > 0) {
                     str += offset + key + " : [\n";
-                    str += miappDumpArray(offset + "  ", input[key], maxDepth-1);
+                    str += miappDumpArray(offset + "  ", input[key], maxDepth - 1);
                     str += offset + "]\n";
                 } else {
                     str += offset + key + " : [Array]\n";
@@ -1729,7 +1753,7 @@ function miappDumpObject(offset, input, maxDepth) {
             } else {
                 if (maxDepth > 0) {
                     str += offset + key + " : {\n";
-                    str += miappDumpObject(offset + "  ", input[key], maxDepth-1);
+                    str += miappDumpObject(offset + "  ", input[key], maxDepth - 1);
                     str += offset + "}\n";
                 } else {
                     str += offset + key + " : [" + typeof(input[key]) + "]\n";
@@ -1805,24 +1829,24 @@ function miappTimestampParse(date) {
 function miappDateParse(date) {
     if (!date || typeof date != 'string' || date == '') return false;
     // Date (choose 0 in date to force an error if parseInt fails)
-    var yearS = parseInt(date.substr(0,4), 10) || 0;
-    var monthS = parseInt(date.substr(5,2), 10) || 0;
-    var dayS = parseInt(date.substr(8,2), 10) || 0;
-    var hourS = parseInt(date.substr(11,2), 10) || 0;
-    var minuteS = parseInt(date.substr(14,2),10) || 0;
-    var secS = parseInt(date.substr(17,2),10) || 0;
+    var yearS = parseInt(date.substr(0, 4), 10) || 0;
+    var monthS = parseInt(date.substr(5, 2), 10) || 0;
+    var dayS = parseInt(date.substr(8, 2), 10) || 0;
+    var hourS = parseInt(date.substr(11, 2), 10) || 0;
+    var minuteS = parseInt(date.substr(14, 2), 10) || 0;
+    var secS = parseInt(date.substr(17, 2), 10) || 0;
     /*
-    BEWARE : here are the ONLY formats supported by all browsers in creating a Date object
-    var d = new Date(2011, 01, 07); // yyyy, mm-1, dd
-    var d = new Date(2011, 01, 07, 11, 05, 00); // yyyy, mm-1, dd, hh, mm, ss
-    var d = new Date("02/07/2011"); // "mm/dd/yyyy"
-    var d = new Date("02/07/2011 11:05:00"); // "mm/dd/yyyy hh:mm:ss"
-    var d = new Date(1297076700000); // milliseconds
-    var d = new Date("Mon Feb 07 2011 11:05:00 GMT"); // ""Day Mon dd yyyy hh:mm:ss GMT/UTC
+     BEWARE : here are the ONLY formats supported by all browsers in creating a Date object
+     var d = new Date(2011, 01, 07); // yyyy, mm-1, dd
+     var d = new Date(2011, 01, 07, 11, 05, 00); // yyyy, mm-1, dd, hh, mm, ss
+     var d = new Date("02/07/2011"); // "mm/dd/yyyy"
+     var d = new Date("02/07/2011 11:05:00"); // "mm/dd/yyyy hh:mm:ss"
+     var d = new Date(1297076700000); // milliseconds
+     var d = new Date("Mon Feb 07 2011 11:05:00 GMT"); // ""Day Mon dd yyyy hh:mm:ss GMT/UTC
      */
 
-    var newDate = new Date(yearS, monthS-1, dayS, hourS, minuteS, secS, 0);
-    if ((newDate.getFullYear() !== yearS) || (newDate.getMonth() !== (monthS-1)) || (newDate.getDate() !== dayS)) {
+    var newDate = new Date(yearS, monthS - 1, dayS, hourS, minuteS, secS, 0);
+    if ((newDate.getFullYear() !== yearS) || (newDate.getMonth() !== (monthS - 1)) || (newDate.getDate() !== dayS)) {
         // Invalid date
         return false;
     }
@@ -1839,21 +1863,21 @@ function miappDateFormatObject(object) {
     var hourS = "00";
     var minuteS = "00";
     var secondS = "00";
-   
-    if ( Object.prototype.toString.call(object) === "[object Date]" ) {
-      // it is a date
-      if ( isNaN(object.getTime() ) ) {  // d.valueOf() could also work
-        // date is not valid
-      }
-      else {
-        // date is valid
-        yearS = ''+object.getFullYear();
-        monthS = ''+(object.getMonth()+1);
-        dayS = ''+object.getDate();
-        hourS = ''+object.getHours();
-        minuteS = ''+object.getMinutes();
-        secondS = ''+object.getSeconds();
-      }
+
+    if (Object.prototype.toString.call(object) === "[object Date]") {
+        // it is a date
+        if (isNaN(object.getTime())) {  // d.valueOf() could also work
+            // date is not valid
+        }
+        else {
+            // date is valid
+            yearS = '' + object.getFullYear();
+            monthS = '' + (object.getMonth() + 1);
+            dayS = '' + object.getDate();
+            hourS = '' + object.getHours();
+            minuteS = '' + object.getMinutes();
+            secondS = '' + object.getSeconds();
+        }
     }
     else if (typeof object == "string") {
         // string
@@ -1883,7 +1907,7 @@ function miappDateFormatObject(object) {
     while (minuteS.length < 2) minuteS = '0' + minuteS;
     while (secondS.length < 2) secondS = '0' + secondS;
 
-    var newDate = yearS + '-' + monthS + '-' + dayS + ' ' + hourS + ':' + minuteS + ':'+secondS;
+    var newDate = yearS + '-' + monthS + '-' + dayS + ' ' + hourS + ':' + minuteS + ':' + secondS;
     return newDate;
 }
 
@@ -1898,7 +1922,7 @@ function miappDateExtractDate(dateString) {
     while (yearS.length < 4) yearS = '0' + yearS;
     while (monthS.length < 2) monthS = '0' + monthS;
     while (dayS.length < 2) dayS = '0' + dayS;
-    return ''+ yearS + '-' + monthS + '-' + dayS;
+    return '' + yearS + '-' + monthS + '-' + dayS;
 }
 
 function miappDateExtractTime(dateString) {
@@ -1920,7 +1944,7 @@ function miappDateExtractTime(dateString) {
     while (minuteS.length < 2) minuteS = '0' + minuteS;
     while (secondS.length < 2) secondS = '0' + secondS;
 
-    return '' + hourS + ':' + minuteS + ':'+secondS;
+    return '' + hourS + ':' + minuteS + ':' + secondS;
 }
 
 
@@ -1940,7 +1964,7 @@ function miappPadNumber(num, digits, trim) {
     return neg + num;
 }
 
-miapp.formatError = function(arg) {
+miapp.formatError = function (arg) {
     if (arg instanceof Error) {
         if (arg.stack) {
             arg = (arg.message && arg.stack.indexOf(arg.message) === -1)
@@ -1980,42 +2004,42 @@ miapp.Log = (function () {
     };
 
     Log.prototype.log = function (msg, details, traceStackOffset) {
-    	
-    	//REMOVE_IN_PROD return {'date':'','msg':msg,'details':details};
-    	    	
+
+        //REMOVE_IN_PROD return {'date':'','msg':msg,'details':details};
+
         details = details || '';
         var now = new Date();
         now = miappDateFormat(now) + '.' + now.getMilliseconds();
         // TODO : get the file and line of caller
         //var nb = (new Error).lineNumber;
         var from = '';
-       	var stack;
+        var stack;
         /*
-        try {
-            throw Error('');
-        } catch(e) {
-            stack = e.stack;
-        }
-        */
+         try {
+         throw Error('');
+         } catch(e) {
+         stack = e.stack;
+         }
+         */
         traceStackOffset = traceStackOffset || 0;
         stack = (new Error).stack;
-       	if (stack) {
+        if (stack) {
             var caller_stack = stack.split("\n");
-            var caller_line = caller_stack[2+traceStackOffset];
-       		if (caller_line) {
-       			var index = caller_line.indexOf("at ") + 3;
+            var caller_line = caller_stack[2 + traceStackOffset];
+            if (caller_line) {
+                var index = caller_line.indexOf("at ") + 3;
                 from = ' at ' + caller_line.substr(index);
-       		}
-       	}
+            }
+        }
         if (details) {
             //MLE //TODO prod ? var ? console.log(now + from + ' : ' + msg + " : " + details);
         } else {
             //MLE console.log(now + from + ' : ' + msg);
         }
         var logEntry = {
-            'date':now,
-            'msg':msg,
-            'details':details
+            'date': now,
+            'msg': msg,
+            'details': details
         };
         if (this.logEntries.length >= this.nbMax) {
             this.logEntries.splice(0, 1);
@@ -2036,7 +2060,7 @@ miapp.Log = (function () {
 
     Log.prototype.addListener = function (fct) {
         this.callbackHandle++;
-        this.callbacks.push({id:this.callbackHandle, callback:fct});
+        this.callbacks.push({id: this.callbackHandle, callback: fct});
         return this.callbackHandle;
     };
 
@@ -2060,7 +2084,6 @@ miapp.ErrorLog = new miapp.Log(1000);
 miapp.InternalLog = new miapp.Log(1000);
 
 
-
 // Namespace miapp
 var miapp;
 if (!miapp) miapp = {};
@@ -2072,7 +2095,7 @@ if (!miapp) miapp = {};
  *
  **/
 miapp.Sha1 = (function () {
-'use strict';
+    'use strict';
 
     var Sha1 = {};
 
@@ -2207,70 +2230,69 @@ miapp.Sha1 = (function () {
 })(); // Invoke the function immediately to create this class.
 
 
-
 /*
-Pour recopier un fichier externe au navigateur dans le localStorage ou le fileStorage, il faut passer par <input type="file"/>
-Exemple :
+ Pour recopier un fichier externe au navigateur dans le localStorage ou le fileStorage, il faut passer par <input type="file"/>
+ Exemple :
 
-<!--<input id="file" type="file" multiple />-->
-<!-- multiple does not work on Android -->
-<input id="file" type="file" />
-<div id="prev"></div>
+ <!--<input id="file" type="file" multiple />-->
+ <!-- multiple does not work on Android -->
+ <input id="file" type="file" />
+ <div id="prev"></div>
 
-<script>
-var fileInput = document.querySelector('#file');
-var prev = document.querySelector('#prev');
+ <script>
+ var fileInput = document.querySelector('#file');
+ var prev = document.querySelector('#prev');
 
-fileInput.onchange = function() {
+ fileInput.onchange = function() {
 
-    var files = this.files;
-    var filesLen = files.length;
-    var allowedTypes = ['png', 'jpg', 'jpeg', 'gif']
+ var files = this.files;
+ var filesLen = files.length;
+ var allowedTypes = ['png', 'jpg', 'jpeg', 'gif']
 
-    for (var i = 0 ; i < filesLen ; i++) {
-        var reader = new FileReader();
-        // Lecture du contenu de fichier
-        reader.onload = function() {
-            alert('Contenu du fichier "' + fileInput.files[i].name + '" :\n\n' + reader.result);
-        };
-        reader.readAsText(files[i]);
+ for (var i = 0 ; i < filesLen ; i++) {
+ var reader = new FileReader();
+ // Lecture du contenu de fichier
+ reader.onload = function() {
+ alert('Contenu du fichier "' + fileInput.files[i].name + '" :\n\n' + reader.result);
+ };
+ reader.readAsText(files[i]);
 
-        // Previsualisation de fichier image
-        var fileNames = files[i].name.split('.');
-        var fileExt = fileNames[fileNames.length - 1];
-        if (allowedTypes.indexOf(fileExt) != -1) {
-            var reader = new FileReader();
-            reader.onload = function() {
-                var imgElement = document.createElement('img');
-                imgElement.style.maxWidth = '150px';
-                imgElement.style.maxHeight = '150px';
-                imgElement.src = this.result;
-                prev.appendChild(imgElement);
-            };
-            reader.readAsDataURL(files[i]);
-        }
-    }
-};
-</script>
+ // Previsualisation de fichier image
+ var fileNames = files[i].name.split('.');
+ var fileExt = fileNames[fileNames.length - 1];
+ if (allowedTypes.indexOf(fileExt) != -1) {
+ var reader = new FileReader();
+ reader.onload = function() {
+ var imgElement = document.createElement('img');
+ imgElement.style.maxWidth = '150px';
+ imgElement.style.maxHeight = '150px';
+ imgElement.src = this.result;
+ prev.appendChild(imgElement);
+ };
+ reader.readAsDataURL(files[i]);
+ }
+ }
+ };
+ </script>
 
  */
 
 // Create a new module
 /*angular.module("miapp", [
-    "miapp.all",
-    "miapp.file",
-    "miapp.analytics",
-    "miapp.storage",
-    "miapp.stringFormat",
-    "miapp.base64",
-    "miapp.json",
-    "miapp.xml",
-    "miapp.fileDownloader",
-    "miapp.fileUploader",
-    "miapp.taskReceiver",
-    "miapp.taskSender",
-    "miapp.sense"
-]);*/
+ "miapp.all",
+ "miapp.file",
+ "miapp.analytics",
+ "miapp.storage",
+ "miapp.stringFormat",
+ "miapp.base64",
+ "miapp.json",
+ "miapp.xml",
+ "miapp.fileDownloader",
+ "miapp.fileUploader",
+ "miapp.taskReceiver",
+ "miapp.taskSender",
+ "miapp.sense"
+ ]);*/
 
 // Create a new module
 //var miappStorageModule = angular.module('miapp.storage', ['miapp.xml', 'miapp.json']);
@@ -2280,11 +2302,11 @@ fileInput.onchange = function() {
  * @param {object} storageService The object window.localStorage or an equivalent object which implements it.
  */
 /*miappStorageModule.factory('localStorage', ['miappXml', 'miappJson', function(miappXml, miappJson) {
-    var LocalStorage = function(storageService) {
-        storageService = storageService || window.localStorage;
-    };
-    return LocalStorage;
-}]);*/
+ var LocalStorage = function(storageService) {
+ storageService = storageService || window.localStorage;
+ };
+ return LocalStorage;
+ }]);*/
 
 // Namespace miapp
 var miapp;
@@ -2295,13 +2317,14 @@ if (!miapp) miapp = {};
  * Usage : miapp.LocalStorageFactory(new miapp.MemoryStorage());
  */
 miapp.MemoryStorage = (function () {
-"use strict";
+    "use strict";
 
     function Storage() {
         this.keyes = [];
         this.set = {};
         this.length = 0;
     }
+
     Storage.prototype.clear = function () {
         this.keyes = [];
         this.set = {};
@@ -2340,7 +2363,7 @@ miapp.MemoryStorage = (function () {
  * Usage : var localStorageService = new LocalStorage(); // to create a new instance
  */
 miapp.LocalStorageFactory = function (storageService) {
-"use strict";
+    "use strict";
 
     var storage = storageService || window.localStorage;
     if (!storage) {
@@ -2384,15 +2407,15 @@ miapp.LocalStorageFactory = function (storageService) {
         else if (value === null)
             value = 'null';
         else if (miapp.Xml.isXml(value))
-            value = miapp.Json.object2String({xml:miapp.Xml.xml2String(value)});
+            value = miapp.Json.object2String({xml: miapp.Xml.xml2String(value)});
         else if (t == "string")
-            value = miapp.Json.object2String({string:value});
+            value = miapp.Json.object2String({string: value});
         else if (t == "number")
-            value = miapp.Json.object2String({number:value});
+            value = miapp.Json.object2String({number: value});
         else if (t == "boolean")
-            value = miapp.Json.object2String({ bool : value });
+            value = miapp.Json.object2String({bool: value});
         else if (t == "object")
-            value = miapp.Json.object2String( { json : value } );
+            value = miapp.Json.object2String({json: value});
         else {
             // reject and do not insert
             // if (typeof value == "function") for example
@@ -2527,8 +2550,8 @@ miapp.FileStorage = (function () {
     // Public API
 
     function initEnd(self) {
-        miapp.safeApply(self.rootScope, function() {
-            for (var i= 0; i < self.initPromises.length; i++) {
+        miapp.safeApply(self.rootScope, function () {
+            for (var i = 0; i < self.initPromises.length; i++) {
                 self.initTrigger(self.initPromises[i]);
             }
             self.initDone = true;
@@ -2539,7 +2562,9 @@ miapp.FileStorage = (function () {
 
     function launchEnd(self) {
         if (self.initTimer === null) {
-            self.initTimer = setTimeout(function() { initEnd(self); }, 100);
+            self.initTimer = setTimeout(function () {
+                initEnd(self);
+            }, 100);
         }
     }
 
@@ -2559,19 +2584,25 @@ miapp.FileStorage = (function () {
                     self.urlPrefix = 'filesystem:' + name + '/persistent';
                 }
                 //miapp.InternalLog.log('miapp.FileStorage', 'urlPrefix = ' + self.urlPrefix);
-                self.initTrigger = function(deferred) { deferred.resolve(); };
+                self.initTrigger = function (deferred) {
+                    deferred.resolve();
+                };
                 launchEnd(self);
             };
             var fctOnFailure = function (fileError) {
                 if (fileError.code == FileError.QUOTA_EXCEEDED_ERR) {
-                    setTimeout(function() { tryQuota(self, grantBytes/2); }, 100);
+                    setTimeout(function () {
+                        tryQuota(self, grantBytes / 2);
+                    }, 100);
                 } else {
                     var message = "requestFileSystem failure : " + errorMessage(fileError);
-                    self.initTrigger = function(deferred) { deferred.reject(message); };
+                    self.initTrigger = function (deferred) {
+                        deferred.reject(message);
+                    };
                     launchEnd(self);
                 }
             };
-            var requestFs = function(grantedBytes) {
+            var requestFs = function (grantedBytes) {
                 try {
                     if (miapp.isDefined(window.requestFileSystem)) {
                         window.requestFileSystem(self.storageType, grantedBytes, fctOnSuccess, fctOnFailure);
@@ -2580,7 +2611,9 @@ miapp.FileStorage = (function () {
                     }
                 } catch (e) {
                     var message = e.message;
-                    self.initTrigger = function(deferred) { deferred.reject(message); };
+                    self.initTrigger = function (deferred) {
+                        deferred.reject(message);
+                    };
                     launchEnd(self);
                 }
             };
@@ -2593,17 +2626,21 @@ miapp.FileStorage = (function () {
                         requestFs(grantedBytes);
                     }, function (fileError) {
                         if (fileError.code == FileError.QUOTA_EXCEEDED_ERR) {
-                            setTimeout(function() { tryQuota(self, grantBytes/2); }, 100);
+                            setTimeout(function () {
+                                tryQuota(self, grantBytes / 2);
+                            }, 100);
                         } else {
                             var message = "requestQuota failure : " + errorMessage(fileError);
-                            self.initTrigger = function(deferred) { deferred.reject(message); };
+                            self.initTrigger = function (deferred) {
+                                deferred.reject(message);
+                            };
                             launchEnd(self);
                         }
                     });
                 } else {
                     requestFs(grantBytes);
                 }
-            } else if (miapp.isDefined(navigator.webkitPersistentStorage)){//MLE deprecated ? (miapp.isDefined(window.webkitStorageInfo)) {
+            } else if (miapp.isDefined(navigator.webkitPersistentStorage)) {//MLE deprecated ? (miapp.isDefined(window.webkitStorageInfo)) {
                 // In Chrome 13
                 if (miapp.isDefined(navigator.webkitPersistentStorage.requestQuota)) {
                     navigator.webkitPersistentStorage.requestQuota(self.storageType, grantBytes, function (grantedBytes) {
@@ -2611,10 +2648,14 @@ miapp.FileStorage = (function () {
                         requestFs(grantedBytes);
                     }, function (fileError) {
                         if (fileError.code == FileError.QUOTA_EXCEEDED_ERR) {
-                            setTimeout(function() { tryQuota(self, grantBytes/2); }, 100);
+                            setTimeout(function () {
+                                tryQuota(self, grantBytes / 2);
+                            }, 100);
                         } else {
                             var message = "requestQuota failure : " + errorMessage(fileError);
-                            self.initTrigger = function(deferred) { deferred.reject(message); };
+                            self.initTrigger = function (deferred) {
+                                deferred.reject(message);
+                            };
                             launchEnd(self);
                         }
                     });
@@ -2626,7 +2667,9 @@ miapp.FileStorage = (function () {
             }
         } catch (e) {
             var message = e.message;
-            self.initTrigger = function(deferred) { deferred.reject(message); };
+            self.initTrigger = function (deferred) {
+                deferred.reject(message);
+            };
             launchEnd(self);
         }
     }
@@ -2648,23 +2691,31 @@ miapp.FileStorage = (function () {
             }
             if (!window.File || !window.FileReader || !window.Blob) {
                 message = "window.File, window.FileReader and window.Blob need to be loaded before miapp.FileStorage!";
-                this.initTrigger = function(deferred) { deferred.reject(message); };
+                this.initTrigger = function (deferred) {
+                    deferred.reject(message);
+                };
                 launchEnd(this);
             } else if (miapp.isUndefined(window.requestFileSystem) && miapp.isUndefined(window.webkitRequestFileSystem)) {
                 message = "window.requestFileSystem() or window.webkitRequestFileSystem() required by miapp.FileStorage!";
-                this.initTrigger = function(deferred) { deferred.reject(message); };
+                this.initTrigger = function (deferred) {
+                    deferred.reject(message);
+                };
                 launchEnd(this);
             } else if (miapp.isUndefined(window.resolveLocalFileSystemURL) &&
                 miapp.isUndefined(window.webkitResolveLocalFileSystemURL) &&
                 miapp.isUndefined(window.resolveLocalFileSystemURI) &&
                 miapp.isUndefined(window.webkitResolveLocalFileSystemURI)) {
                 message = "window.resolveLocalFileSystemURI or equivalent required by miapp.FileStorage!";
-                this.initTrigger = function(deferred) { deferred.reject(message); };
+                this.initTrigger = function (deferred) {
+                    deferred.reject(message);
+                };
                 launchEnd(this);
             } else {
                 var grantBytes = 4 * 1024 * 1024 * 1024;
                 var self = this;
-                setTimeout(function() { tryQuota(self, grantBytes); }, 100);
+                setTimeout(function () {
+                    tryQuota(self, grantBytes);
+                }, 100);
             }
         } else {
             // Init already started but not yet finished
@@ -2682,13 +2733,13 @@ miapp.FileStorage = (function () {
     /* getGrantedBytes() and getUsedBytes() are not yet ready
      FileStorage.getGrantedBytes = function (storageType, onSuccess) {
      // In Chrome 13
-            if ((miapp.isUndefinedOrNull(storageType)) {
-                if (miapp.isUndefinedOrNull(LocalFileSystem)) {
-                    storageType = window.PERSISTENT;
-                } else {
-                    storageType = LocalFileSystem.PERSISTENT;
-                }
-            }
+     if ((miapp.isUndefinedOrNull(storageType)) {
+     if (miapp.isUndefinedOrNull(LocalFileSystem)) {
+     storageType = window.PERSISTENT;
+     } else {
+     storageType = LocalFileSystem.PERSISTENT;
+     }
+     }
      if (miapp.isUndefined(navigator.webkitPersistentStorage)) {
      if (miapp.isUndefined(navigator.webkitPersistentStorage.queryUsageAndQuota)) {
      navigator.webkitPersistentStorage.queryUsageAndQuota(storageType,
@@ -2715,13 +2766,13 @@ miapp.FileStorage = (function () {
     /* getGrantedBytes() and getUsedBytes() are not yet ready
      FileStorage.getUsedBytes = function (storageType, onSuccess) {
      // In Chrome 13
-            if (miapp.isUndefinedOrNull(storageType)) {
-                if (miapp.isUndefinedOrNull(LocalFileSystem)) {
-                    storageType = window.PERSISTENT;
-                } else {
-                    storageType = LocalFileSystem.PERSISTENT;
-                }
-            }
+     if (miapp.isUndefinedOrNull(storageType)) {
+     if (miapp.isUndefinedOrNull(LocalFileSystem)) {
+     storageType = window.PERSISTENT;
+     } else {
+     storageType = LocalFileSystem.PERSISTENT;
+     }
+     }
      if (miapp.isDefined(navigator.webkitPersistentStorage)) {
      if (miapp.isDefined(navigator.webkitPersistentStorage.queryUsageAndQuota)) {
      navigator.webkitPersistentStorage.queryUsageAndQuota(storageType,
@@ -2769,7 +2820,7 @@ miapp.FileStorage = (function () {
                 dirs.push(names[i]);
             }
         }
-        var dirOptions = {create:true, exclusive:false};
+        var dirOptions = {create: true, exclusive: false};
         getDirEntry(this.fs.root, dirOptions, dirs,
             function (dirEntry) {
                 if (onSuccess) {
@@ -2799,7 +2850,7 @@ miapp.FileStorage = (function () {
                 dirs.push(names[i]);
             }
         }
-        var dirOptions = {create:false, exclusive:false};
+        var dirOptions = {create: false, exclusive: false};
         getDirEntry(this.fs.root, dirOptions, dirs, onSuccess, onFailure);
     };
 
@@ -2823,7 +2874,7 @@ miapp.FileStorage = (function () {
                 dirs.push(names[i]);
             }
         }
-        var dirOptions = {create:false, exclusive:false};
+        var dirOptions = {create: false, exclusive: false};
         var dirContentReader = function (dirEntry) {
             var dirReader = dirEntry.createReader();
             var fileEntries = [];
@@ -2885,7 +2936,7 @@ miapp.FileStorage = (function () {
                 dirs.push(names[i]);
             }
         }
-        var dirOptions = {create:false, exclusive:false};
+        var dirOptions = {create: false, exclusive: false};
         var dirEntries = [];
         var fileEntries = [];
         var dirContentReader = function (dirEntry) {
@@ -2942,7 +2993,7 @@ miapp.FileStorage = (function () {
                 dirs.push(names[i]);
             }
         }
-        var dirOptions = {create:false, exclusive:false};
+        var dirOptions = {create: false, exclusive: false};
         getDirEntry(this.fs.root, dirOptions, dirs,
             function (dirEntry) {
                 dirEntry.remove(function () {
@@ -2954,7 +3005,7 @@ miapp.FileStorage = (function () {
                         onFailure("remove " + dirEntry.fullPath + " failure : " + errorMessage(fileError));
                     }
                 });
-            }, function(message) {
+            }, function (message) {
                 // Ignore error if dir unknown. It is also a success
                 if (onSuccess) {
                     onSuccess();
@@ -2974,7 +3025,7 @@ miapp.FileStorage = (function () {
                 dirs.push(names[i]);
             }
         }
-        var dirOptions = {create:false, exclusive:false};
+        var dirOptions = {create: false, exclusive: false};
         getDirEntry(this.fs.root, dirOptions, dirs,
             function (dirEntry) {
                 dirEntry.removeRecursively(function () {
@@ -3009,8 +3060,8 @@ miapp.FileStorage = (function () {
             throw new Error("miapp.FileStorage is not yet initialized with its file system.");
         }
         // resolve File in private or localhost fs
-        fileUrl = fileUrl.replace('/private/','/');
-        fileUrl = fileUrl.replace('/localhost/','/');
+        fileUrl = fileUrl.replace('/private/', '/');
+        fileUrl = fileUrl.replace('/localhost/', '/');
 
         if (miapp.isDefined(window.resolveLocalFileSystemURL)) {
             //miapp.InternalLog.log('miapp.FileStorage','window.resolveLocalFileSystemURL '+fileUrl);
@@ -3057,8 +3108,8 @@ miapp.FileStorage = (function () {
             throw new Error("miapp.FileStorage is not yet initialized with its file system.");
         }
         // resolve File in private or localhost fs
-        fileUri = fileUri.replace('/private/','/');
-        fileUri = fileUri.replace('/localhost/','/');
+        fileUri = fileUri.replace('/private/', '/');
+        fileUri = fileUri.replace('/localhost/', '/');
 
         if (miapp.isDefined(window.resolveLocalFileSystemURI)) {
             //miapp.InternalLog.log('miapp.FileStorage','window.resolveLocalFileSystemURI '+fileUri);
@@ -3106,13 +3157,13 @@ miapp.FileStorage = (function () {
         }
 
         //miapp.InternalLog.log('miapp.FileStorage','getUrlFromFile .. '+filePath);
-        getFileEntry(this.fs.root, filePath, {create:false, exclusive:false},
+        getFileEntry(this.fs.root, filePath, {create: false, exclusive: false},
             function (fileEntry) {
 
                 //miapp.InternalLog.log('miapp.FileStorage','getUrlFromFile result  toURL '+fileEntry.toURL());
                 //miapp.InternalLog.log('miapp.FileStorage','getUrlFromFile result  fullPath '+fileEntry.fullPath);
 
-                if (miapp.isDefined(fileEntry.toNativeURL)){
+                if (miapp.isDefined(fileEntry.toNativeURL)) {
                     //miapp.InternalLog.log('miapp.FileStorage','getUrlFromFile result  toNativeURL '+fileEntry.toNativeURL());
                     if (onSuccess) onSuccess(fileEntry.toNativeURL());
                 } else {
@@ -3135,7 +3186,7 @@ miapp.FileStorage = (function () {
         if (!this.fs) {
             throw new Error("miapp.FileStorage is not yet initialized with its file system.");
         }
-        getFileEntry(this.fs.root, filePath, {create:false, exclusive:false},
+        getFileEntry(this.fs.root, filePath, {create: false, exclusive: false},
             function (fileEntry) {
                 if (onSuccess) {
                     onSuccess(fileEntry.toURI());
@@ -3155,7 +3206,7 @@ miapp.FileStorage = (function () {
         if (!this.fs) {
             throw new Error("miapp.FileStorage is not yet initialized with its file system.");
         }
-        getFileEntry(this.fs.root, filePath, {create:false, exclusive:false},
+        getFileEntry(this.fs.root, filePath, {create: false, exclusive: false},
             function (fileEntry) {
                 fileEntry.getMetadata(
                     function (metadata) {
@@ -3183,7 +3234,7 @@ miapp.FileStorage = (function () {
         if (!this.fs) {
             throw new Error("miapp.FileStorage is not yet initialized with its file system.");
         }
-        getFileEntry(this.fs.root, filePath, {create:false, exclusive:false}, onSuccess, onFailure);
+        getFileEntry(this.fs.root, filePath, {create: false, exclusive: false}, onSuccess, onFailure);
     };
 
     /**
@@ -3198,7 +3249,7 @@ miapp.FileStorage = (function () {
         if (!this.fs) {
             throw new Error("miapp.FileStorage is not yet initialized with its file system.");
         }
-        getFileEntry(this.fs.root, filePath, {create:true, exclusive:true}, onSuccess, onFailure);
+        getFileEntry(this.fs.root, filePath, {create: true, exclusive: true}, onSuccess, onFailure);
     };
 
     /**
@@ -3213,7 +3264,7 @@ miapp.FileStorage = (function () {
         if (!this.fs) {
             throw new Error("miapp.FileStorage is not yet initialized with its file system.");
         }
-        getFileEntry(this.fs.root, filePath, {create:true, exclusive:false}, onSuccess, onFailure);
+        getFileEntry(this.fs.root, filePath, {create: true, exclusive: false}, onSuccess, onFailure);
     };
 
     /**
@@ -3228,7 +3279,7 @@ miapp.FileStorage = (function () {
         if (!this.fs) {
             throw new Error("miapp.FileStorage is not yet initialized with its file system.");
         }
-        getFileEntry(this.fs.root, filePath, {create:false, exclusive:false},
+        getFileEntry(this.fs.root, filePath, {create: false, exclusive: false},
             function (fileEntry) {
                 fileEntry.file(function (file) {
                     var reader = new FileReader();
@@ -3254,7 +3305,7 @@ miapp.FileStorage = (function () {
         if (!this.fs) {
             throw new Error("miapp.FileStorage is not yet initialized with its file system.");
         }
-        getFileEntry(this.fs.root, filePath, {create:false, exclusive:false},
+        getFileEntry(this.fs.root, filePath, {create: false, exclusive: false},
             function (fileEntry) {
                 fileEntry.file(function (file) {
                     var reader = new FileReader();
@@ -3284,7 +3335,7 @@ miapp.FileStorage = (function () {
         if (!this.fs) {
             throw new Error("miapp.FileStorage is not yet initialized with its file system.");
         }
-        getFileEntry(this.fs.root, filePath, {create:false, exclusive:false},
+        getFileEntry(this.fs.root, filePath, {create: false, exclusive: false},
             function (fileEntry) {
                 fileEntry.file(function (file) {
                     var reader = new FileReader();
@@ -3314,7 +3365,7 @@ miapp.FileStorage = (function () {
         if (!this.fs) {
             throw new Error("miapp.FileStorage is not yet initialized with its file system.");
         }
-        getFileEntry(this.fs.root, filePath, {create:false, exclusive:false},
+        getFileEntry(this.fs.root, filePath, {create: false, exclusive: false},
             function (fileEntry) {
                 fileEntry.file(function (file) {
                     var reader = new FileReader();
@@ -3343,7 +3394,7 @@ miapp.FileStorage = (function () {
         if (!this.fs) {
             throw new Error("miapp.FileStorage is not yet initialized with its file system.");
         }
-        getFileEntry(this.fs.root, toFilePath, {create:true, exclusive:false},
+        getFileEntry(this.fs.root, toFilePath, {create: true, exclusive: false},
             function (fileEntry) {
                 fileEntry.createWriter(function (fileWriter) {
                     // WARNING : can not do truncate() + write() at the same time
@@ -3374,7 +3425,7 @@ miapp.FileStorage = (function () {
         if (!this.fs) {
             throw new Error("miapp.FileStorage is not yet initialized with its file system.");
         }
-        getFileEntry(this.fs.root, toFilePath, {create:true, exclusive:false},
+        getFileEntry(this.fs.root, toFilePath, {create: true, exclusive: false},
             function (fileEntry) {
                 fileEntry.createWriter(function (fileWriter) {
                     if (onSuccess) {
@@ -3402,7 +3453,7 @@ miapp.FileStorage = (function () {
         if (!this.fs) {
             throw new Error("miapp.FileStorage is not yet initialized with its file system.");
         }
-        getFileEntry(this.fs.root, filePath, {create:false, exclusive:false},
+        getFileEntry(this.fs.root, filePath, {create: false, exclusive: false},
             function (fileEntry) {
                 fileEntry.remove(function () {
                     if (onSuccess) {
@@ -3436,11 +3487,11 @@ miapp.FileStorage = (function () {
                 dirs.push(names[i]);
             }
         }
-        var dirOptions = {create:true, exclusive:false};
+        var dirOptions = {create: true, exclusive: false};
         getDirEntry(this.fs.root, dirOptions, dirs,
             function (dirEntry) {
                 //miapp.InternalLog.log('miapp.FileStorage','copyFile in :'+fromFilePath+" to:"+toFilePath);
-                getFileEntry(self.fs.root, fromFilePath, {create:false, exclusive:false},
+                getFileEntry(self.fs.root, fromFilePath, {create: false, exclusive: false},
                     function (fileEntry) {
                         //miapp.InternalLog.log('miapp.FileStorage','copyFile in2 :'+fromFilePath+" to:"+toFilePath);
                         fileEntry.copyTo(dirEntry, fileName, function (toFileEntry) {
@@ -3472,7 +3523,7 @@ miapp.FileStorage = (function () {
                 dirs.push(names[i]);
             }
         }
-        var dirOptions = {create:true, exclusive:false};
+        var dirOptions = {create: true, exclusive: false};
         getDirEntry(this.fs.root, dirOptions, dirs,
             function (dirEntry) {
                 //miapp.InternalLog.log('miapp.FileStorage','copyFileFromUrl in :'+fromFileUrl+" to:"+toFilePath);
@@ -3506,10 +3557,10 @@ miapp.FileStorage = (function () {
                 dirs.push(names[i]);
             }
         }
-        var dirOptions = {create:true, exclusive:false};
+        var dirOptions = {create: true, exclusive: false};
         getDirEntry(this.fs.root, dirOptions, dirs,
             function (dirEntry) {
-                getFileEntry(self.fs.root, fromFilePath, {create:false, exclusive:false},
+                getFileEntry(self.fs.root, fromFilePath, {create: false, exclusive: false},
                     function (fileEntry) {
                         fileEntry.moveTo(dirEntry, fileName, function (toFileEntry) {
                             if (onSuccess) {
@@ -3539,18 +3590,18 @@ miapp.FileStorage = (function () {
                 dirs.push(names[i]);
             }
         }
-        var dirOptions = {create:true, exclusive:false};
+        var dirOptions = {create: true, exclusive: false};
         getDirEntry(this.fs.root, dirOptions, dirs,
             function (dirEntry) {
-    			fromFileEntry.moveTo(dirEntry, fileName, function (toFileEntry) {
-                        if (onSuccess) {
-                            onSuccess(toFileEntry);
-                        }
-                    }, function (fileError) {
-                        if (onFailure) {
-                            onFailure("move " + fileEntry.fullPath + " to " + dirEntry.fullPath + "/" + fileName + " failure : " + errorMessage(fileError));
-                        }
-                    });
+                fromFileEntry.moveTo(dirEntry, fileName, function (toFileEntry) {
+                    if (onSuccess) {
+                        onSuccess(toFileEntry);
+                    }
+                }, function (fileError) {
+                    if (onFailure) {
+                        onFailure("move " + fileEntry.fullPath + " to " + dirEntry.fullPath + "/" + fileName + " failure : " + errorMessage(fileError));
+                    }
+                });
             }, onFailure);
 
     };
@@ -3641,14 +3692,14 @@ miapp.FileStorage = (function () {
         );
 
         //setTimeout(function() {
-            //miapp.InternalLog.log('miapp.FileStorage','bWillThrow ? '+bWillThrow+' '+dirName);
-            // window.setTimeout(function(){console.log('wait...');},1000);
-            // console.log('bWillThrow... ? '+bWillThrow);
+        //miapp.InternalLog.log('miapp.FileStorage','bWillThrow ? '+bWillThrow+' '+dirName);
+        // window.setTimeout(function(){console.log('wait...');},1000);
+        // console.log('bWillThrow... ? '+bWillThrow);
 
-            // if (!bWillThrow) {
-            //     console.log('getDirEntry not throw pb'+' '+dirName+' '+dirOptions);
-            //     //if (onFailure) onFailure("getDirectory " + dirName + " from " + dirEntry.fullPath + " failure : unknow ?");
-            // }
+        // if (!bWillThrow) {
+        //     console.log('getDirEntry not throw pb'+' '+dirName+' '+dirOptions);
+        //     //if (onFailure) onFailure("getDirectory " + dirName + " from " + dirEntry.fullPath + " failure : unknow ?");
+        // }
         //},500);
     }
 
@@ -3666,9 +3717,9 @@ miapp.FileStorage = (function () {
         //miapp.InternalLog.log('miapp.FileStorage','getFileEntry filePath :'+filePath+" fileOptions:"+fileOptions.create+' dirs:'+miappDumpObject("  ", dirs, 1));
         var dirOptions;
         if (fileOptions.create) {
-            dirOptions = {create:true, exclusive:false};
+            dirOptions = {create: true, exclusive: false};
         } else {
-            dirOptions = {create:false, exclusive:false};
+            dirOptions = {create: false, exclusive: false};
         }
         getDirEntry(rootEntry, dirOptions, dirs,
             function (dirEntry) {
@@ -3758,24 +3809,20 @@ miapp.PredefinedFileStorage = (function () {
     return PredefinedFileStorage;
 })(); // Invoke the function immediately to create this class.
 
-'use strict';
-
 // Namespace miapp
 var miapp;
 if (!miapp) miapp = {};
 
 
 // Services
+if (typeof angular !== 'undefined')
+    angular.module('miapp.services', [])
+        .factory('srvLocalStorage', function () {
 
-angular.module('miapp.services', [])
+            var LocalStorage = miapp.LocalStorageFactory(window.localStorage);
+            return new LocalStorage();
 
-.factory('srvLocalStorage', function () {
-
-    var LocalStorage = miapp.LocalStorageFactory(window.localStorage);
-    return new LocalStorage();
-
-});
-
+        });
 
 
 // Namespace miapp
@@ -3784,7 +3831,7 @@ if (!miapp) miapp = {};
 
 
 miapp.Utf8 = (function () {
-'use strict';
+    'use strict';
 
     var Utf8 = {};
 
@@ -4045,11 +4092,9 @@ miapp.Utf8 = (function () {
 var miapp;
 if (!miapp) miapp = {};
 
-miapp.Xml = (function()
-{
+miapp.Xml = (function () {
     // Constructor
-    function Xml()
-    {
+    function Xml() {
         this.version = "0.1";
     }
 
@@ -4064,7 +4109,7 @@ miapp.Xml = (function()
     /**
      * Encodes a XML node to string
      */
-    Xml.xml2String = function(xmlNode) {
+    Xml.xml2String = function (xmlNode) {
         // based on http://www.mercurytide.co.uk/news/article/issues-when-working-ajax/
         if (!Xml.isXml(xmlNode)) {
             return false;
@@ -4084,7 +4129,7 @@ miapp.Xml = (function()
     /**
      * Decodes a XML node from string
      */
-    Xml.string2Xml = function(xmlString) {
+    Xml.string2Xml = function (xmlString) {
         // based on http://outwestmedia.com/jquery-plugins/xmldom/
         if (!dom_parser) {
             return false;
@@ -4098,7 +4143,7 @@ miapp.Xml = (function()
     // helper functions and variables hidden within this function scope
 
     var dom_parser = ("DOMParser" in window && (new DOMParser()).parseFromString) ||
-        (window.ActiveXObject && function(_xmlString) {
+        (window.ActiveXObject && function (_xmlString) {
             var xml_doc = new ActiveXObject('Microsoft.XMLDOM');
             xml_doc.async = 'false';
             xml_doc.loadXML(_xmlString);
@@ -4111,15 +4156,14 @@ miapp.Xml = (function()
     return Xml;
 })(); // Invoke the function immediately to create this class.
 
-'use strict';
+if (typeof angular !== 'undefined')
+    angular
+        .module('MiappService', [])
+        .factory('MiappService', function ($log, $q) {
+            return new MiappService($log, $q);
+        });
 
-angular.module('MiappService', [])
-
-.factory('MiappService', function ($log, $q) {
-  return new MiappService($log, $q);
-});
-
-var MiappService = (function() {
+var MiappService = (function () {
     'use strict';
 
     function Service($log, $q) {
@@ -4142,7 +4186,7 @@ var MiappService = (function() {
 
     Service.prototype.sync = function (fnInitFirstData) {
         if (!this.miappService) return this.promise.reject('miapp.sdk.angular.sync : not initialized.');
-        return this.miappService.syncComplete(fnInitFirstData);
+        return this.miappService.syncComplete(fnInitFirstData, this);
     };
 
     Service.prototype.put = function (data) {
@@ -4155,6 +4199,11 @@ var MiappService = (function() {
         return this.miappService.findInDb(id);
     };
 
+    Service.prototype.findAll = function () {
+        if (!this.miappService) return this.promise.reject('miapp.sdk.angular.findAll : not initialized.');
+        return this.miappService.findAllInDb();
+    };
+
 
     Service.prototype.testPromise = function () {
         if (!this.miappService) return this.promise.reject('miapp.sdk.angular.testPromise : not initialized.');
@@ -4165,22 +4214,22 @@ var MiappService = (function() {
 })();
 
 
-var MiappEventable = function() {
+var MiappEventable = function () {
     throw Error("'MiappEventable' is not intended to be invoked directly");
 };
 
 MiappEventable.prototype = {
-    bind: function(event, fn) {
+    bind: function (event, fn) {
         this._events = this._events || {};
         this._events[event] = this._events[event] || [];
         this._events[event].push(fn);
     },
-    unbind: function(event, fn) {
+    unbind: function (event, fn) {
         this._events = this._events || {};
         if (event in this._events === false) return;
         this._events[event].splice(this._events[event].indexOf(fn), 1);
     },
-    trigger: function(event) {
+    trigger: function (event) {
         this._events = this._events || {};
         if (event in this._events === false) return;
         for (var i = 0; i < this._events[event].length; i++) {
@@ -4189,8 +4238,8 @@ MiappEventable.prototype = {
     }
 };
 
-MiappEventable.mixin = function(destObject) {
-    var props = [ "bind", "unbind", "trigger" ];
+MiappEventable.mixin = function (destObject) {
+    var props = ["bind", "unbind", "trigger"];
     for (var i = 0; i < props.length; i++) {
         if (props[i] in destObject.prototype) {
             console.warn("overwriting '" + props[i] + "' on '" + destObject.name + "'.");
@@ -4201,28 +4250,29 @@ MiappEventable.mixin = function(destObject) {
     }
 };
 
-(function() {
-    var name = "Logger", global = this, overwrittenName = global[name], exports;
+(function (global) {
+    var name = "Logger", overwrittenName = global[name], exports;
     /* logging */
     function Logger(name) {
         this.logEnabled = true;
         this.init(name, true);
     }
-    Logger.METHODS = [ "log", "error", "warn", "info", "debug", "assert", "clear", "count", "dir", "dirxml", "exception", "group", "groupCollapsed", "groupEnd", "profile", "profileEnd", "table", "time", "timeEnd", "trace" ];
-    Logger.prototype.init = function(name, logEnabled) {
+
+    Logger.METHODS = ["log", "error", "warn", "info", "debug", "assert", "clear", "count", "dir", "dirxml", "exception", "group", "groupCollapsed", "groupEnd", "profile", "profileEnd", "table", "time", "timeEnd", "trace"];
+    Logger.prototype.init = function (name, logEnabled) {
         this.name = name || "UNKNOWN";
         this.logEnabled = logEnabled || true;
-        var addMethod = function(method) {
+        var addMethod = function (method) {
             this[method] = this.createLogMethod(method);
         }.bind(this);
         Logger.METHODS.forEach(addMethod);
     };
-    Logger.prototype.createLogMethod = function(method) {
+    Logger.prototype.createLogMethod = function (method) {
         return Logger.prototype.log.bind(this, method);
     };
-    Logger.prototype.prefix = function(method, args) {
+    Logger.prototype.prefix = function (method, args) {
         var prepend = "[" + method.toUpperCase() + "][" + name + "]:	";
-        if ([ "log", "error", "warn", "info" ].indexOf(method) !== -1) {
+        if (["log", "error", "warn", "info"].indexOf(method) !== -1) {
             if ("string" === typeof args[0]) {
                 args[0] = prepend + args[0];
             } else {
@@ -4231,7 +4281,7 @@ MiappEventable.mixin = function(destObject) {
         }
         return args;
     };
-    Logger.prototype.log = function() {
+    Logger.prototype.log = function () {
         var args = [].slice.call(arguments);
         var method = args.shift();
         if (Logger.METHODS.indexOf(method) === -1) {
@@ -4241,12 +4291,12 @@ MiappEventable.mixin = function(destObject) {
         args = this.prefix(method, args);
         console[method].apply(console, args);
     };
-    Logger.prototype.setLogEnabled = function(logEnabled) {
+    Logger.prototype.setLogEnabled = function (logEnabled) {
         this.logEnabled = logEnabled || true;
     };
-    Logger.mixin = function(destObject) {
+    Logger.mixin = function (destObject) {
         destObject.__logger = new Logger(destObject.name || "UNKNOWN");
-        var addMethod = function(method) {
+        var addMethod = function (method) {
             if (method in destObject.prototype) {
                 console.warn("overwriting '" + method + "' on '" + destObject.name + "'.");
                 console.warn("the previous version can be found at '_" + method + "' on '" + destObject.name + "'.");
@@ -4257,25 +4307,27 @@ MiappEventable.mixin = function(destObject) {
         Logger.METHODS.forEach(addMethod);
     };
     global[name] = Logger;
-    global[name].noConflict = function() {
+    global[name].noConflict = function () {
         if (overwrittenName) {
             global[name] = overwrittenName;
         }
         return Logger;
     };
     return global[name];
-})();
+})(this || window);
 
-(function(global) {
-    var name = "Promise", overwrittenName = global[name], exports;
-    function Promise() {
+(function (global) {
+    var name = "MiappPromise", overwrittenName = global[name], exports;
+
+    function MiappPromise() {
         this.complete = false;
         this.error = null;
         this.result = null;
         this.callbacks = [];
     }
-    Promise.prototype.then = function(callback, context) {
-        var f = function() {
+
+    MiappPromise.prototype.then = function (callback, context) {
+        var f = function () {
             return callback.apply(context, arguments);
         };
         if (this.complete) {
@@ -4284,7 +4336,7 @@ MiappEventable.mixin = function(destObject) {
             this.callbacks.push(f);
         }
     };
-    Promise.prototype.done = function(error, result) {
+    MiappPromise.prototype.done = function (error, result) {
         this.complete = true;
         this.error = error;
         this.result = result;
@@ -4293,10 +4345,11 @@ MiappEventable.mixin = function(destObject) {
             this.callbacks.length = 0;
         }
     };
-    Promise.join = function(promises) {
-        var p = new Promise(), total = promises.length, completed = 0, errors = [], results = [];
+    MiappPromise.join = function (promises) {
+        var p = new MiappPromise(), total = promises.length, completed = 0, errors = [], results = [];
+
         function notifier(i) {
-            return function(error, result) {
+            return function (error, result) {
                 completed += 1;
                 errors[i] = error;
                 results[i] = result;
@@ -4305,20 +4358,21 @@ MiappEventable.mixin = function(destObject) {
                 }
             };
         }
+
         for (var i = 0; i < total; i++) {
             promises[i]().then(notifier(i));
         }
         return p;
     };
-    Promise.chain = function(promises, error, result) {
-        var p = new Promise();
+    MiappPromise.chain = function (promises, error, result) {
+        var p = new MiappPromise();
         if (promises === null || promises.length === 0) {
             p.done(error, result);
         } else {
-            promises[0](error, result).then(function(res, err) {
+            promises[0](error, result).then(function (res, err) {
                 promises.splice(0, 1);
                 if (promises) {
-                    Promise.chain(promises, res, err).then(function(r, e) {
+                    MiappPromise.chain(promises, res, err).then(function (r, e) {
                         p.done(r, e);
                     });
                 } else {
@@ -4328,28 +4382,30 @@ MiappEventable.mixin = function(destObject) {
         }
         return p;
     };
-    global[name] = Promise;
-    global[name].noConflict = function() {
+    global[name] = MiappPromise;
+    global[name].noConflict = function () {
         if (overwrittenName) {
             global[name] = overwrittenName;
         }
-        return Promise;
+        return MiappPromise;
     };
     return global[name];
-})(this);
+})(this || window);
 
 
+(function (global) {
+    var name = "Ajax", overwrittenName = global[name], exports;
 
-(function() {
-    var name = "Ajax", global = this, overwrittenName = global[name], exports;
     function partial() {
         var args = Array.prototype.slice.call(arguments);
         var fn = args.shift();
         return fn.bind(this, args);
     }
+
     function Ajax() {
         this.logger = new global.Logger(name);
         var self = this;
+
         function encode(data) {
             var result = "";
             if (typeof data === "string") {
@@ -4364,22 +4420,23 @@ MiappEventable.mixin = function(destObject) {
             }
             return result;
         }
+
         function request(m, u, d, token) {
-            var p = new Promise(), timeout;
+            var p = new MiappPromise(), timeout;
             self.logger.time(m + " " + u);
-            (function(xhr) {
-                xhr.onreadystatechange = function() {
+            (function (xhr) {
+                xhr.onreadystatechange = function () {
                     if (this.readyState === 4) {
                         self.logger.timeEnd(m + " " + u);
                         clearTimeout(timeout);
                         p.done(null, this);
                     }
                 };
-                xhr.onerror = function(response) {
+                xhr.onerror = function (response) {
                     clearTimeout(timeout);
                     p.done(response, null);
                 };
-                xhr.oncomplete = function(response) {
+                xhr.oncomplete = function (response) {
                     clearTimeout(timeout);
                     self.logger.timeEnd(m + " " + u);
                     self.info("%s request to %s returned %s", m, u, this.status);
@@ -4398,7 +4455,7 @@ MiappEventable.mixin = function(destObject) {
                     //MLE ? if (token) xhr.setRequestHeader('Cookie', "miapptoken=" + token);
                     //if (token) xhr.setRequestHeader('X-CSRF-Token', token);
                 }
-                timeout = setTimeout(function() {
+                timeout = setTimeout(function () {
                     xhr.abort();
                     p.done("API Call timed out.", null);
                 }, 3e4);
@@ -4406,21 +4463,23 @@ MiappEventable.mixin = function(destObject) {
             })(new XMLHttpRequest());
             return p;
         }
+
         this.request = request;
         this.get = partial(request, "GET");
         this.post = partial(request, "POST");
         this.put = partial(request, "PUT");
         this.delete = partial(request, "DELETE");
     }
+
     global[name] = new Ajax();
-    global[name].noConflict = function() {
+    global[name].noConflict = function () {
         if (overwrittenName) {
             global[name] = overwrittenName;
         }
         return exports;
     };
     return global[name];
-})();
+})(this || window);
 
 /*
  *  This module is a collection of classes designed to make working with
@@ -4447,10 +4506,12 @@ MiappEventable.mixin = function(destObject) {
  */
 window.console = window.console || {};
 
-window.console.log = window.console.log || function() {};
+window.console.log = window.console.log || function () {
+    };
 
 function extend(subClass, superClass) {
-    var F = function() {};
+    var F = function () {
+    };
     F.prototype = superClass.prototype;
     subClass.prototype = new F();
     subClass.prototype.constructor = subClass;
@@ -4474,7 +4535,8 @@ function propCopy(from, to) {
     return to;
 }
 
-function NOOP() {}
+function NOOP() {
+}
 
 function isValidUrl(url) {
     if (!url) return false;
@@ -4525,24 +4587,24 @@ function isUUID(uuid) {
 function encodeParams(params) {
     var queryString;
     if (params && Object.keys(params)) {
-        queryString = [].slice.call(arguments).reduce(function(a, b) {
-            return a.concat(b instanceof Array ? b : [ b ]);
-        }, []).filter(function(c) {
+        queryString = [].slice.call(arguments).reduce(function (a, b) {
+            return a.concat(b instanceof Array ? b : [b]);
+        }, []).filter(function (c) {
             return "object" === typeof c;
-        }).reduce(function(p, c) {
-            !(c instanceof Array) ? p = p.concat(Object.keys(c).map(function(key) {
-                return [ key, c[key] ];
+        }).reduce(function (p, c) {
+            !(c instanceof Array) ? p = p.concat(Object.keys(c).map(function (key) {
+                return [key, c[key]];
             })) : p.push(c);
             return p;
-        }, []).reduce(function(p, c) {
+        }, []).reduce(function (p, c) {
             c.length === 2 ? p.push(c) : p = p.concat(c);
             return p;
-        }, []).reduce(function(p, c) {
-            c[1] instanceof Array ? c[1].forEach(function(v) {
-                p.push([ c[0], v ]);
+        }, []).reduce(function (p, c) {
+            c[1] instanceof Array ? c[1].forEach(function (v) {
+                p.push([c[0], v]);
             }) : p.push(c);
             return p;
-        }, []).map(function(c) {
+        }, []).map(function (c) {
             c[1] = encodeURIComponent(c[1]);
             return c.join("=");
         }).join("&");
@@ -4583,17 +4645,19 @@ function doCallback(callback, params, context) {
     return returnValue;
 }
 
-(function(global) {
+(function (global) {
     var name = "Miapp", overwrittenName = global[name];
-    var VALID_REQUEST_METHODS = [ "GET", "POST", "PUT", "DELETE" ];
+    var VALID_REQUEST_METHODS = ["GET", "POST", "PUT", "DELETE"];
+
     function Miapp() {
         this.logger = new Logger(name);
     }
-    Miapp.isValidEndpoint = function(endpoint) {
+
+    Miapp.isValidEndpoint = function (endpoint) {
         return true;
     };
-    Miapp.Request = function(method, endpoint, query_params, data, callback) {
-        var p = new Promise();
+    Miapp.Request = function (method, endpoint, query_params, data, callback) {
+        var p = new MiappPromise();
         /*
          Create a logger
          */
@@ -4618,33 +4682,33 @@ function doCallback(callback, params, context) {
         /* a callback to make the request */
         var token = null;
         if (query_params) token = query_params.access_token;
-        var request = function() {
+        var request = function () {
             return Ajax.request(this.method, this.endpoint, this.data, token);
         }.bind(this);
         /* a callback to process the response */
-        var response = function(err, request) {
+        var response = function (err, request) {
             return new Miapp.Response(err, request);
         }.bind(this);
         /* a callback to clean up and return data to the client */
-        var oncomplete = function(err, response) {
+        var oncomplete = function (err, response) {
             p.done(err, response);
             this.logger.info("REQUEST", err, response);
-            doCallback(callback, [ err, response ]);
+            doCallback(callback, [err, response]);
             this.logger.timeEnd("process request " + method + " " + endpoint);
         }.bind(this);
         /* and a promise to chain them all together */
-        Promise.chain([ request, response ]).then(oncomplete);
+        MiappPromise.chain([request, response]).then(oncomplete);
         return p;
     };
-    Miapp.Response = function(err, response) {
-        var p = new Promise();
+    Miapp.Response = function (err, response) {
+        var p = new MiappPromise();
         var data = null;
         try {
             data = JSON.parse(response.responseText);
         } catch (e) {
             data = {};
         }
-        Object.keys(data).forEach(function(key) {
+        Object.keys(data).forEach(function (key) {
             Object.defineProperty(this, key, {
                 value: data[key],
                 enumerable: true
@@ -4681,17 +4745,17 @@ function doCallback(callback, params, context) {
             value: this.status - this.status % 100
         });
         switch (this.statusGroup) {
-          case 200:
-            this.success = true;
-            break;
+            case 200:
+                this.success = true;
+                break;
 
-          case 400:
-          case 500:
-          case 300:
-          case 100:
-          default:
-            this.success = false;
-            break;
+            case 400:
+            case 500:
+            case 300:
+            case 100:
+            default:
+                this.success = false;
+                break;
         }
         if (this.success) {
             p.done(null, this);
@@ -4700,32 +4764,32 @@ function doCallback(callback, params, context) {
         }
         return p;
     };
-    Miapp.Response.prototype.getEntities = function() {
+    Miapp.Response.prototype.getEntities = function () {
         var entities;
         if (this.success) {
             entities = this.data ? this.data.entities : this.entities;
         }
         return entities || [];
     };
-    Miapp.Response.prototype.getEntity = function() {
+    Miapp.Response.prototype.getEntity = function () {
         var entities = this.getEntities();
         return entities[0];
     };
     Miapp.VERSION = Miapp.USERGRID_SDK_VERSION = "0.11.0";
     global[name] = Miapp;
-    global[name].noConflict = function() {
+    global[name].noConflict = function () {
         if (overwrittenName) {
             global[name] = overwrittenName;
         }
         return Miapp;
     };
     return global[name];
-})(this);
+})(this || window);
 
-(function() {
-    var name = "Client", global = this, overwrittenName = global[name], exports;
-    var AUTH_ERRORS = [ "auth_expired_session_token", "auth_missing_credentials", "auth_unverified_oath", "expired_token", "unauthorized", "auth_invalid" ];
-    Miapp.Client = function(options) {
+(function (global) {
+    var name = "Client", overwrittenName = global[name], exports;
+    var AUTH_ERRORS = ["auth_expired_session_token", "auth_missing_credentials", "auth_unverified_oath", "expired_token", "unauthorized", "auth_invalid"];
+    Miapp.Client = function (options) {
         //console.log(this);
         this.URI = options.URI;
         if (options.orgName) {
@@ -4741,22 +4805,22 @@ function doCallback(callback, params, context) {
         this.logging = options.logging || false;
     };
     /*
-   *  Main function for making requests to the API.  Can be called directly.
-   *
-   *  options object:
-   *  `method` - http method (GET, POST, PUT, or DELETE), defaults to GET
-   *  `qs` - object containing querystring values to be appended to the uri
-   *  `body` - object containing entity body for POST and PUT requests
-   *  `endpoint` - API endpoint, for example 'users/fred'
-   *  `mQuery` - boolean, set to true if running management query, defaults to false
-   *
-   *  @method request
-   *  @public
-   *  @params {object} options
-   *  @param {function} callback
-   *  @return {callback} callback(err, data)
-   */
-    Miapp.Client.prototype.request = function(options, callback) {
+     *  Main function for making requests to the API.  Can be called directly.
+     *
+     *  options object:
+     *  `method` - http method (GET, POST, PUT, or DELETE), defaults to GET
+     *  `qs` - object containing querystring values to be appended to the uri
+     *  `body` - object containing entity body for POST and PUT requests
+     *  `endpoint` - API endpoint, for example 'users/fred'
+     *  `mQuery` - boolean, set to true if running management query, defaults to false
+     *
+     *  @method request
+     *  @public
+     *  @params {object} options
+     *  @param {function} callback
+     *  @return {callback} callback(err, data)
+     */
+    Miapp.Client.prototype.request = function (options, callback) {
         var method = options.method || "GET";
         var endpoint = options.endpoint;
         var body = options.body || {};
@@ -4767,10 +4831,10 @@ function doCallback(callback, params, context) {
         var default_qs = this.getObject("default_qs");
         var uri;
         /*var logoutCallback=function(){
-        if (typeof(this.logoutCallback) === 'function') {
-            return this.logoutCallback(true, 'no_org_or_app_name_specified');
-        }
-    }.bind(this);*/
+         if (typeof(this.logoutCallback) === 'function') {
+         return this.logoutCallback(true, 'no_org_or_app_name_specified');
+         }
+         }.bind(this);*/
         if (!mQuery && !orgName && !appName) {
             return logoutCallback();
         }
@@ -4786,26 +4850,26 @@ function doCallback(callback, params, context) {
             qs = propCopy(qs, default_qs);
         }
         var self = this;
-        var req = new Miapp.Request(method, uri, qs, body, function(err, response) {
+        var req = new Miapp.Request(method, uri, qs, body, function (err, response) {
             /*if (AUTH_ERRORS.indexOf(response.error) !== -1) {
-            return logoutCallback();
-        }*/
+             return logoutCallback();
+             }*/
             if (err) {
-                doCallback(callback, [ err, response, self ], self);
+                doCallback(callback, [err, response, self], self);
             } else {
-                doCallback(callback, [ null, response, self ], self);
+                doCallback(callback, [null, response, self], self);
             }
         });
     };
     /*
-   *  function for building asset urls
-   *
-   *  @method buildAssetURL
-   *  @public
-   *  @params {string} uuid
-   *  @return {string} assetURL
-   */
-    Miapp.Client.prototype.buildAssetURL = function(uuid) {
+     *  function for building asset urls
+     *
+     *  @method buildAssetURL
+     *  @public
+     *  @params {string} uuid
+     *  @return {string} assetURL
+     */
+    Miapp.Client.prototype.buildAssetURL = function (uuid) {
         var self = this;
         var qs = {};
         var assetURL = this.URI + "/" + this.orgName + "/" + this.appName + "/assets/" + uuid + "/data";
@@ -4819,78 +4883,78 @@ function doCallback(callback, params, context) {
         return assetURL;
     };
     /*
-   *  Main function for creating new groups. Call this directly.
-   *
-   *  @method createGroup
-   *  @public
-   *  @params {string} path
-   *  @param {function} callback
-   *  @return {callback} callback(err, data)
-   */
-    Miapp.Client.prototype.createGroup = function(options, callback) {
+     *  Main function for creating new groups. Call this directly.
+     *
+     *  @method createGroup
+     *  @public
+     *  @params {string} path
+     *  @param {function} callback
+     *  @return {callback} callback(err, data)
+     */
+    Miapp.Client.prototype.createGroup = function (options, callback) {
         var group = new Miapp.Group({
             path: options.path,
             client: this,
             data: options
         });
-        group.save(function(err, response) {
-            doCallback(callback, [ err, response, group ], group);
+        group.save(function (err, response) {
+            doCallback(callback, [err, response, group], group);
         });
     };
     /*
-   *  Main function for creating new entities - should be called directly.
-   *
-   *  options object: options {data:{'type':'collection_type', 'key':'value'}, uuid:uuid}}
-   *
-   *  @method createEntity
-   *  @public
-   *  @params {object} options
-   *  @param {function} callback
-   *  @return {callback} callback(err, data)
-   */
-    Miapp.Client.prototype.createEntity = function(options, callback) {
+     *  Main function for creating new entities - should be called directly.
+     *
+     *  options object: options {data:{'type':'collection_type', 'key':'value'}, uuid:uuid}}
+     *
+     *  @method createEntity
+     *  @public
+     *  @params {object} options
+     *  @param {function} callback
+     *  @return {callback} callback(err, data)
+     */
+    Miapp.Client.prototype.createEntity = function (options, callback) {
         var entity = new Miapp.Entity({
             client: this,
             data: options
         });
-        entity.save(function(err, response) {
-            doCallback(callback, [ err, response, entity ], entity);
+        entity.save(function (err, response) {
+            doCallback(callback, [err, response, entity], entity);
         });
     };
     /*
-   *  Main function for getting existing entities - should be called directly.
-   *
-   *  You must supply a uuid or (username or name). Username only applies to users.
-   *  Name applies to all custom entities
-   *
-   *  options object: options {data:{'type':'collection_type', 'name':'value', 'username':'value'}, uuid:uuid}}
-   *
-   *  @method createEntity
-   *  @public
-   *  @params {object} options
-   *  @param {function} callback
-   *  @return {callback} callback(err, data)
-   */
-    Miapp.Client.prototype.getEntity = function(options, callback) {
+     *  Main function for getting existing entities - should be called directly.
+     *
+     *  You must supply a uuid or (username or name). Username only applies to users.
+     *  Name applies to all custom entities
+     *
+     *  options object: options {data:{'type':'collection_type', 'name':'value', 'username':'value'}, uuid:uuid}}
+     *
+     *  @method createEntity
+     *  @public
+     *  @params {object} options
+     *  @param {function} callback
+     *  @return {callback} callback(err, data)
+     */
+    Miapp.Client.prototype.getEntity = function (options, callback) {
         var entity = new Miapp.Entity({
             client: this,
             data: options
         });
-        entity.fetch(function(err, response) {
-            doCallback(callback, [ err, response, entity ], entity);
+        entity.fetch(function (err, response) {
+            doCallback(callback, [err, response, entity], entity);
         });
     };
     /*
-   *  Main function for restoring an entity from serialized data.
-   *
-   *  serializedObject should have come from entityObject.serialize();
-   *
-   *  @method restoreEntity
-   *  @public
-   *  @param {string} serializedObject
-   *  @return {object} Entity Object
-   */
-    Miapp.Client.prototype.restoreEntity = function(serializedObject) {
+     *  Main function for restoring an entity from serialized data.
+     *
+     *  serializedObject should have come from entityObject.serialize();
+     *
+     *  @method restoreEntity
+     *  @public
+     *  @param {string} serializedObject
+     *  @return {object} Entity Object
+     */
+    Miapp.Client.prototype.restoreEntity = function (serializedObject) {
         var data = JSON.parse(serializedObject);
         var options = {
             client: this,
@@ -4900,17 +4964,17 @@ function doCallback(callback, params, context) {
         return entity;
     };
     /*
-   *  Main function for creating new counters - should be called directly.
-   *
-   *  options object: options {timestamp:0, category:'value', counters:{name : value}}
-   *
-   *  @method createCounter
-   *  @public
-   *  @params {object} options
-   *  @param {function} callback
-   *  @return {callback} callback(err, response, counter)
-   */
-    Miapp.Client.prototype.createCounter = function(options, callback) {
+     *  Main function for creating new counters - should be called directly.
+     *
+     *  options object: options {timestamp:0, category:'value', counters:{name : value}}
+     *
+     *  @method createCounter
+     *  @public
+     *  @params {object} options
+     *  @param {function} callback
+     *  @return {callback} callback(err, response, counter)
+     */
+    Miapp.Client.prototype.createCounter = function (options, callback) {
         var counter = new Miapp.Counter({
             client: this,
             data: options
@@ -4918,17 +4982,17 @@ function doCallback(callback, params, context) {
         counter.save(callback);
     };
     /*
-   *  Main function for creating new assets - should be called directly.
-   *
-   *  options object: options {name:"photo.jpg", path:"/user/uploads", "content-type":"image/jpeg", owner:"F01DE600-0000-0000-0000-000000000000", file: FileOrBlobObject }
-   *
-   *  @method createCounter
-   *  @public
-   *  @params {object} options
-   *  @param {function} callback
-   *  @return {callback} callback(err, response, counter)
-   */
-    Miapp.Client.prototype.createAsset = function(options, callback) {
+     *  Main function for creating new assets - should be called directly.
+     *
+     *  options object: options {name:"photo.jpg", path:"/user/uploads", "content-type":"image/jpeg", owner:"F01DE600-0000-0000-0000-000000000000", file: FileOrBlobObject }
+     *
+     *  @method createCounter
+     *  @public
+     *  @params {object} options
+     *  @param {function} callback
+     *  @return {callback} callback(err, response, counter)
+     */
+    Miapp.Client.prototype.createAsset = function (options, callback) {
         var file = options.file;
         if (file) {
             options.name = options.name || file.name;
@@ -4940,130 +5004,130 @@ function doCallback(callback, params, context) {
             client: this,
             data: options
         });
-        asset.save(function(err, response, asset) {
+        asset.save(function (err, response, asset) {
             if (file && !err) {
                 asset.upload(file, callback);
             } else {
-                doCallback(callback, [ err, response, asset ], asset);
+                doCallback(callback, [err, response, asset], asset);
             }
         });
     };
     /*
-   *  Main function for creating new collections - should be called directly.
-   *
-   *  options object: options {client:client, type: type, qs:qs}
-   *
-   *  @method createCollection
-   *  @public
-   *  @params {object} options
-   *  @param {function} callback
-   *  @return {callback} callback(err, data)
-   */
-    Miapp.Client.prototype.createCollection = function(options, callback) {
+     *  Main function for creating new collections - should be called directly.
+     *
+     *  options object: options {client:client, type: type, qs:qs}
+     *
+     *  @method createCollection
+     *  @public
+     *  @params {object} options
+     *  @param {function} callback
+     *  @return {callback} callback(err, data)
+     */
+    Miapp.Client.prototype.createCollection = function (options, callback) {
         options.client = this;
-        return new Miapp.Collection(options, function(err, data, collection) {
+        return new Miapp.Collection(options, function (err, data, collection) {
             console.log("createCollection", arguments);
-            doCallback(callback, [ err, collection, data ]);
+            doCallback(callback, [err, collection, data]);
         });
     };
     /*
-   *  Main function for restoring a collection from serialized data.
-   *
-   *  serializedObject should have come from collectionObject.serialize();
-   *
-   *  @method restoreCollection
-   *  @public
-   *  @param {string} serializedObject
-   *  @return {object} Collection Object
-   */
-    Miapp.Client.prototype.restoreCollection = function(serializedObject) {
+     *  Main function for restoring a collection from serialized data.
+     *
+     *  serializedObject should have come from collectionObject.serialize();
+     *
+     *  @method restoreCollection
+     *  @public
+     *  @param {string} serializedObject
+     *  @return {object} Collection Object
+     */
+    Miapp.Client.prototype.restoreCollection = function (serializedObject) {
         var data = JSON.parse(serializedObject);
         data.client = this;
         var collection = new Miapp.Collection(data);
         return collection;
     };
     /*
-   *  Main function for retrieving a user's activity feed.
-   *
-   *  @method getFeedForUser
-   *  @public
-   *  @params {string} username
-   *  @param {function} callback
-   *  @return {callback} callback(err, data, activities)
-   */
-    Miapp.Client.prototype.getFeedForUser = function(username, callback) {
+     *  Main function for retrieving a user's activity feed.
+     *
+     *  @method getFeedForUser
+     *  @public
+     *  @params {string} username
+     *  @param {function} callback
+     *  @return {callback} callback(err, data, activities)
+     */
+    Miapp.Client.prototype.getFeedForUser = function (username, callback) {
         var options = {
             method: "GET",
             endpoint: "users/" + username + "/feed"
         };
-        this.request(options, function(err, data) {
+        this.request(options, function (err, data) {
             if (err) {
-                doCallback(callback, [ err ]);
+                doCallback(callback, [err]);
             } else {
-                doCallback(callback, [ err, data, data.getEntities() ]);
+                doCallback(callback, [err, data, data.getEntities()]);
             }
         });
     };
     /*
-   *  Function for creating new activities for the current user - should be called directly.
-   *
-   *  //user can be any of the following: "me", a uuid, a username
-   *  Note: the "me" alias will reference the currently logged in user (e.g. 'users/me/activties')
-   *
-   *  //build a json object that looks like this:
-   *  var options =
-   *  {
-   *    "actor" : {
-   *      "displayName" :"myusername",
-   *      "uuid" : "myuserid",
-   *      "username" : "myusername",
-   *      "email" : "myemail",
-   *      "picture": "http://path/to/picture",
-   *      "image" : {
-   *          "duration" : 0,
-   *          "height" : 80,
-   *          "url" : "http://www.gravatar.com/avatar/",
-   *          "width" : 80
-   *      },
-   *    },
-   *    "verb" : "post",
-   *    "content" : "My cool message",
-   *    "lat" : 48.856614,
-   *    "lon" : 2.352222
-   *  }
-   *
-   *  @method createEntity
-   *  @public
-   *  @params {string} user // "me", a uuid, or a username
-   *  @params {object} options
-   *  @param {function} callback
-   *  @return {callback} callback(err, data)
-   */
-    Miapp.Client.prototype.createUserActivity = function(user, options, callback) {
+     *  Function for creating new activities for the current user - should be called directly.
+     *
+     *  //user can be any of the following: "me", a uuid, a username
+     *  Note: the "me" alias will reference the currently logged in user (e.g. 'users/me/activties')
+     *
+     *  //build a json object that looks like this:
+     *  var options =
+     *  {
+     *    "actor" : {
+     *      "displayName" :"myusername",
+     *      "uuid" : "myuserid",
+     *      "username" : "myusername",
+     *      "email" : "myemail",
+     *      "picture": "http://path/to/picture",
+     *      "image" : {
+     *          "duration" : 0,
+     *          "height" : 80,
+     *          "url" : "http://www.gravatar.com/avatar/",
+     *          "width" : 80
+     *      },
+     *    },
+     *    "verb" : "post",
+     *    "content" : "My cool message",
+     *    "lat" : 48.856614,
+     *    "lon" : 2.352222
+     *  }
+     *
+     *  @method createEntity
+     *  @public
+     *  @params {string} user // "me", a uuid, or a username
+     *  @params {object} options
+     *  @param {function} callback
+     *  @return {callback} callback(err, data)
+     */
+    Miapp.Client.prototype.createUserActivity = function (user, options, callback) {
         options.type = "users/" + user + "/activities";
         options = {
             client: this,
             data: options
         };
         var entity = new Miapp.Entity(options);
-        entity.save(function(err, data) {
-            doCallback(callback, [ err, data, entity ]);
+        entity.save(function (err, data) {
+            doCallback(callback, [err, data, entity]);
         });
     };
     /*
-   *  Function for creating user activities with an associated user entity.
-   *
-   *  user object:
-   *  The user object passed into this function is an instance of Miapp.Entity.
-   *
-   *  @method createUserActivityWithEntity
-   *  @public
-   *  @params {object} user
-   *  @params {string} content
-   *  @param {function} callback
-   *  @return {callback} callback(err, data)
-   */
-    Miapp.Client.prototype.createUserActivityWithEntity = function(user, content, callback) {
+     *  Function for creating user activities with an associated user entity.
+     *
+     *  user object:
+     *  The user object passed into this function is an instance of Miapp.Entity.
+     *
+     *  @method createUserActivityWithEntity
+     *  @public
+     *  @params {object} user
+     *  @params {string} content
+     *  @param {function} callback
+     *  @return {callback} callback(err, data)
+     */
+    Miapp.Client.prototype.createUserActivityWithEntity = function (user, content, callback) {
         var username = user.get("username");
         var options = {
             actor: {
@@ -5085,9 +5149,9 @@ function doCallback(callback, params, context) {
         this.createUserActivity(username, options, callback);
     };
     /*
-   *  A private method to get call timing of last call
-   */
-    Miapp.Client.prototype.calcTimeDiff = function() {
+     *  A private method to get call timing of last call
+     */
+    Miapp.Client.prototype.calcTimeDiff = function () {
         var seconds = 0;
         var time = this._end - this._start;
         try {
@@ -5098,60 +5162,58 @@ function doCallback(callback, params, context) {
         return seconds;
     };
     /*
-   *  A public method to store the OAuth token for later use - uses localstorage if available
-   *
-   *  @method setToken
-   *  @public
-   *  @params {string} token
-   *  @return none
-   */
-    Miapp.Client.prototype.setToken = function(token) {
+     *  A public method to store the OAuth token for later use - uses localstorage if available
+     *
+     *  @method setToken
+     *  @public
+     *  @params {string} token
+     *  @return none
+     */
+    Miapp.Client.prototype.setToken = function (token) {
         this.set("token", token);
     };
 
-    Miapp.Client.prototype.setEndpoint = function(endpoint) {
+    Miapp.Client.prototype.setEndpoint = function (endpoint) {
         this.set("endpoint", endpoint);
     };
-    
-    Miapp.Client.prototype.setUserId = function(userId) {
+
+    Miapp.Client.prototype.setUserId = function (userId) {
         this.set("userid", userId);
     };
-    Miapp.Client.prototype.setAppId = function(appId) {
+    Miapp.Client.prototype.setAppId = function (appId) {
         this.set("miappid", appId);
     };
-    
-    
 
 
     /*
-   *  A public method to get the OAuth token
-   *
-   *  @method getToken
-   *  @public
-   *  @return {string} token
-   */
-    Miapp.Client.prototype.getToken = function() {
+     *  A public method to get the OAuth token
+     *
+     *  @method getToken
+     *  @public
+     *  @return {string} token
+     */
+    Miapp.Client.prototype.getToken = function () {
         return this.get("token");
     };
 
-    Miapp.Client.prototype.getEndpoint = function() {
+    Miapp.Client.prototype.getEndpoint = function () {
         return this.get("endpoint");
     };
-    
-    Miapp.Client.prototype.getUserId = function() {
+
+    Miapp.Client.prototype.getUserId = function () {
         return this.get("userid");
     };
-    Miapp.Client.prototype.getAppId = function() {
+    Miapp.Client.prototype.getAppId = function () {
         return this.get("miappid");
     };
 
-    Miapp.Client.prototype.setObject = function(key, value) {
+    Miapp.Client.prototype.setObject = function (key, value) {
         if (value) {
             value = JSON.stringify(value);
         }
         this.set(key, value);
     };
-    Miapp.Client.prototype.set = function(key, value) {
+    Miapp.Client.prototype.set = function (key, value) {
         var keyStore = "apigee_" + key;
         this[key] = value;
         if (typeof Storage !== "undefined") {
@@ -5162,10 +5224,10 @@ function doCallback(callback, params, context) {
             }
         }
     };
-    Miapp.Client.prototype.getObject = function(key) {
+    Miapp.Client.prototype.getObject = function (key) {
         return JSON.parse(this.get(key));
     };
-    Miapp.Client.prototype.get = function(key) {
+    Miapp.Client.prototype.get = function (key) {
         var keyStore = "apigee_" + key;
         var value = null;
         if (this[key]) {
@@ -5176,18 +5238,18 @@ function doCallback(callback, params, context) {
         return value;
     };
     /*
-   * A public facing helper method for signing up users
-   *
-   * @method signup
-   * @public
-   * @params {string} username
-   * @params {string} password
-   * @params {string} email
-   * @params {string} name
-   * @param {function} callback
-   * @return {callback} callback(err, data)
-   */
-    Miapp.Client.prototype.signup = function(username, password, email, name, callback) {
+     * A public facing helper method for signing up users
+     *
+     * @method signup
+     * @public
+     * @params {string} username
+     * @params {string} password
+     * @params {string} email
+     * @params {string} name
+     * @param {function} callback
+     * @return {callback} callback(err, data)
+     */
+    Miapp.Client.prototype.signup = function (username, password, email, name, callback) {
         var self = this;
         var options = {
             type: "users",
@@ -5199,17 +5261,17 @@ function doCallback(callback, params, context) {
         this.createEntity(options, callback);
     };
     /*
-   *
-   *  A public method to log in an app user - stores the token for later use
-   *
-   *  @method login
-   *  @public
-   *  @params {string} username
-   *  @params {string} password
-   *  @param {function} callback
-   *  @return {callback} callback(err, data)
-   */
-    Miapp.Client.prototype.login = function(username, password, callback) {
+     *
+     *  A public method to log in an app user - stores the token for later use
+     *
+     *  @method login
+     *  @public
+     *  @params {string} username
+     *  @params {string} password
+     *  @param {function} callback
+     *  @return {callback} callback(err, data)
+     */
+    Miapp.Client.prototype.login = function (username, password, callback) {
         var self = this;
         var options = {
             method: "POST",
@@ -5220,7 +5282,7 @@ function doCallback(callback, params, context) {
                 grant_type: "password"
             }
         };
-        self.request(options, function(err, response) {
+        self.request(options, function (err, response) {
             var user = {};
             if (err) {
                 if (self.logging) console.log("error trying to log user in");
@@ -5232,20 +5294,20 @@ function doCallback(callback, params, context) {
                 user = new Miapp.Entity(options);
                 self.setToken(response.access_token);
             }
-            doCallback(callback, [ err, response, user ]);
+            doCallback(callback, [err, response, user]);
         });
     };
 
 
-    Miapp.Client.prototype.authMLE = function(callback) {
+    Miapp.Client.prototype.authMLE = function (callback) {
         var self = this;
         var userId = self.getUserId();
         var appId = self.getAppId();
-        
-        
+
+
         // var cookieToken = Token.encryptTokenData('apifootoken');
         // request(app).post('/api/auth').set('Cookie', 'miapptoken=' + cookieToken)
-        
+
         var options = {
             method: "POST",
             mQuery: true,
@@ -5258,29 +5320,29 @@ function doCallback(callback, params, context) {
         };
 
 
-        self.request(options, function(err, response) {
+        self.request(options, function (err, response) {
             var user = {};
             if (err) {
                 if (self.logging) console.log("error trying to auth user in");
             } else {
                 var options = {
                     client: self,
-                    data: { _id : userId }
+                    data: {_id: userId}
                 };
                 user = new Miapp.Entity(options);
                 self.setToken(response.authToken);
                 self.setEndpoint(response.endpoint);
             }
-            doCallback(callback, [ err, response, user ]);
+            doCallback(callback, [err, response, user]);
         });
     };
 
 
-    Miapp.Client.prototype.loginMLE = function(appid, login, password, updateProperties, callback) {
+    Miapp.Client.prototype.loginMLE = function (appid, login, password, updateProperties, callback) {
         var self = this;
-        
+
         self.setAppId(appid);
-            
+
         var options = {
             method: "POST",
             mQuery: true,
@@ -5295,70 +5357,69 @@ function doCallback(callback, params, context) {
         };
 
 
-        self.request(options, function(err, response) {
+        self.request(options, function (err, response) {
             /*var user = {};
-            if (err) {
-                if (self.logging) console.log("error trying to log user in");
-            } else {
-                var options = {
-                    client: self,
-                    data: { _id : response._id }
-                };
-                user = new Miapp.Entity(options);
-                self.setToken(response.authToken);
-                self.setEndpoint(response.endpoint);
-            }
-            doCallback(callback, [ err, response, user ]);*/
-            
-                self.setToken(password); //FIX //TODO resolve double auth
-                self.setUserId(response._id);
+             if (err) {
+             if (self.logging) console.log("error trying to log user in");
+             } else {
+             var options = {
+             client: self,
+             data: { _id : response._id }
+             };
+             user = new Miapp.Entity(options);
+             self.setToken(response.authToken);
+             self.setEndpoint(response.endpoint);
+             }
+             doCallback(callback, [ err, response, user ]);*/
+
+            self.setToken(password); //FIX //TODO resolve double auth
+            self.setUserId(response._id);
             return self.authMLE(callback);
         });
     };
 
 
-    Miapp.Client.prototype.deleteUserMLE = function(userIDToDelete, callback) {
+    Miapp.Client.prototype.deleteUserMLE = function (userIDToDelete, callback) {
         var self = this;
         var options = {
             method: "DELETE",
             mQuery: true,
-            endpoint: "users/"+userIDToDelete
+            endpoint: "users/" + userIDToDelete
         };
 
         // 1) userId + (cookie) src && version  && valid token 2) body vide + 204
-        self.request(options, function(err, response) {
+        self.request(options, function (err, response) {
             if (err && self.logging) console.log("error trying to log user in");
 
-            doCallback(callback, [ err, response ]);
+            doCallback(callback, [err, response]);
         });
     };
 
 
-
-    Miapp.Client.prototype.reAuthenticateLite = function(callback) {
+    Miapp.Client.prototype.reAuthenticateLite = function (callback) {
         var self = this;
         var options = {
             method: "GET",
             endpoint: "management/me",
             mQuery: true
         };
-        this.request(options, function(err, response) {
+        this.request(options, function (err, response) {
             if (err && self.logging) {
                 console.log("error trying to re-authenticate user");
             } else {
                 self.setToken(response.data.access_token);
             }
-            doCallback(callback, [ err ]);
+            doCallback(callback, [err]);
         });
     };
-    Miapp.Client.prototype.reAuthenticate = function(email, callback) {
+    Miapp.Client.prototype.reAuthenticate = function (email, callback) {
         var self = this;
         var options = {
             method: "GET",
             endpoint: "management/users/" + email,
             mQuery: true
         };
-        this.request(options, function(err, response) {
+        this.request(options, function (err, response) {
             var organizations = {};
             var applications = {};
             var user = {};
@@ -5400,20 +5461,20 @@ function doCallback(callback, params, context) {
                 self.setObject("organizations", organizations);
                 self.setObject("applications", applications);
             }
-            doCallback(callback, [ err, data, user, organizations, applications ], self);
+            doCallback(callback, [err, data, user, organizations, applications], self);
         });
     };
     /*
-   *  A public method to log in an app user with facebook - stores the token for later use
-   *
-   *  @method loginFacebook
-   *  @public
-   *  @params {string} username
-   *  @params {string} password
-   *  @param {function} callback
-   *  @return {callback} callback(err, data)
-   */
-    Miapp.Client.prototype.loginFacebook = function(facebookToken, callback) {
+     *  A public method to log in an app user with facebook - stores the token for later use
+     *
+     *  @method loginFacebook
+     *  @public
+     *  @params {string} username
+     *  @params {string} password
+     *  @param {function} callback
+     *  @return {callback} callback(err, data)
+     */
+    Miapp.Client.prototype.loginFacebook = function (facebookToken, callback) {
         var self = this;
         var options = {
             method: "GET",
@@ -5422,7 +5483,7 @@ function doCallback(callback, params, context) {
                 fb_access_token: facebookToken
             }
         };
-        this.request(options, function(err, data) {
+        this.request(options, function (err, data) {
             var user = {};
             if (err && self.logging) {
                 console.log("error trying to log user in");
@@ -5434,78 +5495,78 @@ function doCallback(callback, params, context) {
                 user = new Miapp.Entity(options);
                 self.setToken(data.access_token);
             }
-            doCallback(callback, [ err, data, user ], self);
+            doCallback(callback, [err, data, user], self);
         });
     };
     /*
-   *  A public method to get the currently logged in user entity
-   *
-   *  @method getLoggedInUser
-   *  @public
-   *  @param {function} callback
-   *  @return {callback} callback(err, data)
-   */
-    Miapp.Client.prototype.getLoggedInUser = function(callback) {
+     *  A public method to get the currently logged in user entity
+     *
+     *  @method getLoggedInUser
+     *  @public
+     *  @param {function} callback
+     *  @return {callback} callback(err, data)
+     */
+    Miapp.Client.prototype.getLoggedInUser = function (callback) {
         var self = this;
         if (!this.getToken()) {
-            doCallback(callback, [ new MiappError("Access Token not set"), null, self ], self);
+            doCallback(callback, [new MiappError("Access Token not set"), null, self], self);
         } else {
             var options = {
                 method: "GET",
                 endpoint: "users/me"
             };
-            this.request(options, function(err, response) {
+            this.request(options, function (err, response) {
                 if (err) {
                     if (self.logging) {
                         console.log("error trying to log user in");
                     }
                     console.error(err, response);
-                    doCallback(callback, [ err, response, self ], self);
+                    doCallback(callback, [err, response, self], self);
                 } else {
                     var options = {
                         client: self,
                         data: response.getEntity()
                     };
                     var user = new Miapp.Entity(options);
-                    doCallback(callback, [ null, response, user ], self);
+                    doCallback(callback, [null, response, user], self);
                 }
             });
         }
     };
     /*
-   *  A public method to test if a user is logged in - does not guarantee that the token is still valid,
-   *  but rather that one exists
-   *
-   *  @method isLoggedIn
-   *  @public
-   *  @return {boolean} Returns true the user is logged in (has token and uuid), false if not
-   */
-    Miapp.Client.prototype.isLoggedIn = function() {
+     *  A public method to test if a user is logged in - does not guarantee that the token is still valid,
+     *  but rather that one exists
+     *
+     *  @method isLoggedIn
+     *  @public
+     *  @return {boolean} Returns true the user is logged in (has token and uuid), false if not
+     */
+    Miapp.Client.prototype.isLoggedIn = function () {
         var token = this.getToken();
         return "undefined" !== typeof token && token !== null;
     };
     /*
-   *  A public method to log out an app user - clears all user fields from client
-   *
-   *  @method logout
-   *  @public
-   *  @return none
-   */
-    Miapp.Client.prototype.logout = function() {
+     *  A public method to log out an app user - clears all user fields from client
+     *
+     *  @method logout
+     *  @public
+     *  @return none
+     */
+    Miapp.Client.prototype.logout = function () {
         this.setToken();
     };
     /*
-   *  A public method to destroy access tokens on the server
-   *
-   *  @method logout
-   *  @public
-   *  @param {string} username	the user associated with the token to revoke
-   *  @param {string} token set to 'null' to revoke the token of the currently logged in user
-   *    or set to token value to revoke a specific token
-   *  @param {string} revokeAll set to 'true' to revoke all tokens for the user
-   *  @return none
-   */
-    Miapp.Client.prototype.destroyToken = function(username, token, revokeAll, callback) {
+     *  A public method to destroy access tokens on the server
+     *
+     *  @method logout
+     *  @public
+     *  @param {string} username	the user associated with the token to revoke
+     *  @param {string} token set to 'null' to revoke the token of the currently logged in user
+     *    or set to token value to revoke a specific token
+     *  @param {string} revokeAll set to 'true' to revoke all tokens for the user
+     *  @return none
+     */
+    Miapp.Client.prototype.destroyToken = function (username, token, revokeAll, callback) {
         var options = {
             client: self,
             method: "PUT"
@@ -5517,35 +5578,35 @@ function doCallback(callback, params, context) {
         } else {
             options.endpoint = "users/" + username + "/revoketoken?token=" + token;
         }
-        this.request(options, function(err, data) {
+        this.request(options, function (err, data) {
             if (err) {
                 if (self.logging) {
                     console.log("error destroying access token");
                 }
-                doCallback(callback, [ err, data, null ], self);
+                doCallback(callback, [err, data, null], self);
             } else {
                 if (revokeAll === true) {
                     console.log("all user tokens invalidated");
                 } else {
                     console.log("token invalidated");
                 }
-                doCallback(callback, [ err, data, null ], self);
+                doCallback(callback, [err, data, null], self);
             }
         });
     };
     /*
-   *  A public method to log out an app user - clears all user fields from client
-   *  and destroys the access token on the server.
-   *
-   *  @method logout
-   *  @public
-   *  @param {string} username the user associated with the token to revoke
-   *  @param {string} token set to 'null' to revoke the token of the currently logged in user
-   *   or set to token value to revoke a specific token
-   *  @param {string} revokeAll set to 'true' to revoke all tokens for the user
-   *  @return none
-   */
-    Miapp.Client.prototype.logoutAndDestroyToken = function(username, token, revokeAll, callback) {
+     *  A public method to log out an app user - clears all user fields from client
+     *  and destroys the access token on the server.
+     *
+     *  @method logout
+     *  @public
+     *  @param {string} username the user associated with the token to revoke
+     *  @param {string} token set to 'null' to revoke the token of the currently logged in user
+     *   or set to token value to revoke a specific token
+     *  @param {string} revokeAll set to 'true' to revoke all tokens for the user
+     *  @return none
+     */
+    Miapp.Client.prototype.logoutAndDestroyToken = function (username, token, revokeAll, callback) {
         if (username === null) {
             console.log("username required to revoke tokens");
         } else {
@@ -5556,22 +5617,22 @@ function doCallback(callback, params, context) {
         }
     };
     /*
-   *  A private method to build the curl call to display on the command line
-   *
-   *  @method buildCurlCall
-   *  @private
-   *  @param {object} options
-   *  @return {string} curl
-   */
-    Miapp.Client.prototype.buildCurlCall = function(options) {
-        var curl = [ "curl" ];
+     *  A private method to build the curl call to display on the command line
+     *
+     *  @method buildCurlCall
+     *  @private
+     *  @param {object} options
+     *  @return {string} curl
+     */
+    Miapp.Client.prototype.buildCurlCall = function (options) {
+        var curl = ["curl"];
         var method = (options.method || "GET").toUpperCase();
         var body = options.body;
         var uri = options.uri;
         curl.push("-X");
-        curl.push([ "POST", "PUT", "DELETE" ].indexOf(method) >= 0 ? method : "GET");
+        curl.push(["POST", "PUT", "DELETE"].indexOf(method) >= 0 ? method : "GET");
         curl.push(uri);
-        if ("object" === typeof body && Object.keys(body).length > 0 && [ "POST", "PUT" ].indexOf(method) !== -1) {
+        if ("object" === typeof body && Object.keys(body).length > 0 && ["POST", "PUT"].indexOf(method) !== -1) {
             curl.push("-d");
             curl.push("'" + JSON.stringify(body) + "'");
         }
@@ -5579,7 +5640,7 @@ function doCallback(callback, params, context) {
         console.log(curl);
         return curl;
     };
-    Miapp.Client.prototype.getDisplayImage = function(email, picture, size) {
+    Miapp.Client.prototype.getDisplayImage = function (email, picture, size) {
         size = size || 50;
         var image = "https://apigee.com/miapp/images/user_profile.png";
         try {
@@ -5588,21 +5649,22 @@ function doCallback(callback, params, context) {
             } else if (email.length) {
                 image = "https://secure.gravatar.com/avatar/" + MD5(email) + "?s=" + size + encodeURI("&d=https://apigee.com/miapp/images/user_profile.png");
             }
-        } catch (e) {} finally {
+        } catch (e) {
+        } finally {
             return image;
         }
     };
     global[name] = Miapp.Client;
-    global[name].noConflict = function() {
+    global[name].noConflict = function () {
         if (overwrittenName) {
             global[name] = overwrittenName;
         }
         return exports;
     };
     return global[name];
-})();
+})(this || window);
 
-var ENTITY_SYSTEM_PROPERTIES = [ "metadata", "created", "modified", "oldpassword", "newpassword", "type", "activated", "uuid" ];
+var ENTITY_SYSTEM_PROPERTIES = ["metadata", "created", "modified", "oldpassword", "newpassword", "type", "activated", "uuid"];
 
 /*
  *  A class to Model a Miapp Entity.
@@ -5611,7 +5673,7 @@ var ENTITY_SYSTEM_PROPERTIES = [ "metadata", "created", "modified", "oldpassword
  *  @constructor
  *  @param {object} options {client:client, data:{'type':'collection_type', uuid:'uuid', 'key':'value'}}
  */
-Miapp.Entity = function(options) {
+Miapp.Entity = function (options) {
     this._data = {};
     this._client = undefined;
     if (options) {
@@ -5628,7 +5690,7 @@ Miapp.Entity = function(options) {
  *  @params {any} obj - any variable
  *  @return {boolean} Returns true or false
  */
-Miapp.Entity.isEntity = function(obj) {
+Miapp.Entity.isEntity = function (obj) {
     return obj && obj instanceof Miapp.Entity;
 };
 
@@ -5641,7 +5703,7 @@ Miapp.Entity.isEntity = function(obj) {
  *  @params {any} obj - any variable
  *  @return {boolean} Returns true or false
  */
-Miapp.Entity.isPersistedEntity = function(obj) {
+Miapp.Entity.isPersistedEntity = function (obj) {
     return isEntity(obj) && isUUID(obj.get("uuid"));
 };
 
@@ -5653,7 +5715,7 @@ Miapp.Entity.isPersistedEntity = function(obj) {
  *  @method serialize
  *  @return {string} data
  */
-Miapp.Entity.prototype.serialize = function() {
+Miapp.Entity.prototype.serialize = function () {
     return JSON.stringify(this._data);
 };
 
@@ -5665,12 +5727,12 @@ Miapp.Entity.prototype.serialize = function() {
  *  @param {string} field
  *  @return {string} || {object} data
  */
-Miapp.Entity.prototype.get = function(key) {
+Miapp.Entity.prototype.get = function (key) {
     var value;
     if (arguments.length === 0) {
         value = this._data;
     } else if (arguments.length > 1) {
-        key = [].slice.call(arguments).reduce(function(p, c, i, a) {
+        key = [].slice.call(arguments).reduce(function (p, c, i, a) {
             if (c instanceof Array) {
                 p = p.concat(c);
             } else {
@@ -5681,7 +5743,7 @@ Miapp.Entity.prototype.get = function(key) {
     }
     if (key instanceof Array) {
         var self = this;
-        value = key.map(function(k) {
+        value = key.map(function (k) {
             return self.get(k);
         });
     } else if ("undefined" !== typeof key) {
@@ -5700,7 +5762,7 @@ Miapp.Entity.prototype.get = function(key) {
  *  @param {string} value
  *  @return none
  */
-Miapp.Entity.prototype.set = function(key, value) {
+Miapp.Entity.prototype.set = function (key, value) {
     if (typeof key === "object") {
         for (var field in key) {
             this._data[field] = key[field];
@@ -5716,17 +5778,17 @@ Miapp.Entity.prototype.set = function(key, value) {
     }
 };
 
-Miapp.Entity.prototype.getEndpoint = function() {
-    var type = this.get("type"), nameProperties = [ "uuid", "name" ], name;
+Miapp.Entity.prototype.getEndpoint = function () {
+    var type = this.get("type"), nameProperties = ["uuid", "name"], name;
     if (type === undefined) {
         throw new MiappError("cannot fetch entity, no entity type specified", "no_type_specified");
     } else if (/^users?$/.test(type)) {
         nameProperties.unshift("username");
     }
-    name = this.get(nameProperties).filter(function(x) {
+    name = this.get(nameProperties).filter(function (x) {
         return x !== null && "undefined" !== typeof x;
     }).shift();
-    return name ? [ type, name ].join("/") : type;
+    return name ? [type, name].join("/") : type;
 };
 
 /*
@@ -5737,7 +5799,7 @@ Miapp.Entity.prototype.getEndpoint = function() {
  *  @param {function} callback
  *  @return {callback} callback(err, response, self)
  */
-Miapp.Entity.prototype.save = function(callback) {
+Miapp.Entity.prototype.save = function (callback) {
     var self = this, type = this.get("type"), method = "POST", entityId = this.get("uuid"), changePassword, entityData = this.get(), options = {
         method: method,
         endpoint: type
@@ -5746,13 +5808,13 @@ Miapp.Entity.prototype.save = function(callback) {
         options.method = "PUT";
         options.endpoint += "/" + entityId;
     }
-    options.body = Object.keys(entityData).filter(function(key) {
+    options.body = Object.keys(entityData).filter(function (key) {
         return ENTITY_SYSTEM_PROPERTIES.indexOf(key) === -1;
-    }).reduce(function(data, key) {
+    }).reduce(function (data, key) {
         data[key] = entityData[key];
         return data;
     }, {});
-    self._client.request(options, function(err, response) {
+    self._client.request(options, function (err, response) {
         var entity = response.getEntity();
         if (entity) {
             self.set(entity);
@@ -5761,7 +5823,7 @@ Miapp.Entity.prototype.save = function(callback) {
         if (err && self._client.logging) {
             console.log("could not save entity");
         }
-        doCallback(callback, [ err, response, self ], self);
+        doCallback(callback, [err, response, self], self);
     });
 };
 
@@ -5769,7 +5831,7 @@ Miapp.Entity.prototype.save = function(callback) {
  *
  * Updates the user's password
  */
-Miapp.Entity.prototype.changePassword = function(oldpassword, newpassword, callback) {
+Miapp.Entity.prototype.changePassword = function (oldpassword, newpassword, callback) {
     var self = this;
     if ("function" === typeof oldpassword && callback === undefined) {
         callback = oldpassword;
@@ -5792,11 +5854,11 @@ Miapp.Entity.prototype.changePassword = function(oldpassword, newpassword, callb
                 newpassword: newpassword
             }
         };
-        self._client.request(options, function(err, response) {
+        self._client.request(options, function (err, response) {
             if (err && self._client.logging) {
                 console.log("could not update user");
             }
-            doCallback(callback, [ err, response, self ], self);
+            doCallback(callback, [err, response, self], self);
         });
     } else {
         throw new MiappInvalidArgumentError("Invalid arguments passed to 'changePassword'");
@@ -5811,19 +5873,19 @@ Miapp.Entity.prototype.changePassword = function(oldpassword, newpassword, callb
  *  @param {function} callback
  *  @return {callback} callback(err, data)
  */
-Miapp.Entity.prototype.fetch = function(callback) {
+Miapp.Entity.prototype.fetch = function (callback) {
     var endpoint, self = this;
     endpoint = this.getEndpoint();
     var options = {
         method: "GET",
         endpoint: endpoint
     };
-    this._client.request(options, function(err, response) {
+    this._client.request(options, function (err, response) {
         var entity = response.getEntity();
         if (entity) {
             self.set(entity);
         }
-        doCallback(callback, [ err, response, self ], self);
+        doCallback(callback, [err, response, self], self);
     });
 };
 
@@ -5837,18 +5899,18 @@ Miapp.Entity.prototype.fetch = function(callback) {
  *  @return {callback} callback(err, data)
  *
  */
-Miapp.Entity.prototype.destroy = function(callback) {
+Miapp.Entity.prototype.destroy = function (callback) {
     var self = this;
     var endpoint = this.getEndpoint();
     var options = {
         method: "DELETE",
         endpoint: endpoint
     };
-    this._client.request(options, function(err, response) {
+    this._client.request(options, function (err, response) {
         if (!err) {
             self.set(null);
         }
-        doCallback(callback, [ err, response, self ], self);
+        doCallback(callback, [err, response, self], self);
     });
 };
 
@@ -5863,7 +5925,7 @@ Miapp.Entity.prototype.destroy = function(callback) {
  *  @return {callback} callback(err, data)
  *
  */
-Miapp.Entity.prototype.connect = function(connection, entity, callback) {
+Miapp.Entity.prototype.connect = function (connection, entity, callback) {
     this.addOrRemoveConnection("POST", connection, entity, callback);
 };
 
@@ -5878,7 +5940,7 @@ Miapp.Entity.prototype.connect = function(connection, entity, callback) {
  *  @return {callback} callback(err, data)
  *
  */
-Miapp.Entity.prototype.disconnect = function(connection, entity, callback) {
+Miapp.Entity.prototype.disconnect = function (connection, entity, callback) {
     this.addOrRemoveConnection("DELETE", connection, entity, callback);
 };
 
@@ -5894,9 +5956,9 @@ Miapp.Entity.prototype.disconnect = function(connection, entity, callback) {
  *  @return {callback} callback(err, data)
  *
  */
-Miapp.Entity.prototype.addOrRemoveConnection = function(method, connection, entity, callback) {
+Miapp.Entity.prototype.addOrRemoveConnection = function (method, connection, entity, callback) {
     var self = this;
-    if ([ "POST", "DELETE" ].indexOf(method.toUpperCase()) == -1) {
+    if (["POST", "DELETE"].indexOf(method.toUpperCase()) == -1) {
         throw new MiappInvalidArgumentError("invalid method for connection call. must be 'POST' or 'DELETE'");
     }
     var connecteeType = entity.get("type");
@@ -5909,16 +5971,16 @@ Miapp.Entity.prototype.addOrRemoveConnection = function(method, connection, enti
     if (!connector) {
         throw new MiappInvalidArgumentError("connector could not be identified");
     }
-    var endpoint = [ connectorType, connector, connection, connecteeType, connectee ].join("/");
+    var endpoint = [connectorType, connector, connection, connecteeType, connectee].join("/");
     var options = {
         method: method,
         endpoint: endpoint
     };
-    this._client.request(options, function(err, response) {
+    this._client.request(options, function (err, response) {
         if (err && self._client.logging) {
             console.log("There was an error with the connection call");
         }
-        doCallback(callback, [ err, response, self ], self);
+        doCallback(callback, [err, response, self], self);
     });
 };
 
@@ -5932,7 +5994,7 @@ Miapp.Entity.prototype.addOrRemoveConnection = function(method, connection, enti
  *  @return {callback} callback(err, data)
  *
  */
-Miapp.Entity.prototype.getEntityId = function(entity) {
+Miapp.Entity.prototype.getEntityId = function (entity) {
     var id;
     if (isUUID(entity.get("uuid"))) {
         id = entity.get("uuid");
@@ -5955,7 +6017,7 @@ Miapp.Entity.prototype.getEntityId = function(entity) {
  *  @return {callback} callback(err, data, connections)
  *
  */
-Miapp.Entity.prototype.getConnections = function(connection, callback) {
+Miapp.Entity.prototype.getConnections = function (connection, callback) {
     var self = this;
     var connectorType = this.get("type");
     var connector = this.getEntityId(this);
@@ -5965,7 +6027,7 @@ Miapp.Entity.prototype.getConnections = function(connection, callback) {
             if (self._client.logging) {
                 console.log(error);
             }
-            doCallback(callback, [ true, error ], self);
+            doCallback(callback, [true, error], self);
         }
         return;
     }
@@ -5974,7 +6036,7 @@ Miapp.Entity.prototype.getConnections = function(connection, callback) {
         method: "GET",
         endpoint: endpoint
     };
-    this._client.request(options, function(err, data) {
+    this._client.request(options, function (err, data) {
         if (err && self._client.logging) {
             console.log("entity could not be connected");
         }
@@ -5987,34 +6049,34 @@ Miapp.Entity.prototype.getConnections = function(connection, callback) {
                 self[connection][data.entities[i].name] = data.entities[i];
             }
         }
-        doCallback(callback, [ err, data, data.entities ], self);
+        doCallback(callback, [err, data, data.entities], self);
     });
 };
 
-Miapp.Entity.prototype.getGroups = function(callback) {
+Miapp.Entity.prototype.getGroups = function (callback) {
     var self = this;
     var endpoint = "users" + "/" + this.get("uuid") + "/groups";
     var options = {
         method: "GET",
         endpoint: endpoint
     };
-    this._client.request(options, function(err, data) {
+    this._client.request(options, function (err, data) {
         if (err && self._client.logging) {
             console.log("entity could not be connected");
         }
         self.groups = data.entities;
-        doCallback(callback, [ err, data, data.entities ], self);
+        doCallback(callback, [err, data, data.entities], self);
     });
 };
 
-Miapp.Entity.prototype.getActivities = function(callback) {
+Miapp.Entity.prototype.getActivities = function (callback) {
     var self = this;
     var endpoint = this.get("type") + "/" + this.get("uuid") + "/activities";
     var options = {
         method: "GET",
         endpoint: endpoint
     };
-    this._client.request(options, function(err, data) {
+    this._client.request(options, function (err, data) {
         if (err && self._client.logging) {
             console.log("entity could not be connected");
         }
@@ -6022,18 +6084,18 @@ Miapp.Entity.prototype.getActivities = function(callback) {
             data.entities[entity].createdDate = new Date(data.entities[entity].created).toUTCString();
         }
         self.activities = data.entities;
-        doCallback(callback, [ err, data, data.entities ], self);
+        doCallback(callback, [err, data, data.entities], self);
     });
 };
 
-Miapp.Entity.prototype.getFollowing = function(callback) {
+Miapp.Entity.prototype.getFollowing = function (callback) {
     var self = this;
     var endpoint = "users" + "/" + this.get("uuid") + "/following";
     var options = {
         method: "GET",
         endpoint: endpoint
     };
-    this._client.request(options, function(err, data) {
+    this._client.request(options, function (err, data) {
         if (err && self._client.logging) {
             console.log("could not get user following");
         }
@@ -6043,18 +6105,18 @@ Miapp.Entity.prototype.getFollowing = function(callback) {
             data.entities[entity]._portal_image_icon = image;
         }
         self.following = data.entities;
-        doCallback(callback, [ err, data, data.entities ], self);
+        doCallback(callback, [err, data, data.entities], self);
     });
 };
 
-Miapp.Entity.prototype.getFollowers = function(callback) {
+Miapp.Entity.prototype.getFollowers = function (callback) {
     var self = this;
     var endpoint = "users" + "/" + this.get("uuid") + "/followers";
     var options = {
         method: "GET",
         endpoint: endpoint
     };
-    this._client.request(options, function(err, data) {
+    this._client.request(options, function (err, data) {
         if (err && self._client.logging) {
             console.log("could not get user followers");
         }
@@ -6064,47 +6126,47 @@ Miapp.Entity.prototype.getFollowers = function(callback) {
             data.entities[entity]._portal_image_icon = image;
         }
         self.followers = data.entities;
-        doCallback(callback, [ err, data, data.entities ], self);
+        doCallback(callback, [err, data, data.entities], self);
     });
 };
 
-Miapp.Client.prototype.createRole = function(roleName, permissions, callback) {
+Miapp.Client.prototype.createRole = function (roleName, permissions, callback) {
     var options = {
         type: "role",
         name: roleName
     };
-    this.createEntity(options, function(err, response, entity) {
+    this.createEntity(options, function (err, response, entity) {
         if (err) {
-            doCallback(callback, [ err, response, self ]);
+            doCallback(callback, [err, response, self]);
         } else {
-            entity.assignPermissions(permissions, function(err, data) {
+            entity.assignPermissions(permissions, function (err, data) {
                 if (err) {
-                    doCallback(callback, [ err, response, self ]);
+                    doCallback(callback, [err, response, self]);
                 } else {
-                    doCallback(callback, [ err, data, data.data ], self);
+                    doCallback(callback, [err, data, data.data], self);
                 }
             });
         }
     });
 };
 
-Miapp.Entity.prototype.getRoles = function(callback) {
+Miapp.Entity.prototype.getRoles = function (callback) {
     var self = this;
     var endpoint = this.get("type") + "/" + this.get("uuid") + "/roles";
     var options = {
         method: "GET",
         endpoint: endpoint
     };
-    this._client.request(options, function(err, data) {
+    this._client.request(options, function (err, data) {
         if (err && self._client.logging) {
             console.log("could not get user roles");
         }
         self.roles = data.entities;
-        doCallback(callback, [ err, data, data.entities ], self);
+        doCallback(callback, [err, data, data.entities], self);
     });
 };
 
-Miapp.Entity.prototype.assignRole = function(roleName, callback) {
+Miapp.Entity.prototype.assignRole = function (roleName, callback) {
     var self = this;
     var type = self.get("type");
     var collection = type + "s";
@@ -6117,22 +6179,22 @@ Miapp.Entity.prototype.assignRole = function(roleName, callback) {
         entityID = self.get("uuid");
     }
     if (type != "users" && type != "groups") {
-        doCallback(callback, [ new MiappError("entity must be a group or user", "invalid_entity_type"), null, this ], this);
+        doCallback(callback, [new MiappError("entity must be a group or user", "invalid_entity_type"), null, this], this);
     }
     var endpoint = "roles/" + roleName + "/" + collection + "/" + entityID;
     var options = {
         method: "POST",
         endpoint: endpoint
     };
-    this._client.request(options, function(err, response) {
+    this._client.request(options, function (err, response) {
         if (err) {
             console.log("Could not assign role.");
         }
-        doCallback(callback, [ err, response, self ]);
+        doCallback(callback, [err, response, self]);
     });
 };
 
-Miapp.Entity.prototype.removeRole = function(roleName, callback) {
+Miapp.Entity.prototype.removeRole = function (roleName, callback) {
     var self = this;
     var type = self.get("type");
     var collection = type + "s";
@@ -6145,27 +6207,27 @@ Miapp.Entity.prototype.removeRole = function(roleName, callback) {
         entityID = this.get("uuid");
     }
     if (type != "users" && type != "groups") {
-        doCallback(callback, [ new MiappError("entity must be a group or user", "invalid_entity_type"), null, this ], this);
+        doCallback(callback, [new MiappError("entity must be a group or user", "invalid_entity_type"), null, this], this);
     }
     var endpoint = "roles/" + roleName + "/" + collection + "/" + entityID;
     var options = {
         method: "DELETE",
         endpoint: endpoint
     };
-    this._client.request(options, function(err, response) {
+    this._client.request(options, function (err, response) {
         if (err) {
             console.log("Could not assign role.");
         }
-        doCallback(callback, [ err, response, self ]);
+        doCallback(callback, [err, response, self]);
     });
 };
 
-Miapp.Entity.prototype.assignPermissions = function(permissions, callback) {
+Miapp.Entity.prototype.assignPermissions = function (permissions, callback) {
     var self = this;
     var entityID;
     var type = this.get("type");
     if (type != "user" && type != "users" && type != "group" && type != "groups" && type != "role" && type != "roles") {
-        doCallback(callback, [ new MiappError("entity must be a group, user, or role", "invalid_entity_type"), null, this ], this);
+        doCallback(callback, [new MiappError("entity must be a group, user, or role", "invalid_entity_type"), null, this], this);
     }
     if (type == "user" && this.get("username") != null) {
         entityID = this.get("username");
@@ -6182,20 +6244,20 @@ Miapp.Entity.prototype.assignPermissions = function(permissions, callback) {
             permission: permissions
         }
     };
-    this._client.request(options, function(err, data) {
+    this._client.request(options, function (err, data) {
         if (err && self._client.logging) {
             console.log("could not assign permissions");
         }
-        doCallback(callback, [ err, data, data.data ], self);
+        doCallback(callback, [err, data, data.data], self);
     });
 };
 
-Miapp.Entity.prototype.removePermissions = function(permissions, callback) {
+Miapp.Entity.prototype.removePermissions = function (permissions, callback) {
     var self = this;
     var entityID;
     var type = this.get("type");
     if (type != "user" && type != "users" && type != "group" && type != "groups" && type != "role" && type != "roles") {
-        doCallback(callback, [ new MiappError("entity must be a group, user, or role", "invalid_entity_type"), null, this ], this);
+        doCallback(callback, [new MiappError("entity must be a group, user, or role", "invalid_entity_type"), null, this], this);
     }
     if (type == "user" && this.get("username") != null) {
         entityID = this.get("username");
@@ -6212,22 +6274,22 @@ Miapp.Entity.prototype.removePermissions = function(permissions, callback) {
             permission: permissions
         }
     };
-    this._client.request(options, function(err, data) {
+    this._client.request(options, function (err, data) {
         if (err && self._client.logging) {
             console.log("could not remove permissions");
         }
-        doCallback(callback, [ err, data, data.params.permission ], self);
+        doCallback(callback, [err, data, data.params.permission], self);
     });
 };
 
-Miapp.Entity.prototype.getPermissions = function(callback) {
+Miapp.Entity.prototype.getPermissions = function (callback) {
     var self = this;
     var endpoint = this.get("type") + "/" + this.get("uuid") + "/permissions";
     var options = {
         method: "GET",
         endpoint: endpoint
     };
-    this._client.request(options, function(err, data) {
+    this._client.request(options, function (err, data) {
         if (err && self._client.logging) {
             console.log("could not get user permissions");
         }
@@ -6263,7 +6325,7 @@ Miapp.Entity.prototype.getPermissions = function(callback) {
             }
         }
         self.permissions = permissions;
-        doCallback(callback, [ err, data, data.entities ], self);
+        doCallback(callback, [err, data, data.entities], self);
     });
 };
 
@@ -6276,7 +6338,7 @@ Miapp.Entity.prototype.getPermissions = function(callback) {
  *  @param {string} options - configuration object
  *  @return {Collection} collection
  */
-Miapp.Collection = function(options) {
+Miapp.Collection = function (options) {
     if (options) {
         this._client = options.client;
         this._type = options.type;
@@ -6304,7 +6366,7 @@ Miapp.Collection = function(options) {
  *  @params {any} obj - any variable
  *  @return {boolean} Returns true or false
  */
-Miapp.isCollection = function(obj) {
+Miapp.isCollection = function (obj) {
     return obj && obj instanceof Miapp.Collection;
 };
 
@@ -6314,7 +6376,7 @@ Miapp.isCollection = function(obj) {
  *  @method serialize
  *  @return {object} data
  */
-Miapp.Collection.prototype.serialize = function() {
+Miapp.Collection.prototype.serialize = function () {
     var data = {};
     data.type = this._type;
     data.qs = this.qs;
@@ -6335,24 +6397,24 @@ Miapp.Collection.prototype.serialize = function() {
 };
 
 /*Miapp.Collection.prototype.addCollection = function (collectionName, options, callback) {
-  self = this;
-  options.client = this._client;
-  var collection = new Miapp.Collection(options, function(err, data) {
-    if (typeof(callback) === 'function') {
+ self = this;
+ options.client = this._client;
+ var collection = new Miapp.Collection(options, function(err, data) {
+ if (typeof(callback) === 'function') {
 
-      collection.resetEntityPointer();
-      while(collection.hasNextEntity()) {
-        var user = collection.getNextEntity();
-        var email = user.get('email');
-        var image = self._client.getDisplayImage(user.get('email'), user.get('picture'));
-        user._portal_image_icon = image;
-      }
+ collection.resetEntityPointer();
+ while(collection.hasNextEntity()) {
+ var user = collection.getNextEntity();
+ var email = user.get('email');
+ var image = self._client.getDisplayImage(user.get('email'), user.get('picture'));
+ user._portal_image_icon = image;
+ }
 
-      self[collectionName] = collection;
-      doCallback(callback, [err, collection], self);
-    }
-  });
-};*/
+ self[collectionName] = collection;
+ doCallback(callback, [err, collection], self);
+ }
+ });
+ };*/
 /*
  *  Populates the collection from the server
  *
@@ -6360,7 +6422,7 @@ Miapp.Collection.prototype.serialize = function() {
  *  @param {function} callback
  *  @return {callback} callback(err, data)
  */
-Miapp.Collection.prototype.fetch = function(callback) {
+Miapp.Collection.prototype.fetch = function (callback) {
     var self = this;
     var qs = this.qs;
     if (this._cursor) {
@@ -6373,15 +6435,15 @@ Miapp.Collection.prototype.fetch = function(callback) {
         endpoint: this._type,
         qs: this.qs
     };
-    this._client.request(options, function(err, response) {
+    this._client.request(options, function (err, response) {
         if (err && self._client.logging) {
             console.log("error getting collection");
         } else {
             self.saveCursor(response.cursor || null);
             self.resetEntityPointer();
-            self._list = response.getEntities().filter(function(entity) {
+            self._list = response.getEntities().filter(function (entity) {
                 return isUUID(entity.uuid);
-            }).map(function(entity) {
+            }).map(function (entity) {
                 var ent = new Miapp.Entity({
                     client: self._client
                 });
@@ -6390,7 +6452,7 @@ Miapp.Collection.prototype.fetch = function(callback) {
                 return ent;
             });
         }
-        doCallback(callback, [ err, response, self ], self);
+        doCallback(callback, [err, response, self], self);
     });
 };
 
@@ -6402,18 +6464,18 @@ Miapp.Collection.prototype.fetch = function(callback) {
  *  @param {function} callback
  *  @return {callback} callback(err, data, entity)
  */
-Miapp.Collection.prototype.addEntity = function(entityObject, callback) {
+Miapp.Collection.prototype.addEntity = function (entityObject, callback) {
     var self = this;
     entityObject.type = this._type;
-    this._client.createEntity(entityObject, function(err, response, entity) {
+    this._client.createEntity(entityObject, function (err, response, entity) {
         if (!err) {
             self.addExistingEntity(entity);
         }
-        doCallback(callback, [ err, response, self ], self);
+        doCallback(callback, [err, response, self], self);
     });
 };
 
-Miapp.Collection.prototype.addExistingEntity = function(entity) {
+Miapp.Collection.prototype.addExistingEntity = function (entity) {
     var count = this._list.length;
     this._list[count] = entity;
 };
@@ -6426,14 +6488,14 @@ Miapp.Collection.prototype.addExistingEntity = function(entity) {
  *  @param {function} callback
  *  @return {callback} callback(err, data)
  */
-Miapp.Collection.prototype.destroyEntity = function(entity, callback) {
+Miapp.Collection.prototype.destroyEntity = function (entity, callback) {
     var self = this;
-    entity.destroy(function(err, response) {
+    entity.destroy(function (err, response) {
         if (err) {
             if (self._client.logging) {
                 console.log("could not destroy entity");
             }
-            doCallback(callback, [ err, response, self ], self);
+            doCallback(callback, [err, response, self], self);
         } else {
             self.fetch(callback);
         }
@@ -6449,7 +6511,7 @@ Miapp.Collection.prototype.destroyEntity = function(entity, callback) {
  *  @param {function} criteria  A function that takes each entity as an argument and returns true or false
  *  @return {Entity[]} returns a list of entities that caused the criteria function to return true
  */
-Miapp.Collection.prototype.getEntitiesByCriteria = function(criteria) {
+Miapp.Collection.prototype.getEntitiesByCriteria = function (criteria) {
     return this._list.filter(criteria);
 };
 
@@ -6461,7 +6523,7 @@ Miapp.Collection.prototype.getEntitiesByCriteria = function(criteria) {
  *  @param {function} criteria  A function that takes each entity as an argument and returns true or false
  *  @return {Entity[]} returns a list of entities that caused the criteria function to return true
  */
-Miapp.Collection.prototype.getEntityByCriteria = function(criteria) {
+Miapp.Collection.prototype.getEntityByCriteria = function (criteria) {
     return this.getEntitiesByCriteria(criteria).shift();
 };
 
@@ -6472,8 +6534,8 @@ Miapp.Collection.prototype.getEntityByCriteria = function(criteria) {
  *  @param {object} entity
  *  @return {Entity} returns the removed entity or undefined if it was not found
  */
-Miapp.Collection.prototype.removeEntity = function(entity) {
-    var removedEntity = this.getEntityByCriteria(function(item) {
+Miapp.Collection.prototype.removeEntity = function (entity) {
+    var removedEntity = this.getEntityByCriteria(function (item) {
         return entity.uuid === item.get("uuid");
     });
     delete this._list[this._list.indexOf(removedEntity)];
@@ -6488,12 +6550,12 @@ Miapp.Collection.prototype.removeEntity = function(entity) {
  *  @param {function} callback
  *  @return {callback} callback(err, data, entity)
  */
-Miapp.Collection.prototype.getEntityByUUID = function(uuid, callback) {
-    var entity = this.getEntityByCriteria(function(item) {
+Miapp.Collection.prototype.getEntityByUUID = function (uuid, callback) {
+    var entity = this.getEntityByCriteria(function (item) {
         return item.get("uuid") === uuid;
     });
     if (entity) {
-        doCallback(callback, [ null, entity, entity ], this);
+        doCallback(callback, [null, entity, entity], this);
     } else {
         var options = {
             data: {
@@ -6513,7 +6575,7 @@ Miapp.Collection.prototype.getEntityByUUID = function(uuid, callback) {
  *  @method getFirstEntity
  *  @return {object} returns an entity object
  */
-Miapp.Collection.prototype.getFirstEntity = function() {
+Miapp.Collection.prototype.getFirstEntity = function () {
     var count = this._list.length;
     if (count > 0) {
         return this._list[0];
@@ -6527,7 +6589,7 @@ Miapp.Collection.prototype.getFirstEntity = function() {
  *  @method getLastEntity
  *  @return {object} returns an entity object
  */
-Miapp.Collection.prototype.getLastEntity = function() {
+Miapp.Collection.prototype.getLastEntity = function () {
     var count = this._list.length;
     if (count > 0) {
         return this._list[count - 1];
@@ -6544,7 +6606,7 @@ Miapp.Collection.prototype.getLastEntity = function() {
  *  @method hasNextEntity
  *  @return {boolean} true if there is a next entity, false if not
  */
-Miapp.Collection.prototype.hasNextEntity = function() {
+Miapp.Collection.prototype.hasNextEntity = function () {
     var next = this._iterator + 1;
     var hasNextElement = next >= 0 && next < this._list.length;
     if (hasNextElement) {
@@ -6562,7 +6624,7 @@ Miapp.Collection.prototype.hasNextEntity = function() {
  *  @method hasNextEntity
  *  @return {object} entity
  */
-Miapp.Collection.prototype.getNextEntity = function() {
+Miapp.Collection.prototype.getNextEntity = function () {
     this._iterator++;
     var hasNextElement = this._iterator >= 0 && this._iterator <= this._list.length;
     if (hasNextElement) {
@@ -6578,7 +6640,7 @@ Miapp.Collection.prototype.getNextEntity = function() {
  *  @method hasPrevEntity
  *  @return {boolean} true if there is a previous entity, false if not
  */
-Miapp.Collection.prototype.hasPrevEntity = function() {
+Miapp.Collection.prototype.hasPrevEntity = function () {
     var previous = this._iterator - 1;
     var hasPreviousElement = previous >= 0 && previous < this._list.length;
     if (hasPreviousElement) {
@@ -6593,7 +6655,7 @@ Miapp.Collection.prototype.hasPrevEntity = function() {
  *  @method getPrevEntity
  *  @return {object} entity
  */
-Miapp.Collection.prototype.getPrevEntity = function() {
+Miapp.Collection.prototype.getPrevEntity = function () {
     this._iterator--;
     var hasPreviousElement = this._iterator >= 0 && this._iterator <= this._list.length;
     if (hasPreviousElement) {
@@ -6609,7 +6671,7 @@ Miapp.Collection.prototype.getPrevEntity = function() {
  *  @method resetEntityPointer
  *  @return none
  */
-Miapp.Collection.prototype.resetEntityPointer = function() {
+Miapp.Collection.prototype.resetEntityPointer = function () {
     this._iterator = -1;
 };
 
@@ -6620,7 +6682,7 @@ Miapp.Collection.prototype.resetEntityPointer = function() {
  * @method saveCursor
  * @return none
  */
-Miapp.Collection.prototype.saveCursor = function(cursor) {
+Miapp.Collection.prototype.saveCursor = function (cursor) {
     if (this._next !== cursor) {
         this._next = cursor;
     }
@@ -6633,7 +6695,7 @@ Miapp.Collection.prototype.saveCursor = function(cursor) {
  * @method resetPaging
  * @return none
  */
-Miapp.Collection.prototype.resetPaging = function() {
+Miapp.Collection.prototype.resetPaging = function () {
     this._previous = [];
     this._next = null;
     this._cursor = null;
@@ -6645,7 +6707,7 @@ Miapp.Collection.prototype.resetPaging = function() {
  *  @method hasNextPage
  *  @return {boolean} returns true if there is a next page of data, false otherwise
  */
-Miapp.Collection.prototype.hasNextPage = function() {
+Miapp.Collection.prototype.hasNextPage = function () {
     return this._next;
 };
 
@@ -6658,7 +6720,7 @@ Miapp.Collection.prototype.hasNextPage = function() {
  *  @param {function} callback
  *  @return {callback} callback(err, data)
  */
-Miapp.Collection.prototype.getNextPage = function(callback) {
+Miapp.Collection.prototype.getNextPage = function (callback) {
     if (this.hasNextPage()) {
         this._previous.push(this._cursor);
         this._cursor = this._next;
@@ -6673,7 +6735,7 @@ Miapp.Collection.prototype.getNextPage = function(callback) {
  *  @method hasPreviousPage
  *  @return {boolean} returns true if there is a previous page of data, false otherwise
  */
-Miapp.Collection.prototype.hasPreviousPage = function() {
+Miapp.Collection.prototype.hasPreviousPage = function () {
     return this._previous.length > 0;
 };
 
@@ -6686,7 +6748,7 @@ Miapp.Collection.prototype.hasPreviousPage = function() {
  *  @param {function} callback
  *  @return {callback} callback(err, data)
  */
-Miapp.Collection.prototype.getPreviousPage = function(callback) {
+Miapp.Collection.prototype.getPreviousPage = function (callback) {
     if (this.hasPreviousPage()) {
         this._next = null;
         this._cursor = this._previous.pop();
@@ -6702,7 +6764,7 @@ Miapp.Collection.prototype.getPreviousPage = function(callback) {
  *  @constructor
  *  @param {object} options {client:client, data: {'key': 'value'}, path:'path'}
  */
-Miapp.Group = function(options, callback) {
+Miapp.Group = function (options, callback) {
     this._path = options.path;
     this._list = [];
     this._client = options.client;
@@ -6725,7 +6787,7 @@ Miapp.Group.prototype = new Miapp.Entity();
  *  @param {function} callback
  *  @returns {function} callback(err, data)
  */
-Miapp.Group.prototype.fetch = function(callback) {
+Miapp.Group.prototype.fetch = function (callback) {
     var self = this;
     var groupEndpoint = "groups/" + this._path;
     var memberEndpoint = "groups/" + this._path + "/users";
@@ -6737,23 +6799,23 @@ Miapp.Group.prototype.fetch = function(callback) {
         method: "GET",
         endpoint: memberEndpoint
     };
-    this._client.request(groupOptions, function(err, response) {
+    this._client.request(groupOptions, function (err, response) {
         if (err) {
             if (self._client.logging) {
                 console.log("error getting group");
             }
-            doCallback(callback, [ err, response ], self);
+            doCallback(callback, [err, response], self);
         } else {
             var entities = response.getEntities();
             if (entities && entities.length) {
                 var groupresponse = entities.shift();
-                self._client.request(memberOptions, function(err, response) {
+                self._client.request(memberOptions, function (err, response) {
                     if (err && self._client.logging) {
                         console.log("error getting group users");
                     } else {
-                        self._list = response.getEntities().filter(function(entity) {
+                        self._list = response.getEntities().filter(function (entity) {
                             return isUUID(entity.uuid);
-                        }).map(function(entity) {
+                        }).map(function (entity) {
                             return new Miapp.Entity({
                                 type: entity.type,
                                 client: self._client,
@@ -6762,7 +6824,7 @@ Miapp.Group.prototype.fetch = function(callback) {
                             });
                         });
                     }
-                    doCallback(callback, [ err, response, self ], self);
+                    doCallback(callback, [err, response, self], self);
                 });
             }
         }
@@ -6777,7 +6839,7 @@ Miapp.Group.prototype.fetch = function(callback) {
  *  @param {function} callback
  *  @return {function} callback(err, data);
  */
-Miapp.Group.prototype.members = function(callback) {
+Miapp.Group.prototype.members = function (callback) {
     return this._list;
 };
 
@@ -6792,22 +6854,22 @@ Miapp.Group.prototype.members = function(callback) {
  *  @param {function} callback
  *  @return {function} callback(err, data)
  */
-Miapp.Group.prototype.add = function(options, callback) {
+Miapp.Group.prototype.add = function (options, callback) {
     var self = this;
     if (options.user) {
         options = {
             method: "POST",
             endpoint: "groups/" + this._path + "/users/" + options.user.get("username")
         };
-        this._client.request(options, function(error, response) {
+        this._client.request(options, function (error, response) {
             if (error) {
-                doCallback(callback, [ error, response, self ], self);
+                doCallback(callback, [error, response, self], self);
             } else {
                 self.fetch(callback);
             }
         });
     } else {
-        doCallback(callback, [ new MiappError("no user specified", "no_user_specified"), null, this ], this);
+        doCallback(callback, [new MiappError("no user specified", "no_user_specified"), null, this], this);
     }
 };
 
@@ -6822,22 +6884,22 @@ Miapp.Group.prototype.add = function(options, callback) {
  *  @param {function} callback
  *  @return {function} callback(err, data)
  */
-Miapp.Group.prototype.remove = function(options, callback) {
+Miapp.Group.prototype.remove = function (options, callback) {
     var self = this;
     if (options.user) {
         options = {
             method: "DELETE",
             endpoint: "groups/" + this._path + "/users/" + options.user.username
         };
-        this._client.request(options, function(error, response) {
+        this._client.request(options, function (error, response) {
             if (error) {
-                doCallback(callback, [ error, response, self ], self);
+                doCallback(callback, [error, response, self], self);
             } else {
                 self.fetch(callback);
             }
         });
     } else {
-        doCallback(callback, [ new MiappError("no user specified", "no_user_specified"), null, this ], this);
+        doCallback(callback, [new MiappError("no user specified", "no_user_specified"), null, this], this);
     }
 };
 
@@ -6849,14 +6911,14 @@ Miapp.Group.prototype.remove = function(options, callback) {
  * @param {function} callback
  * @returns {callback} callback(err, data, activities)
  */
-Miapp.Group.prototype.feed = function(callback) {
+Miapp.Group.prototype.feed = function (callback) {
     var self = this;
     var options = {
         method: "GET",
         endpoint: "groups/" + this._path + "/feed"
     };
-    this._client.request(options, function(err, response) {
-        doCallback(callback, [ err, response, self ], self);
+    this._client.request(options, function (err, response) {
+        doCallback(callback, [err, response, self], self);
     });
 };
 
@@ -6871,7 +6933,7 @@ Miapp.Group.prototype.feed = function(callback) {
  * @param {function} callback
  * @returns {callback} callback(err, entity)
  */
-Miapp.Group.prototype.createGroupActivity = function(options, callback) {
+Miapp.Group.prototype.createGroupActivity = function (options, callback) {
     var self = this;
     var user = options.user;
     var entity = new Miapp.Entity({
@@ -6895,8 +6957,8 @@ Miapp.Group.prototype.createGroupActivity = function(options, callback) {
             type: "groups/" + this._path + "/activities"
         }
     });
-    entity.save(function(err, response, entity) {
-        doCallback(callback, [ err, response, self ]);
+    entity.save(function (err, response, entity) {
+        doCallback(callback, [err, response, self]);
     });
 };
 
@@ -6907,7 +6969,7 @@ Miapp.Group.prototype.createGroupActivity = function(options, callback) {
  *  @param {object} options {timestamp:0, category:'value', counters:{name : value}}
  *  @returns {callback} callback(err, event)
  */
-Miapp.Counter = function(options) {
+Miapp.Counter = function (options) {
     this._client = options.client;
     this._data = options.data || {};
     this._data.category = options.category || "UNKNOWN";
@@ -6916,7 +6978,7 @@ Miapp.Counter = function(options) {
     this._data.counters = options.counters || {};
 };
 
-var COUNTER_RESOLUTIONS = [ "all", "minute", "five_minutes", "half_hour", "hour", "six_day", "day", "week", "month" ];
+var COUNTER_RESOLUTIONS = ["all", "minute", "five_minutes", "half_hour", "hour", "six_day", "day", "week", "month"];
 
 /*
  *  Inherit from Miapp.Entity.
@@ -6934,7 +6996,7 @@ Miapp.Counter.prototype = new Miapp.Entity();
  * @param {function} callback
  * @returns {callback} callback(err, event)
  */
-Miapp.Counter.prototype.fetch = function(callback) {
+Miapp.Counter.prototype.fetch = function (callback) {
     this.getData({}, callback);
 };
 
@@ -6949,12 +7011,12 @@ Miapp.Counter.prototype.fetch = function(callback) {
  * @param {function} callback
  * @returns {callback} callback(err, event)
  */
-Miapp.Counter.prototype.increment = function(options, callback) {
+Miapp.Counter.prototype.increment = function (options, callback) {
     var self = this, name = options.name, value = options.value;
     if (!name) {
-        return doCallback(callback, [ new MiappInvalidArgumentError("'name' for increment, decrement must be a number"), null, self ], self);
+        return doCallback(callback, [new MiappInvalidArgumentError("'name' for increment, decrement must be a number"), null, self], self);
     } else if (isNaN(value)) {
-        return doCallback(callback, [ new MiappInvalidArgumentError("'value' for increment, decrement must be a number"), null, self ], self);
+        return doCallback(callback, [new MiappInvalidArgumentError("'value' for increment, decrement must be a number"), null, self], self);
     } else {
         self._data.counters[name] = parseInt(value) || 1;
         return self.save(callback);
@@ -6972,7 +7034,7 @@ Miapp.Counter.prototype.increment = function(options, callback) {
  * @param {function} callback
  * @returns {callback} callback(err, event)
  */
-Miapp.Counter.prototype.decrement = function(options, callback) {
+Miapp.Counter.prototype.decrement = function (options, callback) {
     var self = this, name = options.name, value = options.value;
     self.increment({
         name: name,
@@ -6991,7 +7053,7 @@ Miapp.Counter.prototype.decrement = function(options, callback) {
  * @param {function} callback
  * @returns {callback} callback(err, event)
  */
-Miapp.Counter.prototype.reset = function(options, callback) {
+Miapp.Counter.prototype.reset = function (options, callback) {
     var self = this, name = options.name;
     self.increment({
         name: name,
@@ -7016,7 +7078,7 @@ Miapp.Counter.prototype.reset = function(options, callback) {
  * @param {function} callback
  * @returns {callback} callback(err, event)
  */
-Miapp.Counter.prototype.getData = function(options, callback) {
+Miapp.Counter.prototype.getData = function (options, callback) {
     var start_time, end_time, start = options.start || 0, end = options.end || Date.now(), resolution = (options.resolution || "all").toLowerCase(), counters = options.counters || Object.keys(this._data.counters), res = (resolution || "all").toLowerCase();
     if (COUNTER_RESOLUTIONS.indexOf(res) === -1) {
         res = "all";
@@ -7024,8 +7086,8 @@ Miapp.Counter.prototype.getData = function(options, callback) {
     start_time = getSafeTime(start);
     end_time = getSafeTime(end);
     var self = this;
-    var params = Object.keys(counters).map(function(counter) {
-        return [ "counter", encodeURIComponent(counters[counter]) ].join("=");
+    var params = Object.keys(counters).map(function (counter) {
+        return ["counter", encodeURIComponent(counters[counter])].join("=");
     });
     params.push("resolution=" + res);
     params.push("start_time=" + String(start_time));
@@ -7033,33 +7095,33 @@ Miapp.Counter.prototype.getData = function(options, callback) {
     var endpoint = "counters?" + params.join("&");
     this._client.request({
         endpoint: endpoint
-    }, function(err, data) {
+    }, function (err, data) {
         if (data.counters && data.counters.length) {
-            data.counters.forEach(function(counter) {
+            data.counters.forEach(function (counter) {
                 self._data.counters[counter.name] = counter.value || counter.values;
             });
         }
-        return doCallback(callback, [ err, data, self ], self);
+        return doCallback(callback, [err, data, self], self);
     });
 };
 
 function getSafeTime(prop) {
     var time;
     switch (typeof prop) {
-      case "undefined":
-        time = Date.now();
-        break;
+        case "undefined":
+            time = Date.now();
+            break;
 
-      case "number":
-        time = prop;
-        break;
+        case "number":
+            time = prop;
+            break;
 
-      case "string":
-        time = isNaN(prop) ? Date.parse(prop) : parseInt(prop);
-        break;
+        case "string":
+            time = isNaN(prop) ? Date.parse(prop) : parseInt(prop);
+            break;
 
-      default:
-        time = Date.parse(prop.toString());
+        default:
+            time = Date.parse(prop.toString());
     }
     return time;
 }
@@ -7071,26 +7133,26 @@ function getSafeTime(prop) {
  *  @param {object} options {name:"MyPhotos", path:"/user/uploads", owner:"00000000-0000-0000-0000-000000000000" }
  *  @returns {callback} callback(err, folder)
  */
-Miapp.Folder = function(options, callback) {
+Miapp.Folder = function (options, callback) {
     var self = this, messages = [];
     console.log("FOLDER OPTIONS", options);
     self._client = options.client;
     self._data = options.data || {};
     self._data.type = "folders";
-    var missingData = [ "name", "owner", "path" ].some(function(required) {
+    var missingData = ["name", "owner", "path"].some(function (required) {
         return !(required in self._data);
     });
     if (missingData) {
-        return doCallback(callback, [ new MiappInvalidArgumentError("Invalid asset data: 'name', 'owner', and 'path' are required properties."), null, self ], self);
+        return doCallback(callback, [new MiappInvalidArgumentError("Invalid asset data: 'name', 'owner', and 'path' are required properties."), null, self], self);
     }
-    self.save(function(err, response) {
+    self.save(function (err, response) {
         if (err) {
-            doCallback(callback, [ new MiappError(response), response, self ], self);
+            doCallback(callback, [new MiappError(response), response, self], self);
         } else {
             if (response && response.entities && response.entities.length) {
                 self.set(response.entities[0]);
             }
-            doCallback(callback, [ null, response, self ], self);
+            doCallback(callback, [null, response, self], self);
         }
     });
 };
@@ -7108,21 +7170,21 @@ Miapp.Folder.prototype = new Miapp.Entity();
  *  @param {function} callback(err, self)
  *  @returns {callback} callback(err, self)
  */
-Miapp.Folder.prototype.fetch = function(callback) {
+Miapp.Folder.prototype.fetch = function (callback) {
     var self = this;
-    Miapp.Entity.prototype.fetch.call(self, function(err, data) {
+    Miapp.Entity.prototype.fetch.call(self, function (err, data) {
         console.log("self", self.get());
         console.log("data", data);
         if (!err) {
-            self.getAssets(function(err, response) {
+            self.getAssets(function (err, response) {
                 if (err) {
-                    doCallback(callback, [ new MiappError(response), resonse, self ], self);
+                    doCallback(callback, [new MiappError(response), resonse, self], self);
                 } else {
-                    doCallback(callback, [ null, self ], self);
+                    doCallback(callback, [null, self], self);
                 }
             });
         } else {
-            doCallback(callback, [ null, data, self ], self);
+            doCallback(callback, [null, data, self], self);
         }
     });
 };
@@ -7135,36 +7197,36 @@ Miapp.Folder.prototype.fetch = function(callback) {
  *  @param {object} options {asset:(uuid || Miapp.Asset || {name:"photo.jpg", path:"/user/uploads", "content-type":"image/jpeg", owner:"F01DE600-0000-0000-0000-000000000000" }) }
  *  @returns {callback} callback(err, folder)
  */
-Miapp.Folder.prototype.addAsset = function(options, callback) {
+Miapp.Folder.prototype.addAsset = function (options, callback) {
     var self = this;
     if ("asset" in options) {
         var asset = null;
         switch (typeof options.asset) {
-          case "object":
-            asset = options.asset;
-            if (!(asset instanceof Miapp.Entity)) {
-                asset = new Miapp.Asset(asset);
-            }
-            break;
+            case "object":
+                asset = options.asset;
+                if (!(asset instanceof Miapp.Entity)) {
+                    asset = new Miapp.Asset(asset);
+                }
+                break;
 
-          case "string":
-            if (isUUID(options.asset)) {
-                asset = new Miapp.Asset({
-                    client: self._client,
-                    data: {
-                        uuid: options.asset,
-                        type: "assets"
-                    }
-                });
-            }
-            break;
+            case "string":
+                if (isUUID(options.asset)) {
+                    asset = new Miapp.Asset({
+                        client: self._client,
+                        data: {
+                            uuid: options.asset,
+                            type: "assets"
+                        }
+                    });
+                }
+                break;
         }
         if (asset && asset instanceof Miapp.Entity) {
-            asset.fetch(function(err, data) {
+            asset.fetch(function (err, data) {
                 if (err) {
-                    doCallback(callback, [ new MiappError(data), data, self ], self);
+                    doCallback(callback, [new MiappError(data), data, self], self);
                 } else {
-                    var endpoint = [ "folders", self.get("uuid"), "assets", asset.get("uuid") ].join("/");
+                    var endpoint = ["folders", self.get("uuid"), "assets", asset.get("uuid")].join("/");
                     var options = {
                         method: "POST",
                         endpoint: endpoint
@@ -7174,7 +7236,7 @@ Miapp.Folder.prototype.addAsset = function(options, callback) {
             });
         }
     } else {
-        doCallback(callback, [ new MiappInvalidArgumentError("No asset specified"), null, self ], self);
+        doCallback(callback, [new MiappInvalidArgumentError("No asset specified"), null, self], self);
     }
 };
 
@@ -7186,42 +7248,42 @@ Miapp.Folder.prototype.addAsset = function(options, callback) {
  *  @param {object} options {asset:(uuid || Miapp.Asset || {name:"photo.jpg", path:"/user/uploads", "content-type":"image/jpeg", owner:"F01DE600-0000-0000-0000-000000000000" }) }
  *  @returns {callback} callback(err, folder)
  */
-Miapp.Folder.prototype.removeAsset = function(options, callback) {
+Miapp.Folder.prototype.removeAsset = function (options, callback) {
     var self = this;
     if ("asset" in options) {
         var asset = null;
         switch (typeof options.asset) {
-          case "object":
-            asset = options.asset;
-            break;
+            case "object":
+                asset = options.asset;
+                break;
 
-          case "string":
-            if (isUUID(options.asset)) {
-                asset = new Miapp.Asset({
-                    client: self._client,
-                    data: {
-                        uuid: options.asset,
-                        type: "assets"
-                    }
-                });
-            }
-            break;
+            case "string":
+                if (isUUID(options.asset)) {
+                    asset = new Miapp.Asset({
+                        client: self._client,
+                        data: {
+                            uuid: options.asset,
+                            type: "assets"
+                        }
+                    });
+                }
+                break;
         }
         if (asset && asset !== null) {
-            var endpoint = [ "folders", self.get("uuid"), "assets", asset.get("uuid") ].join("/");
+            var endpoint = ["folders", self.get("uuid"), "assets", asset.get("uuid")].join("/");
             self._client.request({
                 method: "DELETE",
                 endpoint: endpoint
-            }, function(err, response) {
+            }, function (err, response) {
                 if (err) {
-                    doCallback(callback, [ new MiappError(response), response, self ], self);
+                    doCallback(callback, [new MiappError(response), response, self], self);
                 } else {
-                    doCallback(callback, [ null, response, self ], self);
+                    doCallback(callback, [null, response, self], self);
                 }
             });
         }
     } else {
-        doCallback(callback, [ new MiappInvalidArgumentError("No asset specified"), null, self ], self);
+        doCallback(callback, [new MiappInvalidArgumentError("No asset specified"), null, self], self);
     }
 };
 
@@ -7232,7 +7294,7 @@ Miapp.Folder.prototype.removeAsset = function(options, callback) {
  *  @public
  *  @returns {callback} callback(err, assets)
  */
-Miapp.Folder.prototype.getAssets = function(callback) {
+Miapp.Folder.prototype.getAssets = function (callback) {
     return this.getConnections("assets", callback);
 };
 
@@ -7244,7 +7306,7 @@ Miapp.Folder.prototype.getAssets = function(callback) {
  *  @param {string} sData
  */
 if (!XMLHttpRequest.prototype.sendAsBinary) {
-    XMLHttpRequest.prototype.sendAsBinary = function(sData) {
+    XMLHttpRequest.prototype.sendAsBinary = function (sData) {
         var nBytes = sData.length, ui8Data = new Uint8Array(nBytes);
         for (var nIdx = 0; nIdx < nBytes; nIdx++) {
             ui8Data[nIdx] = sData.charCodeAt(nIdx) & 255;
@@ -7260,25 +7322,25 @@ if (!XMLHttpRequest.prototype.sendAsBinary) {
  *  @param {object} options {name:"photo.jpg", path:"/user/uploads", "content-type":"image/jpeg", owner:"F01DE600-0000-0000-0000-000000000000" }
  *  @returns {callback} callback(err, asset)
  */
-Miapp.Asset = function(options, callback) {
+Miapp.Asset = function (options, callback) {
     var self = this, messages = [];
     self._client = options.client;
     self._data = options.data || {};
     self._data.type = "assets";
-    var missingData = [ "name", "owner", "path" ].some(function(required) {
+    var missingData = ["name", "owner", "path"].some(function (required) {
         return !(required in self._data);
     });
     if (missingData) {
-        doCallback(callback, [ new MiappError("Invalid asset data: 'name', 'owner', and 'path' are required properties."), null, self ], self);
+        doCallback(callback, [new MiappError("Invalid asset data: 'name', 'owner', and 'path' are required properties."), null, self], self);
     } else {
-        self.save(function(err, data) {
+        self.save(function (err, data) {
             if (err) {
-                doCallback(callback, [ new MiappError(data), data, self ], self);
+                doCallback(callback, [new MiappError(data), data, self], self);
             } else {
                 if (data && data.entities && data.entities.length) {
                     self.set(data.entities[0]);
                 }
-                doCallback(callback, [ null, data, self ], self);
+                doCallback(callback, [null, data, self], self);
             }
         });
     }
@@ -7297,37 +7359,37 @@ Miapp.Asset.prototype = new Miapp.Entity();
  *  @param {object} options {folder:"F01DE600-0000-0000-0000-000000000000"}
  *  @returns {callback} callback(err, asset)
  */
-Miapp.Asset.prototype.addToFolder = function(options, callback) {
+Miapp.Asset.prototype.addToFolder = function (options, callback) {
     var self = this, error = null;
     if ("folder" in options && isUUID(options.folder)) {
         var folder = Miapp.Folder({
             uuid: options.folder
-        }, function(err, folder) {
+        }, function (err, folder) {
             if (err) {
-                doCallback(callback, [ MiappError.fromResponse(folder), folder, self ], self);
+                doCallback(callback, [MiappError.fromResponse(folder), folder, self], self);
             } else {
-                var endpoint = [ "folders", folder.get("uuid"), "assets", self.get("uuid") ].join("/");
+                var endpoint = ["folders", folder.get("uuid"), "assets", self.get("uuid")].join("/");
                 var options = {
                     method: "POST",
                     endpoint: endpoint
                 };
-                this._client.request(options, function(err, response) {
+                this._client.request(options, function (err, response) {
                     if (err) {
-                        doCallback(callback, [ MiappError.fromResponse(folder), response, self ], self);
+                        doCallback(callback, [MiappError.fromResponse(folder), response, self], self);
                     } else {
-                        doCallback(callback, [ null, folder, self ], self);
+                        doCallback(callback, [null, folder, self], self);
                     }
                 });
             }
         });
     } else {
-        doCallback(callback, [ new MiappError("folder not specified"), null, self ], self);
+        doCallback(callback, [new MiappError("folder not specified"), null, self], self);
     }
 };
 
-Miapp.Entity.prototype.attachAsset = function(file, callback) {
+Miapp.Entity.prototype.attachAsset = function (file, callback) {
     if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
-        doCallback(callback, [ new MiappError("The File APIs are not fully supported by your browser."), null, this ], this);
+        doCallback(callback, [new MiappError("The File APIs are not fully supported by your browser."), null, this], this);
         return;
     }
     var self = this;
@@ -7338,34 +7400,34 @@ Miapp.Entity.prototype.attachAsset = function(file, callback) {
         attempts = 3;
     }
     if (type != "assets" && type != "asset") {
-        var endpoint = [ this._client.URI, this._client.orgName, this._client.appName, type, self.get("uuid") ].join("/");
+        var endpoint = [this._client.URI, this._client.orgName, this._client.appName, type, self.get("uuid")].join("/");
     } else {
         self.set("content-type", file.type);
         self.set("size", file.size);
-        var endpoint = [ this._client.URI, this._client.orgName, this._client.appName, "assets", self.get("uuid"), "data" ].join("/");
+        var endpoint = [this._client.URI, this._client.orgName, this._client.appName, "assets", self.get("uuid"), "data"].join("/");
     }
     var xhr = new XMLHttpRequest();
     xhr.open("POST", endpoint, true);
-    xhr.onerror = function(err) {
-        doCallback(callback, [ new MiappError("The File APIs are not fully supported by your browser.") ], xhr, self);
+    xhr.onerror = function (err) {
+        doCallback(callback, [new MiappError("The File APIs are not fully supported by your browser.")], xhr, self);
     };
-    xhr.onload = function(ev) {
+    xhr.onload = function (ev) {
         if (xhr.status >= 500 && attempts > 0) {
             self.set("attempts", --attempts);
-            setTimeout(function() {
+            setTimeout(function () {
                 self.attachAsset.apply(self, args);
             }, 100);
         } else if (xhr.status >= 300) {
             self.set("attempts");
-            doCallback(callback, [ new MiappError(JSON.parse(xhr.responseText)), xhr, self ], self);
+            doCallback(callback, [new MiappError(JSON.parse(xhr.responseText)), xhr, self], self);
         } else {
             self.set("attempts");
             self.fetch();
-            doCallback(callback, [ null, xhr, self ], self);
+            doCallback(callback, [null, xhr, self], self);
         }
     };
     var fr = new FileReader();
-    fr.onload = function() {
+    fr.onload = function () {
         var binary = fr.result;
         if (type === "assets" || type === "asset") {
             xhr.overrideMimeType("application/octet-stream");
@@ -7384,12 +7446,12 @@ Miapp.Entity.prototype.attachAsset = function(file, callback) {
  *  @param {object} data Can be a javascript Blob or File object
  *  @returns {callback} callback(err, asset)
  */
-Miapp.Asset.prototype.upload = function(data, callback) {
-    this.attachAsset(data, function(err, response) {
+Miapp.Asset.prototype.upload = function (data, callback) {
+    this.attachAsset(data, function (err, response) {
         if (!err) {
-            doCallback(callback, [ null, response, self ], self);
+            doCallback(callback, [null, response, self], self);
         } else {
-            doCallback(callback, [ new MiappError(err), response, self ], self);
+            doCallback(callback, [new MiappError(err), response, self], self);
         }
     });
 };
@@ -7401,29 +7463,29 @@ Miapp.Asset.prototype.upload = function(data, callback) {
  *  @public
  *  @returns {callback} callback(err, blob) blob is a javascript Blob object.
  */
-Miapp.Entity.prototype.downloadAsset = function(callback) {
+Miapp.Entity.prototype.downloadAsset = function (callback) {
     var self = this;
     var endpoint;
     var type = this._data.type;
     var xhr = new XMLHttpRequest();
     if (type != "assets" && type != "asset") {
-        endpoint = [ this._client.URI, this._client.orgName, this._client.appName, type, self.get("uuid") ].join("/");
+        endpoint = [this._client.URI, this._client.orgName, this._client.appName, type, self.get("uuid")].join("/");
     } else {
-        endpoint = [ this._client.URI, this._client.orgName, this._client.appName, "assets", self.get("uuid"), "data" ].join("/");
+        endpoint = [this._client.URI, this._client.orgName, this._client.appName, "assets", self.get("uuid"), "data"].join("/");
     }
     xhr.open("GET", endpoint, true);
     xhr.responseType = "blob";
-    xhr.onload = function(ev) {
+    xhr.onload = function (ev) {
         var blob = xhr.response;
         if (type != "assets" && type != "asset") {
-            doCallback(callback, [ null, blob, xhr ], self);
+            doCallback(callback, [null, blob, xhr], self);
         } else {
-            doCallback(callback, [ null, xhr, self ], self);
+            doCallback(callback, [null, xhr, self], self);
         }
     };
-    xhr.onerror = function(err) {
+    xhr.onerror = function (err) {
         callback(true, err);
-        doCallback(callback, [ new MiappError(err), xhr, self ], self);
+        doCallback(callback, [new MiappError(err), xhr, self], self);
     };
     if (type != "assets" && type != "asset") {
         xhr.setRequestHeader("Accept", self._data["file-metadata"]["content-type"]);
@@ -7440,12 +7502,12 @@ Miapp.Entity.prototype.downloadAsset = function(callback) {
  *  @public
  *  @returns {callback} callback(err, blob) blob is a javascript Blob object.
  */
-Miapp.Asset.prototype.download = function(callback) {
-    this.downloadAsset(function(err, response) {
+Miapp.Asset.prototype.download = function (callback) {
+    this.downloadAsset(function (err, response) {
         if (!err) {
-            doCallback(callback, [ null, response, self ], self);
+            doCallback(callback, [null, response, self], self);
         } else {
-            doCallback(callback, [ new MiappError(err), response, self ], self);
+            doCallback(callback, [new MiappError(err), response, self], self);
         }
     });
 };
@@ -7453,7 +7515,7 @@ Miapp.Asset.prototype.download = function(callback) {
 /**
  * Created by ryan bridges on 2014-02-05.
  */
-(function(global) {
+(function (global) {
     var name = "MiappError", short, _name = global[name], _short = short && short !== undefined ? global[short] : undefined;
     /*
      *  Instantiates a new MiappError
@@ -7478,6 +7540,7 @@ Miapp.Asset.prototype.download = function(callback) {
         this.duration = duration || 0;
         this.exception = exception;
     }
+
     MiappError.prototype = new Error();
     MiappError.prototype.constructor = MiappError;
     /*
@@ -7497,16 +7560,17 @@ Miapp.Asset.prototype.download = function(callback) {
      *  "error_description":"Could not find application for yourorgname/sandboxxxxx from URI: yourorgname/sandboxxxxx"
      *  }
      */
-    MiappError.fromResponse = function(response) {
+    MiappError.fromResponse = function (response) {
         if (response && "undefined" !== typeof response) {
             return new MiappError(response.error_description, response.error, response.timestamp, response.duration, response.exception);
         } else {
             return new MiappError();
         }
     };
-    MiappError.createSubClass = function(name) {
+    MiappError.createSubClass = function (name) {
         if (name in global && global[name]) return global[name];
-        global[name] = function() {};
+        global[name] = function () {
+        };
         global[name].name = name;
         global[name].prototype = new MiappError();
         return global[name];
@@ -7518,6 +7582,7 @@ Miapp.Asset.prototype.download = function(callback) {
         this.duration = duration || 0;
         this.exception = exception;
     }
+
     MiappHTTPResponseError.prototype = new MiappError();
     function MiappInvalidHTTPMethodError(message, name, timestamp, duration, exception) {
         this.message = message;
@@ -7526,6 +7591,7 @@ Miapp.Asset.prototype.download = function(callback) {
         this.duration = duration || 0;
         this.exception = exception;
     }
+
     MiappInvalidHTTPMethodError.prototype = new MiappError();
     function MiappInvalidURIError(message, name, timestamp, duration, exception) {
         this.message = message;
@@ -7534,6 +7600,7 @@ Miapp.Asset.prototype.download = function(callback) {
         this.duration = duration || 0;
         this.exception = exception;
     }
+
     MiappInvalidURIError.prototype = new MiappError();
     function MiappInvalidArgumentError(message, name, timestamp, duration, exception) {
         this.message = message;
@@ -7542,6 +7609,7 @@ Miapp.Asset.prototype.download = function(callback) {
         this.duration = duration || 0;
         this.exception = exception;
     }
+
     MiappInvalidArgumentError.prototype = new MiappError();
     function MiappKeystoreDatabaseUpgradeNeededError(message, name, timestamp, duration, exception) {
         this.message = message;
@@ -7550,6 +7618,7 @@ Miapp.Asset.prototype.download = function(callback) {
         this.duration = duration || 0;
         this.exception = exception;
     }
+
     MiappKeystoreDatabaseUpgradeNeededError.prototype = new MiappError();
     global.MiappHTTPResponseError = MiappHTTPResponseError;
     global.MiappInvalidHTTPMethodError = MiappInvalidHTTPMethodError;
@@ -7560,7 +7629,7 @@ Miapp.Asset.prototype.download = function(callback) {
     if (short !== undefined) {
         global[short] = MiappError;
     }
-    global[name].noConflict = function() {
+    global[name].noConflict = function () {
         if (_name) {
             global[name] = _name;
         }
@@ -7570,12 +7639,11 @@ Miapp.Asset.prototype.download = function(callback) {
         return MiappError;
     };
     return global[name];
-})(this);
+})(this || window);
 
 
-
-var SrvMiapp = (function() {
-'use strict';
+var SrvMiapp = (function () {
+    'use strict';
 
     function Service(logger, promise) {
 
@@ -7597,15 +7665,15 @@ var SrvMiapp = (function() {
         this.miappIsOffline = getObjectFromLocalStorage('miappIsOffline') || false;
         this.miappURI = getObjectFromLocalStorage('miappURI') || 'https://miapp.io/api';
         this.miappDBURI = getObjectFromLocalStorage('miappDBURI') || 'https://couchdb_notfound';
-        
-        this._db = new PouchDB('miapp_db', { adapter: 'websql' });
+
+        this._db = new PouchDB('miapp_db', {adapter: 'websql'});
         this._dbRecordCount = 0;
         this._dbInitialized = false;
     }
 
 
     Service.prototype.testPromise = function (a) {
-        if (a) return this.promise.resolve('test promise ok '+ a);
+        if (a) return this.promise.resolve('test promise ok ' + a);
         return new this.promise(function (resolve, reject) {
             resolve('test promise ok');
         });
@@ -7620,7 +7688,7 @@ var SrvMiapp = (function() {
                 appName: miappId,
                 logging: true, // Optional - turn on logging, off by default
                 buildCurl: false, // Optional - turn on curl commands, off by default
-                URI : this.miappURI
+                URI: this.miappURI
             });
         }
 
@@ -7633,15 +7701,15 @@ var SrvMiapp = (function() {
 
     Service.prototype.setAuthEndpoint = function (endpointURI) {
         this.miappURI = endpointURI;
-        setObjectFromLocalStorage('miappURI',this.miappURI);
+        setObjectFromLocalStorage('miappURI', this.miappURI);
     };
     Service.prototype.setDBEndpoint = function (endpointURI) {
         this.miappDBURI = endpointURI;
-        setObjectFromLocalStorage('miappDBURI',this.miappDBURI);
+        setObjectFromLocalStorage('miappDBURI', this.miappDBURI);
     };
     Service.prototype.setOffline = function (b) {
         this.miappIsOffline = (b == true);
-        setObjectFromLocalStorage('miappIsOffline',this.miappIsOffline);
+        setObjectFromLocalStorage('miappIsOffline', this.miappIsOffline);
     };
 
     Service.prototype.isLogin = function () {
@@ -7651,7 +7719,7 @@ var SrvMiapp = (function() {
 
     Service.prototype.login = function (login, password, updateProperties) {
         var self = this;
-        return new self.promise(function(resolve,reject) {
+        return new self.promise(function (resolve, reject) {
             if (!self.miappClient && !self.miappIsOffline) {
                 reject('miapp.sdk.service.login : not initialized');
                 return;
@@ -7661,7 +7729,7 @@ var SrvMiapp = (function() {
             //var encrypted = CryptoJS.AES.encrypt(password, 'SALT_TOKEN');
             //var encrypted_json_str = encrypted.toString();
             var encrypted_json_str = password;
-            self.logger.log('miapp.sdk.service.login : '+ login+ ' / '+ encrypted_json_str);
+            self.logger.log('miapp.sdk.service.login : ' + login + ' / ' + encrypted_json_str);
 
             if (self.currentUser) {
                 // Not a pb recheck
@@ -7674,41 +7742,38 @@ var SrvMiapp = (function() {
             }
 
             if (self.miappIsOffline) {
-                var testUser = {};
-                self.currentUser = testUser;
-                self.currentUser.email = login;
-                self.currentUser.password = encrypted_json_str;
-                setObjectFromLocalStorage('miappCurrentUser',self.currentUser);
+                var offlineUser = {};
+                offlineUser.email = login;
+                offlineUser.password = encrypted_json_str;
+                self.setCurrentUser(offlineUser);
                 resolve(self.currentUser);
                 return;
             }
 
-            self.miappClient.loginMLE(self.miappId, login,encrypted_json_str,updateProperties,function (err, user) {
+            self.miappClient.loginMLE(self.miappId, login, encrypted_json_str, updateProperties, function (err, loginUser) {
                 // self.logger.log('miapp.sdk.service.callback done :' + err + ' user:' + user);
                 if (err) {
                     // Error - could not log user in
-                    self.logger.error('miapp.sdk.service.login error : '+ err);
+                    self.logger.error('miapp.sdk.service.login error : ' + err);
                     reject(err);
                 } else {
                     // Success - user has been logged in
-                    self.currentUser = user;
-                    self.currentUser.email = login;
-                    setObjectFromLocalStorage('miappCurrentUser',self.currentUser);
+                    loginUser.email = login;
+                    self.setCurrentUser(loginUser);
                     resolve(self.currentUser);
                 }
             });
         });
     };
 
-    
+
     Service.prototype.logoff = function () {
         var self = this;
         if (!self.currentUser) return self.$q.reject('miapp.sdk.service not login');
-        
+
         return self.deleteUser(self.currentUser._id);
     };
 
-    
 
     Service.prototype.deleteUser = function (userIDToDelete) {
         var self = this;
@@ -7720,8 +7785,8 @@ var SrvMiapp = (function() {
             return self.promise.reject('miapp.sdk.service not initialized');
         }
 
-        return new self.promise(function(resolve,reject){
-            self.miappClient.deleteUserMLE(userIDToDelete,function (err) {
+        return new self.promise(function (resolve, reject) {
+            self.miappClient.deleteUserMLE(userIDToDelete, function (err) {
                 // self.logger.log('miapp.sdk.service.deleteUserMLE callback done :' + err);
                 if (err) {
                     // Error - could not log user in
@@ -7729,7 +7794,7 @@ var SrvMiapp = (function() {
                 } else {
                     // Success - user has been logged in
                     self.currentUser = null;
-                    setObjectFromLocalStorage('miappCurrentUser',self.currentUser);
+                    removeObjectFromLocalStorage('miappCurrentUser');
                     return resolve(self.currentUser);
                 }
             });
@@ -7737,56 +7802,56 @@ var SrvMiapp = (function() {
     };
 
 
-    Service.prototype.syncDb = function(){
+    Service.prototype.syncDb = function () {
         var self = this;
         self.logger.log('miapp.sdk.service.syncDb');
-        
+
         if (self.miappIsOffline) {
             return self.promise.resolve();
         }
 
         var pouchdbEndpoint = self.miappDBURI;
-        var getendpoint = self.miappClient ? self.miappClient.getEndpoint() : null
+        var getendpoint = self.miappClient ? self.miappClient.getEndpoint() : null;
         if (!pouchdbEndpoint && getendpoint) pouchdbEndpoint = getendpoint;
         if (!self.currentUser || !self.currentUser.email || !pouchdbEndpoint || !pouchDB)
-            return self.promise.reject('miapp.sdk.service.syncDb : DB sync impossible. Need a user logged in. (' + pouchdbEndpoint + ' -' + self.currentUser+')');
+            return self.promise.reject('miapp.sdk.service.syncDb : DB sync impossible. Need a user logged in. (' + pouchdbEndpoint + ' -' + self.currentUser + ')');
 
         self.logger.log('miapp.sdk.service.syncDb call');
 
-        return new self.promise(function(resolve,reject){
-            self._db.sync(pouchdbEndpoint,{
-                filter : function(doc){
+        return new self.promise(function (resolve, reject) {
+            self._db.sync(pouchdbEndpoint, {
+                filter: function (doc) {
                     if (doc.appUser_Id == self.currentUser.email) return doc;
                 }
             }).on('complete', function (info) {
-                self.logger.log('miapp.sdk.service.syncDb : db complete : '+info);
+                self.logger.log('miapp.sdk.service.syncDb : db complete : ' + info);
                 resolve();
             })
-            .on('error', function (err) {
-                self.logger.error('miapp.sdk.service.syncDb : db error, we set db temporary offline : '+err);
-                self.miappIsOffline =true;
-                reject(err);
-            }).on('change', function (info) {
-                self.logger.log('miapp.sdk.service.syncDb : db change : '+ info);
+                .on('error', function (err) {
+                    self.logger.error('miapp.sdk.service.syncDb : db error, we set db temporary offline : ' + err);
+                    self.miappIsOffline = true;
+                    reject(err);
+                }).on('change', function (info) {
+                self.logger.log('miapp.sdk.service.syncDb : db change : ' + info);
             }).on('paused', function (err) {
-                self.logger.log('miapp.sdk.service.syncDb : db paused : '+err);
+                self.logger.log('miapp.sdk.service.syncDb : db paused : ' + err);
             }).on('active', function () {
                 self.logger.log('miapp.sdk.service.syncDb : db activate');
             }).on('denied', function (info) {
-                self.logger.error('miapp.sdk.service.syncDb : db denied, we set db temporary offline : '+info);
-                self.miappIsOffline =true;
-                reject('miapp.sdk.service.syncDb : db denied : '+info);
+                self.logger.error('miapp.sdk.service.syncDb : db denied, we set db temporary offline : ' + info);
+                self.miappIsOffline = true;
+                reject('miapp.sdk.service.syncDb : db denied : ' + info);
             });
         });
 
     };
 
 
-    Service.prototype.putInDb = function(data){
+    Service.prototype.putInDb = function (data) {
         var self = this;
-        
+
         if (!self.currentUser || !self.currentUser._id || !self._db)
-            return self.promise.reject('miapp.sdk.service.putInDb : DB put impossible. Need a user logged in. (' + self.currentUser+')');
+            return self.promise.reject('miapp.sdk.service.putInDb : DB put impossible. Need a user logged in. (' + self.currentUser + ')');
 
         data.miappUserId = self.currentUser._id;
         data.miappOrgId = self.appName;
@@ -7796,13 +7861,13 @@ var SrvMiapp = (function() {
         if (!dataId) dataId = generateObjectUniqueId(self.appName);
         delete data._id;
         data._id = dataId;
-        return new self.promise(function(resolve,reject){
-            self._db.put(data, function(err, response) {
+        return new self.promise(function (resolve, reject) {
+            self._db.put(data, function (err, response) {
                 if (response && response.ok && response.id && response.rev) {
                     data._id = response.id;
                     data._rev = response.rev;
                     self._dbRecordCount++;
-                    self.logger.log("updatedData: "+data._id+" - "+data._rev);
+                    self.logger.log("updatedData: " + data._id + " - " + data._rev);
                     resolve(data);
                     return;
                 }
@@ -7812,76 +7877,49 @@ var SrvMiapp = (function() {
 
     };
 
-    Service.prototype.findInDb = function(id){
+    Service.prototype.findInDb = function (id) {
         var self = this;
 
         if (!self.currentUser || !self.currentUser._id || !self._db)
-            return self.promise.reject('miapp.sdk.service.findInDb : need a user logged in. (' + self.currentUser+')');
+            return self.promise.reject('miapp.sdk.service.findInDb : need a user logged in. (' + self.currentUser + ')');
 
         return self._db.get(id);
-
-        /*
-        return new self.promise(function(resolve,reject){
-            self._db.(data, function(err, response) {
-                if (response && response.ok && response.id && response.rev) {
-                    data._id = response.id;
-                    data._rev = response.rev;
-                    self._dbRecordCount++;
-                    self.logger.log("updatedData: "+data._id+" - "+data._rev);
-                    return resolve(data);
-                }
-                return reject(err);
-            });
-
-
-            self._db.allDocs({include_docs: true, descending: true}, function(err, response) {
-                if(err || !response) return reject('miapp.sdk.service.findInDb : No doc found '+ err);
-
-                 var respLength = response.rows.length;
-                    if (!respLength) return reject('miapp.sdk.service.findInDb : empty record');
-
-
-                        var respTested = 0;
-                        var respFound = false;
-                        var results = response.rows.map(function(r){
-                            respTested++;
-                            if (!respFound && r && r.doc && r.doc._id == id) {
-                                respFound = true;
-                                resolve(r.doc);
-                                return r;
-                            }
-                            if (!respFound && respTested === respLength) reject('miapp.sdk.service.findInDb : not found');
-                            return null;
-                        });
-
-
-            });
-        });
-        */
     };
+
+    Service.prototype.findAllInDb = function () {
+        var self = this;
+
+        if (!self.currentUser || !self.currentUser._id || !self._db)
+            return self.promise.reject('miapp.sdk.service.findAllInDb : need a user logged in. (' + self.currentUser + ')');
+
+        return self._db.allDocs({include_docs: true, descending: true});
+    };
+
+
     var _srvDataUniqId = 0;
-    function generateObjectUniqueId(appName, type, name){
-    
+
+    function generateObjectUniqueId(appName, type, name) {
+
         //return null;
         var now = new Date();
-        var simpleDate = ""+now.getYear()+""+now.getMonth()+""+now.getDate()+""+now.getHours()+""+now.getMinutes();//new Date().toISOString();
+        var simpleDate = "" + now.getYear() + "" + now.getMonth() + "" + now.getDate() + "" + now.getHours() + "" + now.getMinutes();//new Date().toISOString();
         var sequId = ++_srvDataUniqId;
         var UId = '';
         if (appName && appName.charAt(0)) UId += appName.charAt(0);
-        if (type && type.length > 3) UId += type.substring(0,4);
-        if (name && name.length > 3) UId += name.substring(0,4);
-        UId += simpleDate+'_'+sequId;
+        if (type && type.length > 3) UId += type.substring(0, 4);
+        if (name && name.length > 3) UId += name.substring(0, 4);
+        UId += simpleDate + '_' + sequId;
         return UId;
     }
 
-/* todo ?
-    Service.prototype._dbFilter= function(doc){
-        var dataUserLoggedIn = this.getUserLoggedIn();
-        if (doc.miappUserId == dataUserLoggedIn.email)
-            return doc;
-        return null;
-    };
-    */
+    /* todo ?
+     Service.prototype._dbFilter= function(doc){
+     var dataUserLoggedIn = this.getUserLoggedIn();
+     if (doc.miappUserId == dataUserLoggedIn.email)
+     return doc;
+     return null;
+     };
+     */
 
 
     Service.prototype.isDbEmpty = function () {
@@ -7894,64 +7932,89 @@ var SrvMiapp = (function() {
         }
 
         self.logger.log('miapp.sdk.service.isDbEmpty call');
-        return new self.promise(function(resolve,reject){
+        return new self.promise(function (resolve, reject) {
             self._db.allDocs({
-                filter : function(doc){
+                filter: function (doc) {
                     if (!self.currentUser) return doc;
                     if (doc.miappUserId == self.currentUser._id) return doc;
                 }
-            },function(err, response) {
+            }, function (err, response) {
                 self.logger.log('miapp.sdk.service.isDbEmpty callback');
-                if (err || !response) { reject(err); return;}
+                if (err || !response) {
+                    reject(err);
+                    return;
+                }
 
                 self._dbRecordCount = response.total_rows;
                 //if (response && response.total_rows && response.total_rows > 5) return resolve(false);
-                if (response.total_rows && response.total_rows > 0) { resolve(false); return;}
+                if (response.total_rows && response.total_rows > 0) {
+                    resolve(false);
+                    return;
+                }
 
-                self.logger.log('miapp.sdk.service.isDbEmpty callback: '+ response.total_rows);
+                self.logger.log('miapp.sdk.service.isDbEmpty callback: ' + response.total_rows);
                 resolve(true);
 
             });
         });
     };
 
+    Service.prototype.setCurrentUser = function (user) {
+        var self = this;
+        if (!user)
+            return self.logger.log('miapp.sdk.service.setCurrentUser : need a valid user');
+
+        var firstUserId = user._id;
+        if (!firstUserId && self.currentUser) firstUserId = self.currentUser._id;
+        if (!firstUserId) firstUserId = generateObjectUniqueId(self.appName, 'user');
+
+        user._id = firstUserId;
+        user.miappUserId = firstUserId;
+        user.miappOrgId = self.appName;
+        user.miappAppVersion = self.appVersion;
+        self.currentUser = user;
+        setObjectFromLocalStorage('miappCurrentUser', self.currentUser);
+        self.logger.log('miapp.sdk.service.setCurrentUser :');
+        self.logger.log(self.currentUser);
+    };
+
     Service.prototype.putFirstUserInEmptyDb = function (firstUser) {
         var self = this;
         if (!firstUser || !self.currentUser || !self.currentUser.email || !self._db)
-            return self.promise.reject('miapp.sdk.service.putFirstUserInEmptyBd : DB put impossible. Need a user logged in. (' + self.currentUser+')_');
+            return self.promise.reject('miapp.sdk.service.putFirstUserInEmptyBd : DB put impossible. Need a user logged in. (' + self.currentUser + ')_');
 
         var firstUserId = firstUser._id;
         if (!firstUserId) firstUserId = self.currentUser._id;
-        if (!firstUserId) firstUserId = generateObjectUniqueId(self.appName,'user');
-        
+        if (!firstUserId) firstUserId = generateObjectUniqueId(self.appName, 'user');
+
         firstUser.miappUserId = firstUserId;
         firstUser.miappOrgId = self.appName;
         firstUser.miappAppVersion = self.appVersion;
         delete firstUser._id;
         firstUser._id = firstUserId;
 
-        return new self.promise(function(resolve,reject){
-            self._db.put(firstUser, function(err, response) {
+        return new self.promise(function (resolve, reject) {
+            self._db.put(firstUser, function (err, response) {
                 if (response && response.ok && response.id && response.rev) {
                     firstUser._id = response.id;
                     firstUser._rev = response.rev;
-                    self.logger.log("miapp.sdk.service.putFirstUserInEmptyBd : firstUser: "+firstUser._id+" - "+firstUser._rev);
+                    self.logger.log("miapp.sdk.service.putFirstUserInEmptyBd : firstUser: " + firstUser._id + " - " + firstUser._rev);
 
-                    // TODO simply login -> putFirstUserInEmptyPouchDB
-                    self.currentUser = firstUser;
                     self._dbRecordCount++;
-                    setObjectFromLocalStorage('miappCurrentUser',self.currentUser);
-
+                    self.setCurrentUser(firstUser);
                     return resolve(firstUser);
                 }
                 return reject(err);
             });
         });
     };
-    
-    Service.prototype.becarefulCleanDb = function() {
+
+    Service.prototype.becarefulCleanDb = function () {
         var self = this;
         self.logger.log('miapp.sdk.service.becarefulCleanDb');
+        if (!self._db)
+            return self.promise.reject('miapp.sdk.service.becarefulCleanDb : DB clean impossible.');
+
         return new self.promise(function (resolve, reject) {
 
             self._db.destroy(function (err, info) {
@@ -7989,24 +8052,24 @@ var SrvMiapp = (function() {
 
                     self.becarefulCleanDb()
                         .then(function (msg) {
+                            console.log(self.currentUser);
                             return self.login(login, password);
                         })
                         .then(function (firstUser) {
-                            if (!firstUser && self.currentUser) {
-                                self._dbInitialized = true;
-                                return self.promise.resolve(); // already set
+                            console.log(self.currentUser);
+                            if (firstUser && !self.currentUser) {
+                                self.setCurrentUser(firstUser);
+                                //self.putFirstUserInEmptyDb(firstUser);
                             }
 
-                            return self.putFirstUserInEmptyDb(firstUser);
-                        })
-                        .then(function (ret) {
-                            //if (ret) return deferred.reject(err);
+                            console.log(self.currentUser);
                             return self.syncDb();
                         })
                         .then(function (ret) {
-                            //if (ret) return reject(err);
+
+                            console.log(self.currentUser);
                             if (!self.currentUser) {
-                                reject('miapp.sdk.service.initDBWithLogin : Pb with user get');
+                                reject('miapp.sdk.service.initDBWithLogin : Pb with user get.' + ret);
                             }
                             else {
                                 self._dbInitialized = true;
@@ -8028,29 +8091,34 @@ var SrvMiapp = (function() {
     // Sync Data
     // If empty call fnInitFirstData(this._db), should return self.promise to call sync
     // Return self.promise with this._db
-    Service.prototype.syncComplete = function (fnInitFirstData) {
+    Service.prototype.syncComplete = function (fnInitFirstData, service) {
         var self = this;
         self.logger.log('miapp.sdk.service.syncComplete');
-        if (!self._dbInitialized) return self.promise.reject('miapp.sdk.service.syncComplete : DB not initialized');
+        if (!self.currentUser || !self._db)
+            return self.promise.reject('miapp.sdk.service.syncComplete : DB sync impossible.');
 
         return new self.promise(function (resolve, reject) {
             self.isDbEmpty()
                 .then(function (isEmpty) {
                     if (isEmpty && fnInitFirstData) {
-                        return fnInitFirstData(self);
+                        var ret = fnInitFirstData(service);
+                        if (ret && ret["catch"] instanceof Function) return ret;
+                        if (typeof ret === 'string') self.logger.log(ret);
                     }
                     return self.promise.resolve('miapp.sdk.service.syncComplete : ready to sync');
                 })
                 .then(function (ret) {
+                    if (typeof ret === 'string') self.logger.log(ret);
                     return self.syncDb();
                 })
                 .then(function (err) {
                     if (err) return reject(err);
-                    //self.logger.log('miapp.sdk.service.srvDataContainer.sync resolved');
+                    self.logger.log('miapp.sdk.service.syncComplete sync resolved');
                     return self._db.info();
                 })
                 .then(function (result) {
                     self._dbRecordCount = result.doc_count;
+                    self.logger.log('miapp.sdk.service.syncComplete _dbRecordCount : ' + self._dbRecordCount);
                     resolve(self._dbRecordCount);
                 })
                 .catch(function (err) {
@@ -8062,19 +8130,17 @@ var SrvMiapp = (function() {
         });
     };
 
-     
-
-
 
     //Local Storage utilities
-    function setObjectFromLocalStorage(id, object){
-      //if(typeof(Storage) === "undefined") return null;
-      var jsonObj = JSON.stringify(object);
-      if (window.localStorage) window.localStorage.setItem(id,jsonObj);
-      //this.logger.log('miapp.sdk.service.retrievedObject: ', JSON.parse(retrievedObject));
-      return jsonObj;
+    function setObjectFromLocalStorage(id, object) {
+        //if(typeof(Storage) === "undefined") return null;
+        var jsonObj = JSON.stringify(object);
+        if (window.localStorage) window.localStorage.setItem(id, jsonObj);
+        //this.logger.log('miapp.sdk.service.retrievedObject: ', JSON.parse(retrievedObject));
+        return jsonObj;
     }
-    function getObjectFromLocalStorage(id){
+
+    function getObjectFromLocalStorage(id) {
         //if(typeof(Storage) === "undefined") return null;
         // Retrieve the object from storage
         var retrievedObject;
@@ -8083,7 +8149,8 @@ var SrvMiapp = (function() {
         //this.logger.log('miapp.sdk.service.retrievedObject: ', JSON.parse(retrievedObject));
         return obj;
     }
-    function removeObjectFromLocalStorage(id){
+
+    function removeObjectFromLocalStorage(id) {
         if (window.localStorage) window.localStorage.removeItem(id);
     }
 

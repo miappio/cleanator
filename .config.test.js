@@ -11,9 +11,9 @@ var configModule = angular.module('myAngularApp.config', [])
     .constant("miappSalt","yyyyy")
 
     // for your test
-    .constant("appIsTest", true)
     .constant("appForceOffline", true)
-    .constant("appEndpointTest", "https://xxxxx")
+    .constant("appAuthEndpoint", "https://miapp.io/api")
+    .constant("appCouchDBEndpoint", "https://couch01.miapp.io/cleanator2")
 
     // from google analytics
     .constant("appGAID","UA-xxxxx");

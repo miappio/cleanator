@@ -1,61 +1,80 @@
-
-
 describe('myAngularApp.services.srvData.pouchdb', function () {
-'use strict';
+    'use strict';
 
     var log, q, http, gettextCatalog;
     var originalTimeout;
     var myRootScope;
     var timeout;
     var $httpBackend;
+    var miappService;
 
     //this.choreColumns     = {type:'docType',appVendorId:'app_Id',appVendorVersion:'app_version',appUserId:'appUser_Id', name:'choreName',category:'choreCategoryName',description:'description',percentAB:'percent_AB',frequencyDays:'frequencyDays',timeInMn:'timeInMn',choreDescriptionCat:'choreDescriptionCat',priority:'priority',priorityComputed:'priorityComputed',lastTimeDone:'lastTimeDone',desactivate:'desactivate', lastModified:'lastModified'};
     //this.historicColumns  = {type:'docType',appVendorId:'app_Id',appVendorVersion:'app_version',appUserId:'appUser_Id', name:'choreName',category:'choreCategoryName',description:'description',percentAB:'percent_AB',frequencyDays:'frequencyDays',timeInMn:'timeInMn',choreDescriptionCat:'choreDescriptionCat',priority:'priority',priorityComputed:'priorityComputed',lastTimeDone:'lastTimeDone',desactivate:'desactivate',choreId:'choreId',userId:'userId',action:'action',actionTodoDate:'actionTodoDate',actionDoneDate:'actionDoneDate',internalWeight:'internalWeight',internalLate:'internalLate', lastModified:'lastModified' };
     var choreRefToCopy = {
-      "_id":"choreFakeId",
-      "choreName": "Vacuum",
-      "choreCategoryName": "01_Chambre",
-      "description": "Vacuum thoroughly (plinths, under carpets, underneath furniture ...)",
-      "percent_AB": 50,
-      "action": "Todo",
-      "frequencyDays": 1,
-      "timeInMn": 10,
-      "choreDescriptionCat": "Aspirateur",
-      "priority": 5,
-      "priorityComputed": 5,
-      "desactivate" : false
+        "_id": "choreFakeId",
+        "choreName": "Vacuum",
+        "choreCategoryName": "01_Chambre",
+        "description": "Vacuum thoroughly (plinths, under carpets, underneath furniture ...)",
+        "percent_AB": 50,
+        "action": "Todo",
+        "frequencyDays": 1,
+        "timeInMn": 10,
+        "choreDescriptionCat": "Aspirateur",
+        "priority": 5,
+        "priorityComputed": 5,
+        "desactivate": false
     };
     var histoRefToCopy = {
-      "choreName": "Vacuum",
-      "choreCategoryName": "01_Chambre",
-      "description": "Vacuum thoroughly (plinths, under carpets, underneath furniture ...)",
-      "percent_AB": 50,
-      "action": "Todo",
-      "frequencyDays": 1,
-      "timeInMn": 10,
-      "choreDescriptionCat": "Aspirateur",
-      "priority": 5,
-      "priorityComputed": 5,
-      "desactivate" : false,
-      'choreId':'choreFakeId',
-      'userId':'',
-      'actionTodoDate':'',
-      'actionDoneDate':'',
-      'internalWeight':'',
-      'internalLate':''
+        "choreName": "Vacuum",
+        "choreCategoryName": "01_Chambre",
+        "description": "Vacuum thoroughly (plinths, under carpets, underneath furniture ...)",
+        "percent_AB": 50,
+        "action": "Todo",
+        "frequencyDays": 1,
+        "timeInMn": 10,
+        "choreDescriptionCat": "Aspirateur",
+        "priority": 5,
+        "priorityComputed": 5,
+        "desactivate": false,
+        'choreId': 'choreFakeId',
+        'userId': '',
+        'actionTodoDate': '',
+        'actionDoneDate': '',
+        'internalWeight': '',
+        'internalLate': ''
     };
-    var userA = {_id:'userA',timeInMnPerSund:30,timeInMnPerMond:30,timeInMnPerTues:30,timeInMnPerWedn:30,timeInMnPerThur:30,timeInMnPerFrid:30,timeInMnPerSatu:30};
-    var userB = {_id:'userB',timeInMnPerSund:30,timeInMnPerMond:30,timeInMnPerTues:30,timeInMnPerWedn:30,timeInMnPerThur:30,timeInMnPerFrid:30,timeInMnPerSatu:30};
+    var userA = {
+        _id: 'userA',
+        timeInMnPerSund: 30,
+        timeInMnPerMond: 30,
+        timeInMnPerTues: 30,
+        timeInMnPerWedn: 30,
+        timeInMnPerThur: 30,
+        timeInMnPerFrid: 30,
+        timeInMnPerSatu: 30
+    };
+    var userB = {
+        _id: 'userB',
+        timeInMnPerSund: 30,
+        timeInMnPerMond: 30,
+        timeInMnPerTues: 30,
+        timeInMnPerWedn: 30,
+        timeInMnPerThur: 30,
+        timeInMnPerFrid: 30,
+        timeInMnPerSatu: 30
+    };
 
 
     describe('basics', function () {
 
         beforeEach(function () {
 
-            inject(function($injector) {
-                log = $injector.get('$log');
+            inject(function ($injector) {
+                log = console;//$injector.get('$log');
                 q = $injector.get('$q');
                 http = $injector.get('$http');
+                miappService = new MiappService(log, q);//$injector.get('MiappService');
+                miappService.init('miappId', 'miappSalt', true);
                 //gettextCatalog = $injector.get('gettextCatalog');
                 myRootScope = $injector.get('$rootScope');
                 timeout = $injector.get('$timeout');
@@ -72,7 +91,9 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
         it('should be correctly initialized', function () {
 
-            var srv = new SrvDataPouchDB(q,log,http,timeout,'appName','appVersion');
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            expect(srv.isInitDone()).toBe(false);
+            srv.init();
             expect(srv.isInitDone()).toBe(true);
             //expect(srv.isLoggedIn()).toBe(false);
             //expect(a4pAnalytics.mAnalyticsArray.length).toEqual(0);
@@ -81,14 +102,15 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
         it('should retrieve couple for one user', function () {
 
-            var srv = new SrvDataPouchDB(q,log,http,timeout,'appName','appVersion');
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            srv.init();
 
             srv.getUserAFromCouple(null)
-                .catch(function(user){
+                .catch(function (user) {
                     expect(user).toBe(null);
                     return srv.getUserBFromCouple(null);
                 })
-                .catch(function(user){
+                .catch(function (user) {
                     expect(user).toBe(null);
                 });
 
@@ -98,7 +120,6 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
 
     });
-
 
 
     describe('algoritm', function () {
@@ -116,6 +137,8 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 myRootScope = $injector.get('$rootScope');
                 timeout = $injector.get('$timeout');
                 $httpBackend = $injector.get('$httpBackend');
+                miappService = new MiappService(log, q);//$injector.get('MiappService');
+                miappService.init('miappId', 'miappSalt', true);
                 //var fakedMainResponse = {};
                 //$httpBackend.when('GET', 'views/user/userCalendar.html').respond(fakedMainResponse);
                 //$httpBackend.when('GET', 'views/user/userAll.html').respond(fakedMainResponse);
@@ -137,10 +160,11 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
         });
 
 
-
         it('should compute by week - with empty values', function (done) {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, 'appName', 'appVersion');
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            expect(srv.isInitDone()).toBe(false);
+            srv.init();
             expect(srv.isInitDone()).toBe(true);
 
             var testComputing = function (lstHistoByCalendar) {
@@ -158,12 +182,14 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 .catch(failTest)
                 .finally(done);
 
-            $httpBackend.flush();
+            //$httpBackend.flush();
+            timeout.flush(200);
         });
 
         it('should compute by week - a A/B dispatch with one chore', function (done) {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, 'appName', 'appVersion');
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            srv.init();
             expect(srv.isInitDone()).toBe(true);
 
             var chores = [choreRefToCopy];
@@ -188,12 +214,14 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 .catch(failTest)
                 .finally(done);
 
-            $httpBackend.flush();
+            //$httpBackend.flush();
+            timeout.flush(200);
         });
 
         it('should compute by week - a A dispatch with one chore with affinity 100% to A', function (done) {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, 'appName', 'appVersion');
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            srv.init();
             expect(srv.isInitDone()).toBe(true);
 
             var oneChore = angular.copy(choreRefToCopy);
@@ -220,12 +248,14 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 .catch(failTest)
                 .finally(done);
 
-            $httpBackend.flush();
+            //$httpBackend.flush();
+            timeout.flush(200);
         });
 
         it('should compute by week - a B dispatch with one chore with affinity 100% to B', function (done) {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, 'appName', 'appVersion');
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            srv.init();
             expect(srv.isInitDone()).toBe(true);
 
             var oneChore = angular.copy(choreRefToCopy);
@@ -252,12 +282,14 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 .catch(failTest)
                 .finally(done);
 
-            $httpBackend.flush();
+            //$httpBackend.flush();
+            timeout.flush(200);
         });
 
         it('should compute by week - a A/B dispatch with one chore with affinity 70% to B', function (done) {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, 'appName', 'appVersion');
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            srv.init();
             expect(srv.isInitDone()).toBe(true);
 
             var oneChore = angular.copy(choreRefToCopy);
@@ -284,12 +316,14 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 .catch(failTest)
                 .finally(done);
 
-            $httpBackend.flush();
+            //$httpBackend.flush();
+            timeout.flush(200);
         });
 
         it('should compute by week - without any time per user should return empty list', function (done) {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, 'appName', 'appVersion');
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            srv.init();
             expect(srv.isInitDone()).toBe(true);
 
             var oneChore = angular.copy(choreRefToCopy);
@@ -311,13 +345,15 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 .catch(failTest)
                 .finally(done);
 
-            $httpBackend.flush();
+            //$httpBackend.flush();
+            timeout.flush(200);
         });
 
 
         it('should compute by week - A is available only during we / B only 2 days', function (done) {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, 'appName', 'appVersion');
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            srv.init();
             expect(srv.isInitDone()).toBe(true);
 
             var oneChore = angular.copy(choreRefToCopy);
@@ -348,7 +384,8 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
         it('should compute by week - A is available only during we / B only 2 days AND done history is full of same chores', function (done) {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, 'appName', 'appVersion');
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            srv.init();
             expect(srv.isInitDone()).toBe(true);
 
             var oneChore = angular.copy(choreRefToCopy);
@@ -395,7 +432,8 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
         it('should compute by week - A & B are full available BUT history have same chores done', function (done) {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, 'appName', 'appVersion');
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            srv.init();
             expect(srv.isInitDone()).toBe(true);
 
             var oneChore = angular.copy(choreRefToCopy);

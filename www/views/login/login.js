@@ -1,6 +1,6 @@
 angular.module('myAngularApp.views.login', [])
 
-    //.config(['$routeProvider', function($routeProvider) {
+//.config(['$routeProvider', function($routeProvider) {
     .config(function ($stateProvider, $urlRouterProvider) {
         'use strict';
 
@@ -15,7 +15,7 @@ angular.module('myAngularApp.views.login', [])
 
     })
 
-    .controller('LoginCtrl', function ($scope, $log, $http, $q, $location, $ionicHistory, $ionicNavBarDelegate, srvConfig, srvData, srvMiapp) {
+    .controller('LoginCtrl', function ($scope, $log, $http, $q, $location, $ionicHistory, $ionicNavBarDelegate, srvDataContainer) {
         'use strict';
 
 
@@ -30,7 +30,7 @@ angular.module('myAngularApp.views.login', [])
 
         $scope.loginSetLogin = function (user) {
 
-            srvConfig.setUserLoggedIn(user)
+            srvDataContainer.login(user)
                 .then(function (user) {
 
                     $ionicNavBarDelegate.showBackButton(true);
@@ -45,7 +45,7 @@ angular.module('myAngularApp.views.login', [])
 
         $scope.loginSignupANewUser = function (newUser) {
 
-            srvConfig.setUserLoggedIn(newUser)
+            srvDataContainer.login(newUser)
                 .then(function (userStored) {
                     return $scope.navDataSync();
                 })
@@ -71,18 +71,18 @@ angular.module('myAngularApp.views.login', [])
 
             //todo ex : ad3777ef69f1ddaec85d1115d012d5f4 ???
 
-            srvData.User.findOneByEmail(email)
-                .then(function (user) {
-                    return $scope.loginSetLogin(user);
-                })
-                .catch(function (err) {
-                    $log.error(err);
-                    var newUser = {};
-                    newUser.email = email;
-                    newUser.password = password; //encryptPass;
-                    return $scope.loginSignupANewUser(newUser);
+            //srvData.User.findOneByEmail(email)
+            //    .then(function (user) {
+            //        return $scope.loginSetLogin(user);
+            //    })
+            //    .catch(function (err) {
+            //        $log.error(err);
+            var newUser = {};
+            newUser.email = email;
+            newUser.password = password; //encryptPass;
+            return $scope.loginSignupANewUser(newUser);
 
-                });
+            //    });
         };
 
 

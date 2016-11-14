@@ -10,10 +10,10 @@ var configModule = angular.module('myAngularApp.config', [])
     .constant("miappId","xxxxxx")
     .constant("miappSalt","yyyyy")
 
-    // for your test
-    .constant("appIsTest", true)
+    // for your ... ?
     .constant("appForceOffline", true)
-    //.constant("appEndpointTest", "https://xxxxx")
+    .constant("appAuthEndpoint", "https://xxxx")
+    .constant("appCouchDBEndpoint", "https://yyyy")
 
     // from google analytics
     .constant("appGAID","UA-xxxxx");

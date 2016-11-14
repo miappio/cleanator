@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/miappio/miappio-sdk.svg?branch=master)](https://travis-ci.org/miappio/miappio-sdk)
+[![Build Status](https://travis-ci.org/miappio/miappio-sdk.svg?branch=master)](https://travis-ci.org/miappio/miappio-sdk) [![NPM version](https://badge.fury.io/js/miappio-sdk.svg)](https://www.npmjs.com/package/miappio-sdk) [![Bower version](https://badge.fury.io/bo/miappio-sdk.svg)](https://libraries.io/bower/miappio-sdk)
 
                                               proudly supported by miapp.io
                      _|                                    _|            
@@ -52,7 +52,7 @@ $ npm test
 
 ### DevOps
 
-    
+[![SDK](https://docs.google.com/drawings/d/17wfq9frYWNzRr9_l1JDeAp77AXFb6aj2iusTDZrQtyA/pub?w=960&amp;h=720)](https://miapp.io/sdk)
 
 # Thanks
 

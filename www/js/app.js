@@ -7,7 +7,7 @@ angular.module('myAngularApp', [
     'angular.filter',
     //  'ngTouch',
     'chart.js',
-    'srvMiapp',
+    'MiappService',
     'miapp.services',
     'ngLocale',
     'gettext',
@@ -30,7 +30,7 @@ angular.module('myAngularApp', [
 
     })
 
-    .run(function($ionicPlatform, gettextCatalog, srvMiapp, miappId, miappSalt, appForceOffline, appAuthEndpoint, appCouchDBEndpoint) {
+    .run(function ($ionicPlatform, gettextCatalog, MiappService, srvData, miappId, miappSalt, appForceOffline, appAuthEndpoint, appCouchDBEndpoint) {
 
 
         //console.log('myAngularApp run');
@@ -50,9 +50,10 @@ angular.module('myAngularApp', [
             }
 
             //miapp.io
-            if (appAuthEndpoint) srvMiapp.setAuthEndpoint(appAuthEndpoint);
-            if (appCouchDBEndpoint) srvMiapp.setDBEndpoint(appCouchDBEndpoint);
-            srvMiapp.init(miappId, miappSalt, appForceOffline);
+            //todo if (appAuthEndpoint) MiappService.setAuthEndpoint(appAuthEndpoint);
+            //todo if (appCouchDBEndpoint) MiappService.setDBEndpoint(appCouchDBEndpoint);
+            MiappService.init(miappId, miappSalt, appForceOffline);
+            srvData.init();
 
         });
 

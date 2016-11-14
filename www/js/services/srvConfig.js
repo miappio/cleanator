@@ -2,8 +2,8 @@
 
 angular.module('srvConfig', [])
 
-.factory('srvConfig', function ($log, $q, gettextCatalog, srvMiapp, srvData) {
-  return new SrvConfig($log,$q, gettextCatalog, srvMiapp, srvData);
+    .factory('srvConfig', function ($log, $q, gettextCatalog, MiappService) {
+        return new SrvConfig($log, $q, gettextCatalog, MiappService);
 });
 
 
@@ -11,14 +11,13 @@ angular.module('srvConfig', [])
 var SrvConfig = (function (){
 //'use strict';
 
-    function service ($log, $q, gettextCatalog, srvMiapp, srvData) {
+    function service($log, $q, gettextCatalog) {
 
         this.$log = $log;
         this.$q = $q;
         this.$log.log('srvConfig - init');
-        this.srvMiapp = srvMiapp;
-        this.srvMiappInitDone = false;
-        this.srvData = srvData;
+        //this.srvMiapp = MiappService;
+        //this.srvMiappInitDone = false;
 
         this.gettextCatalog = gettextCatalog;
         this.configUserLoggedIn = null;
@@ -36,67 +35,31 @@ var SrvConfig = (function (){
     }
 
 
-
+    // used in srvDataContainer.logout()
     service.prototype.logout = function () {
 
         this.configUserLoggedIn = null;
         var ret = removeObjectFromLocalStorage('configUserLoggedIn');
     }
+
     service.prototype.setUserLoggedIn = function (user) {
         var self = this;
-        var defer = self.$q.defer();
-
-        var login = user.email;
-        var password = user.password;
-        self.$log.log('srvConfig.setUserLoggedIn : '+user.email);
-
-        var mergeAndStoreUser = function(userToMerge){
-            if (!self.configUserLoggedIn) self.configUserLoggedIn = angular.copy(userToMerge);
-            for (var attrname in userToMerge) { self.configUserLoggedIn[attrname] = userToMerge[attrname]; }
-            if (userToMerge._id) self.configUserLoggedIn.miappUserId = userToMerge._id;
-            setObjectFromLocalStorage('configUserLoggedIn',self.configUserLoggedIn);
-        };
-
-        if(self.srvMiapp && !self.srvMiappInitDone) {
-            self.$log.log('srvConfig.setUserLoggedIn with srvMiapp');
-            self.srvMiapp.login(login, password, {})
-                .then(function(miappUser){
-
-                    self.$log.log('srvConfig.setUserLoggedIn srvMiapp received: '+ miappUser.email);
-                    for (var attrname in user) { miappUser[attrname] = user[attrname]; }
-                    mergeAndStoreUser(user);
-                    self.srvMiappInitDone = true;
-                    return self.srvMiapp.putFirstUserInEmptyPouchDB(self.srvData.db, self.configUserLoggedIn);
-                })
-                .then(function(miappUser){
-
-                    for (var attrname in user) { miappUser[attrname] = user[attrname]; }
-                    mergeAndStoreUser(miappUser);
-                    defer.resolve(self.configUserLoggedIn);
-
-                })
-                .catch(function(err){
-                    defer.reject(err);
-                });
-        }
-        else {
-            self.$log.log('srvConfig.setUserLoggedIn standalone');
-            mergeAndStoreUser(user);
-            return self.$q.resolve(self.configUserLoggedIn);
-        }
-
-        return defer.promise;
+        delete self.configUserLoggedIn;
+        self.configUserLoggedIn = {};
+        angular.copy(user, self.configUserLoggedIn);
+        setObjectFromLocalStorage('configUserLoggedIn', self.configUserLoggedIn);
     };
     service.prototype.getUserLoggedIn = function () {
-      var obj = getObjectFromLocalStorage('configUserLoggedIn');
-      this.configUserLoggedIn = obj || null;
-      return this.configUserLoggedIn;
+        var self = this;
+        var obj = getObjectFromLocalStorage('configUserLoggedIn');
+        self.configUserLoggedIn = obj || null;
+        return self.configUserLoggedIn;
     };
     service.prototype.isLoggedIn = function () {
-      var user = this.getUserLoggedIn();
-      var b = false;
-      if (user) b = true;
-      return b;
+        var user = this.getUserLoggedIn();
+        var b = false;
+        if (user) b = true;
+        return b;
     };
 
 

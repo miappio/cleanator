@@ -111,14 +111,42 @@ gulp.task('config-html', function () {
 });
 
 gulp.task('config-www', function () {
-  return gulp
-  .src([".config.js",".config.test.js"])
-  .pipe(preprocess(({context: { 
-        PACKAGE_JSON_VERSION: require('./package').version, 
-        PACKAGE_JSON_NAME: require('./package').name
-    
-    }})))
-  .pipe(gulp.dest("./www/js/config/"));
+    return gulp
+        .src([".config.js", ".config.test.js"])
+        .pipe(preprocess(({
+            context: {
+                PACKAGE_JSON_VERSION: require('./package').version,
+                PACKAGE_JSON_NAME: require('./package').name
+
+            }
+        })))
+        .pipe(gulp.dest("./www/js/config/"));
+});
+gulp.task('config-www2', function () {
+    return gulp
+        .src([".config.js"])
+        .pipe(preprocess(({
+            context: {
+                PACKAGE_JSON_VERSION: require('./package').version,
+                PACKAGE_JSON_NAME: require('./package').name
+
+            }
+        })))
+        .pipe(rename('config.js'))
+        .pipe(gulp.dest("./www/js/config/"));
+});
+gulp.task('config-www3', function () {
+    return gulp
+        .src([".config.test.js"])
+        .pipe(preprocess(({
+            context: {
+                PACKAGE_JSON_VERSION: require('./package').version,
+                PACKAGE_JSON_NAME: require('./package').name
+
+            }
+        })))
+        .pipe(rename('config.test.js'))
+        .pipe(gulp.dest("./www/js/config/"));
 });
 
 
@@ -168,10 +196,10 @@ gulp.task('bump', function(){
  * Defaut & Watch
  */
 
-gulp.task('default', ['sass','config','config-www','nggettext_extract','nggettext_compile']);
+gulp.task('default', ['sass', 'config', 'config-www2', 'config-www3', 'nggettext_extract', 'nggettext_compile']);
 
 gulp.task('watch', function() {
   gulp.watch(paths.sass, ['sass']);
-  gulp.watch(paths.config, ['config','config-www']);
+    gulp.watch(paths.config, ['config', 'config-www2', 'config-www3']);
   gulp.watch(paths.html, ['nggettext_extract','nggettext_compile']);
 });

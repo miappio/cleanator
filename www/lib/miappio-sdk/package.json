@@ -1,13 +1,11 @@
 {
   "name": "miappio-sdk",
-  "version": "1.0.35",
+  "version": "1.0.44",
   "description": "miapp.io client SDK",
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
-    "test": "./node_modules/.bin/grunt default; ./node_modules/.bin/karma start test/karma.dist-tests.conf.js",
+    "test": "./node_modules/.bin/grunt build;./node_modules/.bin/tsc;./node_modules/.bin/grunt dist; ./node_modules/.bin/karma start test/karma.dist-tests.conf.js",
     "bump": "./node_modules/.bin/grunt bump",
+    "tsc": "./node_modules/.bin/grunt build; ./node_modules/.bin/tsc --traceResolution",
     "postpublish": "",
     "test-mocha": "./node_modules/.bin/mocha -R dot ./test/test-*.js",
     "test-karma": "./node_modules/.bin/karma start test/karma.unit-tests.conf.js",
@@ -22,6 +20,8 @@
     "miapp.io",
     "mobile",
     "angular",
+    "angular2",
+    "ionic",
     "integration"
   ],
   "author": "miapp.io",
@@ -31,12 +31,15 @@
   },
   "homepage": "https://github.com/miappio/miappio-sdk#readme",
   "devDependencies": {
+    "@types/core-js": "^0.9.34",
+    "@types/node": "^6.0.45",
     "angular": "^1.5.8",
     "angular-mocks": "^1.5.8",
     "grunt": "*",
     "grunt-bump": "*",
     "grunt-cli": "*",
     "grunt-contrib-concat": "*",
+    "grunt-contrib-copy": "*",
     "grunt-contrib-uglify": "*",
     "grunt-typescript-project": "*",
     "jasmine-core": "*",
@@ -47,9 +50,24 @@
     "karma-jasmine": "*",
     "karma-jasmine-html-reporter-livereload": "*",
     "karma-phantomjs-launcher": "*",
-    "typescript": "^2.0.6"
+    "typescript": "^2.0.8"
   },
   "dependencies": {
-    "pouchdb": "^6.0.7"
+    "pouchdb": "^6.0.7",
+    "@angular/common": "~2.1.1",
+    "@angular/compiler": "~2.1.1",
+    "@angular/core": "~2.1.1",
+    "@angular/forms": "~2.1.1",
+    "@angular/http": "~2.1.1",
+    "@angular/platform-browser": "~2.1.1",
+    "@angular/platform-browser-dynamic": "~2.1.1",
+    "@angular/router": "~3.1.1",
+    "@angular/upgrade": "~2.1.1",
+    "angular-in-memory-web-api": "~0.1.13",
+    "core-js": "^2.4.1",
+    "reflect-metadata": "^0.1.8",
+    "rxjs": "5.0.0-beta.12",
+    "systemjs": "0.19.39",
+    "zone.js": "^0.6.25"
   }
 }

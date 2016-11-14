@@ -30,7 +30,6 @@
     "karma-jasmine": "^1.0.2",
     "karma-jasmine-html-reporter-livereload": "*",
     "karma-phantomjs-launcher": "^1.0.1",
-    "miappio-sdk": "*",
     "phantomjs": "*"
   },
   "cordovaPlugins": [
