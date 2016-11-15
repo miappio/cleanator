@@ -141,7 +141,33 @@ var SrvDataContainer = (function () {
         var done = [];
         if (userId) done = this.filterFilter(this.historicsDone, userId);
         else done = this.historicsDone;
+
         return done;
+    };
+    Service.prototype.getHistoricsDoneTimeRemaining = function (userId, date) {
+        var self = this;
+        var user = self.userB;
+        if (self.userA._id == userId) user = self.userA;
+        console.log('userId:' + userId);
+
+        var timeElapsed = self.srvData.getDoneTimeElapsedByUser(self.historicsDone, user, date);
+        console.log('timeElapsed:' + timeElapsed);
+
+        // Sunday is 0, Monday is 1 ...
+        var dayOfWeek = date.getDay();
+        console.log('dayOfWeek:' + dayOfWeek);
+        var col = self.srvData.userColumns.timeInMnPerSund;
+        if (dayOfWeek == 1) col = self.srvData.userColumns.timeInMnPerMond;
+        else if (dayOfWeek == 2) col = self.srvData.userColumns.timeInMnPerTues;
+        else if (dayOfWeek == 3) col = self.srvData.userColumns.timeInMnPerWedn;
+        else if (dayOfWeek == 4) col = self.srvData.userColumns.timeInMnPerThur;
+        else if (dayOfWeek == 5) col = self.srvData.userColumns.timeInMnPerFrid;
+        else if (dayOfWeek == 6) col = self.srvData.userColumns.timeInMnPerSatu;
+        console.log('col:' + col);
+        var timeRemain = parseInt(user[col]);
+        console.log('timeRemain:' + timeRemain);
+        timeRemain = timeRemain - timeElapsed;
+        return (timeRemain > 0) ? timeRemain : 0;
     };
 
     Service.prototype.putInDB = function (dataModel, dataToPut) {
@@ -368,12 +394,12 @@ var SrvDataContainer = (function () {
         var indicAB = indicA + indicB;
         var indicAPer = indicAB ? (Math.round((indicA * 100 / (indicAB)))) : 0;
         var indicBPer = indicAB ? (Math.round((indicB * 100 / (indicAB)))) : 0;
-        choresIndicFeasibility = choresIndicTimeRequired ? (usersIndicTimeAvailabity / choresIndicTimeRequired) : 0;
+        choresIndicFeasibility = choresIndicTimeRequired ? (usersIndicTimeAvailabity * 2 / choresIndicTimeRequired) : 0;
 
         return {
             indicPercent: [indicAPer, indicBPer],
             indicTimeSpent: [userATimeSpent, userBTimeSpent],
-            indicUsersTimeAvailabity: Math.round(usersIndicTimeAvailabity),
+            indicUsersTimeAvailabity: Math.round(usersIndicTimeAvailabity * 2),
             indicChoresTimeRequired: Math.round(choresIndicTimeRequired),
             indicChoresFeasibility: Math.round(choresIndicFeasibility * 100) / 100
         };

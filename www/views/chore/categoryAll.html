@@ -34,14 +34,13 @@
 
                 <div class="item item-avatar" ng-click="toggleStats = !toggleStats">
                     <img src="img/icone_coeur.jpg"/>
-                    <h2 ng-if="navAppInitLevel() <= 2" translate>All chores</h2>
-                    <p ng-if="navAppInitLevel() <= 2" translate>WorldWideStats</p>
+                    <!--<h2 ng-if="navAppInitLevel() <= 2" translate>AllChoresDidYouKnow?</h2>
+                    <p ng-if="navAppInitLevel() <= 2" translate>ChoresWorldWideStats</p>-->
 
-                    <div ng-if="navAppInitLevel() <= 2">
-
-                        <span class="badge badge-balanced">{{categoryIndicators.indicChoresTimeRequired * 7}} <span translate>min / week ?</span></span>
-                    </div>
-                    <div ng-if="navAppInitLevel() > 2">
+                    <h3 ng-if="navAppInitLevel() <= 2" translate>TimeAverageRequired</h3>
+                    <p ng-if="navAppInitLevel() <= 2">{{categoryIndicators.indicChoresTimeRequired * 7}} <span
+                            translate>min / week ?</span></p>
+                    <div>
                         <span class="badge badge-assertive" ng-show="categoryIndicators.indicChoresFeasibility < 0.4"
                               translate>NotGood</span>
                         <span class="badge badge-energized"
@@ -54,10 +53,17 @@
                 </div>
 
                 <div class="item item-body" ng-show="toggleStats">
+                    <p ng-if="navAppInitLevel() <= 2" translate>GUIDER_ChoresWorldwideStats : Split your work on simple
+                        goal</p>
                     <p>
-                        <span translate>TimeAverageAvailable</span>
+                        <span translate>TimeAverageRequired</span>
                         <span>{{categoryIndicators.indicChoresTimeRequired}}</span>
+                        <span translate>min / day ?</span>
+
+                        <span translate>TimeAverageAvailable</span>
+                        <span>{{categoryIndicators.indicUsersTimeAvailabity}}</span>
                         <span translate>min / day.</span>
+
                         <span translate>Feasibility</span>
                         <span>{{categoryIndicators.indicChoresFeasibility}}</span>
                     </p>

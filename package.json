@@ -45,6 +45,7 @@
   ],
   "scripts": {
     "install:bower": "./node_modules/.bin/bower install",
+    "gulp:default": "./node_modules/.bin/gulp",
     "test": "./node_modules/.bin/karma start tests/karma.unit-tests.conf.js --reporters coverage",
     "test:watch": "./node_modules/.bin/karma start tests/karma.unit-tests.conf.js --no-single-run  --no-auto-watch --reporters progress --browsers PhantomJS",
     "start:ionic": "ionic serve",

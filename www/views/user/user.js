@@ -78,8 +78,8 @@ angular.module('myAngularApp.views.user', [])
                             //$scope.userUpdateIndicleanator();
                             $scope.userIndicators = srvDataContainer.computeIndicators();
                         }).catch(function (err) {
-                            $log.error(err);
-                        });
+                        $log.error(err);
+                    });
                 }
 
             }, 1000);

@@ -6,6 +6,59 @@ describe('myAngularApp.services.srvDataContainer', function () {
 
         var log, q, http, gettextCatalog, srvData, srvConfig, srvMiapp, timeout, rootScope;
         var originalTimeout, $httpBackend, filterFilter, pouchDBMock;
+        var choreRefToCopy = {
+            "_id": "choreFakeId",
+            "choreName": "Vacuum",
+            "choreCategoryName": "01_Chambre",
+            "description": "Vacuum thoroughly (plinths, under carpets, underneath furniture ...)",
+            "percent_AB": 50,
+            "action": "Todo",
+            "frequencyDays": 1,
+            "timeInMn": 10,
+            "choreDescriptionCat": "Aspirateur",
+            "priority": 5,
+            "priorityComputed": 5,
+            "desactivate": false
+        };
+        var histoRefToCopy = {
+            "choreName": "Vacuum",
+            "choreCategoryName": "01_Chambre",
+            "description": "Vacuum thoroughly (plinths, under carpets, underneath furniture ...)",
+            "percent_AB": 50,
+            "action": "Todo",
+            "frequencyDays": 1,
+            "timeInMn": 10,
+            "choreDescriptionCat": "Aspirateur",
+            "priority": 5,
+            "priorityComputed": 5,
+            "desactivate": false,
+            'choreId': 'choreFakeId',
+            'userId': '',
+            'actionTodoDate': '',
+            'actionDoneDate': '',
+            'internalWeight': '',
+            'internalLate': ''
+        };
+        var userA = {
+            _id: 'userA', timeInMnPerWeekTodo: 300,
+            timeInMnPerMond: 35,
+            timeInMnPerTues: 36,
+            timeInMnPerWedn: 37,
+            timeInMnPerThur: 38,
+            timeInMnPerFrid: 39,
+            timeInMnPerSatu: 40,
+            timeInMnPerSund: 41
+        };
+        var userB = {
+            _id: 'userB', timeInMnPerWeekTodo: 200,
+            timeInMnPerMond: 22,
+            timeInMnPerTues: 23,
+            timeInMnPerWedn: 24,
+            timeInMnPerThur: 25,
+            timeInMnPerFrid: 26,
+            timeInMnPerSatu: 27,
+            timeInMnPerSund: 28
+        };
 
         beforeEach(module('myAngularApp'));
         beforeEach(function () {
@@ -61,6 +114,77 @@ describe('myAngularApp.services.srvDataContainer', function () {
 
             expect(srv.getChores().length).toBe(0);
         });
+
+        it('should compute indicators', function () {
+
+            var srv = new SrvDataContainer(log, q, http, filterFilter, srvData, srvConfig, srvMiapp);
+            var indicators = srv.computeIndicators();
+            expect(indicators.indicPercent).toEqual([0, 0]);
+            expect(indicators.indicTimeSpent).toEqual([0, 0]);
+            expect(indicators.indicUsersTimeAvailabity).toBe(0);
+            expect(indicators.indicChoresTimeRequired).toBe(0);
+            expect(indicators.indicChoresFeasibility).toBe(0);
+
+            //inject chores and historics
+            srv.chores = [choreRefToCopy, choreRefToCopy, choreRefToCopy, choreRefToCopy];
+            var historicsDone = [];
+            for (var i = 0; i < 3; i++) {
+                var hist = angular.copy(histoRefToCopy);
+                hist._id = i;
+                hist.userId = (i == 1) ? userA._id : userB._id;
+                historicsDone.push(hist);
+            }
+            srv.historicsDone = historicsDone;
+            srv.userA = userA;
+            srv.userB = userB;
+
+            indicators = srv.computeIndicators();
+            expect(indicators.indicPercent).toEqual([25, 75]);
+            expect(indicators.indicTimeSpent).toEqual([10, 20]);
+            expect(indicators.indicUsersTimeAvailabity).toBe(71);
+            expect(indicators.indicChoresTimeRequired).toBe(40);
+            expect(indicators.indicChoresFeasibility).toBe(1.79);
+
+        });
+
+
+        it('should compute historics', function () {
+
+            var srv = new SrvDataContainer(log, q, http, filterFilter, srvData, srvConfig, srvMiapp);
+            srv.userA = userA;
+            srv.userB = userB;
+
+            var userId = userA._id;
+            var now = new Date("January 03, 2016 11:13:00");
+            var hDone = srv.getHistoricsDone(userId);
+            expect(hDone).toEqual([]);
+
+            var time = srv.getHistoricsDoneTimeRemaining(userId, now);
+            expect(time).toEqual(41);
+
+
+            //inject chores and historics
+            srv.chores = [choreRefToCopy, choreRefToCopy, choreRefToCopy, choreRefToCopy];
+            var historicsDone = [];
+            for (var i = 0; i < 4; i++) {
+                var hist = angular.copy(histoRefToCopy);
+                hist._id = i;
+                hist.userId = (i == 1) ? userB._id : userA._id;
+                hist.actionTodoDate = '2016-01-0' + i;
+                hist.actionDoneDate = '2016-01-0' + (i + 1);
+                historicsDone.push(hist);
+            }
+            srv.historicsDone = historicsDone;
+
+            hDone = srv.getHistoricsDone(userId);
+            expect(hDone.length).toEqual(3);
+
+            time = srv.getHistoricsDoneTimeRemaining(userId, now);
+            expect(time).toEqual(31);
+
+        });
+
+
     });
 
 
@@ -73,42 +197,6 @@ describe('myAngularApp.services.srvDataContainer', function () {
 
         var log, q, http, gettextCatalog, srvData, srvDataContainer, srvConfig, srvMiapp, timeout, rootScope;
         var originalTimeout, $httpBackend, filterFilter, pouchDBMock;
-
-        var choreRefToCopy = {
-            "_id": "choreFakeId",
-            "choreName": "Vacuum",
-            "choreCategoryName": "01_Chambre",
-            "description": "Vacuum thoroughly (plinths, under carpets, underneath furniture ...)",
-            "percent_AB": 50,
-            "action": "Todo",
-            "frequencyDays": 1,
-            "timeInMn": 10,
-            "choreDescriptionCat": "Aspirateur",
-            "priority": 5,
-            "priorityComputed": 5,
-            "desactivate": false
-        };
-        var histoRefToCopy = {
-            "choreName": "Vacuum",
-            "choreCategoryName": "01_Chambre",
-            "description": "Vacuum thoroughly (plinths, under carpets, underneath furniture ...)",
-            "percent_AB": 50,
-            "action": "Todo",
-            "frequencyDays": 1,
-            "timeInMn": 10,
-            "choreDescriptionCat": "Aspirateur",
-            "priority": 5,
-            "priorityComputed": 5,
-            "desactivate": false,
-            'choreId': 'choreFakeId',
-            'userId': '',
-            'actionTodoDate': '',
-            'actionDoneDate': '',
-            'internalWeight': '',
-            'internalLate': ''
-        };
-        var userA = {_id: 'userA', timeInMnPerWeekTodo: 200};
-        var userB = {_id: 'userB', timeInMnPerWeekTodo: 300};
 
 
         var currentUser = {
@@ -258,37 +346,7 @@ describe('myAngularApp.services.srvDataContainer', function () {
             expect(srv.getChores().length).toBe(0);
         });
 
-        it('should compute indicators', function () {
 
-            var srv = srvDataContainer;
-            var indicators = srv.computeIndicators();
-            expect(indicators.indicPercent).toEqual([0, 0]);
-            expect(indicators.indicTimeSpent).toEqual([0, 0]);
-            expect(indicators.indicUsersTimeAvailabity).toBe(0);
-            expect(indicators.indicChoresTimeRequired).toBe(0);
-            expect(indicators.indicChoresFeasibility).toBe(0);
-
-            //inject chores and historics
-            srv.chores = [choreRefToCopy, choreRefToCopy, choreRefToCopy, choreRefToCopy];
-            var historicsDone = [];
-            for (var i = 0; i < 3; i++) {
-                var hist = angular.copy(histoRefToCopy);
-                hist._id = i;
-                hist.userId = (i == 1) ? userA._id : userB._id;
-                historicsDone.push(hist);
-            }
-            srv.historicsDone = historicsDone;
-            srv.userA = userA;
-            srv.userB = userB;
-
-            indicators = srv.computeIndicators();
-            expect(indicators.indicPercent).toEqual([43, 57]);
-            expect(indicators.indicTimeSpent).toEqual([10, 20]);
-            expect(indicators.indicUsersTimeAvailabity).toBe(36);
-            expect(indicators.indicChoresTimeRequired).toBe(40);
-            expect(indicators.indicChoresFeasibility).toBe(0.89);
-
-        });
 
         it('should catch error with a bad init', function (done) {
 

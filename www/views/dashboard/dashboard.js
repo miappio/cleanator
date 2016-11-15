@@ -24,7 +24,7 @@ angular.module('myAngularApp.views.dashboard', [])
         $urlRouterProvider.otherwise('/dashboard/user/a');
     })
 
-    .controller('DashboardCtrl', function ($scope, $timeout, $q, $stateParams, $location, srvDataContainer, srvData, srvConfig) {
+    .controller('DashboardCtrl', function ($scope, $timeout, $log, $q, $stateParams, $location, srvDataContainer, srvData, srvConfig) {
         'use strict';
 
         //$scope.dashboardErrorMsg = "";
@@ -384,7 +384,15 @@ angular.module('myAngularApp.views.dashboard', [])
 
         $scope.dashboardAvailability = function(dateAsYYMMDD, userId ) {
 
-            return 120;
+            var date = null;
+            if (dateAsYYMMDD) date = new Date(dateAsYYMMDD);
+            else date = new Date();
+            //var res = date.toISOString().slice(0, 10).replace(/-/g, "/");
+
+            var min = srvDataContainer.getHistoricsDoneTimeRemaining($scope.dashboardSearch.userId, date);
+
+
+            return min;
         };
 
         //
@@ -436,7 +444,8 @@ angular.module('myAngularApp.views.dashboard', [])
             else date = new Date();
             var res = date.toISOString().slice(0, 10).replace(/-/g, "/");
 
-            var display = "" + $scope.dashboardDisplayHistoricDate(dateAsYYMMDD) + " <span class='small' >" + res + "</span>";
+            var display = "" + $scope.dashboardDisplayHistoricDate(dateAsYYMMDD) + " <span class='small'>" + res + "</span>";
+            //$log.log('dashboardDisplayHistoricCalendar: '+dateAsYYMMDD+' : '+display);
             return display;
         };
 
@@ -571,6 +580,9 @@ angular.module('myAngularApp.views.dashboard', [])
         $scope.dashboardIndicatorShowResetVar = false;
         $scope.dashboardIndicatorShowReset = function () {
             $scope.dashboardIndicatorShowResetVar = !$scope.dashboardIndicatorShowResetVar;
+            $timeout(function () {
+                $scope.dashboardIndicatorShowResetVar = false;
+            }, 4000);
         };
 
 

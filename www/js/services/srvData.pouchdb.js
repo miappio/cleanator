@@ -1083,7 +1083,7 @@ var SrvDataPouchDB = (function () {
             }
 
             if (!dayDate || isSameDay) {
-                if (hist[this.historicColumns.userId] == user._id) timeE += hist[this.historicColumns.timeInMn];
+                if (hist[this.historicColumns.userId] == user._id) timeE += parseInt(hist[this.historicColumns.timeInMn]);
             }
         }
 

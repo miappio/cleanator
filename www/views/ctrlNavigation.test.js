@@ -5,7 +5,7 @@ describe('myAngularApp.views.ctrlNavigation', function() {
   var $stateProvider,  $urlRouterProvider,  $ionicConfigProvider;
 
   beforeEach(module('myAngularApp'));
-  beforeEach(module('myAngularApp.views.dashboard'));
+    beforeEach(module('crtl.Navigation'));
   beforeEach(inject(function($injector) {
     // Set up the mock http service responses
     $httpBackend = $injector.get('$httpBackend');
