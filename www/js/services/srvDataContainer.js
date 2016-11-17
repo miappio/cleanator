@@ -148,14 +148,14 @@ var SrvDataContainer = (function () {
         var self = this;
         var user = self.userB;
         if (self.userA._id == userId) user = self.userA;
-        console.log('userId:' + userId);
+        //console.log('userId:' + userId);
 
         var timeElapsed = self.srvData.getDoneTimeElapsedByUser(self.historicsDone, user, date);
-        console.log('timeElapsed:' + timeElapsed);
+        //console.log('timeElapsed:' + timeElapsed);
 
         // Sunday is 0, Monday is 1 ...
         var dayOfWeek = date.getDay();
-        console.log('dayOfWeek:' + dayOfWeek);
+        //console.log('dayOfWeek:' + dayOfWeek);
         var col = self.srvData.userColumns.timeInMnPerSund;
         if (dayOfWeek == 1) col = self.srvData.userColumns.timeInMnPerMond;
         else if (dayOfWeek == 2) col = self.srvData.userColumns.timeInMnPerTues;
@@ -163,9 +163,9 @@ var SrvDataContainer = (function () {
         else if (dayOfWeek == 4) col = self.srvData.userColumns.timeInMnPerThur;
         else if (dayOfWeek == 5) col = self.srvData.userColumns.timeInMnPerFrid;
         else if (dayOfWeek == 6) col = self.srvData.userColumns.timeInMnPerSatu;
-        console.log('col:' + col);
+        //console.log('col:' + col);
         var timeRemain = parseInt(user[col]);
-        console.log('timeRemain:' + timeRemain);
+        //console.log('timeRemain:' + timeRemain);
         timeRemain = timeRemain - timeElapsed;
         return (timeRemain > 0) ? timeRemain : 0;
     };
