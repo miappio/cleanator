@@ -83,7 +83,7 @@ describe('myAngularApp.services.srvAnalytics', function () {
 
 
             inject(function($injector) {
-                log = $injector.get('$log');
+                log = console;//$injector.get('$log');
             });
 
 
