@@ -87,14 +87,27 @@
 
             <ion-list>
                 <div class="item item-divider">
-                    <span ng-bind-html="dashboardDisplayHistoricCalendar()"></span>
-                    <span class="badge badge-balanced">{{dashboardAvailability(null, dashboardSearch.userId)}}<span
-                            translate>mn</span></span>
+                    <span ng-bind-html="dashboardDisplayHistoricCalendar()"></span>{{dashboardTodayIsEmpty}}
+                    <span ng-show="(dashboardAvailability(null, dashboardSearch.userId) <= 0) || dashboardCheckTodayIsEmpty()" class="badge badge-balanced" translate>Did it !</span>
+                    <span ng-show="dashboardAvailability(null, dashboardSearch.userId) > 0 && !dashboardCheckTodayIsEmpty()" class="badge badge-assertive">{{dashboardAvailability(null, dashboardSearch.userId)}}&nbsp;
+                        <span translate>mn</span>
+                    </span>
                 </div>
                 <label class="item item-input item-select" style="border:0">
                     <div class="input-label" translate>Unforeseen item :</div>
                     <select ng-model="dashboardChoresCategoryFilter"
-                            ng-options="cat for cat in dashboardChoresCategoriesToAdd"></select>
+                            ng-options="catNow for catNow in dashboardChoresCategoriesToAdd"
+                            ng-change="dashboardSetCategoryToDoNow(dashboardChoresCategoryFilter)">
+                        <option value="" translate>-- choose category --</option>
+                    </select>
+                </label>
+                <label class="item item-input item-select" style="border:0" ng-show="dashboardChoresCategoryFilter && dashboardChoresFromCatToDoNow">
+                    <div class="input-label">&nbsp;</div>
+                    <select ng-model="dashboardChoresCategoryChoosen"
+                            ng-options="choreNow.choreName for choreNow in dashboardChoresFromCatToDoNow"
+                            ng-change="dashboardSetHistoricToDoNow(dashboardChoresCategoryChoosen);">
+                        <option value="" translate>-- choose chore --</option>
+                    </select>
                 </label>
 
                 <div class="item item-avatar item-button-right" ng-show="dashboardHistoricToDoNow" style="border-top:0">
@@ -109,7 +122,7 @@
                     <small ng-hide="dashboardShowLastHistoricDate(dashboardHistoricToDoNow)" translate>none</small>
                     <p>{{dashboardHistoricToDoNow[historicCols.description]}}</p>
                     <button class="button button-dark"
-                            ng-click="dashboardTerminateHistoricNow(dashboardHistoricToDoNow)"
+                            ng-click="dashboardTerminateHistoricNow(dashboardHistoricToDoNow); dashboardChoresCategoryFilter= null;"
                             style="margin-top:20px;">
                         <small translate>Terminated</small>
                     </button>
@@ -119,14 +132,15 @@
 
 
             <div ng-repeat="(historicGroup, historicList) in (dashboardHistorics| filter : dashboardSearch.userId) | orderBy:'actionTodoDate' | groupBy : 'actionTodoDate'"
-                 ng-init="isTodayGroup = dashboardIsItToday(historicGroup)">
+                 ng-init="isTodayGroup = dashboardIsItToday(historicGroup);">
                 <ion-list>
                     <ion-item class="item item-divider" ng-hide="isTodayGroup">
                         <span ng-bind-html="dashboardDisplayHistoricCalendar(historicGroup)"></span>
-                        testtt<span class="badge badge-balanced">{{dashboardAvailability(historicGroup, dashboardSearch.userId)}}<span
-                            translate>mn</span></span>
+                        <span class="badge">{{dashboardAvailability(historicGroup, dashboardSearch.userId)}}&nbsp;
+                        <span translate>mn</span></span>
                     </ion-item>
-                    <div class="item item-avatar item-button-right" ng-repeat="historic in historicList"
+                    <div class="item item-avatar item-button-right"
+                         ng-repeat="historic in historicList"
                          ng-hide="historic.tmpBeforeTerminate">
 
                         <img ng-src="{{getChoreCategoryThumbPath(historic[historicCols.category])}}"/>

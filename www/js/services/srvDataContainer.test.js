@@ -170,17 +170,23 @@ describe('myAngularApp.services.srvDataContainer', function () {
                 var hist = angular.copy(histoRefToCopy);
                 hist._id = i;
                 hist.userId = (i == 1) ? userB._id : userA._id;
-                hist.actionTodoDate = '2016-01-0' + i;
-                hist.actionDoneDate = '2016-01-0' + (i + 1);
+                hist.actionTodoDate = new Date(Date.UTC(2016,0,i));
+                hist.actionDoneDate = new Date(Date.UTC(2016,0,i+1));
                 historicsDone.push(hist);
             }
             srv.historicsDone = historicsDone;
+            srv.historicsTodo2 = historicsDone;
 
             hDone = srv.getHistoricsDone(userId);
             expect(hDone.length).toEqual(3);
 
             time = srv.getHistoricsDoneTimeRemaining(userId, now);
             expect(time).toEqual(31);
+
+            var todos = srv.getHistoricsTodo(userId, now);
+            expect(todos.length).toEqual(1);
+
+
 
         });
 

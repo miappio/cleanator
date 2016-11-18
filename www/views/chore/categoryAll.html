@@ -37,10 +37,10 @@
                     <!--<h2 ng-if="navAppInitLevel() <= 2" translate>AllChoresDidYouKnow?</h2>
                     <p ng-if="navAppInitLevel() <= 2" translate>ChoresWorldWideStats</p>-->
 
-                    <h3 ng-if="navAppInitLevel() <= 2" translate>TimeAverageRequired</h3>
-                    <p ng-if="navAppInitLevel() <= 2">{{categoryIndicators.indicChoresTimeRequired * 7}} <span
+                    <h3 ng-show="navAppInitLevel() <= 2" translate>TimeAverageRequired</h3>
+                    <p ng-show="navAppInitLevel() <= 2">{{categoryIndicators.indicChoresTimeRequired * 7}} <span
                             translate>min / week ?</span></p>
-                    <div>
+                    <div ng-show="navAppInitLevel() > 2">
                         <span class="badge badge-assertive" ng-show="categoryIndicators.indicChoresFeasibility < 0.4"
                               translate>NotGood</span>
                         <span class="badge badge-energized"
@@ -53,7 +53,7 @@
                 </div>
 
                 <div class="item item-body" ng-show="toggleStats">
-                    <p ng-if="navAppInitLevel() <= 2" translate>GUIDER_ChoresWorldwideStats : Split your work on simple
+                    <p ng-show="navAppInitLevel() <= 2" translate>GUIDER_ChoresWorldwideStats : Split your work on simple
                         goal</p>
                     <p>
                         <span translate>TimeAverageRequired</span>

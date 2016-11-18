@@ -25,6 +25,7 @@ var SrvDataContainer = (function () {
         this.chores = [];
         this.categories = [];
         this.historicsTodo = {};
+        this.historicsTodo2 = [];
         this.historicsDone = [];
         this.userCols = srvData.User.columns;
         this.coupleCols = srvData.Couple.columns;
@@ -144,18 +145,50 @@ var SrvDataContainer = (function () {
 
         return done;
     };
-    Service.prototype.getHistoricsDoneTimeRemaining = function (userId, date) {
+
+    Service.prototype.getHistoricsDoneTimeElapsedByUser = function (userId, date) {
         var self = this;
         var user = self.userB;
         if (self.userA._id == userId) user = self.userA;
-        //console.log('userId:' + userId);
-
         var timeElapsed = self.srvData.getDoneTimeElapsedByUser(self.historicsDone, user, date);
-        //console.log('timeElapsed:' + timeElapsed);
+        return timeElapsed;
+    };
 
-        // Sunday is 0, Monday is 1 ...
+    Service.prototype.getHistoricsTodo = function (userId, date) {
+        var self = this;
+        var user = self.userB;
+        if (self.userA._id == userId) user = self.userA;
+
+        var todos = self.historicsTodo2;
+        var todosToday = [];
+        for (var i = 0; todos && (i < todos.length); i++) {
+            //console.log(todos[i].actionTodoDate);
+            //console.log(date);
+            var dateCorrect = false;
+            if (!date) dateCorrect = true;
+            else {
+                var dateUTCYYYYMMDD = new Date(date);
+                var dateUTCYYYYMMDDTodo = new Date(todos[i].actionTodoDate);
+                if (dateUTCYYYYMMDD.getFullYear() === dateUTCYYYYMMDDTodo.getFullYear()
+                    && dateUTCYYYYMMDD.getMonth() === dateUTCYYYYMMDDTodo.getMonth()
+                    && dateUTCYYYYMMDD.getDate() === dateUTCYYYYMMDDTodo.getDate())
+                    dateCorrect = true;
+            }
+
+            if (dateCorrect && (todos[i].userId === userId))
+                todosToday.push(todos[i]);
+
+        }
+
+        return todosToday;
+    };
+
+    Service.prototype.getHistoricsDoneTimeRemaining = function (userId, date) {
+        var self = this;
+
+        var timeElapsed = self.getHistoricsDoneTimeElapsedByUser(userId, date);
+
         var dayOfWeek = date.getDay();
-        //console.log('dayOfWeek:' + dayOfWeek);
         var col = self.srvData.userColumns.timeInMnPerSund;
         if (dayOfWeek == 1) col = self.srvData.userColumns.timeInMnPerMond;
         else if (dayOfWeek == 2) col = self.srvData.userColumns.timeInMnPerTues;
@@ -163,9 +196,10 @@ var SrvDataContainer = (function () {
         else if (dayOfWeek == 4) col = self.srvData.userColumns.timeInMnPerThur;
         else if (dayOfWeek == 5) col = self.srvData.userColumns.timeInMnPerFrid;
         else if (dayOfWeek == 6) col = self.srvData.userColumns.timeInMnPerSatu;
-        //console.log('col:' + col);
+
+        var user = self.userB;
+        if (self.userA._id == userId) user = self.userA;
         var timeRemain = parseInt(user[col]);
-        //console.log('timeRemain:' + timeRemain);
         timeRemain = timeRemain - timeElapsed;
         return (timeRemain > 0) ? timeRemain : 0;
     };
@@ -347,6 +381,7 @@ var SrvDataContainer = (function () {
         // compute base on all historics done
         self.srvData.computeHistoricsByCalendar(self.chores, self.historicsDone, self.userA, self.userB, 7)
             .then(function (allHistoricsTodo) {
+                self.historicsTodo2 = allHistoricsTodo;
                 deferred.resolve(allHistoricsTodo);
             })
             .catch(function (err) {

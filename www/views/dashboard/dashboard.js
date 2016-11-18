@@ -32,8 +32,10 @@ angular.module('myAngularApp.views.dashboard', [])
         //$scope.dashboardHistoricsDone = [];
         $scope.dashboardSearch = {};
         $scope.dashboardHistoricDisplay = "week";
-        $scope.dashboardChoresToAdd = {'': []};
-        $scope.dashboardChoresCategoriesToAdd = [''];
+        //$scope.dashboardChoresToAdd = {'': []};
+        //$scope.dashboardChoresCategoriesToAdd = [''];
+        $scope.dashboardChoresToAdd = {};
+        $scope.dashboardChoresCategoriesToAdd = [];
 
 
         //$scope.dashboardViewTitle = "a";
@@ -171,10 +173,12 @@ angular.module('myAngularApp.views.dashboard', [])
         $scope.dashboardComputeChoresToAdd = function () {
             if (!$scope.chores || $scope.chores.length === 0) return;
 
-            $scope.dashboardChoresToAdd = {'': []};
-            $scope.dashboardChoresCategoriesToAdd = [''];
+            //$scope.dashboardChoresToAdd = {'': []};
+            //$scope.dashboardChoresCategoriesToAdd = [''];
+            //$scope.dashboardChoresToAdd[''] = [];
+            $scope.dashboardChoresToAdd = {};
+            $scope.dashboardChoresCategoriesToAdd = [];
 
-            $scope.dashboardChoresToAdd[''] = [];
             //$scope.dashboardChoresToAdd.push({dashboardSelectTitle : 'What are you doing ?'});
             for (var i = 0; i < $scope.chores.length; i++) {
                 var choreToAdd = $scope.chores[i];
@@ -283,8 +287,17 @@ angular.module('myAngularApp.views.dashboard', [])
         };
 
         $scope.dashboardHistoricToDoNow = null;
-        $scope.dashboardHistoricToDoNowDone = false;
-        $scope.setHistoricToDoNow = function (choreToDoNow) {
+        //$scope.dashboardHistoricToDoNowDone = false;
+        $scope.dashboardChoresFromCatToDoNow = null;
+        $scope.dashboardSetCategoryToDoNow = function (catToDoNow) {
+            $scope.dashboardChoresFromCatToDoNow = null;
+            if (!catToDoNow) return;
+            $scope.dashboardChoresFromCatToDoNow = $scope.dashboardChoresToAdd[catToDoNow];
+            $scope.dashboardSetHistoricToDoNow(null);
+        };
+        $scope.dashboardSetHistoricToDoNow = function (choreToDoNow) {
+            $scope.dashboardHistoricToDoNow = null;
+            if (!choreToDoNow) return;
             $scope.dashboardHistoricToDoNow = angular.copy(choreToDoNow);
             $scope.dashboardHistoricToDoNow[$scope.historicCols.choreId] = choreToDoNow._id;
             $scope.dashboardHistoricToDoNow[$scope.historicCols.userId] = $scope.dashboardSearch.userId;
@@ -292,18 +305,20 @@ angular.module('myAngularApp.views.dashboard', [])
         };
 
         $scope.dashboardTerminateHistoricNow = function (historic) {
-            $scope.dashboardHistoricToDoNowDone = true;
+            //$scope.dashboardHistoricToDoNowDone = true;
             $scope.dashboardTerminateHistoric(historic).finally(function () {
-                $scope.dashboardHistoricToDoNow = null;
-                $scope.dashboardComputeChoresToAdd();
-                $scope.dashboardHistoricToDoNowDone = false;
+                //$scope.dashboardHistoricToDoNow = null;
+                //$scope.dashboardComputeChoresToAdd();
+                $scope.dashboardSetCategoryToDoNow(null);
+                $scope.dashboardSetHistoricToDoNow(null);
+                //$scope.dashboardHistoricToDoNowDone = false;
             });
         };
 
-        $scope.isDashboardHistoricToDoNowDone = function () {
+        //$scope.isDashboardHistoricToDoNowDone = function () {
             //console.log('$scope.dashboardHistoricToDoNowDone :'+$scope.dashboardHistoricToDoNowDone);
-            return $scope.dashboardHistoricToDoNowDone;
-        };
+        //    return $scope.dashboardHistoricToDoNowDone;
+        //};
 
         $scope.dashboardNotForMe = function (historic) {
             if (!historic) return;
@@ -382,16 +397,14 @@ angular.module('myAngularApp.views.dashboard', [])
                 });
         };
 
-        $scope.dashboardAvailability = function(dateAsYYMMDD, userId ) {
+        $scope.dashboardAvailability = function(dateISO, userId ) {
 
             var date = null;
-            if (dateAsYYMMDD) date = new Date(dateAsYYMMDD);
+            if (typeof dateISO === "string") date = new Date(dateISO);
+            else if (dateISO && dateISO instanceof Date) date = new Date(Date.UTC(dateISO.getFullYear(),dateISO.getMonth(),dateISO.getDate()));
             else date = new Date();
             //var res = date.toISOString().slice(0, 10).replace(/-/g, "/");
-
             var min = srvDataContainer.getHistoricsDoneTimeRemaining($scope.dashboardSearch.userId, date);
-
-
             return min;
         };
 
@@ -404,10 +417,11 @@ angular.module('myAngularApp.views.dashboard', [])
         // 	return "";
         // };
 
-        $scope.dashboardDisplayHistoricDate = function (dateAsYYMMDD) {
+        $scope.dashboardDisplayHistoricDate = function (dateISO) {
 
             var date = null;
-            if (dateAsYYMMDD) date = new Date(dateAsYYMMDD);
+            if (typeof dateISO === "string") date = new Date(dateISO);
+            else if (dateISO && dateISO instanceof Date) date = new Date(Date.UTC(dateISO.getFullYear(),dateISO.getMonth(),dateISO.getDate()));
             else date = new Date();
 
             var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -428,24 +442,35 @@ angular.module('myAngularApp.views.dashboard', [])
         };
 
 
-        $scope.dashboardIsItToday = function (dateAsYYMMDD) {
+        $scope.dashboardIsItToday = function (dateISO) {
 
-            var date = new Date(dateAsYYMMDD);
+            var date = null;
+            if (typeof dateISO === "string") date = new Date(dateISO);
+            else if (dateISO && dateISO instanceof Date) date = new Date(Date.UTC(dateISO.getFullYear(),dateISO.getMonth(),dateISO.getDate()));
+            else date = new Date();
             var now = new Date();
             var isToday = ((date.getDate() == now.getDate()) && (date.getMonth() == now.getMonth()) && (date.getFullYear() == now.getFullYear()));
             return isToday;
         };
 
+        $scope.dashboardCheckTodayIsEmpty = function(){
+            var now = new Date();
+            var t = srvDataContainer.getHistoricsTodo($scope.dashboardSearch.userId, now);
+            return (t && (t.length === 0));
 
-        $scope.dashboardDisplayHistoricCalendar = function (dateAsYYMMDD) {
+        };
+
+
+        $scope.dashboardDisplayHistoricCalendar = function (dateISO) {
 
             var date = null;
-            if (dateAsYYMMDD) date = new Date(dateAsYYMMDD);
+            if (typeof dateISO === "string") date = new Date(dateISO);
+            else if (dateISO && dateISO instanceof Date) date = new Date(Date.UTC(dateISO.getFullYear(),dateISO.getMonth(),dateISO.getDate()));
             else date = new Date();
-            var res = date.toISOString().slice(0, 10).replace(/-/g, "/");
+            var res = ''+date.getFullYear()+'-'+('0'+ (date.getMonth()+1)).slice(-2)+'-'+('0'+date.getDate()).slice(-2);//.toISOString();//.slice(0, 10).replace(/-/g, "/");
 
-            var display = "" + $scope.dashboardDisplayHistoricDate(dateAsYYMMDD) + " <span class='small'>" + res + "</span>";
-            //$log.log('dashboardDisplayHistoricCalendar: '+dateAsYYMMDD+' : '+display);
+            var display = "" + $scope.dashboardDisplayHistoricDate(dateISO) + " <span class='small'>" + res + "</span>";
+            //$log.log('dashboardDisplayHistoricCalendar: '+dateISO+' : '+display);
             return display;
         };
 

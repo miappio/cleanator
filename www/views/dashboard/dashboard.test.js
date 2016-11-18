@@ -75,21 +75,47 @@ describe('myAngularApp.views.dashboard', function () {
             expect(controller).toBeDefined();
 
             //var dateAsYYMMDD = '31/12/1812';
-            var dateAsYYMMDD = '2011/11/30';
-            var displayDate = $rootScope.dashboardDisplayHistoricDate(dateAsYYMMDD);
+            var dateDay = 'Wednesday';
+            var displayDate = $rootScope.dashboardDisplayHistoricDate('2011/11/30');
+            expect(displayDate).toBe(dateDay);
+            var displayDate = $rootScope.dashboardDisplayHistoricDate('2011-11-30');
+            expect(displayDate).toBe(dateDay);
+            var displayDate = $rootScope.dashboardDisplayHistoricDate(new Date(2011,10,30));
+            expect(displayDate).toBe(dateDay);
 
-            expect(displayDate).toBe('Wednesday');
+            //todo Prefer this UTC Date way !
+            var displayDate = $rootScope.dashboardDisplayHistoricDate(new Date(Date.UTC(2011, 10, 30)));
+            expect(displayDate).toBe(dateDay);
         });
 
 
         it('computing dashboardDisplayHistoricCalendar', function () {
             expect(controller).toBeDefined();
 
-            //var dateAsYYMMDD = '31/12/1812';
-            var dateAsYYMMDD = '2011/11/30';
-            var displayDate = $rootScope.dashboardDisplayHistoricCalendar(dateAsYYMMDD);
+            var dateAsString = 'Monday '+"<span class='small'>"+'2011-01-31</span>';
+            var dateAsYYYYMMDD_PleaseDoNotUse = new Date(2011,0,31);//cause month [0 - 11]
+            var dateAsYYYYMMDDUTC = new Date(Date.UTC(2011,0,31));
+            //var offset = dateAsYYYYMMDDUTC.getTimezoneOffset();
+            //expect(offset).toBe(0);
+            var displayDate = $rootScope.dashboardDisplayHistoricCalendar(dateAsYYYYMMDDUTC);
+            expect(displayDate).toBe(dateAsString);
+            var dateISO = dateAsYYYYMMDDUTC.toISOString();
+            expect(dateISO).toBe('2011-01-31T00:00:00.000Z');
+            displayDate = $rootScope.dashboardDisplayHistoricCalendar(dateISO);
+            expect(displayDate).toBe(dateAsString);
 
-            expect(displayDate).toBe("Wednesday <span class='small'>2011/11/29</span>");
+
+            var dateAsString = 'Saturday '+"<span class='small'>"+'2011-12-31</span>';
+            var dateAsYYYYMMDD_PleaseDoNotUse = new Date(2011,11,31);//cause month [0 - 11]
+            var dateAsYYYYMMDDUTC = new Date(Date.UTC(2011,11,31));
+            //var offset = dateAsYYYYMMDDUTC.getTimezoneOffset();
+            //expect(offset).toBe(0);
+            var displayDate = $rootScope.dashboardDisplayHistoricCalendar(dateAsYYYYMMDDUTC);
+            expect(displayDate).toBe(dateAsString);
+            var dateISO = dateAsYYYYMMDDUTC.toISOString();
+            expect(dateISO).toBe('2011-12-31T00:00:00.000Z');
+            displayDate = $rootScope.dashboardDisplayHistoricCalendar(dateISO);
+            expect(displayDate).toBe(dateAsString);
         });
 
     });

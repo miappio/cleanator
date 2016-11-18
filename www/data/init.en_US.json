@@ -48,7 +48,7 @@
       "categoryName": "04_Famille",
       "description": "Family",
       "thumb": "img/categories/familly.png",
-      "desactivate" : false
+      "desactivate" : true
     },
     {
       "group" : "choreCategory",
@@ -69,7 +69,7 @@
       "categoryName": "07_Maison",
       "description": "Various",
       "thumb": "img/categories/house.png",
-      "desactivate" : false
+      "desactivate" : true
     },
     {
       "group" : "choreCategory",
@@ -83,7 +83,7 @@
       "categoryName": "09_Exterieur",
       "description": "Exterior",
       "thumb": "img/categories/garden.png",
-      "desactivate" : false
+      "desactivate" : true
     },
 
 
@@ -258,7 +258,7 @@
       "choreDescriptionCat": "Animaux",
       "priority": 5,
       "priorityComputed": 5,
-      "desactivate" : false
+      "desactivate" : true
     },
     {
       "choreName": "Vacuum thoroughly (plinths, under carpets, underneath furniture ...)",
@@ -414,7 +414,7 @@
       "choreDescriptionCat": "Balai",
       "priority": 5,
       "priorityComputed": 5,
-      "desactivate" : false
+      "desactivate" : true
     },
     {
       "choreName": "Mop floors if wooden or tiled",

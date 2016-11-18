@@ -890,12 +890,12 @@ var SrvDataPouchDB = (function () {
                         var found = false;
                         for (var x = 0; (x < lstHistoByCalendar.length) && !found; x++) {
                             var h1 = lstHistoByCalendar[x];
-                            if (h1.actionTodoDate == dateTxt && h1.choreId === histo.choreId) found = true;
+                            if (h1.actionTodoDate === dateTxt && h1.choreId === histo.choreId) found = true;
                         }
                         for (var y = 0; (y < historics.length) && !found; y++) {
                             var h2 = historics[y];
                             var h2Date = new Date(h2.actionDoneDate);
-                            if (h2Date.getDate() == dateTodo.getDate() && h2Date.getMonth() == dateTodo.getMonth() && h2Date.getFullYear() == dateTodo.getFullYear() &&
+                            if (h2Date.getDate() === dateTodo.getDate() && h2Date.getMonth() === dateTodo.getMonth() && h2Date.getFullYear() === dateTodo.getFullYear() &&
                                 h2.choreId === histo.choreId)
                                 found = true;
                         }
