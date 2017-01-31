@@ -73,7 +73,8 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 log = console;//$injector.get('$log');
                 q = $injector.get('$q');
                 http = $injector.get('$http');
-                miappService = new MiappService(log, q);//$injector.get('MiappService');
+                //miappService = $injector.get('MiappService');
+                miappService = new miapp.angularService(log, q);
                 miappService.init('miappId', 'miappSalt', true);
                 //gettextCatalog = $injector.get('gettextCatalog');
                 myRootScope = $injector.get('$rootScope');
@@ -137,7 +138,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 myRootScope = $injector.get('$rootScope');
                 timeout = $injector.get('$timeout');
                 $httpBackend = $injector.get('$httpBackend');
-                miappService = new MiappService(log, q);//$injector.get('MiappService');
+                miappService = new miapp.angularService(log, q);//$injector.get('MiappService');
                 miappService.init('miappId', 'miappSalt', true);
                 //var fakedMainResponse = {};
                 //$httpBackend.when('GET', 'views/user/userCalendar.html').respond(fakedMainResponse);

@@ -85,14 +85,6 @@ angular.module('myAngularApp.views.user', [])
             }, 1000);
         };
 
-
-        $scope.logout = function () {
-            srvDataContainer.logout();
-            //$scope.userInitSpinnerStopped = false;
-            if ($scope.navRedirect) $scope.navRedirect();
-        };
-
-
         // Synchronise DB
         $scope.userDataSync = function () {
             var self = this;
@@ -116,8 +108,8 @@ angular.module('myAngularApp.views.user', [])
             $scope.userInitSpinnerStopped = true;
         };
 
-
         $scope.userSaveEnable = {};
+
         $scope.userSave = function (user) {
             if (!user || !user._id) return;
             var uid = user._id;
@@ -147,12 +139,15 @@ angular.module('myAngularApp.views.user', [])
         };
 
         $scope.userAHasSameTimeEachDay = false;
+
         $scope.userBHasSameTimeEachDay = false;
+
         $scope.setUserASameTimeEachDay = function (val) {
             //var value = val ? val : !$scope.userAHasSameTimeEachDay;
             //$scope.userAHasSameTimeEachDay = true;
             $scope.userUpdateTimePerWeek($scope.userA, true);
         };
+
         $scope.setUserBSameTimeEachDay = function (val) {
             //var value = val ? val : !$scope.userBHasSameTimeEachDay;
             //$scope.userBHasSameTimeEachDay = true;
@@ -228,35 +223,37 @@ angular.module('myAngularApp.views.user', [])
 
         };
 
-
         //------------------
         // Modals
-
         $ionicModal.fromTemplateUrl('views/user/modals.html', {
             scope: $scope,
             animation: 'slide-in-up'
         }).then(function (modal) {
             $scope.modal = modal;
         });
+
         $scope.openModal = function () {
             if ($scope.modal) $scope.modal.show();
         };
+
         $scope.closeModal = function () {
             if ($scope.modal) $scope.modal.hide();
         };
+
         //Cleanup the modal when we're done with it!
         $scope.$on('$destroy', function () {
             if ($scope.modal) $scope.modal.remove();
         });
+
         // Execute action on hide modal
         $scope.$on('modal.hidden', function () {
             // Execute action
         });
+
         // Execute action on remove modal
         $scope.$on('modal.removed', function () {
             // Execute action
         });
-
 
         //------------------
         // Initialization

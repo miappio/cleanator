@@ -80,7 +80,7 @@ describe('myAngularApp', function () {
                 var appForceOffline = $injector.get('appForceOffline');
                 expect(appForceOffline).toBe(true);
                 var appAuthEndpoint = $injector.get('appAuthEndpoint');
-                expect(appAuthEndpoint).toBe('https://xxxx');
+                expect(appAuthEndpoint).toBe('');
 
 
 

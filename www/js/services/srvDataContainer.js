@@ -36,33 +36,35 @@ var SrvDataContainer = (function () {
 
     Service.prototype.login = function (user) {
         var self = this;
-        if (self.isLoggedIn()) return self.$q.reject('srvDataContainer.login : already logged in');
+        //if (self.isLoggedIn()) return self.$q.reject('srvDataContainer.login : already logged in');
 
         var login = user ? user.email : null;
         var password = user ? user.password : null;
         self.$log.log('srvDataContainer.login : ' + login);
 
         return self.$q(function (resolve, reject) {
-            self.srvMiapp.login(login, password, {})
+            self.srvMiapp.login(login, password)
                 .then(function (miappUser) {
 
                     self.$log.log('srvDataContainer.login srvMiapp received: ' + miappUser.email);
                     if (user) for (var attrname in user) {
                         miappUser[attrname] = user[attrname];
                     }
+                    var configUser = self.srvConfig.getUserLoggedIn();
+                    if (configUser) for (var attrname in configUser) {
+                        miappUser[attrname] = configUser[attrname];
+                    }
 
-                    self.$log.log('srvDataContainer.login srvMiapp put : ');
-                    self.$log.log(miappUser);
-                    //return self.putInDB(self.srvData.User, miappUser);
+                    //   self.$log.log('srvDataContainer.login srvMiapp put : ', miappUser);
+                    //   return self.putInDB(self.srvData.User, miappUser);
                     //})
                     //.then(function (miappUser) {
-                    //  self.$log.log('srvDataContainer.login srvConfig put : ');
-                    // self.$log.log(miappUser);
+                    self.$log.log('srvDataContainer.login srvConfig put : ', miappUser);
                     self.srvConfig.setUserLoggedIn(miappUser);
                     resolve(miappUser);
                 })
                 .catch(function (err) {
-                    self.$log.log('srvConfig.setUserLoggedIn reject : ' + err);
+                    self.$log.error('srvConfig.setUserLoggedIn reject : ' + err);
                     reject(err);
                 });
         });
@@ -87,7 +89,7 @@ var SrvDataContainer = (function () {
                     return bindData(self);
                 })
                 .then(function (err) {
-                    if (err) return deferred.reject(err);
+                    if (err) return reject(err);
                     self.$log.log('srvDataContainer.sync resolved');
                     resolve();
                 })
@@ -108,7 +110,8 @@ var SrvDataContainer = (function () {
     Service.prototype.logout = function (is) {
         this.srvConfig.logout();
         this.srvConfig.setAppFirstInitLevel(0);
-        return this.srvData.becarefulClean();
+        //return this.srvData.becarefulClean();
+        return this.srvMiapp.logoff();
     };
 
     Service.prototype.reset = function () {
@@ -241,11 +244,12 @@ var SrvDataContainer = (function () {
 
                     self.putInDB(self.srvData.User, userA)
                         .then(function (newUserA) {
-                            self.$log.log('srvDataContainer.initWithFirstData put A :' + newUserA.email);
+                            self.$log.log('srvDataContainer.initWithFirstData put A :',  newUserA);
                             return self.putInDB(self.srvData.User, userB);
                         })
                         .then(function (newUserB) {
-                            self.$log.log('srvDataContainer.initWithFirstData put B :' + newUserB.firstname);
+                            self.$log.log('srvDataContainer.initWithFirstData put B :', newUserB);
+
                             var couple = {};
                             var chanceCouple = new Chance(chanceBaseCouple + i);
                             couple[self.coupleCols.name] = chanceCouple.sentence({words: 2});
@@ -258,8 +262,7 @@ var SrvDataContainer = (function () {
                             return self.putInDB(self.srvData.Couple, couple);
                         })
                         .then(function (coupleSaved) {
-                            self.$log.log('srvDataContainer.initWithFirstData coupleSaved :' + coupleSaved.name);
-                            self.$log.log(coupleSaved);
+                            self.$log.log('srvDataContainer.initWithFirstData coupleSaved :',coupleSaved);
 
                             // Categories first init
                             var categories = data.categories;
@@ -476,10 +479,11 @@ var SrvDataContainer = (function () {
                 .then(function (historics) {
                     self.$log.log('srvDataContainer.bindData historics:' + historics.length);
                     return deferred.resolve(); //OK
-                }).catch(function (err) {
-                var errMessage = err ? err : 'pb with getting data';
-                return deferred.reject(errMessage);
-            });
+                })
+                .catch(function (err) {
+                    var errMessage = err ? err : 'pb with getting data';
+                    return deferred.reject(errMessage);
+                });
         }
 
         return deferred.promise;

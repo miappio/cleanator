@@ -12,8 +12,8 @@ var configModule = angular.module('myAngularApp.config', [])
 
     // for your ... ?
     .constant("appForceOffline", true)
-    .constant("appAuthEndpoint", "https://xxxx")
-    .constant("appCouchDBEndpoint", "https://yyyy")
+    .constant("appAuthEndpoint", "")
+    .constant("appCouchDBEndpoint", "")
 
     // from google analytics
     .constant("appGAID","UA-xxxxx");

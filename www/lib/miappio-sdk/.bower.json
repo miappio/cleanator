@@ -1,11 +1,12 @@
 {
   "name": "miappio-sdk",
-  "version": "1.0.46",
+  "version": "1.0.58",
   "main": "dist/miapp.io.js",
   "ignore": [
     "**/.*",
     "*.sh",
     "src",
+    "docs",
     "node_modules",
     "bower_components",
     "test",
@@ -27,11 +28,11 @@
     "integration"
   ],
   "license": "MIT",
-  "_release": "1.0.46",
+  "_release": "1.0.58",
   "_resolution": {
     "type": "version",
-    "tag": "v1.0.46",
-    "commit": "6c99b4038804336fecf5deb1cc7606404eddb4ed"
+    "tag": "v1.0.58",
+    "commit": "c360b25a667234c4d758a0ef375ba0fe660abbad"
   },
   "_source": "https://github.com/miappio/miappio-sdk.git",
   "_target": "*",

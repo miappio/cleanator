@@ -58,6 +58,31 @@ $ npm run text:extract
     ssh-keygen -t rsa -C "your_email@example.com"
     cat id_rsa.pub
 
+
+### Deploy ?
+
+npm info cordova version
+npm install -g cordova
+
+cordova platform ls
+cordova requirements
+
+cordova build
+
+cordova run ios
+
+ionic run ios
+ionic run android --device
+
+///cordova run android --device
+
+
+//adb kill-server
+adb devices
+
+pgb
+
+
 # Thanks
 
 [@miapp.io](https://miapp.io) @mat_cloud @gandhi @dalai_lama @my_wife !  :)

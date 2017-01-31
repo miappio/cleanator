@@ -113,6 +113,8 @@ describe('myAngularApp.services.srvConfig', function () {
         it('should remove all db', function (done) {
 
             //$httpBackend.flush();
+            srvDataContainer.srvMiapp.miappService.currentUser = {};
+
             srvDataContainer.logout()
                 .then(function (err) {
                     console.log('db destroy');

@@ -1,6 +1,6 @@
 function ctrlNavigation($scope, $log, $location, $state, $anchorScroll, $timeout, $q,
                         $ionicHistory, $ionicScrollDelegate,
-                        srvAnalytics, srvDataContainer, srvData, srvConfig) {
+                        srvAnalytics, srvData, srvDataContainer, srvConfig) {
     'use strict';
 
     //NO factory pattern:  $scope.srvDataContainer = srvDataContainer;
@@ -20,7 +20,6 @@ function ctrlNavigation($scope, $log, $location, $state, $anchorScroll, $timeout
         }
     };
 
-    // spinner : TODO override in each controller
     $scope.afterNavigationInitSpinnerShow = function () {
         $scope.navInit();
         $timeout(function () {
@@ -59,8 +58,17 @@ function ctrlNavigation($scope, $log, $location, $state, $anchorScroll, $timeout
     };
 
     $scope.navHiddenWho = false;
+
     $scope.navHiddenWhat = true;
+
     $scope.navHiddenWhen = true;
+
+    $scope.logout = function () {
+        srvDataContainer.logout();
+        srvConfig.logout();
+        if ($scope.navRedirect) $scope.navRedirect();
+    };
+
     $scope.navRedirect = function (pathToGo) {
         var url = $location.url();
         var path = $location.path();
@@ -81,12 +89,10 @@ function ctrlNavigation($scope, $log, $location, $state, $anchorScroll, $timeout
         else if (pathToGo) $location.path(pathToGo);
     };
 
-
     $scope.navBack = function () {
         //if (history) history.back();
         if ($ionicHistory) $ionicHistory.goBack();
     };
-
 
     $scope.navGAClick = function (event) {
         // remove from the critical path of loading
@@ -96,6 +102,7 @@ function ctrlNavigation($scope, $log, $location, $state, $anchorScroll, $timeout
     $scope.navAppInitLevel = function () {
         return srvConfig.getAppFirstInitLevel();
     };
+
     $scope.navSetAppInitLevel = function (level) {
         return srvConfig.setAppFirstInitLevel(level);
     };
@@ -108,7 +115,9 @@ function ctrlNavigation($scope, $log, $location, $state, $anchorScroll, $timeout
     //                    ];
     //$scope.navigLang = $scope.navigLangs[0];
     $scope.navigLangs = srvConfig.getConfigLangs();
+
     $scope.navigLang = srvConfig.getConfigLang();
+
     $scope.navChangeLang = function (lang) {
         srvConfig.setConfigLang(lang);
     };
@@ -135,24 +144,30 @@ function ctrlNavigation($scope, $log, $location, $state, $anchorScroll, $timeout
     //$scope.userAprofilNb = 0;
     //$scope.userBprofilNb = 3;
 
-
     $scope.navDataSync = function () {
         var self = this;
         var deferred = $q.defer();
         var errMessage = null;
         if (srvDataContainer) {
-            var next;
-            if (!srvDataContainer.isLoggedIn())
-                next = srvDataContainer.login();
-            else
-                next = srvDataContainer.sync();
+            //var next;
+            //if (!srvDataContainer.isLoggedIn())
+            //    next = srvDataContainer.login();
+            //else
+            //    next = srvDataContainer.sync();
 
-            next
-                .catch(function (err) {
-                    $log.log('Maybe a first sync failed because we need to check remote before');
-                    $log.error(err);
-                    //errMessage = err;
+            //next
+            srvDataContainer.login()
+                .then(function(){
                     return srvDataContainer.sync();
+                })
+                .catch(function (err) {
+                    $log.log('Maybe a first sync failed because we need to check remote before ?');
+                    //$log.error(err);
+
+                    $scope.logout();
+
+                    deferred.reject(err);
+                    //return srvDataContainer.sync();
                 })
                 .catch(function (err) {
                     // second & real error : need to be offline ?
@@ -172,14 +187,6 @@ function ctrlNavigation($scope, $log, $location, $state, $anchorScroll, $timeout
 
         return deferred.promise;
     };
-
-
-    //--------------------
-    // INITIALIZATION
-    // TODO done by kids :
-    //$scope.navInit();
-    //if ($scope.navRedirect) $scope.navRedirect();
-
 
 }
 

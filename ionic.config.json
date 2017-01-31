@@ -1,6 +1,6 @@
 {
-  "name": "_?",
-  "app_id": "_?",
+  "name": "cleanator",
+  "app_id": "cleanator",
   "gulpStartupTasks": [
     "default"
   ],

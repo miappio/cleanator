@@ -4,6 +4,8 @@ export declare class Miapp2Service {
     constructor();
     init(miappId: any, miappSalt: any, isOffline: any): any;
     login(login: any, password: any): any;
+    isLoggedIn(): any;
+    logoff(): any;
     sync(fnInitFirstData: any): any;
     put(data: any): any;
     find(id: any): any;

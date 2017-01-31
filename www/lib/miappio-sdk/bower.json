@@ -1,11 +1,12 @@
 {
   "name": "miappio-sdk",
-  "version": "1.0.45",
+  "version": "1.0.57",
   "main": "dist/miapp.io.js",
   "ignore": [
     "**/.*",
     "*.sh",
     "src",
+    "docs",
     "node_modules",
     "bower_components",
     "test",

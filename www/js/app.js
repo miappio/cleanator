@@ -50,9 +50,8 @@ angular.module('myAngularApp', [
             }
 
             //miapp.io
-            //todo if (appAuthEndpoint) MiappService.setAuthEndpoint(appAuthEndpoint);
-            //todo if (appCouchDBEndpoint) MiappService.setDBEndpoint(appCouchDBEndpoint);
-            MiappService.init(miappId, miappSalt, appForceOffline);
+            MiappService.init(miappId, miappSalt, !appForceOffline, appAuthEndpoint);
+
             srvData.init();
 
         });
