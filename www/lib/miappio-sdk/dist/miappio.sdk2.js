@@ -13064,6 +13064,7 @@ function doCallback(callback, params, context) {
          */
         self.logger = new global.Logger("miappSdk.Request");
         self.logger.time("process request " + method + " " + endpoint);
+        self.logger.info("REQUEST launch " + method + " " + endpoint);
         /*
          Validate our input
          */
@@ -13077,7 +13078,7 @@ function doCallback(callback, params, context) {
          Prepare our request
          */
 
-        self.logger.info("REQUEST launch", self.endpoint, self.method, self.data);
+        //self.logger.info("REQUEST launch", self.endpoint, self.method, self.data);
         if (!isValidUrl(self.endpoint)) {
             self.logger.error(endpoint, self.endpoint, /^https:\/\//.test(endpoint));
             throw new miappSdkInvalidURIError("The provided endpoint is not valid: " + self.endpoint);
@@ -13095,7 +13096,8 @@ function doCallback(callback, params, context) {
         /* a callback to clean up and return data to the client */
         var oncomplete = function (err, response) {
             p.done(err, response);
-            self.logger.info("REQUEST complete", err, response);
+            //self.logger.info("REQUEST complete", err, response);
+            self.logger.info("REQUEST complete " + method + " " + endpoint);
             doCallback(callback, [err, response]);
             self.logger.timeEnd("process request " + method + " " + endpoint);
         }.bind(self);
@@ -13785,10 +13787,9 @@ function doCallback(callback, params, context) {
                     if (self.logging) console.log("error trying to log user in : " + err);
                     doCallback(callback, [err, user]);
                 } else {
-                    //FIX //TODO resolve double auth
-                    //TODO store token as a real one, and renew it
                     user._id = response._id;
-                    self.setToken(user.password);
+                    user.access_token = self.getToken();
+                    //self.setToken(user.password);
                     self.setUserId(user._id);
                     self.authMLE(function (errAuth, miappURL, miappDBURL, endDate) {
                         if (errAuth) err += errAuth;
@@ -13832,7 +13833,7 @@ function doCallback(callback, params, context) {
             endpoint: "management/me",
             mQuery: true
         };
-        this.request(options, function (err, response) {
+        self.request(options, function (err, response) {
             if (err && self.logging) {
                 console.log("error trying to re-authenticate user");
             } else {
@@ -13841,6 +13842,31 @@ function doCallback(callback, params, context) {
             doCallback(callback, [err]);
         });
     };
+
+    miappSdk.Client.prototype.reAuthenticateMLE = function (callback) {
+        var self = this;
+        var options = {
+            method: "GET",
+            endpoint: "auth/" + self.getToken(),
+            mQuery: true
+        };
+
+        try {
+            self.request(options, function (err, response) {
+                if (err && self.logging) {
+                    console.error("error trying to re-authenticate user");
+                } else {
+                    if (response.data.access_token) self.setToken(response.data.access_token);
+                }
+                doCallback(callback, [err]);
+            });
+        }
+        catch (e) {
+            if (self.logging) console.error("error trying to log user : ", e);
+            doCallback(callback, [e]);
+        }
+    };
+
     miappSdk.Client.prototype.reAuthenticate = function (email, callback) {
         var self = this;
         var options = {
@@ -13848,7 +13874,7 @@ function doCallback(callback, params, context) {
             endpoint: "management/users/" + email,
             mQuery: true
         };
-        this.request(options, function (err, response) {
+        self.request(options, function (err, response) {
             var organizations = {};
             var applications = {};
             var user = {};
@@ -16149,77 +16175,97 @@ var SrvMiapp = (function () {
     Service.prototype.login = function (login, password, updateProperties) {
         var self = this;
         return new self.promise(function (resolve, reject) {
-            if (!self.miappClient && !self.miappIsOffline) {
-                reject('miapp.sdk.service.login : not initialized. Did you miapp.sdk.service.init() ?');
-                return;
-            }
+                if (!self.miappClient && !self.miappIsOffline) {
+                    reject('miapp.sdk.service.login : not initialized. Did you miapp.sdk.service.init() ?');
+                    return;
+                }
 
-            //TODO password encrypting and salt stuff
-            //var encrypted = CryptoJS.AES.encrypt(password, 'SALT_TOKEN');
-            //var encrypted_json_str = encrypted.toString();
-            var encrypted_json_str = password;
-            self.logger.log('miapp.sdk.service.login : ' + login + ' / ' + encrypted_json_str);
+                //TODO password encrypting and salt stuff
+                //var encrypted = CryptoJS.AES.encrypt(password, 'SALT_TOKEN');
+                //var encrypted_json_str = encrypted.toString();
+                var encrypted_json_str = password;
+                self.logger.log('miapp.sdk.service.login : ' + login + ' / ' + encrypted_json_str);
 
-            // Recheck currentUser if login/password provided
-            if (self.currentUser && login && password) {
-                if (self.currentUser.email === login && self.currentUser.password === encrypted_json_str) {
-                    // OK
+                // Recheck currentUser if login/password provided
+                if (self.currentUser && login && password) {
+                    if (self.currentUser.email === login && self.currentUser.password === encrypted_json_str) {
+                        // OK
+                        resolve(self.currentUser);
+                        return;
+                    }
+                    // Need a refresh
+                    self.currentUser = null;
+                }
+
+                //TODO : if no login/password recheck with current Token stored
+                var needCheckToken = false;
+            if (self.currentUser && ((!login && !password) || self.currentUser.access_token)) {
+                    login = self.currentUser.email;
+                    encrypted_json_str = self.currentUser.password;
+                    needCheckToken = true;
+                }
+
+                if (!self.miappClient) {
+                    var offlineUser = {};
+                    if (login) offlineUser.email = login;
+                    if (encrypted_json_str) offlineUser.password = encrypted_json_str;
+                    self.setCurrentUser(offlineUser);
                     resolve(self.currentUser);
                     return;
                 }
-                // Need a refresh
-                self.currentUser = null;
-            }
 
-            //TODO : if no login/password recheck with current Token stored
-            if (self.currentUser && (!login && !password)) {
-                login = self.currentUser.email;
-                encrypted_json_str = self.currentUser.password;
-            }
-
-            if (!self.miappClient) {
-                var offlineUser = {};
-                if (login) offlineUser.email = login;
-                if (encrypted_json_str) offlineUser.password = encrypted_json_str;
-                self.setCurrentUser(offlineUser);
-                resolve(self.currentUser);
-                return;
-            }
-
-            self.miappClient.loginMLE(self.miappId, login, encrypted_json_str, updateProperties, function (err, loginUser) {
-                // self.logger.log('miapp.sdk.service.callback done :' + err + ' user:' + user);
-                if (err) {
-                    // Error - could not log user in
-                    self.logger.error('miapp.sdk.service.login error : ' + err);
-                    //reject(err);
-                    self.miappIsOffline = true;
-                    return reject(err);
+                if (needCheckToken) {
+                    // Check Token
+                    self.logger.log('miapp.sdk.service.login Check Token');
+                    self.miappClient.reAuthenticateMLE(function (err) {
+                        if (err) {
+                            // Error - could not log user in
+                            self.logger.error('miapp.sdk.service.login error : ' + err);
+                            return reject(err);
+                        }
+                        resolve(self.currentUser);
+                    });
                 }
+                else {
+                    // Check a full Login
+                    self.logger.log('miapp.sdk.service.login Check Full Login');
+                    self.miappClient.loginMLE(self.miappId, login, encrypted_json_str, updateProperties, function (err, loginUser) {
+                        // self.logger.log('miapp.sdk.service.login done :' + err + ' user:' + user);
+                        if (err) {
+                            // Error - could not log user in
+                            self.logger.error('miapp.sdk.service.login error : ' + err);
+                            //reject(err);
+                            self.miappIsOffline = true;
+                            return reject(err);
+                        }
 
-                if (!loginUser) {
-                    reject('miapp.sdk.service.login error : ' + err);
+                        if (!loginUser) {
+                            reject('miapp.sdk.service.login error : ' + err);
+                        }
+
+                        if (loginUser) {
+                            // Success - user has been logged in
+                            loginUser.email = login;
+
+                            // get miapp endpoints
+                            if (loginUser.miappURL) self.setAuthEndpoint(loginUser.miappURL);
+                            if (loginUser.miappDBURL) self.setDBEndpoint(loginUser.miappDBURL);
+                            if (loginUser.miappNeedRefresh) self.setAuthEndDate(loginUser.miappNeedRefresh);
+                            delete loginUser.miappURL;
+                            delete loginUser.miappDBURL;
+                            delete loginUser.miappNeedRefresh;
+
+                            // store it
+                            self.setCurrentUser(loginUser);
+
+                            resolve(self.currentUser);
+                        }
+                    });
                 }
-
-                if (loginUser) {
-                    // Success - user has been logged in
-                    loginUser.email = login;
-
-                    // get miapp endpoints
-                    if (loginUser.miappURL) self.setAuthEndpoint(loginUser.miappURL);
-                    if (loginUser.miappDBURL) self.setDBEndpoint(loginUser.miappDBURL);
-                    if (loginUser.miappNeedRefresh) self.setAuthEndDate(loginUser.miappNeedRefresh);
-                    delete loginUser.miappURL;
-                    delete loginUser.miappDBURL;
-                    delete loginUser.miappNeedRefresh;
-
-                    // store it
-                    self.setCurrentUser(loginUser);
-
-                    resolve(self.currentUser);
-                }
-            });
-        });
-    };
+            }
+        );
+    }
+    ;
 
     Service.prototype.logoff = function () {
         var self = this;
@@ -16325,7 +16371,7 @@ var SrvMiapp = (function () {
         data.miappAppVersion = self.miappAppVersion;
 
         var dataId = data._id;
-        if (!dataId) dataId = generateObjectUniqueId(self.appName);
+        if (!dataId) dataId = _generateObjectUniqueId(self.appName);
         delete data._id;
         data._id = dataId;
         return new self.promise(function (resolve, reject) {
@@ -16410,7 +16456,7 @@ var SrvMiapp = (function () {
         // Look for an unique id
         var firstUserId = user._id;
         if (!firstUserId) firstUserId = self.currentUser._id;
-        if (!firstUserId) firstUserId = generateObjectUniqueId(self.miappAppVersion, 'user');
+        if (!firstUserId) firstUserId = _generateObjectUniqueId(self.miappAppVersion, 'user');
 
         user._id = firstUserId;
         user.miappUserId = firstUserId;
@@ -16418,9 +16464,9 @@ var SrvMiapp = (function () {
         user.miappAppVersion = self.miappAppVersion;
 
         // Merge from stored currentUser and user gave in
-        self.logger.log(self.currentUser);
+        //self.logger.log(self.currentUser);
         for (var attrname in user) {
-            self.logger.log('' + attrname + ' = ' + user[attrname]);
+            //self.logger.log('' + attrname + ' = ' + user[attrname]);
             if (user[attrname]) self.currentUser[attrname] = user[attrname];
         }
 
@@ -16429,10 +16475,10 @@ var SrvMiapp = (function () {
 
         // store it
         setObjectFromLocalStorage('miappCurrentUser', self.currentUser);
-        self.logger.log('miapp.sdk.service.setCurrentUser :');
-        self.logger.log(self.currentUser);
+        self.logger.log('miapp.sdk.service.setCurrentUser :', self.currentUser);
     };
 
+    // used ?
     Service.prototype.putFirstUserInEmptyDb = function (firstUser) {
         var self = this;
         self.logger.log('miapp.sdk.service.putFirstUserInEmptyBd');
@@ -16441,7 +16487,7 @@ var SrvMiapp = (function () {
 
         var firstUserId = firstUser._id;
         if (!firstUserId) firstUserId = self.currentUser._id;
-        if (!firstUserId) firstUserId = generateObjectUniqueId(self.appName, 'user');
+        if (!firstUserId) firstUserId = _generateObjectUniqueId(self.appName, 'user');
 
         firstUser.miappUserId = firstUserId;
         firstUser.miappOrgId = self.miappOrg;
@@ -16698,17 +16744,17 @@ var SrvMiapp = (function () {
 
     var _srvDataUniqId = 0;
 
-    function generateObjectUniqueId(appName, type, name) {
+    function _generateObjectUniqueId(appName, type, name) {
 
         //return null;
         var now = new Date();
         var simpleDate = "" + now.getYear() + "" + now.getMonth() + "" + now.getDate() + "" + now.getHours() + "" + now.getMinutes();//new Date().toISOString();
         var sequId = ++_srvDataUniqId;
         var UId = '';
-        if (appName && appName.charAt(0)) UId += appName.charAt(0);
+        if (appName && appName.charAt(0)) UId += appName.charAt(0) + '';
         if (type && type.length > 3) UId += type.substring(0, 4);
         if (name && name.length > 3) UId += name.substring(0, 4);
-        UId += simpleDate + '_' + sequId;
+        UId += simpleDate + '' + sequId;
         return UId;
     }
 

@@ -19,6 +19,7 @@ node_modules/
 build/
 platforms/
 plugins/
+res/
 
 www/lib/**/*.html
 www/lib/**/*.htm

@@ -162,17 +162,14 @@ function ctrlNavigation($scope, $log, $location, $state, $anchorScroll, $timeout
                 })
                 .catch(function (err) {
                     $log.log('Maybe a first sync failed because we need to check remote before ?');
-                    //$log.error(err);
-
-                    $scope.logout();
-
-                    deferred.reject(err);
-                    //return srvDataContainer.sync();
+                    return srvDataContainer.sync();
                 })
                 .catch(function (err) {
                     // second & real error : need to be offline ?
                     errMessage = err;
                     $log.error(err);
+                    $scope.logout();
+                    deferred.reject(err);
                 })
                 .finally(function () {
                     $scope.userA = srvDataContainer.getUserA();
