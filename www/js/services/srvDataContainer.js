@@ -43,7 +43,7 @@ var SrvDataContainer = (function () {
         self.$log.log('srvDataContainer.login : ' + login);
 
         return self.$q(function (resolve, reject) {
-            self.srvMiapp.login(login, password)
+            self.srvMiapp.login(login, password, true)
                 .then(function (miappUser) {
 
                     self.$log.log('srvDataContainer.login srvMiapp received: ' + miappUser.email);

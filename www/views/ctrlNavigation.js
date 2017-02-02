@@ -147,7 +147,6 @@ function ctrlNavigation($scope, $log, $location, $state, $anchorScroll, $timeout
     $scope.navDataSync = function () {
         var self = this;
         var deferred = $q.defer();
-        var errMessage = null;
         if (srvDataContainer) {
             //var next;
             //if (!srvDataContainer.isLoggedIn())
@@ -155,31 +154,34 @@ function ctrlNavigation($scope, $log, $location, $state, $anchorScroll, $timeout
             //else
             //    next = srvDataContainer.sync();
 
+            var setData = function() {
+                $scope.userA = srvDataContainer.getUserA();
+                $scope.couple = srvDataContainer.getCouple();
+                $scope.userB = srvDataContainer.getUserB();
+                $scope.chores = srvDataContainer.getChores();
+                $scope.categories = srvDataContainer.getCategories();
+                //$scope.historics = srvDataContainer.getHistorics();
+                deferred.resolve();
+            };
+
+            var errFn = function (err) {
+                $log.error(err);
+                $scope.logout();
+                deferred.reject(err);
+            };
+
             //next
             srvDataContainer.login()
                 .then(function(){
-                    return srvDataContainer.sync();
+                    srvDataContainer.sync()
+                        .catch(function (err) {
+                            $log.log('Maybe a first sync failed because we need to check remote before ?');
+                            return srvDataContainer.sync();
+                        })
+                        .catch(errFn)
+                        .finally(setData);
                 })
-                .catch(function (err) {
-                    $log.log('Maybe a first sync failed because we need to check remote before ?');
-                    return srvDataContainer.sync();
-                })
-                .catch(function (err) {
-                    // second & real error : need to be offline ?
-                    errMessage = err;
-                    $log.error(err);
-                    $scope.logout();
-                    deferred.reject(err);
-                })
-                .finally(function () {
-                    $scope.userA = srvDataContainer.getUserA();
-                    $scope.couple = srvDataContainer.getCouple();
-                    $scope.userB = srvDataContainer.getUserB();
-                    $scope.chores = srvDataContainer.getChores();
-                    $scope.categories = srvDataContainer.getCategories();
-                    //$scope.historics = srvDataContainer.getHistorics();
-                    deferred.resolve(errMessage);
-                });
+                .catch(errFn);
         }
 
         return deferred.promise;
