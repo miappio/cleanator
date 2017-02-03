@@ -4,7 +4,6 @@
 .DS_Store
 .env
 .config.js
-.config.test.js
 .editorconfig
 .github-webhook
 *.log
