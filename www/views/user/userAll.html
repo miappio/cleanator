@@ -41,7 +41,8 @@
                                     </div>
                                     <div class="item range range-positive">
                                         <input type="range" min="0" max="{{profil.length - 1}}" style="margin:0"
-                                               ng-model="userA[userCols.profilID]">
+                                               ng-model="userA[userCols.profilID]"
+                                               ng-change="userSave(userA)">
                                     </div>
                                 </div>
                                 <div class="col">
@@ -55,7 +56,8 @@
                                     </div>
                                     <div class="item range range-assertive">
                                         <input type="range" min="0" max="{{profil.length - 1}}" style="margin:0"
-                                               ng-model="userB[userCols.profilID]">
+                                               ng-model="userB[userCols.profilID]"
+                                               ng-change="userSave(userB)">
                                     </div>
                                 </div>
                             </div>

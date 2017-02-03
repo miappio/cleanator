@@ -2719,6 +2719,30 @@ miapp.BrowserCapabilities = (function (navigator, window, document) {
 
     capacities.online = navigator.onLine;
 
+    capacities.isConnectionOnline = function () {
+        // web browser
+        if (navigator && typeof navigator.onLine === 'boolean') return navigator.onLine;
+
+        //cordova
+        if (navigator && navigator.connection && Connection) {
+            var networkState = navigator.connection.type;
+
+            var states = {};
+            states[Connection.UNKNOWN] = 'Unknown connection';
+            states[Connection.ETHERNET] = 'Ethernet connection';
+            states[Connection.WIFI] = 'WiFi connection';
+            states[Connection.CELL_2G] = 'Cell 2G connection';
+            states[Connection.CELL_3G] = 'Cell 3G connection';
+            states[Connection.CELL_4G] = 'Cell 4G connection';
+            states[Connection.CELL] = 'Cell generic connection';
+            states[Connection.NONE] = 'No network connection';
+
+            return (states[networkState] !== 'No network connection');
+        }
+
+        return false;
+    }
+
     capacities.RESIZE_EVENT = 'onorientationchange' in window ? 'orientationchange' : 'resize';
     capacities.TRNEND_EVENT = (function () {
         if (capacities.vendor == '') return false;
@@ -13703,7 +13727,7 @@ function doCallback(callback, params, context) {
         try {
             self.request(options, function (err, response) {
                 if (err) {
-                    if (self.logging) console.error("error trying to log user in : " + err);
+                    if (self.logging) console.error('error trying to log user in : ',err);
                     doCallback(callback, [err, user]);
                 } else {
                     user._id = response._id;
@@ -16109,7 +16133,7 @@ var SrvMiapp = (function () {
                 var encrypted_json_str = password;
                 self.logger.log('miapp.sdk.service.login : ' + login + ' / ' + encrypted_json_str);
 
-                if (!self.miappClient || self.miappIsOffline) {
+            if (!self.miappClient || self.miappIsOffline || !miapp.BrowserCapabilities.isConnectionOnline()) {
                     var offlineUser = {};
                     if (login) offlineUser.email = login;
                     if (encrypted_json_str) offlineUser.password = encrypted_json_str;
@@ -16119,15 +16143,15 @@ var SrvMiapp = (function () {
                 }
 
 
-                var fullLogin = function () {
+            var fullLogin = function () {
 
                     // Check a full Login
                     self.logger.log('miapp.sdk.service.login Check Full Login');
 
-                    // Need a refresh token
-                    self.miappClient.logout();
-                    if (self.currentUser && self.currentUser.access_token)
-                        delete self.currentUser.access_token;
+                // Need a refresh token
+                self.miappClient.logout();
+                if (self.currentUser && self.currentUser.access_token)
+                    delete self.currentUser.access_token;
 
                     self.miappClient.loginMLE(self.miappId, login, encrypted_json_str, updateProperties, function (err, loginUser) {
                         // self.logger.log('miapp.sdk.service.login done :' + err + ' user:' + user);
@@ -16155,34 +16179,34 @@ var SrvMiapp = (function () {
                         resolve(self.currentUser);
 
                     });
-                };
+            };
 
 
-                var sameUser = self.currentUser && (self.currentUser.email === login && self.currentUser.password === encrypted_json_str);
-                var noUser = (!login && !password);
-                if (self.currentUser && self.currentUser.access_token && (noUser || sameUser)) {
-                    login = self.currentUser.email;
-                    //todo ! encrypted_json_str = self.currentUser.password;
+            var sameUser = self.currentUser && (self.currentUser.email === login && self.currentUser.password === encrypted_json_str);
+            var noUser = (!login && !password);
+            if (self.currentUser && self.currentUser.access_token && (noUser || sameUser)) {
+                login = self.currentUser.email;
+                //todo ! encrypted_json_str = self.currentUser.password;
 
-                    // Check Token
-                    self.logger.log('miapp.sdk.service.login Check Token');
-                    self.miappClient.reAuthenticateMLE(function (err) {
-                        if (err) {
-                            // Error - could not reLog user in
-                            self.logger.error('miapp.sdk.service.login Check Token error : ' + err);
-                            if (!noUser)
-                                fullLogin();
-                            else
-                                reject('Need to login again ...');
-                        }
-                        else {
+                // Check Token
+                self.logger.log('miapp.sdk.service.login Check Token');
+                self.miappClient.reAuthenticateMLE(function (err) {
+                    if (err) {
+                        // Error - could not reLog user in
+                        self.logger.error('miapp.sdk.service.login Check Token error : ' + err);
+                        if (!noUser)
+                            fullLogin();
+                        else
+                            reject('Need to login again ...');
+                    }
+                    else {
                             resolve(self.currentUser);
                         }
                     });
                 }
-                else {
-                    fullLogin();
-                }
+            else {
+                fullLogin();
+            }
 
             }
         );
@@ -16618,7 +16642,7 @@ var SrvMiapp = (function () {
                     resolve(self._dbRecordCount);
                 })
                 .catch(function (err) {
-                    var errMessage = 'miapp.sdk.service.syncComplete : DB pb with getting data ('+ err+')';
+                    var errMessage = 'miapp.sdk.service.syncComplete : DB pb with getting data (' + err + ')';
                     //self.logger.error(errMessage);
                     reject(errMessage);
                 })

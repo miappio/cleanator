@@ -12,7 +12,7 @@ msgstr ""
 msgid "-- choose chore --"
 msgstr ""
 
-#: login/loginIn.html:62
+#: login/loginIn.html:32
 msgid "01valid.email@required.com"
 msgstr ""
 
@@ -107,7 +107,7 @@ msgstr ""
 msgid "Feasibility"
 msgstr ""
 
-#: user/userAll.html:65
+#: user/userAll.html:67
 msgid "Footer_ButtonWhen"
 msgstr ""
 
@@ -162,24 +162,24 @@ msgstr ""
 msgid "Last reset:"
 msgstr ""
 
-#: user/userAll.html:64
+#: user/userAll.html:66
 msgid "Level0_You’ve set your profiles ? Ready for the next part : setting all the chores you have to deal with."
 msgstr ""
 
-#: login/loginIn.html:78
-#: user/userAll.html:75
+#: login/loginIn.html:48
+#: user/userAll.html:77
 msgid "LoginLanguage"
 msgstr ""
 
-#: login/loginIn.html:71
+#: login/loginIn.html:41
 msgid "LoginNewPassword"
 msgstr ""
 
-#: login/loginIn.html:93
+#: login/loginIn.html:63
 msgid "LoginSignin"
 msgstr ""
 
-#: login/loginIn.html:52
+#: login/loginIn.html:22
 msgid "LoginWelcome"
 msgstr ""
 
@@ -307,11 +307,11 @@ msgstr ""
 msgid "UserBackToSession"
 msgstr ""
 
-#: user/userAll.html:90
+#: user/userAll.html:92
 msgid "UserEmail"
 msgstr ""
 
-#: user/userAll.html:88
+#: user/userAll.html:90
 msgid "UserEmailCouple"
 msgstr ""
 
@@ -323,7 +323,7 @@ msgstr ""
 msgid "UserPseudoA"
 msgstr ""
 
-#: user/userAll.html:50
+#: user/userAll.html:51
 msgid "UserPseudoB"
 msgstr ""
 
@@ -345,7 +345,7 @@ msgstr ""
 msgid "each"
 msgstr ""
 
-#: login/loginIn.html:36
+#: login/loginIn.html:7
 msgid "for Better for Dust"
 msgstr ""
 

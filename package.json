@@ -1,6 +1,6 @@
 {
   "name": "cleanator",
-  "version": "17.01.02",
+  "version": "17.1.3",
   "description": "cleanator",
   "author": "mlefree",
   "homepage": "https://miapp.github.io/cleanator",
@@ -28,8 +28,7 @@
     "karma-jasmine-html-reporter-livereload": "*",
     "karma-phantomjs-launcher": "^1.0.1",
     "phantomjs": "*",
-    "shelljs": "^0.7.5",
-    "webcrypto-jwt": "^0.2.1"
+    "shelljs": "^0.7.5"
   },
   "cordovaPlugins": [
     "cordova-plugin-device",
@@ -44,11 +43,13 @@
   ],
   "scripts": {
     "install:bower": "./node_modules/.bin/bower install",
-    "gulp:default": "./node_modules/.bin/gulp",
+    "gulp:default": "npm version patch; ./node_modules/.bin/gulp",
     "test": "./node_modules/.bin/karma start tests/karma.unit-tests.conf.js",
     "test:old": "./node_modules/.bin/karma start tests/karma.unit-tests.conf.js --reporters coverage",
     "test:watch": "./node_modules/.bin/karma start tests/karma.unit-tests.conf.js --no-single-run  --no-auto-watch --reporters progress --browsers PhantomJS",
-    "start:ionic": "ionic serve",
-    "start": "./node_modules/.bin/http-server -a 0.0.0.0 -p 8080 ./www/"
+    "start": "./node_modules/.bin/http-server -a 0.0.0.0 -p 8080 ./www/",
+    "dev:serve_notused": "ionic serve",
+    "dev:build": "ionic build",
+    "dev:run": "ionic run android --device"
   }
 }
