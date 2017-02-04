@@ -9092,3 +9092,33 @@ a.button {
 .scroll-bg {
   background: url("../img/ben.png") no-repeat center center fixed;
   background-size: cover; }
+
+@font-face {
+  font-family: "Cleanator";
+  src: url("../font/uppereastside/UpperEastSide.ttf?v=2.0.1") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+
+.nav-bar-title {
+  font-size: 2.2em !important;
+  color: #838383; }
+
+.bar .title,
+.bar .title a {
+  font-family: "Cleanator";
+  font-size: 1.3em !important; }
+
+.tabs > a {
+  font-family: "Cleanator";
+  font-size: 1.6em !important;
+  font-weight: bold; }
+
+.bar-dark-light {
+  background-color: #5A5757 !important; }
+
+.small {
+  font-size: 0.7em; }
+
+@media (max-width: 767px) {
+  .hidden-xs {
+    display: none; } }

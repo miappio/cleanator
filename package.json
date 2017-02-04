@@ -42,14 +42,14 @@
     "android"
   ],
   "scripts": {
-    "install:bower": "./node_modules/.bin/bower install",
+    "bower:install": "./node_modules/.bin/bower install",
     "gulp:default": "npm version patch; ./node_modules/.bin/gulp",
     "test": "./node_modules/.bin/karma start tests/karma.unit-tests.conf.js",
     "test:old": "./node_modules/.bin/karma start tests/karma.unit-tests.conf.js --reporters coverage",
     "test:watch": "./node_modules/.bin/karma start tests/karma.unit-tests.conf.js --no-single-run  --no-auto-watch --reporters progress --browsers PhantomJS",
     "start": "./node_modules/.bin/http-server -a 0.0.0.0 -p 8080 ./www/",
     "dev:serve_notused": "ionic serve",
-    "dev:build": "ionic build",
+    "dev:build": "ionic build android",
     "dev:run": "ionic run android --device"
   }
 }

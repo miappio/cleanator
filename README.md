@@ -61,26 +61,22 @@ $ npm run text:extract
 
 ### Deploy ?
 
-npm info cordova version
-npm install -g cordova
+//npm info cordova version
+//cordova platform ls
+ionic platform ls
+ionic requirements
+ionic build
 
-cordova platform ls
-cordova requirements
-
-cordova build
-
-cordova run ios
-
+//cordova run ios
+//cordova run android --device
 ionic run ios
 ionic run android --device
 
-///cordova run android --device
-
-
 //adb kill-server
 adb devices
+adb logcat
 
-pgb
+//pgb
 
 
 # Thanks

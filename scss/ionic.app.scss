@@ -21,20 +21,58 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
 // Include all of Ionic
 @import "../www/lib/ionic/scss/ionic";
 
-$light:                           #fff !default;
-$stable:                          #f8f8f8 !default;
-$positive:                        #4a87ee !default;
-$calm:                            #43cee6 !default;
-$balanced:                        #66cc33 !default;
-$energized:                       #f0b840 !default;
-$assertive:                       #ef4e3a !default;
-$royal:                           #8a6de9 !default;
-$dark:                            #444 !default;
+$light: #fff !default;
+$stable: #f8f8f8 !default;
+$positive: #4a87ee !default;
+$calm: #43cee6 !default;
+$balanced: #66cc33 !default;
+$energized: #f0b840 !default;
+$assertive: #ef4e3a !default;
+$royal: #8a6de9 !default;
+$dark: #444 !default;
 
-
-$big-bg:      '../img/ben.png';
+$big-bg: '../img/ben.png';
 
 .scroll-bg {
   background: url($big-bg) no-repeat center center fixed;
   background-size: cover;
+}
+
+@font-face {
+  font-family: "Cleanator";
+  src: url("../font/uppereastside/UpperEastSide.ttf?v=2.0.1") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.nav-bar-title {
+
+  font-size: 2.2em !important;
+  color: rgb(131, 131, 131);
+}
+
+.bar .title,
+.bar .title a {
+  font-family: "Cleanator";
+  font-size: 1.3em !important;
+}
+
+.tabs > a {
+  font-family: "Cleanator";
+  font-size: 1.6em !important;
+  font-weight: bold;
+}
+
+.bar-dark-light {
+  background-color: #5A5757 !important;
+}
+
+.small {
+  font-size: 0.7em;
+}
+
+@media (max-width: 767px) {
+  .hidden-xs {
+    display: none;
+  }
 }
