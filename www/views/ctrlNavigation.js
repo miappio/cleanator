@@ -107,6 +107,13 @@ function ctrlNavigation($scope, $log, $location, $state, $anchorScroll, $timeout
         return srvConfig.setAppFirstInitLevel(level);
     };
 
+    $scope.navAppOnlineLevel = function () {
+        var level = 'on';
+        var miappLevel = miapp.BrowserCapabilities.isConnectionOnline() ? 'O' : 'N';
+        var navLevel = (navigator && navigator.onLine) ? 'o' : 'n';
+        return level + miappLevel + navLevel;
+    }
+
     // Lang
     //$scope.navigLangs = [
     //                    {title:'English', code:'en_US'},

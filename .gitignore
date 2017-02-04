@@ -14,6 +14,7 @@ Makefile
 .c9/
 .git/
 .idea/
+hooks/
 coverage/
 node_modules/
 build/
