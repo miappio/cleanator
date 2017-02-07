@@ -73,7 +73,7 @@
                 <li class="item item-avatar item-button-right" ng-click="toggleUserA = !toggleUserA">
                     <img ng-src="{{profil[userA[userCols.profilID]].img}}">
                     {{userA[userCols.firstName]}}
-                    <p>{{Math.round(userA[userCols.timeInMnPerWeekTodo] / 7)}} <span translate>minutes av./day</span>
+                    <p>{{navMathRound(userA[userCols.timeInMnPerWeekTodo] / 7)}} <span translate>minutes av./day</span>
                     </p>
                     <button class="button button-clear">
                         <i class="icon ion-ios-arrow-right" ng-hide="toggleUserA"></i>
@@ -131,7 +131,7 @@
                 <li class="item item-avatar item-button-right" ng-click="toggleUserB = !toggleUserB">
                     <img ng-src="{{profil[userB[userCols.profilID]].img}}">
                     {{userB[userCols.firstName]}}
-                    <p>{{Math.round(userB[userCols.timeInMnPerWeekTodo] / 7)}} <span translate>minutes av./day</span>
+                    <p>{{navMathRound(userB[userCols.timeInMnPerWeekTodo] / 7)}} <span translate>minutes av./day</span>
                     </p>
                     <button class="button button-clear">
                         <i class="icon ion-ios-arrow-right" ng-hide="toggleUserB"></i>

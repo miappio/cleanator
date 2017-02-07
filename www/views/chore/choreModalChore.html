@@ -84,11 +84,11 @@
                                     <div class="row">
                                         <small class="col-xs-6">
                                             <small>{{userA[userCols.firstName] | cut:true:10:' ...'}} {{(100 -
-                                                Math.round(choreToEdit[choreCols.percentAB]))}}%
+                                                navMathRound(choreToEdit[choreCols.percentAB]))}}%
                                             </small>
                                         </small>
                                         <small class="col-xs-6" style="text-align:right">
-                                            <small>{{(Math.round(choreToEdit[choreCols.percentAB]))}}%
+                                            <small>{{(navMathRound(choreToEdit[choreCols.percentAB]))}}%
                                                 {{userB[userCols.firstName] | cut:true:10:' ...'}}
                                             </small>
                                         </small>

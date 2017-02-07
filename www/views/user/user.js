@@ -31,7 +31,7 @@ angular.module('myAngularApp.views.user', [])
     })
 
     //.controller('UsersCtrl', function ($scope, $timeout, $routeParams, $location, $q, srvData, srvConfig) {
-    .controller('UsersCtrl', function ($scope, $log, $timeout, $location, $q, $ionicModal, srvDataContainer, srvData, srvConfig) {
+    .controller('UsersCtrl', function ($scope, $log, $timeout, $location, $q, $ionicModal, srvDataContainer, srvData) {
         'use strict';
 
         //$scope.userId = userId;
@@ -51,7 +51,7 @@ angular.module('myAngularApp.views.user', [])
 
             $timeout(function () {
 
-                if (srvConfig.getAppFirstInitLevel() === 0) {
+                if (srvDataContainer.getAppFirstInitLevel() === 0) {
                     //One First sync needed just after login
                     $scope.navDataSync()
                         .then(function (msg) {
@@ -103,7 +103,6 @@ angular.module('myAngularApp.views.user', [])
 
         $scope.userStopSpinnerWithMessage = function (msg) {
             var text = msg || "";
-            //text = "aaaaaahhh   "+ text ;
             if (text) $scope.navAddErrorMessage(text);
             $scope.userInitSpinnerStopped = true;
         };

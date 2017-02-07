@@ -13810,7 +13810,7 @@ function doCallback(callback, params, context) {
         try {
             self.request(options, function (err, response) {
                 if (err) {
-                    if (self.logging) console.error('error trying to log user in : ',err);
+                    if (self.logging) console.error("error trying to log user in : " + err);
                     doCallback(callback, [err, user]);
                 } else {
                     user._id = response._id;

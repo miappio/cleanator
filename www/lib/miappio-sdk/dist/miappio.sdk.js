@@ -2719,9 +2719,10 @@ miapp.BrowserCapabilities = (function (navigator, window, document) {
 
     capacities.online = navigator.onLine;
 
+    /**
+     *  @deprecated  use ngCordova now
+     */
     capacities.isConnectionOnline = function () {
-        // web browser
-        if (navigator && typeof navigator.onLine === 'boolean') return navigator.onLine;
 
         //cordova
         if (navigator && navigator.connection && Connection) {
@@ -2737,8 +2738,12 @@ miapp.BrowserCapabilities = (function (navigator, window, document) {
             states[Connection.CELL] = 'Cell generic connection';
             states[Connection.NONE] = 'No network connection';
 
-            return (states[networkState] !== 'No network connection');
+            return (states[networkState] !== 'No network connection'
+            && states[networkState] !== 'Unknown connection');
         }
+
+        // web browser
+        if (navigator && typeof navigator.onLine === 'boolean') return navigator.onLine;
 
         return false;
     }
@@ -12488,9 +12493,11 @@ if (!miapp) miapp = {};
  * Miapp Angular Auth SDK : Help your app to manage your users (login) and session shared data (sync)
  * with an angular module
  * @class miapp.angularService
- * @version 1.0
+ * @version 1.x
  * @example
  *   var myAngularApp = angular.module('myApp', ['MiappService','miapp.services'])
+ *    .run(function (MiappService) {    MiappService.init('579898767AZEE45556 Given by Miapp.io', 'myAppSalt Given by Miapp.io'); })
+ *
  */
 miapp.angularService = (function () {
     'use strict';
@@ -12518,7 +12525,7 @@ miapp.angularService = (function () {
         if (this.miappService) return this.promise.reject('miapp.sdk.angular.init : already initialized.');
         this.miappService = new SrvMiapp(this.logger, this.promise);
         if (_forceEndpoint) this.miappService.setAuthEndpoint(_forceEndpoint);
-        return this.miappService.init(miappId, miappSalt, _forceOnline);
+        return this.miappService.miappInit(miappId, miappSalt, _forceOnline);
     };
 
     /**
@@ -12530,48 +12537,72 @@ miapp.angularService = (function () {
      */
     Service.prototype.login = function (login, password, forceOnline) {
         if (!this.miappService) return this.promise.reject('miapp.sdk.angular.login : not initialized.');
-        return this.miappService.initDBWithLogin(login, password, forceOnline);
+        return this.miappService.miappLogin(login, password, forceOnline);
     };
 
 
     /**
      * @return true if logged in
+     * @memberof miapp.angularService
      */
     Service.prototype.isLoggedIn = function () {
         if (!this.miappService) return this.promise.reject('miapp.sdk.angular.isLoggedIn : not initialized.');
-        return this.miappService.isLogin();
+        return this.miappService.miappIsLogin();
     };
 
+    /**
+     * Logoff all miapp services
+     * @memberof miapp.angularService
+     */
     Service.prototype.logoff = function () {
-        if (!this.miappService) return this.promise.reject('miapp.sdk.angular.logoff : not initialized.');
-        return this.miappService.logoff();
+        if (!this.miappService) return this.promise.reject('miapp.sdk.angular.miappLogoff : not initialized.');
+        return this.miappService.miappLogoff();
     };
-
 
     /**
      *
-     * @param fnInitFirstData
+     * Synchronize DB
+     * @param fnInitFirstData  fnInitFirstData(this._db) {return Promise;} : call if DB is empty
+     * @param service
      * @param forceOnline
+     * @returns {*} promise with this._db
      * @memberof miapp.angularService
      */
     Service.prototype.sync = function (fnInitFirstData, forceOnline) {
         if (!this.miappService) return this.promise.reject('miapp.sdk.angular.sync : not initialized.');
-        return this.miappService.syncComplete(fnInitFirstData, this, forceOnline);
+        return this.miappService.miappSync(fnInitFirstData, this, forceOnline);
     };
 
+    /**
+     *
+     * @param data
+     * @returns {*}
+     * @memberof miapp.angularService
+     */
     Service.prototype.put = function (data) {
         if (!this.miappService) return this.promise.reject('miapp.sdk.angular.put : not initialized.');
-        return this.miappService.putInDb(data);
+        return this.miappService.miappPutInDb(data);
     };
 
+    /**
+     *
+     * @param id
+     * @returns {*}
+     * @memberof miapp.angularService
+     */
     Service.prototype.find = function (id) {
         if (!this.miappService) return this.promise.reject('miapp.sdk.angular.find : not initialized.');
-        return this.miappService.findInDb(id);
+        return this.miappService.miappFindInDb(id);
     };
 
+    /**
+     *
+     * @returns {*}
+     * @memberof miapp.angularService
+     */
     Service.prototype.findAll = function () {
         if (!this.miappService) return this.promise.reject('miapp.sdk.angular.findAll : not initialized.');
-        return this.miappService.findAllInDb();
+        return this.miappService.miappFindAllInDb();
     };
 
 
@@ -13727,7 +13758,7 @@ function doCallback(callback, params, context) {
         try {
             self.request(options, function (err, response) {
                 if (err) {
-                    if (self.logging) console.error('error trying to log user in : ',err);
+                    if (self.logging) console.error('error trying to log user in : ', err);
                     doCallback(callback, [err, user]);
                 } else {
                     user._id = response._id;
@@ -16049,7 +16080,7 @@ var SrvMiapp = (function () {
         //self.logger.log('miapp.sdk.service : init');
 
         this.miappClient = null;
-        this.currentUser = getObjectFromLocalStorage('miappCurrentUser') || null;
+        this.currentUser = _getObjectFromLocalStorage('miappCurrentUser') || null;
 
         this.miappId = null;
         this.miappSalt = 'miappDefaultSalt';
@@ -16057,12 +16088,12 @@ var SrvMiapp = (function () {
         this.miappAppVersion = 'draft';
         //this.miappTestURI = null;
 
-        this.miappIsOffline = getObjectFromLocalStorage('miappIsOffline') || false;
-        this.miappURL = getObjectFromLocalStorage('miappURL') || 'https://miapp.io/api';
-        this.miappDBURL = getObjectFromLocalStorage('miappDBURL') || 'https://couchdb01.miapp.io';
+        this.miappIsOffline = _getObjectFromLocalStorage('miappIsOffline') || false;
+        this.miappURL = _getObjectFromLocalStorage('miappURL') || 'https://miapp.io/api';
+        this.miappDBURL = _getObjectFromLocalStorage('miappDBURL') || 'https://couchdb01.miapp.io';
         this.miappAuthEndDate = new Date();
         this.miappAuthEndDate.setMonth(this.miappAuthEndDate.getMonth() + 1);
-        var ls = getObjectFromLocalStorage('miappAuthEndDate');
+        var ls = _getObjectFromLocalStorage('miappAuthEndDate');
         //console.log(ls);
         var miappAuthEndDate = ls;// ? JSON.parse(ls) : null;
         if (miappAuthEndDate) this.miappAuthEndDate = new Date(miappAuthEndDate);
@@ -16072,10 +16103,17 @@ var SrvMiapp = (function () {
         this._dbInitialized = false;
     }
 
-    Service.prototype.init = function (miappId, miappSalt, forceOnline) {
 
-        this.logger.log('miapp.sdk.service.init : ' + miappId + ' ? ' + forceOnline);
-        //self.logger.log('miapp.sdk.service.init : ' + miappId + ' ? ' + forceOnline);
+    /**
+     *
+     * @param miappId
+     * @param miappSalt
+     * @param forceOnline
+     */
+    Service.prototype.miappInit = function (miappId, miappSalt, forceOnline) {
+
+        this.logger.log('miapp.sdk.service.miappInit : ' + miappId + ' ? ' + forceOnline);
+        //self.logger.log('miapp.sdk.service.miappInit : ' + miappId + ' ? ' + forceOnline);
         this.miappIsOffline = (typeof forceOnline === 'undefined') ? this.miappIsOffline : !forceOnline;
         if (!this.miappIsOffline) {
             this.miappClient = new miappSdk.Client({
@@ -16093,37 +16131,278 @@ var SrvMiapp = (function () {
 
     };
 
+    /**
+     * Call it on each app start
+     * Set User login in DB if db empty
+     * Return self.promise with this._db
+     * @param login
+     * @param password
+     * @param forceOnline
+     * @returns {*}
+     */
+    Service.prototype.miappLogin = function (login, password, forceOnline) {
+        var self = this;
+        self.logger.log('miapp.sdk.service.miappLogin');
+
+        var now = new Date();
+        var isDeprecated = (self.miappAuthEndDate < now);
+        self.logger.log('miapp.sdk.service.miappLogin : is isDeprecated ? ', isDeprecated);
+
+        if (self._dbInitialized && self.currentUser && !forceOnline && !isDeprecated)
+            return self.promise.resolve(self.currentUser);
+
+        if (forceOnline || isDeprecated) self.setOffline(false);
+
+        return new self.promise(function (resolve, reject) {
+
+            self.isDbEmpty()
+                .then(function (isEmpty) {
+
+
+                    self.logger.log('miapp.sdk.service.miappLogin : is empty ? ', isEmpty);
+
+                    // We force login and syncDB : force or first time
+                    if (forceOnline || isDeprecated) {
+                        self.logger.log('miapp.sdk.service.miappLogin : self.miappAuthEndDate ? ', self.miappAuthEndDate);
+                        self.loginInternal(login, password)
+                            .then(function (firstUser) {
+                                if (firstUser) {
+                                    self.logger.log('miapp.sdk.service.miappLogin : login done for the first time.');
+                                    self.setCurrentUser(firstUser);
+                                }
+                                self.syncDb()
+                                    .finally(function (ret) {
+                                        self.logger.log('miapp.sdk.service.miappLogin : self.currentUser', self.currentUser);
+                                        if (!self.currentUser) {
+                                            reject('miapp.sdk.service.miappLogin : Pb with user get.' + ret);
+                                        }
+                                        else {
+                                            self._dbInitialized = true;
+                                            resolve(self.currentUser);
+                                        }
+                                    });
+                            })
+                            .catch(function (err) {
+                                var errMsg = 'miapp.sdk.service.miappLogin : ' + err;
+                                self.logger.error(errMsg);
+                                reject(errMsg);
+                            });
+                        return;
+                    }
+
+                    // DB already initialized
+                    if (!isEmpty && self.currentUser) {
+
+                        self.logger.log('miapp.sdk.service.miappLogin : self.miappAuthEndDate ? ', self.miappAuthEndDate);
+                        self._dbInitialized = true
+                        resolve(self.currentUser); // already set
+                        return;
+                    }
+
+                    // ELSE : Back from root > clean DB and login
+                    self.becarefulCleanDb()
+                        .then(function (msg) {
+                            //self.logger.log(self.currentUser);
+                            return self.loginInternal(login, password);
+                        })
+                        .then(function (firstUser) {
+                            self.logger.log(self.currentUser);
+                            if (firstUser && !self.currentUser) {
+                                self.logger.log('miapp.sdk.service.miappLogin : login done for the first time..');
+                                self.setCurrentUser(firstUser);
+                                //self.putFirstUserInEmptyDb(firstUser);
+                            }
+
+                            self.logger.log('miapp.sdk.service.miappLogin : sync DB...');
+                            //self.logger.log(self.currentUser);
+
+                            // do not trap db pb : set as offline
+                            self.syncDb()
+                                .finally(function (ret) {
+
+                                    self.logger.log(self.currentUser);
+                                    if (!self.currentUser) {
+                                        reject('miapp.sdk.service.miappLogin : Pb with user get.' + ret);
+                                    }
+                                    else {
+                                        self._dbInitialized = true;
+                                        resolve(self.currentUser);
+                                    }
+                                });
+                        })
+                        .catch(function (err) {
+                            self.logger.error('miapp.sdk.service.miappLogin : err ..: ', err);
+                            reject(err);
+                        });
+                })
+                .catch(function (err) {
+                    self.logger.error('miapp.sdk.service.miappLogin : err : ', err);
+                    reject(err);
+                });
+        });
+
+
+    };
+
+    Service.prototype.miappIsLogin = function () {
+        if (!this.currentUser) return false;
+        return true;
+    };
+
+    Service.prototype.miappLogoff = function () {
+        var self = this;
+        if (!self.currentUser) return self.promise.reject('miapp.sdk.service not login');
+
+        self.currentUser = null;
+        _removeObjectFromLocalStorage('miappCurrentUser');
+        return self.becarefulCleanDb();
+
+        //return self.deleteUser(self.currentUser._id);
+    };
+
+    /**
+     * Synchronize DB
+     * @param fnInitFirstData  fnInitFirstData(this._db) {return Promise;} : call if DB is empty
+     * @param service
+     * @param forceOnline
+     * @returns {*} promise with this._db
+     */
+    Service.prototype.miappSync = function (fnInitFirstData, service, forceOnline) {
+        var self = this;
+        self.logger.log('miapp.sdk.service.miappSync');
+        if (!self.currentUser || !self._db)
+            return self.promise.reject('miapp.sdk.service.miappSync : DB sync impossible. Did you miapp.sdk.service.miappLogin() ?');
+
+        if (forceOnline) self.setOffline(false);
+
+        return new self.promise(function (resolve, reject) {
+            self.isDbEmpty()
+                .then(function (isEmpty) {
+                    if (isEmpty && fnInitFirstData) {
+                        var ret = fnInitFirstData(service);
+                        if (ret && ret["catch"] instanceof Function) return ret;
+                        if (typeof ret === 'string') self.logger.log(ret);
+                    }
+                    return self.promise.resolve('miapp.sdk.service.miappSync : ready to sync');
+                })
+                .then(function (ret) {
+                    if (typeof ret === 'string') self.logger.log(ret);
+                    return self.syncDb();
+                })
+                .then(function (err) {
+                    if (err) return reject(err);
+                    self.logger.log('miapp.sdk.service.miappSync sync resolved');
+                    return self._db.info();
+                })
+                .then(function (result) {
+                    self._dbRecordCount = 0;
+                    if (result && result.doc_count) self._dbRecordCount = result.doc_count;
+                    self.logger.log('miapp.sdk.service.miappSync _dbRecordCount : ' + self._dbRecordCount);
+                    resolve(self._dbRecordCount);
+                })
+                .catch(function (err) {
+                    var errMessage = 'miapp.sdk.service.miappSync : DB pb with getting data (' + err + ')';
+                    //self.logger.error(errMessage);
+                    reject(errMessage);
+                })
+            ;
+        });
+    };
+
+
+    /**
+     *
+     * @param data
+     * @returns {*}
+     */
+    Service.prototype.miappPutInDb = function (data) {
+        var self = this;
+        self.logger.log('miapp.sdk.service.miappPutInDb');
+        self.logger.log(data);
+
+        if (!self.currentUser || !self.currentUser._id || !self._db)
+            return self.promise.reject('miapp.sdk.service.miappPutInDb : DB put impossible. Need a user logged in. (' + self.currentUser + ')');
+
+        data.miappUserId = self.currentUser._id;
+        data.miappOrgId = self.miappOrg;
+        data.miappAppVersion = self.miappAppVersion;
+
+        var dataId = data._id;
+        if (!dataId) dataId = _generateObjectUniqueId(self.appName);
+        delete data._id;
+        data._id = dataId;
+        return new self.promise(function (resolve, reject) {
+            self._db.put(data, function (err, response) {
+                if (response && response.ok && response.id && response.rev) {
+                    data._id = response.id;
+                    data._rev = response.rev;
+                    self._dbRecordCount++;
+                    self.logger.log("updatedData: " + data._id + " - " + data._rev);
+                    resolve(data);
+                    return;
+                }
+                reject(err);
+            });
+        });
+
+    };
+
+    /**
+     *
+     * @param id
+     * @returns {*}
+     */
+    Service.prototype.miappFindInDb = function (id) {
+        var self = this;
+
+        if (!self.currentUser || !self.currentUser._id || !self._db)
+            return self.promise.reject('miapp.sdk.service.miappFindInDb : need a user logged in. (' + self.currentUser + ')');
+
+        return self._db.get(id);
+    };
+
+    /**
+     *
+     * @returns {*}
+     */
+    Service.prototype.miappFindAllInDb = function () {
+        var self = this;
+
+        if (!self.currentUser || !self.currentUser._id || !self._db)
+            return self.promise.reject('miapp.sdk.service.miappFindAllInDb : need a user logged in. (' + self.currentUser + ')');
+
+        return self._db.allDocs({include_docs: true, descending: true});
+    };
+
+
+    // Internal functions
+
     Service.prototype.setAuthEndpoint = function (endpointURI) {
         this.miappURL = endpointURI;
-        if (this.miappURL) setObjectFromLocalStorage('miappURL', this.miappURL);
+        if (this.miappURL) _setObjectFromLocalStorage('miappURL', this.miappURL);
         if (this.miappClient && this.miappURL) this.miappClient.setMiappURL(this.miappURL);
     };
 
     Service.prototype.setDBEndpoint = function (endpointURI) {
         this.miappDBURL = endpointURI;
-        if (this.miappDBURL) setObjectFromLocalStorage('miappDBURL', this.miappDBURL);
-    };
-    Service.prototype.setAuthEndDate = function (endDate) {
-        this.miappAuthEndDate = endDate;
-        if (this.miappAuthEndDate) setObjectFromLocalStorage('miappAuthEndDate', this.miappAuthEndDate);
+        if (this.miappDBURL) _setObjectFromLocalStorage('miappDBURL', this.miappDBURL);
     };
 
+    Service.prototype.setAuthEndDate = function (endDate) {
+        this.miappAuthEndDate = endDate;
+        if (this.miappAuthEndDate) _setObjectFromLocalStorage('miappAuthEndDate', this.miappAuthEndDate);
+    };
 
     Service.prototype.setOffline = function (b) {
         this.miappIsOffline = (b == true);
-        setObjectFromLocalStorage('miappIsOffline', this.miappIsOffline);
+        _setObjectFromLocalStorage('miappIsOffline', this.miappIsOffline);
     };
 
-    Service.prototype.isLogin = function () {
-        if (!this.currentUser) return false;
-        return true;
-    };
-
-    Service.prototype.login = function (login, password, updateProperties) {
+    Service.prototype.loginInternal = function (login, password, updateProperties) {
         var self = this;
         return new self.promise(function (resolve, reject) {
                 if (!self.miappClient && !self.miappIsOffline) {
-                    reject('miapp.sdk.service.login : not initialized. Did you miapp.sdk.service.init() ?');
+                    reject('miapp.sdk.service.loginInternal : not initialized. Did you miapp.sdk.service.miappInit() ?');
                     return;
                 }
 
@@ -16131,9 +16410,9 @@ var SrvMiapp = (function () {
                 //var encrypted = CryptoJS.AES.encrypt(password, 'SALT_TOKEN');
                 //var encrypted_json_str = encrypted.toString();
                 var encrypted_json_str = password;
-                self.logger.log('miapp.sdk.service.login : ' + login + ' / ' + encrypted_json_str);
+            self.logger.log('miapp.sdk.service.loginInternal : ' + login + ' / ' + encrypted_json_str);
 
-            if (!self.miappClient || self.miappIsOffline || !miapp.BrowserCapabilities.isConnectionOnline()) {
+            if (!self.miappClient || self.miappIsOffline) { // || !miapp.BrowserCapabilities.isConnectionOnline()) {
                     var offlineUser = {};
                     if (login) offlineUser.email = login;
                     if (encrypted_json_str) offlineUser.password = encrypted_json_str;
@@ -16146,7 +16425,7 @@ var SrvMiapp = (function () {
             var fullLogin = function () {
 
                     // Check a full Login
-                    self.logger.log('miapp.sdk.service.login Check Full Login');
+                self.logger.log('miapp.sdk.service.loginInternal Check Full Login');
 
                 // Need a refresh token
                 self.miappClient.logout();
@@ -16154,10 +16433,10 @@ var SrvMiapp = (function () {
                     delete self.currentUser.access_token;
 
                     self.miappClient.loginMLE(self.miappId, login, encrypted_json_str, updateProperties, function (err, loginUser) {
-                        // self.logger.log('miapp.sdk.service.login done :' + err + ' user:' + user);
+                        // self.logger.log('miapp.sdk.service.loginInternal done :' + err + ' user:' + user);
                         if (err || !loginUser) {
                             // Error - could not log user in
-                            self.logger.error('miapp.sdk.service.login error : ' + err);
+                            self.logger.error('miapp.sdk.service.loginInternal error : ' + err);
                             //self.miappIsOffline = true;
                             return reject(err);
                         }
@@ -16189,11 +16468,11 @@ var SrvMiapp = (function () {
                 //todo ! encrypted_json_str = self.currentUser.password;
 
                 // Check Token
-                self.logger.log('miapp.sdk.service.login Check Token');
+                self.logger.log('miapp.sdk.service.loginInternal Check Token');
                 self.miappClient.reAuthenticateMLE(function (err) {
                     if (err) {
                         // Error - could not reLog user in
-                        self.logger.error('miapp.sdk.service.login Check Token error : ' + err);
+                        self.logger.error('miapp.sdk.service.loginInternal Check Token error : ' + err);
                         if (!noUser)
                             fullLogin();
                         else
@@ -16210,17 +16489,6 @@ var SrvMiapp = (function () {
 
             }
         );
-    };
-
-    Service.prototype.logoff = function () {
-        var self = this;
-        if (!self.currentUser) return self.promise.reject('miapp.sdk.service not login');
-
-        self.currentUser = null;
-        removeObjectFromLocalStorage('miappCurrentUser');
-        return self.becarefulCleanDb();
-
-        //return self.deleteUser(self.currentUser._id);
     };
 
     Service.prototype.deleteUser = function (userIDToDelete) {
@@ -16241,6 +16509,43 @@ var SrvMiapp = (function () {
                     return reject(err);
                 }
                 return resolve();
+            });
+        });
+    };
+
+    Service.prototype.isDbEmpty = function () {
+        var self = this;
+        self.logger.log('miapp.sdk.service.isDbEmpty ..');
+        if (!self._db) {//if (!self.currentUser || !self.currentUser.email || !pouchDB) {
+            var error = 'miapp.sdk.service.isDbEmpty : DB search impossible. Need a user logged in. (' + self.currentUser + ')';
+            self.logger.error(error);
+            return self.promise.reject(error);
+        }
+
+        self.logger.log('miapp.sdk.service.isDbEmpty call');
+        return new self.promise(function (resolve, reject) {
+            self._db.allDocs({
+                //filter: function (doc) {
+                //    if (!self.currentUser || !self.currentUser._id) return doc;
+                //    if (doc.miappUserId === self.currentUser._id) return doc;
+                //}
+            }, function (err, response) {
+                self.logger.log('miapp.sdk.service.isDbEmpty callback');
+                if (err || !response) {
+                    reject(err);
+                    return;
+                }
+
+                self._dbRecordCount = response.total_rows;
+                //if (response && response.total_rows && response.total_rows > 5) return resolve(false);
+                if (response.total_rows && response.total_rows > 0) {
+                    resolve(false);
+                    return;
+                }
+
+                self.logger.log('miapp.sdk.service.isDbEmpty callback: ' + response.total_rows);
+                resolve(true);
+
             });
         });
     };
@@ -16303,93 +16608,6 @@ var SrvMiapp = (function () {
 
     };
 
-    Service.prototype.putInDb = function (data) {
-        var self = this;
-        self.logger.log('miapp.sdk.service.putInDb');
-        self.logger.log(data);
-
-        if (!self.currentUser || !self.currentUser._id || !self._db)
-            return self.promise.reject('miapp.sdk.service.putInDb : DB put impossible. Need a user logged in. (' + self.currentUser + ')');
-
-        data.miappUserId = self.currentUser._id;
-        data.miappOrgId = self.miappOrg;
-        data.miappAppVersion = self.miappAppVersion;
-
-        var dataId = data._id;
-        if (!dataId) dataId = _generateObjectUniqueId(self.appName);
-        delete data._id;
-        data._id = dataId;
-        return new self.promise(function (resolve, reject) {
-            self._db.put(data, function (err, response) {
-                if (response && response.ok && response.id && response.rev) {
-                    data._id = response.id;
-                    data._rev = response.rev;
-                    self._dbRecordCount++;
-                    self.logger.log("updatedData: " + data._id + " - " + data._rev);
-                    resolve(data);
-                    return;
-                }
-                reject(err);
-            });
-        });
-
-    };
-
-    Service.prototype.findInDb = function (id) {
-        var self = this;
-
-        if (!self.currentUser || !self.currentUser._id || !self._db)
-            return self.promise.reject('miapp.sdk.service.findInDb : need a user logged in. (' + self.currentUser + ')');
-
-        return self._db.get(id);
-    };
-
-    Service.prototype.findAllInDb = function () {
-        var self = this;
-
-        if (!self.currentUser || !self.currentUser._id || !self._db)
-            return self.promise.reject('miapp.sdk.service.findAllInDb : need a user logged in. (' + self.currentUser + ')');
-
-        return self._db.allDocs({include_docs: true, descending: true});
-    };
-
-    Service.prototype.isDbEmpty = function () {
-        var self = this;
-        self.logger.log('miapp.sdk.service.isDbEmpty ..');
-        if (!self._db) {//if (!self.currentUser || !self.currentUser.email || !pouchDB) {
-            var error = 'miapp.sdk.service.isDbEmpty : DB search impossible. Need a user logged in. (' + self.currentUser + ')';
-            self.logger.error(error);
-            return self.promise.reject(error);
-        }
-
-        self.logger.log('miapp.sdk.service.isDbEmpty call');
-        return new self.promise(function (resolve, reject) {
-            self._db.allDocs({
-                //filter: function (doc) {
-                //    if (!self.currentUser || !self.currentUser._id) return doc;
-                //    if (doc.miappUserId === self.currentUser._id) return doc;
-                //}
-            }, function (err, response) {
-                self.logger.log('miapp.sdk.service.isDbEmpty callback');
-                if (err || !response) {
-                    reject(err);
-                    return;
-                }
-
-                self._dbRecordCount = response.total_rows;
-                //if (response && response.total_rows && response.total_rows > 5) return resolve(false);
-                if (response.total_rows && response.total_rows > 0) {
-                    resolve(false);
-                    return;
-                }
-
-                self.logger.log('miapp.sdk.service.isDbEmpty callback: ' + response.total_rows);
-                resolve(true);
-
-            });
-        });
-    };
-
     Service.prototype.setCurrentUser = function (user) {
         var self = this;
         if (!user)
@@ -16419,7 +16637,7 @@ var SrvMiapp = (function () {
         delete self.currentUser._rev;
 
         // store it
-        setObjectFromLocalStorage('miappCurrentUser', self.currentUser);
+        _setObjectFromLocalStorage('miappCurrentUser', self.currentUser);
         self.logger.log('miapp.sdk.service.setCurrentUser :', self.currentUser);
     };
 
@@ -16489,7 +16707,7 @@ var SrvMiapp = (function () {
                 // Do we need to remove CurrentUser ?
                 //delete self.currentUser;
                 //self.currentUser = null;
-                //removeObjectFromLocalStorage('miappCurrentUser');
+                //_removeObjectFromLocalStorage('miappCurrentUser');
 
                 self._dbRecordCount = 0;
                 self.logger.log('miapp.sdk.service.becarefulCleanDb .. done : ' + info);
@@ -16498,157 +16716,7 @@ var SrvMiapp = (function () {
         });
     };
 
-    // Call it on each app start
-    // Set User login in DB if db empty
-    // Return self.promise with this._db
-    Service.prototype.initDBWithLogin = function (login, password, forceOnline) {
-        var self = this;
-        self.logger.log('miapp.sdk.service.initDBWithLogin');
-
-        var now = new Date();
-        var isDeprecated = (self.miappAuthEndDate < now);
-        self.logger.log('miapp.sdk.service.initDBWithLogin : is isDeprecated ? ', isDeprecated);
-
-        if (self._dbInitialized && self.currentUser && !forceOnline && !isDeprecated)
-            return self.promise.resolve(self.currentUser);
-
-        if (forceOnline || isDeprecated) self.setOffline(false);
-
-        return new self.promise(function (resolve, reject) {
-
-            self.isDbEmpty()
-                .then(function (isEmpty) {
-
-
-                    self.logger.log('miapp.sdk.service.initDBWithLogin : is empty ? ', isEmpty);
-
-                    // We force login and syncDB : force or first time
-                    if (forceOnline || isDeprecated) {
-                        self.logger.log('miapp.sdk.service.initDBWithLogin : self.miappAuthEndDate ? ', self.miappAuthEndDate);
-                        self.login(login, password)
-                            .then(function (firstUser) {
-                                if (firstUser) {
-                                    self.logger.log('miapp.sdk.service.initDBWithLogin : login done for the first time.');
-                                    self.setCurrentUser(firstUser);
-                                }
-                                self.syncDb()
-                                    .finally(function (ret) {
-                                        self.logger.log('miapp.sdk.service.initDBWithLogin : self.currentUser', self.currentUser);
-                                        if (!self.currentUser) {
-                                            reject('miapp.sdk.service.initDBWithLogin : Pb with user get.' + ret);
-                                        }
-                                        else {
-                                            self._dbInitialized = true;
-                                            resolve(self.currentUser);
-                                        }
-                                    });
-                            })
-                            .catch(function (err) {
-                                var errMsg = 'miapp.sdk.service.initDBWithLogin : ' + err;
-                                self.logger.error(errMsg);
-                                reject(errMsg);
-                            });
-                        return;
-                    }
-
-                    // DB already initialized
-                    if (!isEmpty && self.currentUser) {
-
-                        self.logger.log('miapp.sdk.service.initDBWithLogin : self.miappAuthEndDate ? ', self.miappAuthEndDate);
-                        self._dbInitialized = true
-                        resolve(self.currentUser); // already set
-                        return;
-                    }
-
-                    // ELSE : Back from root > clean DB and login
-                    self.becarefulCleanDb()
-                        .then(function (msg) {
-                            //self.logger.log(self.currentUser);
-                            return self.login(login, password);
-                        })
-                        .then(function (firstUser) {
-                            self.logger.log(self.currentUser);
-                            if (firstUser && !self.currentUser) {
-                                self.logger.log('miapp.sdk.service.initDBWithLogin : login done for the first time..');
-                                self.setCurrentUser(firstUser);
-                                //self.putFirstUserInEmptyDb(firstUser);
-                            }
-
-                            self.logger.log('miapp.sdk.service.initDBWithLogin : sync DB...');
-                            //self.logger.log(self.currentUser);
-
-                            // do not trap db pb : set as offline
-                            self.syncDb()
-                                .finally(function (ret) {
-
-                                    self.logger.log(self.currentUser);
-                                    if (!self.currentUser) {
-                                        reject('miapp.sdk.service.initDBWithLogin : Pb with user get.' + ret);
-                                    }
-                                    else {
-                                        self._dbInitialized = true;
-                                        resolve(self.currentUser);
-                                    }
-                                });
-                        })
-                        .catch(function (err) {
-                            self.logger.error('miapp.sdk.service.initDBWithLogin : err ..: ', err);
-                            reject(err);
-                        });
-                })
-                .catch(function (err) {
-                    self.logger.error('miapp.sdk.service.initDBWithLogin : err : ', err);
-                    reject(err);
-                });
-        });
-
-
-    };
-
-    // Sync Data
-    // If empty call fnInitFirstData(this._db), should return self.promise to call sync
-    // Return self.promise with this._db
-    Service.prototype.syncComplete = function (fnInitFirstData, service, forceOnline) {
-        var self = this;
-        self.logger.log('miapp.sdk.service.syncComplete');
-        if (!self.currentUser || !self._db)
-            return self.promise.reject('miapp.sdk.service.syncComplete : DB sync impossible. Did you miapp.sdk.service.login() ?');
-
-        if (forceOnline) self.setOffline(false);
-
-        return new self.promise(function (resolve, reject) {
-            self.isDbEmpty()
-                .then(function (isEmpty) {
-                    if (isEmpty && fnInitFirstData) {
-                        var ret = fnInitFirstData(service);
-                        if (ret && ret["catch"] instanceof Function) return ret;
-                        if (typeof ret === 'string') self.logger.log(ret);
-                    }
-                    return self.promise.resolve('miapp.sdk.service.syncComplete : ready to sync');
-                })
-                .then(function (ret) {
-                    if (typeof ret === 'string') self.logger.log(ret);
-                    return self.syncDb();
-                })
-                .then(function (err) {
-                    if (err) return reject(err);
-                    self.logger.log('miapp.sdk.service.syncComplete sync resolved');
-                    return self._db.info();
-                })
-                .then(function (result) {
-                    self._dbRecordCount = 0;
-                    if (result && result.doc_count) self._dbRecordCount = result.doc_count;
-                    self.logger.log('miapp.sdk.service.syncComplete _dbRecordCount : ' + self._dbRecordCount);
-                    resolve(self._dbRecordCount);
-                })
-                .catch(function (err) {
-                    var errMessage = 'miapp.sdk.service.syncComplete : DB pb with getting data (' + err + ')';
-                    //self.logger.error(errMessage);
-                    reject(errMessage);
-                })
-            ;
-        });
-    };
+    // Private functions
 
     Service.prototype._testPromise = function (a) {
         if (a) return this.promise.resolve('test promise ok ' + a);
@@ -16658,7 +16726,7 @@ var SrvMiapp = (function () {
     };
 
     //Local Storage Utilities
-    function setObjectFromLocalStorage(id, object) {
+    function _setObjectFromLocalStorage(id, object) {
         //if(typeof(Storage) === "undefined") return null;
         var jsonObj = JSON.stringify(object);
         if (window.localStorage) window.localStorage.setItem(id, jsonObj);
@@ -16666,7 +16734,7 @@ var SrvMiapp = (function () {
         return jsonObj;
     }
 
-    function getObjectFromLocalStorage(id) {
+    function _getObjectFromLocalStorage(id) {
         //if(typeof(Storage) === "undefined") return null;
         // Retrieve the object from storage
         var retrievedObject;
@@ -16676,12 +16744,12 @@ var SrvMiapp = (function () {
         return obj;
     }
 
-    function removeObjectFromLocalStorage(id) {
+    function _removeObjectFromLocalStorage(id) {
         if (window.localStorage) window.localStorage.removeItem(id);
     }
 
     //TODO utilities : static removeAll in localStorage ?
-    function removeAllObjects() {
+    function _removeAllObjects() {
         window.localStorage.removeItem('miappCurrentUser');
         window.localStorage.removeItem('miappIsOffline');
         window.localStorage.removeItem('miappURL');

@@ -35,7 +35,7 @@ module.exports = function (config) {
             //'../node_modules/es5-shim/es5-shim.js',
             'www/lib/Chart.js/Chart.min.js',
             'www/lib/angular-chart.js/dist/angular-chart.min.js',
-            'www/lib/crypto-js/crypto-js.js',
+            //'www/lib/crypto-js/crypto-js.js',
             'www/lib/miappio-sdk/dist/miappio.sdk.js',
 
             'www/js/app.js',

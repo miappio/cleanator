@@ -12,7 +12,7 @@ msgstr ""
 msgid "-- choose chore --"
 msgstr ""
 
-#: login/loginIn.html:32
+#: login/loginIn.html:37
 msgid "01valid.email@required.com"
 msgstr ""
 
@@ -166,20 +166,20 @@ msgstr ""
 msgid "Level0_You’ve set your profiles ? Ready for the next part : setting all the chores you have to deal with."
 msgstr ""
 
-#: login/loginIn.html:48
+#: login/loginIn.html:53
 #: user/userAll.html:77
 msgid "LoginLanguage"
 msgstr ""
 
-#: login/loginIn.html:41
+#: login/loginIn.html:46
 msgid "LoginNewPassword"
 msgstr ""
 
-#: login/loginIn.html:63
+#: login/loginIn.html:76
 msgid "LoginSignin"
 msgstr ""
 
-#: login/loginIn.html:22
+#: login/loginIn.html:27
 msgid "LoginWelcome"
 msgstr ""
 
@@ -345,7 +345,7 @@ msgstr ""
 msgid "each"
 msgstr ""
 
-#: login/loginIn.html:7
+#: login/loginIn.html:17
 msgid "for Better for Dust"
 msgstr ""
 

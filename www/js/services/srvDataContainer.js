@@ -1,49 +1,73 @@
-angular.module('srvDataContainer', ['srvData.pouchdb'])
-
-    .factory('srvDataContainer', function ($log, $q, $http, filterFilter, srvData, srvConfig, MiappService) {
-        return new SrvDataContainer($log, $q, $http, filterFilter, srvData, srvConfig, MiappService);
+angular
+    .module('srvDataContainer', ['srvData.pouchdb'])
+    .factory('srvDataContainer', function ($log, $q, $http, $rootScope, $cordovaNetwork, filterFilter, srvData, srvConfig, MiappService, appForceOffline) {
+        return new SrvDataContainer($log, $q, $http, $rootScope, $cordovaNetwork, filterFilter, srvData, srvConfig, MiappService, appForceOffline);
     });
-
 
 var SrvDataContainer = (function () {
     'use strict';
 
-    function Service($log, $q, $http, filterFilter, srvData, srvConfig, MiappService) {
-        this.$log = $log;
-        this.$q = $q;
-        this.$http = $http;
-        this.filterFilter = filterFilter;
+    function Service($log, $q, $http, $rootScope, $cordovaNetwork, filterFilter, srvData, srvConfig, MiappService, appForceOffline) {
 
-        this.srvData = srvData;
-        this.srvConfig = srvConfig;
-        this.srvMiapp = MiappService;
-        //this.srvDataNeedFirstSyncForThisUser = true;
+        var self = this;
+        self.$log = $log;
+        self.$q = $q;
+        self.$http = $http;
+        self.filterFilter = filterFilter;
+        self.srvData = srvData;
+        self.srvConfig = srvConfig;
+        self.srvMiapp = MiappService;
 
-        this.userA = null;
-        this.couple = null;
-        this.userB = null;
-        this.chores = [];
-        this.categories = [];
-        this.historicsTodo = {};
-        this.historicsTodo2 = [];
-        this.historicsDone = [];
-        this.userCols = srvData.User.columns;
-        this.coupleCols = srvData.Couple.columns;
-        this.historicCols = srvData.Historic.columns;
-        this.choreCols = srvData.Chore.columns;
-        this.categoryCols = srvData.Category.columns;
+        self.appForceOffline = appForceOffline;
+        // Check Online Event based on Cordova
+        self.isCordovaOnline = false;
+        if (!self.appForceOffline) {
+            document.addEventListener("deviceready", function () {
+
+                if ($cordovaNetwork)
+                    self.isCordovaOnline = $cordovaNetwork.isCordovaOnline();
+
+                // listen for Online event
+                $rootScope.$on('$cordovaNetwork:online', function (event, networkState) {
+                    self.isCordovaOnline = true;
+                });
+                // listen for Offline event
+                $rootScope.$on('$cordovaNetwork:offline', function (event, networkState) {
+                    self.isCordovaOnline = false;
+                });
+
+            }, false);
+        }
+
+        self.userA = null;
+        self.couple = null;
+        self.userB = null;
+        self.chores = [];
+        self.categories = [];
+        self.historicsTodo = {};
+        self.historicsTodo2 = [];
+        self.historicsDone = [];
+        self.userCols = srvData.User.columns;
+        self.coupleCols = srvData.Couple.columns;
+        self.historicCols = srvData.Historic.columns;
+        self.choreCols = srvData.Chore.columns;
+        self.categoryCols = srvData.Category.columns;
     }
 
     Service.prototype.login = function (user) {
         var self = this;
-        //if (self.isLoggedIn()) return self.$q.reject('srvDataContainer.login : already logged in');
+        var login = null;
+        var password = null;
+        var forceOnlineCheckin = self.isCordovaOnline;
+        if (!!user) {
+            login = user.email;
+            password = user.password;
+        }
 
-        var login = user ? user.email : null;
-        var password = user ? user.password : null;
-        self.$log.log('srvDataContainer.login : ' + login);
+        self.$log.log('srvDataContainer.login : ', login);
 
         return self.$q(function (resolve, reject) {
-            self.srvMiapp.login(login, password, true)
+            self.srvMiapp.login(login, password, forceOnlineCheckin)
                 .then(function (miappUser) {
 
                     self.$log.log('srvDataContainer.login srvMiapp received: ' + miappUser.email);
@@ -68,7 +92,6 @@ var SrvDataContainer = (function () {
                     reject(err);
                 });
         });
-
     };
 
     Service.prototype.sync = function () {
@@ -80,10 +103,11 @@ var SrvDataContainer = (function () {
         self.$log.log('srvDataContainer.sync');
         return new self.$q(function (resolve, reject) {
             self.srvMiapp.sync(
-                function () {
+                function (miappSrv) {
                     self.$log.log('srvDataContainer.sync first data');
                     return self.initWithFirstData(lang, userMain);
-                }
+                },
+                self.isCordovaOnline
             )
                 .then(function () {
                     return bindData(self);
@@ -104,9 +128,32 @@ var SrvDataContainer = (function () {
     Service.prototype.isLoggedIn = function () {
         var userMain = this.srvConfig.getUserLoggedIn();
         var bc = this.srvConfig.isLoggedIn();
-        var loggedIn = (userMain && userMain.email && bc && this.srvMiapp.miappService._dbInitialized) ? true : false;
+        var mi = this.srvMiapp.isLoggedIn();
+        var loggedIn = (userMain && userMain.email && bc && mi) ? true : false;
         return loggedIn;
     };
+
+
+    Service.prototype.getAppFirstInitLevel = function () {
+        return this.srvConfig.getAppFirstInitLevel();
+    };
+    Service.prototype.isAppFirstInitCompleted = function () {
+        return this.srvConfig.isAppFirstInitCompleted();
+    };
+    Service.prototype.setAppFirstInitLevel = function (level) {
+        return this.srvConfig.setAppFirstInitLevel(level);
+    };
+
+    Service.prototype.getConfigLangs = function () {
+        return this.srvConfig.getConfigLangs();
+    };
+    Service.prototype.getConfigLang = function () {
+        return this.srvConfig.getConfigLang();
+    };
+    Service.prototype.setConfigLang = function (lang) {
+        return this.srvConfig.setConfigLang(lang);
+    };
+
     Service.prototype.logout = function (is) {
         this.srvConfig.logout();
         this.srvConfig.setAppFirstInitLevel(0);
@@ -117,14 +164,11 @@ var SrvDataContainer = (function () {
     Service.prototype.reset = function () {
         this.historicsDone = [];
         this.srvData.resetHistorics();
-        //this.srvConfig.setLastResetDate();
     };
 
     Service.prototype.getLastResetDate = function () {
-        //return this.srvConfig.getLastResetDate();
         return this.srvData.getLastHistoricsResetDate();
     };
-
 
     Service.prototype.getUserA = function () {
         return this.userA;
@@ -212,7 +256,6 @@ var SrvDataContainer = (function () {
         return dataModel.set(dataToPut);
     };
 
-
     Service.prototype.initWithFirstData = function (langOfFile, firstUserLoggedIn) {
         var i, j, self = this;
         var chanceBaseUser = 2345, chanceBaseCouple = 2645, chanceBaseChore = 2945;//Math.random
@@ -244,7 +287,7 @@ var SrvDataContainer = (function () {
 
                     self.putInDB(self.srvData.User, userA)
                         .then(function (newUserA) {
-                            self.$log.log('srvDataContainer.initWithFirstData put A :',  newUserA);
+                            self.$log.log('srvDataContainer.initWithFirstData put A :', newUserA);
                             return self.putInDB(self.srvData.User, userB);
                         })
                         .then(function (newUserB) {
@@ -262,7 +305,7 @@ var SrvDataContainer = (function () {
                             return self.putInDB(self.srvData.Couple, couple);
                         })
                         .then(function (coupleSaved) {
-                            self.$log.log('srvDataContainer.initWithFirstData coupleSaved :',coupleSaved);
+                            self.$log.log('srvDataContainer.initWithFirstData coupleSaved :', coupleSaved);
 
                             // Categories first init
                             var categories = data.categories;
@@ -303,7 +346,6 @@ var SrvDataContainer = (function () {
         });
     };
 
-
     Service.prototype.getChoreCategoryName = function (choreGroup) {
         var self = this;
         if (!choreGroup || !self.categories) return 'na';
@@ -315,7 +357,6 @@ var SrvDataContainer = (function () {
         }
         return 'na';
     };
-
 
     Service.prototype.getChoreCategoryThumbPath = function (choreGroup) {
 
@@ -330,8 +371,9 @@ var SrvDataContainer = (function () {
         return 'na';
     };
 
-
-    // not correct !
+    /**
+     * @deprecated
+     */
     Service.prototype.computeTodoForOneUser = function (userId) {
 
         var self = this;
@@ -369,7 +411,6 @@ var SrvDataContainer = (function () {
 
         return deferred.promise;
     };
-
 
     Service.prototype.computeTodoForAllUsers = function () {
 
@@ -443,11 +484,9 @@ var SrvDataContainer = (function () {
         };
     };
 
-
     // --------------------------
     // Private functions
     // --------------------------
-
 
     var bindData = function (self) {
 
@@ -535,7 +574,6 @@ var SrvDataContainer = (function () {
         return deferred.promise;
     };
 
-
     var bindCategories = function (self) {
         //var self = this;
         var deferred = self.$q.defer();
@@ -545,7 +583,6 @@ var SrvDataContainer = (function () {
         });
         return deferred.promise;
     };
-
 
     // Find and bind historics marked as "done" in db
     var bindHistoricsDone = function (self) {

@@ -1,24 +1,7 @@
-function ctrlNavigation($scope, $log, $location, $state, $anchorScroll, $timeout, $q,
-                        $ionicHistory, $ionicScrollDelegate,
-                        srvAnalytics, srvData, srvDataContainer, srvConfig) {
+function ctrlNavigation($scope, $log, $location, $timeout, $q, $ionicHistory,
+                        srvAnalytics, srvDataContainer) {
     'use strict';
 
-    //NO factory pattern:  $scope.srvDataContainer = srvDataContainer;
-    //NO $scope.srvConfig = srvConfig;
-    $scope.Math = window.Math;
-    //this.$log = $log;
-
-    // apply utility
-    $scope.safeApply = function (fn) {
-        var phase = this.$root.$$phase;
-        if (phase == '$apply' || phase == '$digest') {
-            if (fn && (typeof(fn) === 'function')) {
-                fn();
-            }
-        } else {
-            this.$apply(fn);
-        }
-    };
 
     $scope.afterNavigationInitSpinnerShow = function () {
         $scope.navInit();
@@ -65,19 +48,18 @@ function ctrlNavigation($scope, $log, $location, $state, $anchorScroll, $timeout
 
     $scope.logout = function () {
         srvDataContainer.logout();
-        srvConfig.logout();
         if ($scope.navRedirect) $scope.navRedirect();
     };
 
     $scope.navRedirect = function (pathToGo) {
         var url = $location.url();
         var path = $location.path();
-        var loggedIn = srvConfig.isLoggedIn();
-        var level = srvConfig.getAppFirstInitLevel();
+        var loggedIn = srvDataContainer.isLoggedIn();
+        var level = srvDataContainer.getAppFirstInitLevel();
 
-        $scope.navHiddenWho = !srvConfig.isAppFirstInitCompleted() && srvConfig.getAppFirstInitLevel() !== 0;
-        $scope.navHiddenWhat = !srvConfig.isAppFirstInitCompleted() && srvConfig.getAppFirstInitLevel() !== 1;
-        $scope.navHiddenWhen = !srvConfig.isAppFirstInitCompleted() && srvConfig.getAppFirstInitLevel() !== 2;
+        $scope.navHiddenWho = !srvDataContainer.isAppFirstInitCompleted() && srvDataContainer.getAppFirstInitLevel() !== 0;
+        $scope.navHiddenWhat = !srvDataContainer.isAppFirstInitCompleted() && srvDataContainer.getAppFirstInitLevel() !== 1;
+        $scope.navHiddenWhen = !srvDataContainer.isAppFirstInitCompleted() && srvDataContainer.getAppFirstInitLevel() !== 2;
 
         //empty cache : $state.go($state.currentState, {}, {reload:true})
         //if (!loggedIn) $state.go('login', {}, {reload:true});//$location.path('/login');//$state.go('login');
@@ -100,54 +82,54 @@ function ctrlNavigation($scope, $log, $location, $state, $anchorScroll, $timeout
     };
 
     $scope.navAppInitLevel = function () {
-        return srvConfig.getAppFirstInitLevel();
+        return srvDataContainer.getAppFirstInitLevel();
     };
 
     $scope.navSetAppInitLevel = function (level) {
-        return srvConfig.setAppFirstInitLevel(level);
+        return srvDataContainer.setAppFirstInitLevel(level);
     };
 
     $scope.navAppOnlineLevel = function () {
-        var level = 'on';
-        var miappLevel = miapp.BrowserCapabilities.isConnectionOnline() ? 'O' : 'N';
-        var navLevel = (navigator && navigator.onLine) ? 'o' : 'n';
-        return level + miappLevel + navLevel;
+        return srvDataContainer.isCordovaOnline ? 'o' : 'n';
     }
 
-    // Lang
-    //$scope.navigLangs = [
-    //                    {title:'English', code:'en_US'},
-    //                    {title:'Français', code:'fr_FR'}
-    //                    //{title:'Espagnol', code:'es_ES'}
-    //                    ];
-    //$scope.navigLang = $scope.navigLangs[0];
-    $scope.navigLangs = srvConfig.getConfigLangs();
+    /**
+     * [{title:'English', code:'en_US'},{title:'Français', code:'fr_FR'}, {title:'Espagnol', code:'es_ES'}];
+     */
+    $scope.navigLangs = srvDataContainer.getConfigLangs();
 
-    $scope.navigLang = srvConfig.getConfigLang();
+    $scope.navigLang = srvDataContainer.getConfigLang();
 
     $scope.navChangeLang = function (lang) {
-        srvConfig.setConfigLang(lang);
+        srvDataContainer.setConfigLang(lang);
+    };
+
+    //$scope.Math = window.Math;
+    $scope.navMathRound = function (val) {
+        var ret = val;
+        if (window.Math) ret = window.Math.round(val);
+        return ret;
     };
 
 
-    // All Data
+    // All Data needed in Navigation RootScope
     $scope.userA = null;
     $scope.couple = null;
     $scope.userB = null;
     $scope.chores = null;
     $scope.categories = null;
-    $scope.userCols = srvData.User.columns;
-    $scope.coupleCols = srvData.Couple.columns;
-    $scope.historicCols = srvData.Historic.columns;
-    $scope.choreCols = srvData.Chore.columns;
-    $scope.categoryCols = srvData.Category.columns;
+    $scope.userCols = srvDataContainer.userCols;
+    $scope.coupleCols = srvDataContainer.coupleCols;
+    $scope.historicCols = srvDataContainer.historicCols;
+    $scope.choreCols = srvDataContainer.choreCols;
+    $scope.categoryCols = srvDataContainer.categoryCols;
     $scope.profil = [
-        {id: "g1", img: "img/profil/girl01.jpg"},
-        {id: "b1", img: "img/profil/boy01.jpg"},
-        {id: "g2", img: "img/profil/girl02.jpg"},
-        {id: "b2", img: "img/profil/boy02.jpg"},
-        {id: "g3", img: "img/profil/girl03.jpg"},
-        {id: "b3", img: "img/profil/boy03.jpg"}];
+        {id: 'g1', img: './img/profil/girl01.jpg'},
+        {id: 'b1', img: './img/profil/boy01.jpg'},
+        {id: 'g2', img: './img/profil/girl02.jpg'},
+        {id: 'b2', img: './img/profil/boy02.jpg'},
+        {id: 'g3', img: './img/profil/girl03.jpg'},
+        {id: 'b3', img: './img/profil/boy03.jpg'}];
     //$scope.userAprofilNb = 0;
     //$scope.userBprofilNb = 3;
 

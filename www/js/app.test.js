@@ -1,9 +1,5 @@
-
-
 describe('myAngularApp', function () {
-'use strict';
-
-
+    'use strict';
 
     describe('fakeApp injection', function () {
 
@@ -13,12 +9,10 @@ describe('myAngularApp', function () {
         ])
             .value('version', 'v1.0.1')
             .config(function () {
-                //console.log('myAngularApp config');
             })
             .run(function (MiappService) {
-                //console.log('myAngularApp run');
                 //if (appIsTest && appEndpointTest) srvMiapp.setEndpoint(appEndpointTest);
-                MiappService.init('miappId', 'miappSalt', true);
+                MiappService.init('miappId', 'miappSalt', false);
             });
 
         beforeEach(module('myFakeApp'));
@@ -33,21 +27,24 @@ describe('myAngularApp', function () {
 
     describe('myAngularApp injection', function () {
 
-        //beforeEach(module('myAngularApp'));
-        beforeEach(function() {
-            module('myAngularApp');
-        });
+        beforeEach(module('myAngularApp'));
+        /*beforeEach(function () {
+         angular
+         .module('myFakeApp', ['myAngularApp'])
+         .run(function (MiappService) {
+         MiappService.init('miappId', 'miappSalt', false);
+         });
+         });*/
         afterEach(function () {
         });
 
-        it('should inject and launch one fake test ', function () {
-            expect(true).toEqual(true);
-        });
 
-        it('should provide a version', inject(function (launched) {
+        it('should provide app constants', inject(function (launched, appForceOffline) {
+
+            expect(appForceOffline).toBeTruthy();
             expect(launched).toBeDefined();
-            //expect(launched).
-            //todo format as date ?
+            expect(typeof launched).toBe('object');
+
         }));
         it('should override a version and test the new version is injected', function () {
             // module() takes functions or strings (module aliases)
@@ -81,7 +78,6 @@ describe('myAngularApp', function () {
                 expect(appForceOffline).toBe(true);
                 var appAuthEndpoint = $injector.get('appAuthEndpoint');
                 expect(appAuthEndpoint).toBe('');
-
 
 
             });

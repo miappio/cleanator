@@ -1,6 +1,6 @@
-angular.module('myAngularApp.views.login', [])
+angular
+    .module('myAngularApp.views.login', [])
 
-//.config(['$routeProvider', function($routeProvider) {
     .config(function ($stateProvider, $urlRouterProvider) {
         'use strict';
 
@@ -12,14 +12,12 @@ angular.module('myAngularApp.views.login', [])
             })
         ;
 
-
     })
 
-    .controller('LoginCtrl', function ($scope, $log, $http, $q, $location, $ionicHistory, $ionicNavBarDelegate, srvDataContainer) {
+    .controller('LoginCtrl', function ($scope, $log, $http, $q, $location, $timeout, $ionicHistory, $ionicNavBarDelegate, srvDataContainer) {
         'use strict';
 
-
-        $scope.logInit = function () {
+        $scope.loginInit = function () {
 
             $ionicHistory.clearHistory();
             $ionicHistory.nextViewOptions({
@@ -28,6 +26,26 @@ angular.module('myAngularApp.views.login', [])
 
         };
 
+
+        // Spinner
+        $scope.loginInitSpinnerStopped = false;
+        $scope.loginWaitForLoginRequest = false;
+        $scope.afterNavigationInitSpinnerShow = function () {
+            $scope.navInit();
+
+            if (!$scope.loginWaitForLoginRequest) {
+                $timeout(function () {
+                    $scope.loginInitSpinnerStopped = true;
+                }, 500);
+            }
+        };
+        $scope.loginErrMsgs = [];
+        //Spinner - end
+
+        /**
+         * @deprecated
+         * @param user
+         */
         $scope.loginSetLogin = function (user) {
 
             srvDataContainer.login(user)
@@ -45,6 +63,8 @@ angular.module('myAngularApp.views.login', [])
 
         $scope.loginSignupANewUser = function (newUser) {
 
+            $scope.loginInitSpinnerStopped = false;
+            $scope.loginWaitForLoginRequest = true;
             srvDataContainer.login(newUser)
                 .then(function (userStored) {
                     return $scope.navDataSync();
@@ -56,7 +76,12 @@ angular.module('myAngularApp.views.login', [])
                     $scope.navRedirect('/config/couple');
                 })
                 .catch(function (err) {
-                    alert("Login PB :" + err);
+                    //alert("Login PB :" + err);
+                    $scope.loginErrMsgs.push(err);
+                })
+                .finally(function (msg) {
+                    $scope.loginInitSpinnerStopped = true;
+                    $scope.loginWaitForLoginRequest = false;
                 });
 
         };
@@ -64,30 +89,15 @@ angular.module('myAngularApp.views.login', [])
         $scope.loginSubmit = function (email, password, validForm) {
             if (!validForm) return;
 
-            //var userCols = srvData.User.columns;
-            //var encryptPass = SHA256(password);
-            //console.log('pass:'+encryptPass);
-
-
-            //todo ex : ad3777ef69f1ddaec85d1115d012d5f4 ???
-
-            //srvData.User.findOneByEmail(email)
-            //    .then(function (user) {
-            //        return $scope.loginSetLogin(user);
-            //    })
-            //    .catch(function (err) {
-            //        $log.error(err);
             var newUser = {};
             newUser.email = email;
-            newUser.password = password; //encryptPass;
+            newUser.password = password; //todo : offuscate or encrypt Pass;
             return $scope.loginSignupANewUser(newUser);
 
-            //    });
         };
 
-
         // Init
-        $scope.logInit();
+        $scope.loginInit();
         if ($scope.navRedirect) $scope.navRedirect();
 
     });

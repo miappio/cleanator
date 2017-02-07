@@ -211,7 +211,7 @@ angular.module('myAngularApp.views.dashboard', [])
                     historics.sort(function (a, b) {
                         return a[$scope.historicCols.actionTodoDate] > b[$scope.historicCols.actionTodoDate];
                     });
-                    $scope.safeApply(function () {
+                    miapp.safeApply(function () {
                         $scope.dashboardHistorics = historics;
                     });
                     deferred.resolve(err);
