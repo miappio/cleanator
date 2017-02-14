@@ -58,17 +58,19 @@ angular
 
                 })
                 .catch(function (err) {
-                    console.log('loginErr : ', err);
+                    //console.log('loginErr : ', err);
                     if (err && err.name === '404') {
                         $scope.loginErrCode = 'loginBadConnection';
+                        $scope.loginErrMsgs.push(err.name);
                     } else if (err && err.name === '0') {
                         $scope.loginErrCode = 'loginNoConnection';
+                        $scope.loginErrMsgs.push('Timeout');
                     } else {
                         $scope.loginErrCode = 'loginBadCredential';
+                        if (err && err.name) $scope.loginErrMsgs.push(err.name);
                     }
                     $scope.loginErrMsgs.push(err.message ? err.message : err);
                 });
-
         };
 
         $scope.loginSignupANewUser = function (newUser) {
@@ -86,13 +88,16 @@ angular
                     $scope.navRedirect('/config/couple');
                 })
                 .catch(function (err) {
-                    console.log('loginErr : ', err);
+                    //console.log('loginErr : ', err);
                     if (err && err.name === '404') {
                         $scope.loginErrCode = 'loginBadConnection';
+                        $scope.loginErrMsgs.push(err.name);
                     } else if (err && err.name === '0') {
                         $scope.loginErrCode = 'loginNoConnection';
+                        $scope.loginErrMsgs.push('Timeout');
                     } else {
                         $scope.loginErrCode = 'loginBadCredential';
+                        if (err && err.name) $scope.loginErrMsgs.push(err.name);
                     }
                     $scope.loginErrMsgs.push(err.message ? err.message : err);
                 })
