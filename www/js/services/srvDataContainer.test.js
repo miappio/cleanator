@@ -5,6 +5,7 @@ describe('myAngularApp.services.srvDataContainer', function () {
 
         var log, q, http, gettextCatalog, srvData, srvConfig, srvMiapp, timeout, rootScope;
         var originalTimeout, $httpBackend, filterFilter, pouchDBMock;
+        var _cordovaNetwork;
         var choreRefToCopy = {
             "_id": "choreFakeId",
             "choreName": "Vacuum",
@@ -71,6 +72,7 @@ describe('myAngularApp.services.srvDataContainer', function () {
                 srvConfig = $injector.get('srvConfig');
                 srvMiapp = $injector.get('MiappService');
                 rootScope = $injector.get('$rootScope');
+                _cordovaNetwork = $injector.get('$cordovaNetwork');
                 timeout = $injector.get('$timeout');
                 $httpBackend = $injector.get('$httpBackend');
                 $httpBackend.whenGET(/views.*/).respond(200, '');
@@ -90,27 +92,27 @@ describe('myAngularApp.services.srvDataContainer', function () {
                 };
             });
         });
-        afterEach(function () {
-        });
 
         it('should be correctly initialized', function () {
 
             expect(log).toBeDefined();
             expect(q).toBeDefined();
+            expect(rootScope).toBeDefined();
+            expect(_cordovaNetwork).toBeDefined();
             expect(filterFilter).toBeDefined();
             expect(srvData).toBeDefined();
             expect(srvConfig).toBeDefined();
             expect(srvMiapp).toBeDefined();
             expect(srvData.User).toBeDefined();
 
-            var srv = new SrvDataContainer(log, q, http, filterFilter, srvData, srvConfig, srvMiapp);
+            var srv = new SrvDataContainer(log, q, http, rootScope, _cordovaNetwork, filterFilter, srvData, srvConfig, srvMiapp);
 
             expect(srv.getChores().length).toBe(0);
         });
 
         it('should compute indicators', function () {
 
-            var srv = new SrvDataContainer(log, q, http, filterFilter, srvData, srvConfig, srvMiapp);
+            var srv = new SrvDataContainer(log, q, http, rootScope, _cordovaNetwork, filterFilter, srvData, srvConfig, srvMiapp);
             var indicators = srv.computeIndicators();
             expect(indicators.indicPercent).toEqual([0, 0]);
             expect(indicators.indicTimeSpent).toEqual([0, 0]);
@@ -142,7 +144,7 @@ describe('myAngularApp.services.srvDataContainer', function () {
 
         it('should compute historics', function () {
 
-            var srv = new SrvDataContainer(log, q, http, filterFilter, srvData, srvConfig, srvMiapp);
+            var srv = new SrvDataContainer(log, q, http, rootScope, _cordovaNetwork, filterFilter, srvData, srvConfig, srvMiapp);
             srv.userA = userA;
             srv.userB = userB;
 
@@ -187,7 +189,7 @@ describe('myAngularApp.services.srvDataContainer', function () {
     describe('injected', function () {
 
         var log, q, http, srvData, srvDataContainer, srvConfig, srvMiapp, timeout, rootScope;
-        var $httpBackend, filterFilter, pouchDBMock;
+        var $httpBackend, filterFilter, _pouchDBMockEmpty, _pouchDBMockFull;
         var currentUser = {
             email: 'mock@user.com',
             miappUserId: 'myMockedUser',
@@ -231,7 +233,7 @@ describe('myAngularApp.services.srvDataContainer', function () {
         };
 
         beforeEach(module('myAngularApp'));
-        beforeEach(function () {
+        beforeEach(function (done) {
             inject(function ($injector) {
                 log = console;//$injector.get('$log');
                 q = $injector.get('$q');
@@ -240,14 +242,15 @@ describe('myAngularApp.services.srvDataContainer', function () {
                 srvData = $injector.get('srvData');
                 srvDataContainer = $injector.get('srvDataContainer');
                 srvDataContainer.$log = log;
+
                 srvConfig = $injector.get('srvConfig');
-                window.localStorage.removeItem('configLang');
-                srvConfig.getUserLoggedIn = function () {
-                    return {_id: "myMockedUser", email: 'mock@user.com', miappUserId: 'myMockedUser'};
-                };
+                //window.localStorage.removeItem('configLang');
+                //srvConfig.getUserLoggedIn = function () {
+                //    return {_id: "myMockedUser", email: 'mock@user.com', miappUserId: 'myMockedUser'};
+                //};
                 srvMiapp = $injector.get('MiappService');
                 srvMiapp.miappService.logger = console;
-                srvMiapp.miappService.currentUser = currentUser;
+                //srvMiapp.miappService.currentUser = currentUser;
                 rootScope = $injector.get('$rootScope');
                 timeout = $injector.get('$timeout');
                 $httpBackend = $injector.get('$httpBackend');
@@ -261,7 +264,38 @@ describe('myAngularApp.services.srvDataContainer', function () {
 
                 $httpBackend.when('GET', 'data/init.en_US.json').respond(getData());
 
-                pouchDBMock = {
+                _pouchDBMockEmpty = {
+                    allDocs: function (filter, callback) {
+                        //console.log('srvDataContainer.test.pouchDBMock.allDocs');
+                        var response = {};
+                        response.total_rows = 0;
+                        response.rows = [];
+                        return callback(null, response);
+                    },
+                    sync: function (pouchdbEndpoint, filter) {
+                        var onFn = {
+                            on: function (status, callback) {
+                                if (status === 'complete') callback('pouchDBMock is synced...');
+                                return onFn;
+                            }
+                        };
+                        return onFn;
+                    },
+                    put: function (data, callback) {
+                        var response = {};
+                        response.ok = true;
+                        response.id = data._id;
+                        response.rev = 'fakeRev';
+                        return callback(null, response);
+                    },
+                    info: function () {
+                        return q.resolve({doc_count: 0});
+                    },
+                    destroy: function (callback) {
+                        return callback('mock : no db destroy cause renew a real db');
+                    }
+                };
+                _pouchDBMockFull = {
                     allDocs: function (filter, callback) {
                         console.log('srvDataContainer.test.pouchDBMock.allDocs');
                         var response = {};
@@ -269,8 +303,8 @@ describe('myAngularApp.services.srvDataContainer', function () {
                         response.rows = [];
 
                         // 2 users
-                        response.rows.push(srvMiapp.miappService.currentUser);
-                        response.rows.push(srvMiapp.miappService.currentUser);
+                        response.rows.push(currentUser);
+                        response.rows.push(currentUser);
 
                         // 1 couple
                         response.rows.push(currentCouple);
@@ -302,17 +336,21 @@ describe('myAngularApp.services.srvDataContainer', function () {
                     },
                     info: function () {
                         return q.resolve({doc_count: 8});
+                    },
+                    destroy: function (callback) {
+                        return callback('mock : no db destroy cause renew a real db');
                     }
                 };
+
+
+                srvDataContainer.srvData.db = _pouchDBMockEmpty;
+                srvDataContainer.srvMiapp.miappService._db = _pouchDBMockEmpty;
+
+                done();
             });
         });
-        beforeEach(function () {
-            //return $httpBackend.flush();
-        });
-        afterEach(function () {
-        });
 
-        it('should be correctly initialized', function () {
+        it('should be correctly initialized', function (done) {
 
             expect(log).toBeDefined();
             expect(q).toBeDefined();
@@ -325,8 +363,14 @@ describe('myAngularApp.services.srvDataContainer', function () {
             expect(srvData.User).toBeDefined();
 
             var srv = srvDataContainer;
+            srv.logout()
+                .finally(function () {
 
-            expect(srv.getChores().length).toBe(0);
+                    expect(srv.getChores().length).toBe(0);
+                    done();
+                });
+            rootScope.$apply();
+
         });
 
         it('should catch error with a bad init', function (done) {
@@ -340,9 +384,12 @@ describe('myAngularApp.services.srvDataContainer', function () {
             //console.log(srvConfig.getUserLoggedIn());
             expect(srv.isLoggedIn()).toBe(false, 'should be not logged in');
 
+            $httpBackend.whenGET(/data\/init.*/).respond(200, '');
+
             srv.sync()
                 .then(function (err) {
                     expect(true).toBe(false, 'should not pass here : ' + err);
+                    done.fail(err);
                 })
                 .catch(function (err) {
                     console.log('#####bad init > sync');
@@ -358,10 +405,11 @@ describe('myAngularApp.services.srvDataContainer', function () {
                 })
                 .then(function (err) {
                     expect(true).toBe(false, 'should not pass here : ' + err);
+                    done.fail(err);
                 })
                 .catch(function (err) {
                     console.log('#####bad init > catched');
-                    expect(err).toBe('first data creation pb : miapp.sdk.service.putInDb : DB put impossible. Need a user logged in. ([object Object])');
+                    expect(err).toBe('miapp.sdk.service.miappSync : DB pb with getting data (undefined)');
                 })
                 .finally(function (err) {
 
@@ -369,7 +417,6 @@ describe('myAngularApp.services.srvDataContainer', function () {
                     done();
                 });
 
-            //timeout.flush(200);
             setTimeout(function () {
                 console.log('#####bad init > finished 02');
                 rootScope.$apply();
@@ -378,24 +425,6 @@ describe('myAngularApp.services.srvDataContainer', function () {
                     rootScope.$apply();
                     $httpBackend.flush();
                     console.log('#####bad init > finished 04');
-                    /*
-                    setTimeout(function () {
-                        rootScope.$apply();
-                        console.log('#####bad init > finished 05');
-                        setTimeout(function () {
-                            rootScope.$apply();
-                            console.log('#####bad init > finished 06');
-                            setTimeout(function () {
-                                rootScope.$apply();
-                                console.log('#####bad init > finished 07');
-                                setTimeout(function () {
-                                    rootScope.$apply();
-                                    console.log('#####bad init > finished ...');
-                                }, 200);
-                            }, 200);
-                        }, 200);
-                    }, 200);
-                    */
                 }, 200);
             }, 200);
         });
@@ -405,28 +434,30 @@ describe('myAngularApp.services.srvDataContainer', function () {
             console.log('#####login');
             var srv = srvDataContainer;
             var userLoggedIn = srvConfig.getUserLoggedIn();
-            expect(userLoggedIn.email).toBe('mock@user.com');
+            expect(userLoggedIn).toBeNull();
             expect(srv.isLoggedIn()).toBe(false, 'should not be login by default');
 
-            srv.login(userLoggedIn)
+            srv.login(currentUser)
                 .then(function (userLogged) {
+                    expect(srv.isLoggedIn()).toBe(true, 'should be login');
                     expect(userLogged.email).toBe('mock@user.com');
-                    expect(srv.isLoggedIn()).toBe(true, 'should be login');
-                    console.log(userLogged);
-                    return srv.login(userLoggedIn);
+                    //    console.log(userLogged);
+                    //    return srv.login(userLoggedIn);
                 })
-                .then(function (userRelogged) {
-                    expect(userRelogged.email).toBe('mock@user.com');
-                    expect(srv.isLoggedIn()).toBe(true, 'should be login');
-                    //expect(err).toBeUndefined('should not be there : ' + err);
-                    //done.fail(err);
-                })
+                //.then(function (userRelogged) {
+                //    expect(userRelogged.email).toBe('mock@user.com');
+                //    expect(srv.isLoggedIn()).toBe(true, 'should be login');
+                //    //expect(err).toBeUndefined('should not be there : ' + err);
+                //    done.fail('should not relog');
+                //})
                 .catch(function (err) {
-                    expect(err).toBe('srvDataContainer.login : already logged in');
-                    srv.srvConfig.getUserLoggedIn = function () {
-                        return null;
-                    };
-                    return srv.login(userLoggedIn);
+                    expect(err).toBe('mock : no db destroy cause renew a real db');
+                    expect(srv.isLoggedIn()).toBe(true, 'should be login');
+                    //srv.srvConfig.getUserLoggedIn = function () {
+                    //    return null;
+                    //};
+                    //return srv.login(userLoggedIn);
+                    done.fail(err);
                 })
                 .finally(function (err) {
                     done();
@@ -461,9 +492,11 @@ describe('myAngularApp.services.srvDataContainer', function () {
             srv.srvData.getUserBFromCouple = function (couple) {
                 return q.resolve(currentUser);
             };
-            srv.srvData.db = pouchDBMock;
-            srv.srvMiapp.miappService._db = pouchDBMock;
+            srv.srvData.db = _pouchDBMockFull;
+            srv.srvMiapp.miappService._db = _pouchDBMockFull;
             srv.srvMiapp.miappService._dbInitialized = true;
+
+            $httpBackend.whenGET(/data\/init.*/).respond(200, '');
 
             expect(srv.isLoggedIn()).toBe(true);
 
@@ -481,10 +514,11 @@ describe('myAngularApp.services.srvDataContainer', function () {
                     done();
                 })
                 .catch(function (err) {
-                    expect(err).toBeUndefined('should not catch error : ' + err);
-                    done();
+                    done.fail(err);
                 });
 
+
+            $httpBackend.flush();
             setTimeout(function () {
                 rootScope.$apply();
                 setTimeout(function () {
@@ -513,12 +547,10 @@ describe('myAngularApp.services.srvDataContainer', function () {
             //$httpBackend.flush();
             srvDataContainer.logout()
                 .then(function (err) {
-                    console.log('db destroy');
-                    expect(err).toBeUndefined(err);
-                    done();
+                    done.fail('should not resolve due to mock');
                 })
                 .catch(function (err) {
-                    expect(err).toBe('no error supposed to be catched', err);
+                    expect(err).toBe('mock : no db destroy cause renew a real db');
                     done();
                 });
 

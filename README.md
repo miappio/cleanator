@@ -27,6 +27,7 @@ $ npm install -g cordova ionic gulp
 $ npm install
 
 $ cp .config.example.js .config.js
+$ cp .config.example.js .config.test.js
 
 $ gulp watch
 $ npm start 

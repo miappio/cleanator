@@ -11,14 +11,13 @@ module.exports = function (config) {
             'karma-jasmine',
             'karma-coverage',
             'karma-phantomjs-launcher',
-            'karma-chrome-launcher'
+            'karma-chrome-launcher',
+            'karma-jasmine-ajax'
         ],
-
 
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-        frameworks: ['jasmine'],
-
+        frameworks: ['jasmine-ajax', 'jasmine'],
 
         // list of files / patterns to load in the browser
         files: [
@@ -36,6 +35,7 @@ module.exports = function (config) {
             'www/lib/Chart.js/Chart.min.js',
             'www/lib/angular-chart.js/dist/angular-chart.min.js',
             //'www/lib/crypto-js/crypto-js.js',
+            'www/lib/ngCordova/dist/ng-cordova.min.js',
             'www/lib/miappio-sdk/dist/miappio.sdk.js',
 
             'www/js/app.js',
@@ -57,12 +57,10 @@ module.exports = function (config) {
 
         ],
 
-
         // list of files to exclude
         exclude: [
             'www/**/*.notused*'
         ],
-
 
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
@@ -74,12 +72,10 @@ module.exports = function (config) {
             'www/views/**/!(*.test).js': ['coverage']
         },
 
-
         // test results reporter to use
         // possible values: 'dots', 'progress'
         // available reporters: https://npmjs.org/browse/keyword/karma-reporter
         reporters: ['progress', 'coverage'],
-
 
         // optionally, configure the reporter
         coverageReporter: {
@@ -99,15 +95,11 @@ module.exports = function (config) {
             ]
         },
 
-
         // web server port
         port: 8101,
 
-
         // enable / disable colors in the output (reporters and logs)
         colors: true,
-
-
 
         // level of logging
         // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG

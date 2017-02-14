@@ -1,6 +1,6 @@
 {
   "name": "miappio-sdk",
-  "version": "1.0.64",
+  "version": "1.0.69",
   "main": "dist/miapp.io.js",
   "ignore": [
     "**/.*",

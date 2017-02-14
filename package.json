@@ -47,9 +47,13 @@
     "test": "./node_modules/.bin/karma start tests/karma.unit-tests.conf.js",
     "test:old": "./node_modules/.bin/karma start tests/karma.unit-tests.conf.js --reporters coverage",
     "test:watch": "./node_modules/.bin/karma start tests/karma.unit-tests.conf.js --no-single-run  --no-auto-watch --reporters progress --browsers PhantomJS",
-    "start": "./node_modules/.bin/http-server -a 0.0.0.0 -p 8080 ./www/",
+    "start": "./node_modules/.bin/gulp 'config-test-js'; ./node_modules/.bin/http-server -a 0.0.0.0 -p 8080 ./www/",
     "dev:serve_notused": "ionic serve",
     "dev:build": "npm version patch; ./node_modules/.bin/gulp; ionic build android",
     "dev:run": "ionic run android --device"
+  },
+  "devDependencies": {
+    "jasmine-ajax": "^3.3.1",
+    "karma-jasmine-ajax": "^0.1.13"
   }
 }

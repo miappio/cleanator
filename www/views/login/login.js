@@ -26,7 +26,6 @@ angular
 
         };
 
-
         // Spinner
         $scope.loginInitSpinnerStopped = false;
         $scope.loginWaitForLoginRequest = false;
@@ -39,8 +38,11 @@ angular
                 }, 500);
             }
         };
-        $scope.loginErrMsgs = [];
         //Spinner - end
+
+
+        $scope.loginErrCode = '';
+        $scope.loginErrMsgs = [];
 
         /**
          * @deprecated
@@ -56,7 +58,15 @@ angular
 
                 })
                 .catch(function (err) {
-                    alert("Login PB :" + err);
+                    console.log('loginErr : ', err);
+                    if (err && err.name === '404') {
+                        $scope.loginErrCode = 'loginBadConnection';
+                    } else if (err && err.name === '0') {
+                        $scope.loginErrCode = 'loginNoConnection';
+                    } else {
+                        $scope.loginErrCode = 'loginBadCredential';
+                    }
+                    $scope.loginErrMsgs.push(err.message ? err.message : err);
                 });
 
         };
@@ -65,7 +75,7 @@ angular
 
             $scope.loginInitSpinnerStopped = false;
             $scope.loginWaitForLoginRequest = true;
-            srvDataContainer.login(newUser)
+            return srvDataContainer.login(newUser)
                 .then(function (userStored) {
                     return $scope.navDataSync();
                 })
@@ -76,12 +86,20 @@ angular
                     $scope.navRedirect('/config/couple');
                 })
                 .catch(function (err) {
-                    //alert("Login PB :" + err);
-                    $scope.loginErrMsgs.push(err);
+                    console.log('loginErr : ', err);
+                    if (err && err.name === '404') {
+                        $scope.loginErrCode = 'loginBadConnection';
+                    } else if (err && err.name === '0') {
+                        $scope.loginErrCode = 'loginNoConnection';
+                    } else {
+                        $scope.loginErrCode = 'loginBadCredential';
+                    }
+                    $scope.loginErrMsgs.push(err.message ? err.message : err);
                 })
                 .finally(function (msg) {
                     $scope.loginInitSpinnerStopped = true;
                     $scope.loginWaitForLoginRequest = false;
+                    return $q.resolve();
                 });
 
         };
@@ -93,7 +111,6 @@ angular
             newUser.email = email;
             newUser.password = password; //todo : offuscate or encrypt Pass;
             return $scope.loginSignupANewUser(newUser);
-
         };
 
         // Init

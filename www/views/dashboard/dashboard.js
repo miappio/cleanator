@@ -20,7 +20,6 @@ angular.module('myAngularApp.views.dashboard', [])
                 controller: 'DashboardIndicatorCtrl'
             });
 
-
         $urlRouterProvider.otherwise('/dashboard/user/a');
     })
 
@@ -211,7 +210,7 @@ angular.module('myAngularApp.views.dashboard', [])
                     historics.sort(function (a, b) {
                         return a[$scope.historicCols.actionTodoDate] > b[$scope.historicCols.actionTodoDate];
                     });
-                    miapp.safeApply(function () {
+                    miapp.safeApply($scope, function () {
                         $scope.dashboardHistorics = historics;
                     });
                     deferred.resolve(err);

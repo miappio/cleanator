@@ -70,7 +70,7 @@ var SrvDataContainer = (function () {
             self.srvMiapp.login(login, password, forceOnlineCheckin)
                 .then(function (miappUser) {
 
-                    self.$log.log('srvDataContainer.login srvMiapp received: ' + miappUser.email);
+                    self.$log.log('srvDataContainer.login srvMiapp received: ', miappUser);
                     if (user) for (var attrname in user) {
                         miappUser[attrname] = user[attrname];
                     }
@@ -129,6 +129,8 @@ var SrvDataContainer = (function () {
         var userMain = this.srvConfig.getUserLoggedIn();
         var bc = this.srvConfig.isLoggedIn();
         var mi = this.srvMiapp.isLoggedIn();
+
+        console.log('srvDataContainer.isLoggedIn : ', userMain, bc, mi);
         var loggedIn = (userMain && userMain.email && bc && mi) ? true : false;
         return loggedIn;
     };
@@ -154,7 +156,8 @@ var SrvDataContainer = (function () {
         return this.srvConfig.setConfigLang(lang);
     };
 
-    Service.prototype.logout = function (is) {
+    Service.prototype.logout = function () {
+        console.log('srvDataContainer logout');
         this.srvConfig.logout();
         this.srvConfig.setAppFirstInitLevel(0);
         //return this.srvData.becarefulClean();

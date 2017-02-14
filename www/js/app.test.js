@@ -1,5 +1,4 @@
 describe('myAngularApp', function () {
-    'use strict';
 
     describe('fakeApp injection', function () {
 
@@ -17,6 +16,7 @@ describe('myAngularApp', function () {
 
         beforeEach(module('myFakeApp'));
         afterEach(function () {
+            console.log('after');
         });
 
         it('should provide a version', inject(function (version) {
@@ -27,36 +27,28 @@ describe('myAngularApp', function () {
 
     describe('myAngularApp injection', function () {
 
+        var _launched, _appForceOffline;
+
         beforeEach(module('myAngularApp'));
-        /*beforeEach(function () {
-         angular
-         .module('myFakeApp', ['myAngularApp'])
-         .run(function (MiappService) {
-         MiappService.init('miappId', 'miappSalt', false);
-         });
-         });*/
+        beforeEach(function (done) {
+            inject(function ($injector) {
+                _launched = $injector.get('launched');
+                _appForceOffline = $injector.get('appForceOffline');
+                done();
+            });
+        });
         afterEach(function () {
         });
 
 
-        it('should provide app constants', inject(function (launched, appForceOffline) {
+        it('should provide app constants', function () {
 
-            expect(appForceOffline).toBeTruthy();
-            expect(launched).toBeDefined();
-            expect(typeof launched).toBe('object');
+            expect(_appForceOffline).toBeTruthy();
+            expect(_launched).toBeDefined();
+            expect(typeof _launched).toBe('object');
 
-        }));
-        it('should override a version and test the new version is injected', function () {
-            // module() takes functions or strings (module aliases)
-            module(function ($provide) {
-                $provide.value('launched', 'overridden'); // override version here
-            });
-
-            inject(function (launched) {
-                expect(launched).toEqual('overridden');
-            });
         });
-        // The inject and module method can also be used inside of the it or beforeEach
+
         it('should a Miapp Service been injected', function () {
 
             inject(function ($injector) {
@@ -65,7 +57,7 @@ describe('myAngularApp', function () {
 
             });
         });
-        // The inject and module method can also be used inside of the it or beforeEach
+
         it('should have an example config set', function () {
 
             inject(function ($injector) {
@@ -77,11 +69,12 @@ describe('myAngularApp', function () {
                 var appForceOffline = $injector.get('appForceOffline');
                 expect(appForceOffline).toBe(true);
                 var appAuthEndpoint = $injector.get('appAuthEndpoint');
-                expect(appAuthEndpoint).toBe('');
+                expect(appAuthEndpoint).toBe('http://testmocksite.com/api');
 
 
             });
         });
+
     });
 
 });

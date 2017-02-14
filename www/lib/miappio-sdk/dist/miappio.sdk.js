@@ -12853,43 +12853,79 @@ miappSdkEventable.mixin = function (destObject) {
 
         function request(m, u, d, token) {
             var p = new miappSdkPromise(), timeout;
-            self.logger.time(m + " " + u);
+            //self.logger.time(m + " " + u);
             (function (xhr) {
-                xhr.onreadystatechange = function () {
-                    if (this.readyState === 4) {
-                        self.logger.timeEnd(m + " " + u);
-                        clearTimeout(timeout);
-                        p.done(null, this);
-                    }
-                };
-                xhr.onerror = function (response) {
-                    clearTimeout(timeout);
-                    p.done(response, null);
-                };
-                xhr.oncomplete = function (response) {
-                    clearTimeout(timeout);
-                    self.logger.timeEnd(m + " " + u);
-                    self.info("%s request to %s returned %s", m, u, self.status);
-                };
-                xhr.open(m, u);
-                if (d) {
-                    if ("object" === typeof d) {
-                        d = JSON.stringify(d);
-                    }
-                    xhr.setRequestHeader("Content-Type", "application/json");
-                    xhr.setRequestHeader("Accept", "application/json");
+                try {
+                    xhr.onreadystatechange = function () {
 
-                    //var token = token;//self.getToken();
-                    console.log('TODO token : ' + token);
-                    //MLE ? xhr.withCredentials = true;
-                    //MLE ? if (token) xhr.setRequestHeader('Cookie', "miappSdktoken=" + token);
-                    //if (token) xhr.setRequestHeader('X-CSRF-Token', token);
+                        if (xhr.readyState === 4) {
+
+                            clearTimeout(timeout);
+                            var status = xhr.status ? parseInt(xhr.status) : 0;
+                            var statusGroup = status - status % 100;
+                            var success = false;
+                            switch (statusGroup) {
+                                case 200:
+                                    success = true;
+                                    break;
+                                default:
+                                    success = false;
+                                    break;
+                            }
+                            if (success) {
+                                //self.logger.timeEnd(m + " " + u);
+                                p.done(null, this);
+                            }
+                            else {
+                                var errStatus = '' + xhr.status;
+                                //console.log('xhr.status :', errStatus);
+                                //console.log('statusGroup :', statusGroup);
+                                //clearTimeout(timeout);
+                                xhr.abort();
+                                var error = new miappSdkError('Miapp.io SDK request fail.', errStatus);
+                                //console.log('error', error);
+                                p.done(error, null);
+                            }
+                        }
+                    };
+                    xhr.onerror = function (response) {
+                        clearTimeout(timeout);
+                        if (response && response.target && response.target.timeout === 2000) {
+                            response.error = "request_timeout";
+                            response.error_description = "API Call timed out.";
+                        }
+                        p.done(response, null);
+                    };
+                    xhr.oncomplete = function (response) {
+                        clearTimeout(timeout);
+                        //self.logger.timeEnd(m + " " + u);
+                        //self.info("%s request to %s returned %s", m, u, self.status);
+                    };
+                    xhr.open(m, u);
+                    if (d) {
+                        if ("object" === typeof d) {
+                            d = JSON.stringify(d);
+                        }
+                        xhr.setRequestHeader("Content-Type", "application/json");
+                        xhr.setRequestHeader("Accept", "application/json");
+
+                        //var token = token;//self.getToken();
+                        //console.log('TODO token : ' + token);
+                        //MLE ? xhr.withCredentials = true;
+                        //MLE ? if (token) xhr.setRequestHeader('Cookie', "miappSdktoken=" + token);
+                        //if (token) xhr.setRequestHeader('X-CSRF-Token', token);
+                    }
+                    xhr.timeout = 2000; // time in milliseconds
+                    timeout = setTimeout(function () {
+                        xhr.abort();
+                        p.done("API Call timed out.", null);
+                    }, 3e4);
+                    xhr.send(encode(d));
                 }
-                timeout = setTimeout(function () {
-                    xhr.abort();
-                    p.done("API Call timed out.", null);
-                }, 3e4);
-                xhr.send(encode(d));
+                catch
+                    (err) {
+                    p.done(err, null);
+                }
             })(new XMLHttpRequest());
             return p;
         }
@@ -12909,7 +12945,8 @@ miappSdkEventable.mixin = function (destObject) {
         return exports;
     };
     return global[name];
-})(this || window);
+})
+(this || window);
 
 function extend(subClass, superClass) {
     var F = function () {
@@ -12953,7 +12990,7 @@ function isValidUrl(url) {
         doc.body.appendChild(anchor);
         isValid = !(anchor.href === "");
     } catch (e) {
-        console.error(e);
+        //console.error(e);
     } finally {
         doc.head.removeChild(base);
         doc.body.removeChild(anchor);
@@ -13065,18 +13102,21 @@ function doCallback(callback, params, context) {
         }.bind(self);
         /* a callback to process the response */
         var response = function (err, request) {
+            //console.log("REQUEST response : ", err , request);
             return new miappSdk.Response(err, request);
         }.bind(self);
         /* a callback to clean up and return data to the client */
         var oncomplete = function (err, response) {
             p.done(err, response);
-            //self.logger.info("REQUEST complete", err, response);
-            self.logger.info("REQUEST complete " + method + " " + endpoint);
+            //console.log("REQUEST complete : ", method + " " + endpoint, err);
+            //console.log('response : ', response);
+            //self.logger.info("REQUEST complete " + method + " " + endpoint);
             doCallback(callback, [err, response]);
-            self.logger.timeEnd("process request " + method + " " + endpoint);
+            //self.logger.timeEnd("process request " + method + " " + endpoint);
         }.bind(self);
         /* and a promise to chain them all together */
         miappSdkPromise.chain([request, response]).then(oncomplete);
+
         return p;
     };
     miappSdk.Response = function (err, response) {
@@ -13092,7 +13132,7 @@ function doCallback(callback, params, context) {
         Object.keys(data).forEach(function (key) {
             self[key] = data[key];
         });
-        self.status = parseInt(response.status);
+        self.status = response ? parseInt(response.status) : 0;
         self.statusGroup = self.status - self.status % 100;
         /*
          in place of ....
@@ -13146,10 +13186,17 @@ function doCallback(callback, params, context) {
                 self.success = false;
                 break;
         }
+
+        //console.log('request success or not : ',self.success, data, err);
         if (self.success) {
             p.done(null, self);
         } else {
-            p.done(miappSdkError.fromResponse(data), self);
+            var errorSdk = err;
+            if ((!err instanceof miappSdkError))
+                errorSdk = miappSdkError.fromResponse(err);
+
+            //console.log('errorSdk : ',errorSdk);
+            p.done(errorSdk, self);
         }
         return p;
     };
@@ -13415,7 +13462,7 @@ function doCallback(callback, params, context) {
     miappSdk.Client.prototype.createCollection = function (options, callback) {
         options.client = this;
         return new miappSdk.Collection(options, function (err, data, collection) {
-            console.log("createCollection", arguments);
+            //console.log("createCollection", arguments);
             doCallback(callback, [err, collection, data]);
         });
     };
@@ -13678,9 +13725,8 @@ function doCallback(callback, params, context) {
         };
         self.request(options, function (err, response) {
             var user = {};
-            if (err) {
-                if (self.logging) console.log("error trying to log user in");
-            } else {
+            //if (self.logging && err) console.log("error trying to log user in");
+            if (!err) {
                 var options = {
                     client: self,
                     data: response.user
@@ -13716,9 +13762,8 @@ function doCallback(callback, params, context) {
 
         self.request(options, function (err, response) {
             //var user = {};
-            if (err) {
-                if (self.logging) console.log("error trying to auth user in : ", err);
-            } else {
+            //if (self.logging && err) console.log("error trying to auth user in : ", err);
+            if (!err) {
                 //var options = {
                 //    client: self,
                 //    data: { _id : userId }
@@ -13758,7 +13803,7 @@ function doCallback(callback, params, context) {
         try {
             self.request(options, function (err, response) {
                 if (err) {
-                    if (self.logging) console.error('error trying to log user in : ', err);
+                    //if (self.logging) console.error('error trying to log user in : ', err);
                     doCallback(callback, [err, user]);
                 } else {
                     user._id = response._id;
@@ -13781,7 +13826,7 @@ function doCallback(callback, params, context) {
             });
         }
         catch (e) {
-            if (self.logging) console.log("error trying to log user : " + e);
+            //if (self.logging) console.log("error trying to log user : " + e);
             doCallback(callback, [e, user]);
         }
     };
@@ -13797,7 +13842,7 @@ function doCallback(callback, params, context) {
 
         // 1) userId + (cookie) src && version  && valid token 2) body vide + 204
         self.request(options, function (err, response) {
-            if (err && self.logging) console.log("error trying to log user in");
+            //if (err && self.logging) console.log("error trying to log user in");
 
             doCallback(callback, [err, response]);
         });
@@ -13812,9 +13857,8 @@ function doCallback(callback, params, context) {
             mQuery: true
         };
         self.request(options, function (err, response) {
-            if (err && self.logging) {
-                console.log("error trying to re-authenticate user");
-            } else {
+            //if (err && self.logging) console.log("error trying to re-authenticate user");
+            if (!err) {
                 self.setToken(response.data.access_token);
             }
             doCallback(callback, [err]);
@@ -13831,16 +13875,15 @@ function doCallback(callback, params, context) {
 
         try {
             self.request(options, function (err, response) {
-                if (err && self.logging) {
-                    console.error("error trying to re-authenticate user");
-                } else {
+                //if (err && self.logging) console.error("error trying to re-authenticate user");
+                if (!err) {
                     if (response.data.access_token) self.setToken(response.data.access_token);
                 }
                 doCallback(callback, [err]);
             });
         }
         catch (e) {
-            if (self.logging) console.error("error trying to log user : ", e);
+            //if (self.logging) console.error("error trying to log user : ", e);
             doCallback(callback, [e]);
         }
     };
@@ -13857,9 +13900,8 @@ function doCallback(callback, params, context) {
             var applications = {};
             var user = {};
             var data;
-            if (err && self.logging) {
-                console.log("error trying to full authenticate user");
-            } else {
+            //if (err && self.logging) console.log("error trying to full authenticate user");
+            if (!err) {
                 data = response.data;
                 self.setToken(data.token);
                 self.set("email", data.email);
@@ -13885,9 +13927,7 @@ function doCallback(callback, params, context) {
                     self.set("orgName", org.name);
                 } catch (e) {
                     err = true;
-                    if (self.logging) {
-                        console.log("error selecting org");
-                    }
+                    //if (self.logging) console.log("error selecting org");
                 }
                 applications = self.parseApplicationsArray(org);
                 self.selectFirstApp(applications);
@@ -13918,9 +13958,8 @@ function doCallback(callback, params, context) {
         };
         this.request(options, function (err, data) {
             var user = {};
-            if (err && self.logging) {
-                console.log("error trying to log user in");
-            } else {
+            //if (err && self.logging) console.log("error trying to log user in");
+            if (!err) {
                 var options = {
                     client: self,
                     data: data.user
@@ -13950,10 +13989,8 @@ function doCallback(callback, params, context) {
             };
             this.request(options, function (err, response) {
                 if (err) {
-                    if (self.logging) {
-                        console.log("error trying to log user in");
-                    }
-                    console.error(err, response);
+                    //if (self.logging) console.log("error trying to log user in");
+                    //console.error(err, response);
                     doCallback(callback, [err, response, self], self);
                 } else {
                     var options = {
@@ -14013,16 +14050,15 @@ function doCallback(callback, params, context) {
         }
         this.request(options, function (err, data) {
             if (err) {
-                if (self.logging) {
-                    console.log("error destroying access token");
-                }
+                //if (self.logging) console.log("error destroying access token");
+
                 doCallback(callback, [err, data, null], self);
             } else {
-                if (revokeAll === true) {
-                    console.log("all user tokens invalidated");
-                } else {
-                    console.log("token invalidated");
-                }
+                //if (revokeAll === true) {
+                //    console.log("all user tokens invalidated");
+                //} else {
+                //    console.log("token invalidated");
+                //}
                 doCallback(callback, [err, data, null], self);
             }
         });
@@ -14040,9 +14076,9 @@ function doCallback(callback, params, context) {
      *  @return none
      */
     miappSdk.Client.prototype.logoutAndDestroyToken = function (username, token, revokeAll, callback) {
-        if (username === null) {
-            console.log("username required to revoke tokens");
-        } else {
+
+        //if (username === null)  console.log("username required to revoke tokens");
+        if (username !== null) {
             this.destroyToken(username, token, revokeAll, callback);
             if (revokeAll === true || token === this.getToken() || token === null) {
                 this.setToken(null);
@@ -14070,7 +14106,7 @@ function doCallback(callback, params, context) {
             curl.push("'" + JSON.stringify(body) + "'");
         }
         curl = curl.join(" ");
-        console.log(curl);
+        //console.log(curl);
         return curl;
     };
     miappSdk.Client.prototype.getDisplayImage = function (email, picture, size) {
@@ -14249,9 +14285,8 @@ miappSdk.Entity.prototype.save = function (callback) {
             self.set(entity);
             self.set("type", /^\//.test(response.path) ? response.path.substring(1) : response.path);
         }
-        if (err && self._client.logging) {
-            console.log("could not save entity");
-        }
+        //if (err && self._client.logging) console.log("could not save entity");
+
         doCallback(callback, [err, response, self], self);
     });
 };
@@ -14284,9 +14319,8 @@ miappSdk.Entity.prototype.changePassword = function (oldpassword, newpassword, c
             }
         };
         self._client.request(options, function (err, response) {
-            if (err && self._client.logging) {
-                console.log("could not update user");
-            }
+            //if (err && self._client.logging)  console.log("could not update user");
+
             doCallback(callback, [err, response, self], self);
         });
     } else {
@@ -14406,9 +14440,8 @@ miappSdk.Entity.prototype.addOrRemoveConnection = function (method, connection, 
         endpoint: endpoint
     };
     this._client.request(options, function (err, response) {
-        if (err && self._client.logging) {
-            console.log("There was an error with the connection call");
-        }
+        //if (err && self._client.logging) console.log("There was an error with the connection call");
+
         doCallback(callback, [err, response, self], self);
     });
 };
@@ -14453,9 +14486,8 @@ miappSdk.Entity.prototype.getConnections = function (connection, callback) {
     if (!connector) {
         if (typeof callback === "function") {
             var error = "Error in getConnections - no uuid specified.";
-            if (self._client.logging) {
-                console.log(error);
-            }
+            //if (self._client.logging) console.log(error);
+
             doCallback(callback, [true, error], self);
         }
         return;
@@ -14466,9 +14498,8 @@ miappSdk.Entity.prototype.getConnections = function (connection, callback) {
         endpoint: endpoint
     };
     this._client.request(options, function (err, data) {
-        if (err && self._client.logging) {
-            console.log("entity could not be connected");
-        }
+        //if (err && self._client.logging) console.log("entity could not be connected");
+
         self[connection] = {};
         var length = data && data.entities ? data.entities.length : 0;
         for (var i = 0; i < length; i++) {
@@ -14490,9 +14521,8 @@ miappSdk.Entity.prototype.getGroups = function (callback) {
         endpoint: endpoint
     };
     this._client.request(options, function (err, data) {
-        if (err && self._client.logging) {
-            console.log("entity could not be connected");
-        }
+        //if (err && self._client.logging) console.log("entity could not be connected");
+
         self.groups = data.entities;
         doCallback(callback, [err, data, data.entities], self);
     });
@@ -14506,9 +14536,8 @@ miappSdk.Entity.prototype.getActivities = function (callback) {
         endpoint: endpoint
     };
     this._client.request(options, function (err, data) {
-        if (err && self._client.logging) {
-            console.log("entity could not be connected");
-        }
+        //if (err && self._client.logging) console.log("entity could not be connected");
+
         for (var entity in data.entities) {
             data.entities[entity].createdDate = new Date(data.entities[entity].created).toUTCString();
         }
@@ -14525,9 +14554,8 @@ miappSdk.Entity.prototype.getFollowing = function (callback) {
         endpoint: endpoint
     };
     this._client.request(options, function (err, data) {
-        if (err && self._client.logging) {
-            console.log("could not get user following");
-        }
+        //if (err && self._client.logging) console.log("could not get user following");
+
         for (var entity in data.entities) {
             data.entities[entity].createdDate = new Date(data.entities[entity].created).toUTCString();
             var image = self._client.getDisplayImage(data.entities[entity].email, data.entities[entity].picture);
@@ -14546,9 +14574,8 @@ miappSdk.Entity.prototype.getFollowers = function (callback) {
         endpoint: endpoint
     };
     this._client.request(options, function (err, data) {
-        if (err && self._client.logging) {
-            console.log("could not get user followers");
-        }
+        //if (err && self._client.logging) console.log("could not get user followers");
+
         for (var entity in data.entities) {
             data.entities[entity].createdDate = new Date(data.entities[entity].created).toUTCString();
             var image = self._client.getDisplayImage(data.entities[entity].email, data.entities[entity].picture);
@@ -14587,9 +14614,8 @@ miappSdk.Entity.prototype.getRoles = function (callback) {
         endpoint: endpoint
     };
     this._client.request(options, function (err, data) {
-        if (err && self._client.logging) {
-            console.log("could not get user roles");
-        }
+        //if (err && self._client.logging) console.log("could not get user roles");
+
         self.roles = data.entities;
         doCallback(callback, [err, data, data.entities], self);
     });
@@ -14616,9 +14642,8 @@ miappSdk.Entity.prototype.assignRole = function (roleName, callback) {
         endpoint: endpoint
     };
     this._client.request(options, function (err, response) {
-        if (err) {
-            console.log("Could not assign role.");
-        }
+        //if (err)  console.log("Could not assign role.");
+
         doCallback(callback, [err, response, self]);
     });
 };
@@ -14644,9 +14669,8 @@ miappSdk.Entity.prototype.removeRole = function (roleName, callback) {
         endpoint: endpoint
     };
     this._client.request(options, function (err, response) {
-        if (err) {
-            console.log("Could not assign role.");
-        }
+        //if (err) console.log("Could not assign role.");
+
         doCallback(callback, [err, response, self]);
     });
 };
@@ -14674,9 +14698,8 @@ miappSdk.Entity.prototype.assignPermissions = function (permissions, callback) {
         }
     };
     this._client.request(options, function (err, data) {
-        if (err && self._client.logging) {
-            console.log("could not assign permissions");
-        }
+        //if (err && self._client.logging) console.log("could not assign permissions");
+
         doCallback(callback, [err, data, data.data], self);
     });
 };
@@ -14704,9 +14727,8 @@ miappSdk.Entity.prototype.removePermissions = function (permissions, callback) {
         }
     };
     this._client.request(options, function (err, data) {
-        if (err && self._client.logging) {
-            console.log("could not remove permissions");
-        }
+        //if (err && self._client.logging) console.log("could not remove permissions");
+
         doCallback(callback, [err, data, data.params.permission], self);
     });
 };
@@ -14719,9 +14741,8 @@ miappSdk.Entity.prototype.getPermissions = function (callback) {
         endpoint: endpoint
     };
     this._client.request(options, function (err, data) {
-        if (err && self._client.logging) {
-            console.log("could not get user permissions");
-        }
+        //if (err && self._client.logging) console.log("could not get user permissions");
+
         var permissions = [];
         if (data.data) {
             var perms = data.data;
@@ -14865,9 +14886,9 @@ miappSdk.Collection.prototype.fetch = function (callback) {
         qs: this.qs
     };
     this._client.request(options, function (err, response) {
-        if (err && self._client.logging) {
-            console.log("error getting collection");
-        } else {
+        //if (err && self._client.logging) console.log("error getting collection");
+
+        if (!err) {
             self.saveCursor(response.cursor || null);
             self.resetEntityPointer();
             self._list = response.getEntities().filter(function (entity) {
@@ -14921,9 +14942,8 @@ miappSdk.Collection.prototype.destroyEntity = function (entity, callback) {
     var self = this;
     entity.destroy(function (err, response) {
         if (err) {
-            if (self._client.logging) {
-                console.log("could not destroy entity");
-            }
+            //if (self._client.logging) console.log("could not destroy entity");
+
             doCallback(callback, [err, response, self], self);
         } else {
             self.fetch(callback);
@@ -15230,9 +15250,8 @@ miappSdk.Group.prototype.fetch = function (callback) {
     };
     this._client.request(groupOptions, function (err, response) {
         if (err) {
-            if (self._client.logging) {
-                console.log("error getting group");
-            }
+            //if (self._client.logging)  console.log("error getting group");
+
             doCallback(callback, [err, response], self);
         } else {
             var entities = response.getEntities();
@@ -16092,7 +16111,7 @@ var SrvMiapp = (function () {
         this.miappURL = _getObjectFromLocalStorage('miappURL') || 'https://miapp.io/api';
         this.miappDBURL = _getObjectFromLocalStorage('miappDBURL') || 'https://couchdb01.miapp.io';
         this.miappAuthEndDate = new Date();
-        this.miappAuthEndDate.setMonth(this.miappAuthEndDate.getMonth() + 1);
+        this.miappAuthEndDate.setDate(this.miappAuthEndDate.getDate() + 1);
         var ls = _getObjectFromLocalStorage('miappAuthEndDate');
         //console.log(ls);
         var miappAuthEndDate = ls;// ? JSON.parse(ls) : null;
@@ -16146,7 +16165,7 @@ var SrvMiapp = (function () {
 
         var now = new Date();
         var isDeprecated = (self.miappAuthEndDate < now);
-        self.logger.log('miapp.sdk.service.miappLogin : is isDeprecated ? ', isDeprecated);
+        self.logger.log('miapp.sdk.service.miappLogin : is isDeprecated ? ', isDeprecated, self.miappAuthEndDate, now);
 
         if (self._dbInitialized && self.currentUser && !forceOnline && !isDeprecated)
             return self.promise.resolve(self.currentUser);
@@ -16200,40 +16219,43 @@ var SrvMiapp = (function () {
                     }
 
                     // ELSE : Back from root > clean DB and login
-                    self.becarefulCleanDb()
-                        .then(function (msg) {
-                            //self.logger.log(self.currentUser);
-                            return self.loginInternal(login, password);
-                        })
-                        .then(function (firstUser) {
-                            self.logger.log(self.currentUser);
-                            if (firstUser && !self.currentUser) {
-                                self.logger.log('miapp.sdk.service.miappLogin : login done for the first time..');
-                                self.setCurrentUser(firstUser);
-                                //self.putFirstUserInEmptyDb(firstUser);
-                            }
+                    var nextFn = function () {
+                        return self.loginInternal(login, password)
+                            .then(function (firstUser) {
+                                self.logger.log(self.currentUser);
+                                if (firstUser && !self.currentUser) {
+                                    self.logger.log('miapp.sdk.service.miappLogin : login done for the first time..');
+                                    self.setCurrentUser(firstUser);
+                                    //self.putFirstUserInEmptyDb(firstUser);
+                                }
 
-                            self.logger.log('miapp.sdk.service.miappLogin : sync DB...');
-                            //self.logger.log(self.currentUser);
+                                self.logger.log('miapp.sdk.service.miappLogin : sync DB...');
+                                //self.logger.log(self.currentUser);
 
-                            // do not trap db pb : set as offline
-                            self.syncDb()
-                                .finally(function (ret) {
+                                // do not trap db pb : set as offline
+                                self.syncDb()
+                                    .finally(function (ret) {
 
-                                    self.logger.log(self.currentUser);
-                                    if (!self.currentUser) {
-                                        reject('miapp.sdk.service.miappLogin : Pb with user get.' + ret);
-                                    }
-                                    else {
-                                        self._dbInitialized = true;
-                                        resolve(self.currentUser);
-                                    }
-                                });
-                        })
-                        .catch(function (err) {
-                            self.logger.error('miapp.sdk.service.miappLogin : err ..: ', err);
-                            reject(err);
-                        });
+                                        self.logger.log(self.currentUser);
+                                        if (!self.currentUser) {
+                                            reject('miapp.sdk.service.miappLogin : Pb with user get.' + ret);
+                                        }
+                                        else {
+                                            self._dbInitialized = true;
+                                            resolve(self.currentUser);
+                                        }
+                                    });
+                            })
+                            .catch(function (err) {
+                                self.logger.error('miapp.sdk.service.miappLogin : err ..: ', err);
+                                reject(err);
+                            });
+                    };
+
+                    if (!isEmpty)
+                        self.becarefulCleanDb().then(nextFn);
+                    else
+                        nextFn();
                 })
                 .catch(function (err) {
                     self.logger.error('miapp.sdk.service.miappLogin : err : ', err);
