@@ -32,10 +32,11 @@
                     <p ng-if="navAppInitLevel() <= 1" translate>CalendarWorldWideStats</p>-->
                     <h3 ng-show="navAppInitLevel() <= 1">
                         {{userIndicators.indicUsersTimeAvailabity}}
-                        <span translate>min VS</span>
-                        {{userIndicators.indicChoresTimeRequired}}
-                        <span translate>min / week ?</span>
+                        <span translate>min average by day</span>
                     </h3>
+                    <p ng-show="navAppInitLevel() <= 1">
+                        <span translate>front of all todos</span>
+                    </p>
                     <div>
                         <span class="badge badge-assertive" ng-show="userIndicators.indicChoresFeasibility < 0.4"
                               translate>NotGood</span>
@@ -56,11 +57,13 @@
                         <span translate>TimeAverageAvailable</span>
                         <span>{{userIndicators.indicUsersTimeAvailabity}}</span>
                         <span translate>min / day ?</span>
-
+                    </p>
+                    <p>
                         <span translate>TimeAverageRequired</span>
                         <span>{{userIndicators.indicChoresTimeRequired}}</span>
                         <span translate>min / day.</span>
-
+                    </p>
+                    <p>
                         <span translate>Feasibility</span>
                         <span>{{userIndicators.indicChoresFeasibility}}</span>
                     </p>
@@ -71,7 +74,7 @@
             <!-- user A -->
             <ul class="list">
                 <li class="item item-avatar item-button-right" ng-click="toggleUserA = !toggleUserA">
-                    <img ng-src="{{profil[userA[userCols.profilID]].img}}">
+                    <img ng-src="{{navProfils[userA[userCols.profilID]].img}}">
                     {{userA[userCols.firstName]}}
                     <p>{{navMathRound(userA[userCols.timeInMnPerWeekTodo] / 7)}} <span translate>minutes av./day</span>
                     </p>
@@ -129,7 +132,7 @@
             <!-- user B -->
             <ul class="list">
                 <li class="item item-avatar item-button-right" ng-click="toggleUserB = !toggleUserB">
-                    <img ng-src="{{profil[userB[userCols.profilID]].img}}">
+                    <img ng-src="{{navProfils[userB[userCols.profilID]].img}}">
                     {{userB[userCols.firstName]}}
                     <p>{{navMathRound(userB[userCols.timeInMnPerWeekTodo] / 7)}} <span translate>minutes av./day</span>
                     </p>

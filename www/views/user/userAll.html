@@ -13,7 +13,8 @@
         <article ng-if="userInitSpinnerStopped">
 
             <ion-list show-delete="true">
-                <ion-item class="item item-icon-left item-dark" ng-repeat="msg in navErrMsgs track by $index">
+                <ion-item class="item item-icon-left item-dark item-text-wrap"
+                          ng-repeat="msg in navErrMsgs track by $index">
                     <ion-delete-button class="ion-close-round"
                                        ng-click="navErrMsgs.splice($index,1)"></ion-delete-button>
                     <span style="white-space: normal">{{msg}}</span>
@@ -37,10 +38,10 @@
                                         <i class="icon ion-edit" style="font-size:100%"></i>
                                     </label>
                                     <div class="item item-body">
-                                        <img class="full-image" ng-src="{{profil[userA[userCols.profilID]].img}}">
+                                        <img class="full-image" ng-src="{{navProfils[userA[userCols.profilID]].img}}">
                                     </div>
                                     <div class="item range range-positive">
-                                        <input type="range" min="0" max="{{profil.length - 1}}" style="margin:0"
+                                        <input type="range" min="0" max="{{navProfils.length - 1}}" style="margin:0"
                                                ng-model="userA[userCols.profilID]"
                                                ng-change="userSave(userA)">
                                     </div>
@@ -52,10 +53,10 @@
                                         <i class="icon ion-edit" style="font-size:100%"></i>
                                     </label>
                                     <div class="item item-body">
-                                        <img class="full-image" ng-src="{{profil[userB[userCols.profilID]].img}}">
+                                        <img class="full-image" ng-src="{{navProfils[userB[userCols.profilID]].img}}">
                                     </div>
                                     <div class="item range range-assertive">
-                                        <input type="range" min="0" max="{{profil.length - 1}}" style="margin:0"
+                                        <input type="range" min="0" max="{{navProfils.length - 1}}" style="margin:0"
                                                ng-model="userB[userCols.profilID]"
                                                ng-change="userSave(userB)">
                                     </div>
@@ -63,13 +64,13 @@
                             </div>
                             <div class="row" ng-if="navAppInitLevel() == 0 && userSaved">
                                 <div class="col">
-                                    <span translate>Level0_You’ve set your profiles ? Ready for the next part : setting all the chores you have to deal with.</span>
+                                    <span ng-show="false" translate>Level0_You’ve set your profiles ? Ready for the next part : setting all the chores you have to deal with.</span>
                                     <a class="button button-block icon-right ion-chevron-right button-assertive"
                                        ng-href="#/config/category"
                                        ng-click="navSetAppInitLevel(2);userSave(userA);userSave(userB);" translate>Footer_ButtonWhen</a>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row" ng-if="navAppInitLevel() !== 0">
                                 <div class="col">
                                     <div class="list">
                                         <label class="item item-input item-select">

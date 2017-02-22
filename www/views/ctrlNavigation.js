@@ -123,7 +123,7 @@ function ctrlNavigation($scope, $log, $location, $timeout, $q, $ionicHistory,
     $scope.historicCols = srvDataContainer.historicCols;
     $scope.choreCols = srvDataContainer.choreCols;
     $scope.categoryCols = srvDataContainer.categoryCols;
-    $scope.profil = [
+    $scope.navProfils = [
         {id: 'g1', img: './img/profil/girl01.jpg'},
         {id: 'b1', img: './img/profil/boy01.jpg'},
         {id: 'g2', img: './img/profil/girl02.jpg'},

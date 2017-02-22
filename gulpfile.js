@@ -31,7 +31,7 @@ gulp.task('nggettext_compile', function () {
     return gulp.src('po/**/*.po')
         .pipe(gettext.compile({
             // options to pass to angular-gettext-tools...
-            format: 'json'
+            format: 'javascript'
         }))
         .pipe(gulp.dest('www/js/languages/'));
 });

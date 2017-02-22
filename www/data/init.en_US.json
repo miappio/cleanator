@@ -349,7 +349,7 @@
       "choreDescriptionCat": "Aspirateur",
       "priority": 5,
       "priorityComputed": 5,
-      "desactivate" : false
+      "desactivate": true
     },
     {
       "choreName": "Vacuum rapid",
@@ -362,7 +362,7 @@
       "choreDescriptionCat": "Aspirateur",
       "priority": 5,
       "priorityComputed": 5,
-      "desactivate" : false
+      "desactivate": true
     },
     {
       "choreName": "Vacuum rapid",
@@ -466,7 +466,7 @@
       "choreDescriptionCat": "Balai",
       "priority": 5,
       "priorityComputed": 5,
-      "desactivate" : false
+      "desactivate": true
     },
     {
       "choreName": "Shine the shoes",
@@ -492,7 +492,7 @@
       "choreDescriptionCat": "typeDevoir",
       "priority": 5,
       "priorityComputed": 5,
-      "desactivate" : false
+      "desactivate": true
     },
     {
       "choreName": "Clean the oven interior",
@@ -570,7 +570,7 @@
       "choreDescriptionCat": "typeLinge",
       "priority": 5,
       "priorityComputed": 5,
-      "desactivate" : false
+      "desactivate": true
     },
     {
       "choreName": "Extending the machine",
@@ -791,7 +791,7 @@
       "choreDescriptionCat": "typePoubelle",
       "priority": 5,
       "priorityComputed": 5,
-      "desactivate" : false
+      "desactivate": true
     },
     {
       "choreName": "Empty trash",
@@ -804,7 +804,7 @@
       "choreDescriptionCat": "typePoubelle",
       "priority": 5,
       "priorityComputed": 5,
-      "desactivate" : false
+      "desactivate": true
     },
     {
       "choreName": "Background dust (above furniture ...)",
@@ -960,7 +960,7 @@
       "choreDescriptionCat": "typeRecurer",
       "priority": 5,
       "priorityComputed": 5,
-      "desactivate" : false
+      "desactivate": true
     },
     {
       "choreName": "Defrost old fridges and freezers",
@@ -1077,7 +1077,7 @@
       "choreDescriptionCat": "typeTable",
       "priority": 1,
       "priorityComputed": 5,
-      "desactivate" : false
+      "desactivate": true
     },
     {
       "choreName": "Clean traces on doors / switches",
@@ -1155,7 +1155,7 @@
       "choreDescriptionCat": "typeToileAraignee",
       "priority": 5,
       "priorityComputed": 5,
-      "desactivate" : false
+      "desactivate": true
     },
     {
       "choreName": "Skip mower",
@@ -1168,7 +1168,7 @@
       "choreDescriptionCat": "typeTondeuse",
       "priority": 5,
       "priorityComputed": 5,
-      "desactivate" : false
+      "desactivate": true
     },
     {
       "choreName": "Washing windows",
@@ -1233,7 +1233,7 @@
       "choreDescriptionCat": "typeVitre",
       "priority": 5,
       "priorityComputed": 5,
-      "desactivate" : false
+      "desactivate": true
     }
   ]
 }

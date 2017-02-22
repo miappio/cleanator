@@ -48,8 +48,8 @@ angular
 
         });
 
-        //gettextCatalog.currentLanguage = 'en_US';
-        //gettextCatalog.setCurrentLanguage('en_US');
-        //gettextCatalog.debug = true;
+        gettextCatalog.currentLanguage = 'en_US';
+        gettextCatalog.setCurrentLanguage('en_US');
+        gettextCatalog.debug = true;
 
     });

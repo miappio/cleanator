@@ -39,7 +39,13 @@
     "ionic-plugin-keyboard"
   ],
   "cordovaPlatforms": [
-    "android"
+    "android",
+    "ios",
+    {
+      "platform": "ios",
+      "version": "",
+      "locator": "ios"
+    }
   ],
   "scripts": {
     "bower:install": "./node_modules/.bin/bower install",
@@ -49,7 +55,7 @@
     "test:watch": "./node_modules/.bin/karma start tests/karma.unit-tests.conf.js --no-single-run  --no-auto-watch --reporters progress --browsers PhantomJS",
     "start": "./node_modules/.bin/gulp 'config-test-js'; ./node_modules/.bin/http-server -a 0.0.0.0 -p 8080 ./www/",
     "dev:serve_notused": "ionic serve",
-    "dev:build": "npm version patch; ./node_modules/.bin/gulp; ionic build android",
+    "dev:build": "npm version patch; ./node_modules/.bin/gulp; ionic build ios; ionic build android",
     "dev:run": "ionic run android --device"
   },
   "devDependencies": {

@@ -64,7 +64,6 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
         timeInMnPerSatu: 30
     };
 
-
     describe('basics', function () {
 
         beforeEach(function () {
@@ -88,7 +87,6 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
         afterEach(function () {
         });
-
 
         it('should be correctly initialized', function () {
 
@@ -119,13 +117,9 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
         });
 
-
     });
 
-
     describe('algoritm', function () {
-
-
 
         //beforeEach(module('myAngularApp'));
         beforeEach(function () {
@@ -152,14 +146,12 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
             $httpBackend.verifyNoOutstandingExpectation();
             $httpBackend.verifyNoOutstandingRequest();
         });
-
         afterEach(function () {
             //jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
             //myRootScope.$apply();
             //timeout.flush();
             //myRootScope.$digest();
         });
-
 
         it('should compute by week - with empty values', function (done) {
 
@@ -350,7 +342,6 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
             timeout.flush(200);
         });
 
-
         it('should compute by week - A is available only during we / B only 2 days', function (done) {
 
             var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
@@ -430,7 +421,6 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
             timeout.flush(200);
         });
 
-
         it('should compute by week - A & B are full available BUT history have same chores done', function (done) {
 
             var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
@@ -474,6 +464,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
             $httpBackend.flush();
         });
+
     });
 
 });

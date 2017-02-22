@@ -87,7 +87,7 @@
 
 
                     <li class="item item-avatar" style="border-bottom:0;">
-                        <img ng-src="{{profil[userA[userCols.profilID]].img}}">
+                        <img ng-src="{{navProfils[userA[userCols.profilID]].img}}">
                         {{userA[userCols.firstName]}}
                         <p translate>affinity for this item</p>
                     </li>
@@ -98,7 +98,7 @@
                     </li>
 
                     <li class="item item-avatar" style="border-bottom:0;">
-                        <img ng-src="{{profil[userB[userCols.profilID]].img}}">
+                        <img ng-src="{{navProfils[userB[userCols.profilID]].img}}">
                         {{userB[userCols.firstName]}}
                         <p translate>affinity for this item</p>
                     </li>
@@ -109,6 +109,11 @@
                     </li>
 
                 </ul>
+
+                <a class="button button-block button-assertive"
+                   ng-href="#/config/category"
+                   ng-click="choreRemove(choreToEdit);"
+                   translate>ChoreDetailRemove</a>
 
             </form>
 

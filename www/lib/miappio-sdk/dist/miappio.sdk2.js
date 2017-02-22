@@ -4316,10 +4316,10 @@ miappSdkEventable.prototype = {
                             }
                         }
                     }, xhr.onerror = function (response) {
-                        clearTimeout(timeout), response && response.target && 2e3 === response.target.timeout && (response.error = "request_timeout", response.error_description = "API Call timed out."), p.done(response, null)
+                        clearTimeout(timeout), response && response.target && 9e3 === response.target.timeout && (response.error = "request_timeout", response.error_description = "API Call timed out."), p.done(response, null)
                     }, xhr.oncomplete = function (response) {
                         clearTimeout(timeout)
-                    }, xhr.open(m, u), d && ("object" == typeof d && (d = JSON.stringify(d)), xhr.setRequestHeader("Content-Type", "application/json"), xhr.setRequestHeader("Accept", "application/json")), xhr.timeout = 2e3, timeout = setTimeout(function () {
+                    }, xhr.open(m, u), d && ("object" == typeof d && (d = JSON.stringify(d)), xhr.setRequestHeader("Content-Type", "application/json"), xhr.setRequestHeader("Accept", "application/json")), xhr.timeout = 9e3, timeout = setTimeout(function () {
                         xhr.abort(), p.done("API Call timed out.", null)
                     }, 3e4), xhr.send(encode(d))
                 } catch (err) {

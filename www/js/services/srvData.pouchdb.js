@@ -8,38 +8,27 @@ angular.module('srvData.pouchdb', ['MiappService'])
         return new SrvDataPouchDB($q, $log, $http, $timeout, MiappService);
     });
 
-
 var SrvDataPouchDB = (function () {
     'use strict';
+
     function Service($q, $log, $http, $timeout, MiappService) {
 
-        //this.$rootScope = $rootScope;
-        this.$q = $q;
-        this.$log = $log;
-        this.$http = $http;
-        this.$timeout = $timeout;
-        this.db = null;
-        // todo in srvMiapp this.appName = appName;
-        // todo in srvMiapp this.appVersion = appVersion;
-        this.srvMiapp = MiappService;
+        var self = this;
+        self.$q = $q;
+        self.$log = $log;
+        self.$http = $http;
+        self.$timeout = $timeout;
+        self.db = null;
+        self.srvMiapp = MiappService;
+        self.initDone = false;
+        self.dataLastResetDate = null;
 
-        //this.WS_URL_LOCAL=WS_URL_LOCAL;
-        //this.WS_URL_ONLINE=WS_URL_ONLINE;
-        //this.currentWSUrl = this.WS_URL_LOCAL;
-
-        this.initDone = false;
-        // todo in srvMiap this.dataUserLoggedIn = false;
-        this.dataCoupleLoggedIn = false;
-        this.dataLastResetDate = null;
-        //todo ? this.dataHistoricsDone = [];
-
-        this.alreadySyncronized = false;
-        this.userType = 'UserDocType';
-        this.coupleType = 'CoupleDocType';
-        this.choreType = 'ChoreDocType';
-        this.historicType = 'HistoricDocType';
-        this.categoryType = 'CategoryDocType';
-        this.userColumns = {
+        self.userType = 'UserDocType';
+        self.coupleType = 'CoupleDocType';
+        self.choreType = 'ChoreDocType';
+        self.historicType = 'HistoricDocType';
+        self.categoryType = 'CategoryDocType';
+        self.userColumns = {
             type: 'docType',
             firstName: 'firstname',
             lastName: 'lastname',
@@ -57,7 +46,7 @@ var SrvDataPouchDB = (function () {
             timeInMnPerSund: 'timeInMnPerSund',
             lastModified: 'lastModified'
         };
-        this.coupleColumns = {
+        self.coupleColumns = {
             type: 'docType',
             name: 'coupleName',
             description: 'description',
@@ -66,7 +55,7 @@ var SrvDataPouchDB = (function () {
             lastResetDate: 'LastResetDate',
             lastModified: 'lastModified'
         };
-        this.choreColumns = {
+        self.choreColumns = {
             type: 'docType',
             name: 'choreName',
             category: 'choreCategoryName',
@@ -83,7 +72,7 @@ var SrvDataPouchDB = (function () {
             desactivate: 'desactivate',
             lastModified: 'lastModified'
         };
-        this.historicColumns = {
+        self.historicColumns = {
             type: 'docType',
             name: 'choreName',
             category: 'choreCategoryName',
@@ -107,7 +96,7 @@ var SrvDataPouchDB = (function () {
             internalLate: 'internalLate',
             lastModified: 'lastModified'
         };
-        this.categoryColumns = {
+        self.categoryColumns = {
             type: 'docType',
             name: 'categoryName',
             description: 'description',
@@ -116,10 +105,8 @@ var SrvDataPouchDB = (function () {
             desactivate: 'desactivate',
             lastModified: 'lastModified'
         };
-        //this.categories = {};
 
-        var self = this;
-        this.User = {
+        self.User = {
 
             type: self.userType,
             columns: self.userColumns,
@@ -218,7 +205,7 @@ var SrvDataPouchDB = (function () {
                 return new Date();
             }
         };
-        this.Couple = {
+        self.Couple = {
 
             type: self.coupleType,
             columns: self.coupleColumns,
@@ -319,9 +306,7 @@ var SrvDataPouchDB = (function () {
                 return new Date();
             }
         };
-
-
-        this.Category = {
+        self.Category = {
 
             type: self.categoryType,
             columns: self.categoryColumns,
@@ -379,9 +364,7 @@ var SrvDataPouchDB = (function () {
                 return new Date();
             }
         };
-
-
-        this.Chore = {
+        self.Chore = {
 
             type: self.choreType,
             columns: self.choreColumns,
@@ -462,7 +445,7 @@ var SrvDataPouchDB = (function () {
                 return new Date();
             }
         };
-        this.Historic = {
+        self.Historic = {
 
             type: self.historicType,
             columns: self.historicColumns,
@@ -516,7 +499,6 @@ var SrvDataPouchDB = (function () {
 
     }
 
-
     Service.prototype.isInitDone = function () {
         return this.initDone;
     };
@@ -544,45 +526,7 @@ var SrvDataPouchDB = (function () {
         self.initDone = true;
     };
 
-
-    function setObjectFromLocalStorage(id, object) {
-        if (typeof(Storage) === "undefined") return null;
-
-        var jsonObj = JSON.stringify(object);
-        // Retrieve the object from storage
-        localStorage.setItem(id, jsonObj);
-
-        //console.log('retrievedObject: ', JSON.parse(retrievedObject));
-        return jsonObj;
-
-    }
-
-    function getObjectFromLocalStorage(id) {
-        if (typeof(Storage) === "undefined") return null;
-
-        // Retrieve the object from storage
-        var retrievedObject = localStorage.getItem(id);
-        var obj = JSON.parse(retrievedObject);
-
-        //console.log('retrievedObject: ', JSON.parse(retrievedObject));
-        return obj;
-
-    }
-
-
-    var _srvDataUniqId = 0;
-
-    function generateObjectUniqueId(appName, type, name) {
-
-        //return null;
-        var now = new Date();
-        var simpleDate = "" + now.getYear() + "" + now.getMonth() + "" + now.getDate() + "" + now.getHours() + "" + now.getMinutes();//new Date().toISOString();
-        var sequId = ++_srvDataUniqId;
-        var UId = appName.charAt(0) + "_" + type.substring(0, 4) + "_" + name.substring(0, 4) + '_' + simpleDate + '_' + sequId;
-        return UId;
-    }
-
-
+    //todo : set in srvDataContainer or srvComputing
     Service.prototype.getUserAFromCouple = function (couple) {
         var self = this;
         var deferred = self.$q.defer();
@@ -618,125 +562,6 @@ var SrvDataPouchDB = (function () {
             else return deferred.reject(null);
         });
 
-        return deferred.promise;
-    };
-
-
-    Service.prototype.initWithDemoData = function () {
-        var i, self = this, chanceBaseUser = 12345, chanceBaseCouple = 12645, chanceBaseChore = 12945;//Math.random
-        var deferred = self.$q.defer();
-
-
-        var users = [];
-        for (i = 0; i < 10; i++) {
-            var user = {};
-            var chanceUser = new Chance(chanceBaseUser + i);
-            user._id = 'demo' + chanceUser.hash({length: 10});
-            user[self.userColumns.type] = self.userType;
-            user[self.userColumns.firstName] = chanceUser.first();
-            user[self.userColumns.lastName] = chanceUser.last();
-            user[self.userColumns.email] = chanceUser.email();
-            user[self.userColumns.lastModified] = chanceUser.date();
-
-            users.push(user);
-        }
-        var couples = [];
-        for (i = 0; i < 10; i++) {
-            var couple = {};
-            var chanceCouple = new Chance(chanceBaseCouple + i);
-            couple[self.coupleColumns.type] = self.coupleType;
-            couple[self.coupleColumns.name] = chanceCouple.sentence({words: 2});
-            couple[self.coupleColumns.description] = chanceCouple.sentence({words: 5});
-            couple[self.coupleColumns.lastModified] = chanceCouple.date();
-
-            couple[self.coupleColumns.userAId] = users[i]._id;
-            couple[self.coupleColumns.userBId] = users[(i > 5) ? (i - 1) : (i + 1)]._id;
-
-
-            couples.push(couple);
-        }
-        var chores = [];
-        for (i = 0; i < 10; i++) {
-            var chore = {};
-            chores.push(chore);
-        }
-
-        var docs = users.concat(couples, chores);
-        self.db.bulkDocs(docs, function (err, response) {
-            //self.$log.log(err+' '+response);
-            if (err) return deferred.reject(err);
-            deferred.resolve(response);
-        });
-
-        return deferred.promise;
-    };
-
-
-    Service.prototype.becarefulClean = function () {
-        var self = this;
-        var deferred = self.$q.defer();
-        this.alreadySyncronized = false;
-
-        self.srvMiapp.miappService.becarefulCleanDb()
-            .then(function () {
-                self.db = self.srvMiapp.miappService._db;
-                deferred.resolve();
-            })
-            .catch(function () {
-                deferred.reject();
-            });
-        return deferred.promise;
-    };
-
-    Service.prototype.createCouple = function (couple) {
-        /*this.DS.create('couple', couple,{useClass:true,cacheResponse:true,eagerInject:true})
-         .then(function (coupleCreated) {
-         //post; // { id: 65, author: 'Sally', title: 'Angular gotchas' }
-         alert("couple created"+coupleCreated);
-         });*/
-    };
-
-    function padInteger(num, size) {
-        if (!size) size = 10;
-        var s = "000000000" + num;
-        return s.substr(s.length - size);
-    }
-
-    // creation de la liste des taches
-    // chores 	 : liste de toutes les taches
-    // userA, userB : utilisateurs
-    // maxHistoric : nb de taches max a retourner
-    Service.prototype.computeHistoricsByPrior = function (chores, userA, userB, maxHistoric) {
-        var i, self = this;
-        var deferred = self.$q.defer();
-        var lstChores = [];
-
-        // depending on % affinity , copy chores
-        var rand = new Chance(Math.random);
-        rand = rand.year();
-        for (i = 0; userA && userB && chores && i < chores.length && i < maxHistoric; i++) {
-            var historic = {};
-            var j = (rand + i) % chores.length;
-            var choreToCopy = chores[j];
-
-            if (!choreToCopy) {
-                alert("Pb : (" + j + ") " + chores.length);
-            }
-
-            if (choreToCopy[self.historicColumns.timeInMn] > 0) {
-                angular.copy(choreToCopy, historic);
-                historic._id = null;
-                historic[self.historicColumns.choreId] = choreToCopy._id;
-                var uId = new Chance(Math.random).bool() ? userB._id : userA._id; //choreToCopy.percent_AB > 50 ? userB._id : userA._id;
-                if (uId == userA._id && choreToCopy.percent_AB > 85) uId = userB._id;
-                if (uId == userB._id && choreToCopy.percent_AB < 15) uId = userA._id;
-
-                historic[self.historicColumns.userId] = uId;
-                historic[self.historicColumns.frequencyDays] = padInteger(historic[self.historicColumns.frequencyDays]);
-                lstChores.push(historic);
-            }
-        }
-        deferred.resolve(lstChores);
         return deferred.promise;
     };
 
@@ -913,37 +738,25 @@ var SrvDataPouchDB = (function () {
         // 		Si retard >= - J   // il faut traiter la tâche
         // 			Dispo A = Calcul dispo de A pour J
         // 			Dispo B = Calcul dispo de B pour J
-
         // 			Si Dispo A = ok & Dispo B = ok
         // 				Calcul du taux de réalisation par A de la tâche / B
-
         // 				Si taux de A > Affinité de A
         // 					Remplissage de la liste de B (Nom de la tache + date J pour affichage)
         // 				Sinon
         // 					Remplissage de la liste de A (Nom de la tache + date J pour affichage)
-
         // 				Suppression de la tâche de la liste L
-
         // 			Sinon si Dispo A = ok OU Dispo B = ok
-
         // 				Si dispo A = ok
         // 					Remplissage de la liste de A (Nom de la tache + date J pour affichage)
-
         // 				Sinon si dispo B = ok
         // 					Remplissage de la liste de B (Nom de la tache + date J pour affichage)
-
         // 				Suppression de la tâche de la liste L
-
         // 			Sinon
         // 				Retard ++ (dans la liste, pas dans la bdd...)
-
         // Plus de place dispo chez A ou B : à traiter le jour suivant
-
-
         deferred.resolve(lstHistoByCalendar);
         return deferred.promise;
     };
-
 
     Service.prototype.terminateHistoric = function (chores, historic) {
         var i, self = this;
@@ -984,35 +797,6 @@ var SrvDataPouchDB = (function () {
         return deferred.promise;
     };
 
-    Service.prototype.computeFairIndicleanator = function (historics, userA, userB) {
-
-        var indic = 50;
-        var nbA = 0;
-        var nbB = 0;
-        // depending on percent, copy chores
-        for (var i = 0; (i < historics.length); i++) {
-            var historic = historics[i];
-            var userId = historic[self.historicColumns.userId];
-            if (userId == userA._id) nbA++;
-            if (userId == userB._id) nbB++;
-        }
-        var nb = nbA + nbB;
-        if (nb) indic = nbA / nb;
-        return indic;
-    };
-
-    Service.prototype.setFairIndicleanator = function (newValue) {
-        this.dataFairIndicleanator = newValue;
-        setObjectFromLocalStorage('dataFairIndicleanator', newValue);
-    };
-
-    Service.prototype.getFairIndicleanator = function () {
-        var obj = getObjectFromLocalStorage('dataFairIndicleanator');
-        this.dataFairIndicleanator = obj;
-        return this.dataFairIndicleanator;
-    };
-
-
     Service.prototype.resetHistorics = function () {
         //if (!this.dataCoupleLoggedIn) return null;
         this.dataLastResetDate = new Date();
@@ -1029,7 +813,6 @@ var SrvDataPouchDB = (function () {
         }
         return this.dataLastResetDate;
     };
-
 
     Service.prototype.getDateOfLastChoreDoneByType = function (chores, historics, choreIdToSearch) {
         //var obj = getObjectFromLocalStorage('dataLastResetDate');
@@ -1090,6 +873,167 @@ var SrvDataPouchDB = (function () {
         return timeE;
     };
 
+
+    /** @deprecated **/
+    Service.prototype.initWithDemoData = function () {
+        var i, self = this, chanceBaseUser = 12345, chanceBaseCouple = 12645, chanceBaseChore = 12945;//Math.random
+        var deferred = self.$q.defer();
+
+
+        var users = [];
+        for (i = 0; i < 10; i++) {
+            var user = {};
+            var chanceUser = new Chance(chanceBaseUser + i);
+            user._id = 'demo' + chanceUser.hash({length: 10});
+            user[self.userColumns.type] = self.userType;
+            user[self.userColumns.firstName] = chanceUser.first();
+            user[self.userColumns.lastName] = chanceUser.last();
+            user[self.userColumns.email] = chanceUser.email();
+            user[self.userColumns.lastModified] = chanceUser.date();
+
+            users.push(user);
+        }
+        var couples = [];
+        for (i = 0; i < 10; i++) {
+            var couple = {};
+            var chanceCouple = new Chance(chanceBaseCouple + i);
+            couple[self.coupleColumns.type] = self.coupleType;
+            couple[self.coupleColumns.name] = chanceCouple.sentence({words: 2});
+            couple[self.coupleColumns.description] = chanceCouple.sentence({words: 5});
+            couple[self.coupleColumns.lastModified] = chanceCouple.date();
+
+            couple[self.coupleColumns.userAId] = users[i]._id;
+            couple[self.coupleColumns.userBId] = users[(i > 5) ? (i - 1) : (i + 1)]._id;
+
+
+            couples.push(couple);
+        }
+        var chores = [];
+        for (i = 0; i < 10; i++) {
+            var chore = {};
+            chores.push(chore);
+        }
+
+        var docs = users.concat(couples, chores);
+        self.db.bulkDocs(docs, function (err, response) {
+            //self.$log.log(err+' '+response);
+            if (err) return deferred.reject(err);
+            deferred.resolve(response);
+        });
+
+        return deferred.promise;
+    };
+    Service.prototype.becarefulClean = function () {
+        var self = this;
+        var deferred = self.$q.defer();
+        this.alreadySyncronized = false;
+
+        self.srvMiapp.miappService.becarefulCleanDb()
+            .then(function () {
+                self.db = self.srvMiapp.miappService._db;
+                deferred.resolve();
+            })
+            .catch(function () {
+                deferred.reject();
+            });
+        return deferred.promise;
+    };
+    Service.prototype.createCouple = function (couple) {
+        /*this.DS.create('couple', couple,{useClass:true,cacheResponse:true,eagerInject:true})
+         .then(function (coupleCreated) {
+         //post; // { id: 65, author: 'Sally', title: 'Angular gotchas' }
+         alert("couple created"+coupleCreated);
+         });*/
+    };
+    Service.prototype.computeFairIndicleanator = function (historics, userA, userB) {
+
+        var indic = 50;
+        var nbA = 0;
+        var nbB = 0;
+        // depending on percent, copy chores
+        for (var i = 0; (i < historics.length); i++) {
+            var historic = historics[i];
+            var userId = historic[self.historicColumns.userId];
+            if (userId == userA._id) nbA++;
+            if (userId == userB._id) nbB++;
+        }
+        var nb = nbA + nbB;
+        if (nb) indic = nbA / nb;
+        return indic;
+    };
+    Service.prototype.setFairIndicleanator = function (newValue) {
+        this.dataFairIndicleanator = newValue;
+        setObjectFromLocalStorage('dataFairIndicleanator', newValue);
+    };
+    Service.prototype.getFairIndicleanator = function () {
+        var obj = getObjectFromLocalStorage('dataFairIndicleanator');
+        this.dataFairIndicleanator = obj;
+        return this.dataFairIndicleanator;
+    };
+    Service.prototype.computeHistoricsByPrior = function (chores, userA, userB, maxHistoric) {
+        var i, self = this;
+        var deferred = self.$q.defer();
+        var lstChores = [];
+
+        // depending on % affinity , copy chores
+        var rand = new Chance(Math.random);
+        rand = rand.year();
+        for (i = 0; userA && userB && chores && i < chores.length && i < maxHistoric; i++) {
+            var historic = {};
+            var j = (rand + i) % chores.length;
+            var choreToCopy = chores[j];
+
+            if (!choreToCopy) {
+                alert("Pb : (" + j + ") " + chores.length);
+            }
+
+            if (choreToCopy[self.historicColumns.timeInMn] > 0) {
+                angular.copy(choreToCopy, historic);
+                historic._id = null;
+                historic[self.historicColumns.choreId] = choreToCopy._id;
+                var uId = new Chance(Math.random).bool() ? userB._id : userA._id; //choreToCopy.percent_AB > 50 ? userB._id : userA._id;
+                if (uId == userA._id && choreToCopy.percent_AB > 85) uId = userB._id;
+                if (uId == userB._id && choreToCopy.percent_AB < 15) uId = userA._id;
+
+                historic[self.historicColumns.userId] = uId;
+                historic[self.historicColumns.frequencyDays] = padInteger(historic[self.historicColumns.frequencyDays]);
+                lstChores.push(historic);
+            }
+        }
+        deferred.resolve(lstChores);
+        return deferred.promise;
+    };
+
+    // private
+    function padInteger(num, size) {
+        if (!size) size = 10;
+        var s = "000000000" + num;
+        return s.substr(s.length - size);
+    }
+
+    function setObjectFromLocalStorage(id, object) {
+        if (typeof(Storage) === "undefined") return null;
+
+        var jsonObj = JSON.stringify(object);
+        // Retrieve the object from storage
+        localStorage.setItem(id, jsonObj);
+
+        //console.log('retrievedObject: ', JSON.parse(retrievedObject));
+        return jsonObj;
+
+    }
+
+    function getObjectFromLocalStorage(id) {
+        if (typeof(Storage) === "undefined") return null;
+
+        // Retrieve the object from storage
+        var retrievedObject = localStorage.getItem(id);
+        var obj = JSON.parse(retrievedObject);
+
+        //console.log('retrievedObject: ', JSON.parse(retrievedObject));
+        return obj;
+
+    }
 
     return Service;
 })();

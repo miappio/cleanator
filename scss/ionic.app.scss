@@ -15,11 +15,21 @@ $royal:                           #886aea !default;
 $dark:                            #444 !default;
 */
 
+
 // The path for our ionicons font files, relative to the built CSS in www/css
 $ionicons-font-path: "../lib/ionic/fonts" !default;
-
 // Include all of Ionic
-@import "../www/lib/ionic/scss/ionic";
+//@import "../www/lib/ionic/scss/ionic";
+
+@import // Ionicons
+"../www/lib/ionic/scss/ionicons/ionicons.scss",
+  // Variables
+"../www/lib/ionic/scss/_mixins",
+"../www/lib/ionic/scss/_variables";
+
+// our Variables
+
+$bar-footer-height: 60px;
 
 $light: #fff !default;
 $stable: #f8f8f8 !default;
@@ -32,6 +42,45 @@ $royal: #8a6de9 !default;
 $dark: #444 !default;
 
 $big-bg: '../img/ben.png';
+
+@import // Base
+"../www/lib/ionic/scss/_reset",
+"../www/lib/ionic/scss/_scaffolding",
+"../www/lib/ionic/scss/_type",
+  // Components
+"../www/lib/ionic/scss/_action-sheet",
+"../www/lib/ionic/scss/_backdrop",
+"../www/lib/ionic/scss/_bar",
+"../www/lib/ionic/scss/tabs",
+"../www/lib/ionic/scss/menu",
+"../www/lib/ionic/scss/modal",
+"../www/lib/ionic/scss/popover",
+"../www/lib/ionic/scss/popup",
+"../www/lib/ionic/scss/loading",
+"../www/lib/ionic/scss/items",
+"../www/lib/ionic/scss/list",
+"../www/lib/ionic/scss/badge",
+"../www/lib/ionic/scss/slide-box",
+"../www/lib/ionic/scss/refresher",
+"../www/lib/ionic/scss/spinner",
+  // Forms
+"../www/lib/ionic/scss/form",
+"../www/lib/ionic/scss/checkbox",
+"../www/lib/ionic/scss/toggle",
+"../www/lib/ionic/scss/radio",
+"../www/lib/ionic/scss/range",
+"../www/lib/ionic/scss/select",
+"../www/lib/ionic/scss/progress",
+  // Buttons
+"../www/lib/ionic/scss/button",
+"../www/lib/ionic/scss/button-bar",
+  // Util
+"../www/lib/ionic/scss/grid",
+"../www/lib/ionic/scss/util",
+"../www/lib/ionic/scss/platform",
+  // Animations
+"../www/lib/ionic/scss/animations",
+"../www/lib/ionic/scss/transitions";
 
 .scroll-bg {
   background: url($big-bg) no-repeat center center fixed;

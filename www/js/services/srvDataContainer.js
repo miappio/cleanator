@@ -135,7 +135,6 @@ var SrvDataContainer = (function () {
         return loggedIn;
     };
 
-
     Service.prototype.getAppFirstInitLevel = function () {
         return this.srvConfig.getAppFirstInitLevel();
     };
@@ -190,9 +189,14 @@ var SrvDataContainer = (function () {
     };
     Service.prototype.getHistoricsDone = function (userId) {
         var done = [];
-        if (userId) done = this.filterFilter(this.historicsDone, userId);
+        var filter = {};
+        if (userId) {
+            filter[this.historicCols.userId] = userId;
+            done = this.filterFilter(this.historicsDone, filter);
+        }
         else done = this.historicsDone;
 
+        console.log('srvDataContainer.getHistoricsDone :' + userId + ' (' + this.historicsDone.length + '/' + done.length + ') ', this.historicsDone);
         return done;
     };
 
@@ -212,8 +216,6 @@ var SrvDataContainer = (function () {
         var todos = self.historicsTodo2;
         var todosToday = [];
         for (var i = 0; todos && (i < todos.length); i++) {
-            //console.log(todos[i].actionTodoDate);
-            //console.log(date);
             var dateCorrect = false;
             if (!date) dateCorrect = true;
             else {
@@ -375,7 +377,7 @@ var SrvDataContainer = (function () {
     };
 
     /**
-     * @deprecated
+     * @deprecated ???
      */
     Service.prototype.computeTodoForOneUser = function (userId) {
 
@@ -416,14 +418,9 @@ var SrvDataContainer = (function () {
     };
 
     Service.prototype.computeTodoForAllUsers = function () {
-
         var self = this;
         var deferred = self.$q.defer();
-
-        if (!self.userA || !self.userB) {
-            deferred.reject('data not initialized...');
-            return deferred.promise;
-        }
+        if (!self.userA || !self.userB) return self.$q.reject('data not initialized...');
 
         // compute base on all historics done
         self.srvData.computeHistoricsByCalendar(self.chores, self.historicsDone, self.userA, self.userB, 7)
@@ -474,8 +471,8 @@ var SrvDataContainer = (function () {
         var indicA = userATimeAvailable ? (Math.round((userATimeSpent * period / userATimeAvailable) * 10) / 10) : 0;
         var indicB = userBTimeAvailable ? (Math.round((userBTimeSpent * period / userBTimeAvailable) * 10) / 10) : 0;
         var indicAB = indicA + indicB;
-        var indicAPer = indicAB ? (Math.round((indicA * 100 / (indicAB)))) : 0;
-        var indicBPer = indicAB ? (Math.round((indicB * 100 / (indicAB)))) : 0;
+        var indicAPer = indicAB ? (Math.round((indicA * 100 / (indicAB)))) : 50;
+        var indicBPer = indicAB ? (Math.round((indicB * 100 / (indicAB)))) : 50;
         choresIndicFeasibility = choresIndicTimeRequired ? (usersIndicTimeAvailabity * 2 / choresIndicTimeRequired) : 0;
 
         return {

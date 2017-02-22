@@ -3506,10 +3506,12 @@ ion-infinite-scroll {
   top: 137px; }
 
 .has-footer {
-  bottom: 44px; }
+    bottom: 60px;
+}
 
 .has-subfooter {
-  bottom: 88px; }
+    bottom: 104px;
+}
 
 .has-tabs,
 .bar-footer.has-tabs {
@@ -3520,7 +3522,8 @@ ion-infinite-scroll {
     height: auto; }
 
 .has-footer.has-tabs {
-  bottom: 93px; }
+    bottom: 109px;
+}
 
 .pane {
   -webkit-transform: translate3d(0, 0, 0);
@@ -4278,7 +4281,8 @@ a.subdued {
   border-top-width: 1px;
   border-bottom-width: 0;
   background-position: top;
-  height: 44px; }
+    height: 60px;
+}
   .bar-footer.item-input-inset {
     position: absolute; }
 
@@ -4291,7 +4295,7 @@ a.subdued {
   height: 44px; }
 
 .bar-subfooter {
-  bottom: 44px;
+    bottom: 60px;
   display: block;
   height: 44px; }
 

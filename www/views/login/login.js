@@ -88,22 +88,25 @@ angular
                     $scope.navRedirect('/config/couple');
                 })
                 .catch(function (err) {
-                    //console.log('loginErr : ', err);
+                    console.log('loginErr : ', err);
                     if (err && err.name === '404') {
                         $scope.loginErrCode = 'loginBadConnection';
                         $scope.loginErrMsgs.push(err.name);
+                        if (err && err.message) $scope.loginErrMsgs.push(err.message);
                     } else if (err && err.name === '0') {
                         $scope.loginErrCode = 'loginNoConnection';
                         $scope.loginErrMsgs.push('Timeout');
                     } else {
                         $scope.loginErrCode = 'loginBadCredential';
                         if (err && err.name) $scope.loginErrMsgs.push(err.name);
+                        else if (err && err.message) $scope.loginErrMsgs.push(err.message);
                     }
-                    $scope.loginErrMsgs.push(err.message ? err.message : err);
                 })
                 .finally(function (msg) {
                     $scope.loginInitSpinnerStopped = true;
                     $scope.loginWaitForLoginRequest = false;
+                    // Stop the ion-refresher from spinning
+                    $scope.$broadcast('scroll.refreshComplete');
                     return $q.resolve();
                 });
 

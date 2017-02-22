@@ -5,406 +5,413 @@ msgstr ""
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: fr_FR\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.6\n"
+"X-Generator: Poedit 1.8.12\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: www/views/login/loginIn.html:57
+#: dashboard/dashboardUser.html:96
+msgid "-- choose category --"
+msgstr "— choisissez une catégorie —"
+
+#: dashboard/dashboardUser.html:105
+msgid "-- choose chore --"
+msgstr "— choisissez une tâche —"
+
+#: login/loginIn.html:57
 msgid "01valid.email@required.com"
-msgstr "un.email@valide.com"
+msgstr "votre.email@requis.fr"
 
-#: www/views/chore/categoryChores.html:51
+#: chore/categoryChores.html:55
 msgid "AddOneChore.."
-msgstr ""
+msgstr "Rajouter une tâche"
 
-#: www/views/chore/choreDetail.html:100 www/views/chore/choreDetail.html:89
-msgid "affinity for this item"
-msgstr "Affinité pour cette tâche à faire"
+#: login/loginIn.html:26
+msgid "Authentication service problem, please contact support@miapp.io"
+msgstr "Problème d’authentification. Merci de contacter support@miapp.io"
 
-#: www/views/chore/categoryAll.html:33
-msgid "All chores available"
-msgstr "Corvées des amoureux"
+#: login/loginIn.html:24
+msgid "Bad login/password."
+msgstr "Mauvais login / mot de passe."
 
-#: www/views/dashboard/dashboardUser.html:66
-msgid "All chores todo for"
-msgstr "Liste des tâches à faire pour"
-
-#: www/views/chore/categoryAll.html:97
+#: chore/categoryAll.html:132
 msgid "CatActivate"
-msgstr ""
+msgstr "Activer"
 
-#: www/views/chore/categoryAll.html:51 www/views/chore/categoryAll.html:64
+#: chore/categoryAll.html:97
 msgid "CatDeactivate"
-msgstr ""
+msgstr "Désactiver"
 
-#: www/views/user/modals.html:14
+#: chore/categoryAll.html:84
+msgid "CatIGotIt"
+msgstr "J’ai compris"
+
+#: user/modals.html:11
 msgid "Changing your email means logout and loosing this Cleanator session"
 msgstr " "
 
-#: www/views/chore/categoryChores.html:66
+#: chore/categoryChores.html:70
 msgid "ChoreActivate"
-msgstr ""
+msgstr "Activer"
 
-#: www/views/chore/categoryDetail.html:82
+#: chore/categoryDetail.html:86
 msgid "ChoreAffinity"
-msgstr ""
+msgstr "Affinité"
 
-#: www/views/chore/categoryChores.html:38
+#: chore/categoryChores.html:42
 msgid "ChoreDeactivate"
-msgstr ""
+msgstr "Désactiver"
 
-#: www/views/chore/categoryDetail.html:55
-#: www/views/chore/categoryDetail.html:56 www/views/chore/choreDetail.html:63
-#: www/views/chore/choreDetail.html:64
+#: chore/categoryDetail.html:58 chore/categoryDetail.html:60
+#: chore/choreDetail.html:65 chore/choreDetail.html:67
 msgid "ChoreDescription"
 msgstr "Description"
 
-#: www/views/chore/categoryDetail.html:61 www/views/chore/choreDetail.html:69
+#: chore/choreDetail.html:113
+msgid "ChoreDetailRemove"
+msgstr "Supprimer cette tâche"
+
+#: chore/categoryDetail.html:65 chore/choreDetail.html:72
 msgid "ChoreEstimate"
-msgstr "Temps estimé"
+msgstr "Temps à passer"
 
-#: www/views/chore/categoryDetail.html:61
+#: chore/categoryDetail.html:65
 msgid "ChoreEstimateMn"
-msgstr ""
+msgstr "Temps à passer en minutes"
 
-#: www/views/chore/categoryDetail.html:71 www/views/chore/choreDetail.html:77
+#: chore/categoryDetail.html:75 chore/choreDetail.html:80
 msgid "ChoreFrequency"
 msgstr "Fréquence"
 
-#: www/views/chore/categoryDetail.html:71
+#: chore/categoryDetail.html:75
 msgid "ChoreFrequencyDays"
-msgstr ""
+msgstr "Fréquence en jours"
 
-#: www/views/chore/categoryDetail.html:29
-#: www/views/chore/categoryDetail.html:30 www/views/chore/choreDetail.html:42
-#: www/views/chore/choreDetail.html:43
+#: chore/categoryDetail.html:29 chore/categoryDetail.html:31
+#: chore/choreDetail.html:42 chore/choreDetail.html:44
 msgid "ChoreName"
 msgstr "Nom"
 
-#: www/views/chore/categoryDetail.html:42 www/views/chore/choreDetail.html:52
+#: chore/categoryDetail.html:45 chore/choreDetail.html:53
 msgid "ChorePriority"
-msgstr "Priorité"
+msgstr "Tâche prioritaire ?"
 
-#: www/views/chore/categoryDetail.html:34 www/views/chore/choreDetail.html:47
+#: chore/categoryDetail.html:35 chore/choreDetail.html:48
 msgid "ChoreType"
-msgstr ""
+msgstr "Type"
 
-#: www/views/dashboard/dashboardIndicator.html:54
+#: dashboard/dashboardIndicator.html:35
 msgid "Clean History"
-msgstr ""
+msgstr "Vider l’historique"
 
-#: www/views/dashboard/dashboardUser.html:83
+#: dashboard/modals.html:57
+msgid "DashboardModalCancel"
+msgstr "Revenir"
+
+#: dashboard/modals.html:52
+msgid "DashboardModalDidIt"
+msgstr "Terminer"
+
+#: dashboard/modals.html:5
+msgid "DashboardModalDone"
+msgstr "Fait !"
+
+#: dashboard/modals.html:41
+msgid "DashboardModalHowDidYouFeel"
+msgstr "Votre ressenti ?"
+
+#: dashboard/modals.html:29
+msgid "DashboardModalTimesSpent"
+msgstr "Temps passé :"
+
+#: dashboard/dashboardUser.html:76
 msgid "DashboardPleasePullToRefreshYourDashboard"
-msgstr ""
+msgstr "Rafraîchir"
 
-#: www/views/chore/choreDetail.html:78
-msgid "day(s)"
-msgstr "jour(s)"
-
-#: www/views/chore/choreDetail.html:78
-msgid "each"
-msgstr "tous les"
-
-#: www/views/dashboard/dashboardIndicator.html:18
-msgid "Fair indicator of"
-msgstr ""
-
-#: www/views/chore/categoryAll.html:37 www/views/user/userCalendar.html:27
+#: chore/categoryAll.html:69 user/userCalendar.html:67
 msgid "Feasibility"
-msgstr ""
+msgstr "faisabilité :"
 
-#: www/views/user/userAll.html:57
+#: user/userAll.html:67
 msgid "Footer_ButtonWhen"
-msgstr "Vos disponibilités ?"
+msgstr "Prochaine étape"
 
-#: www/views/commons/footer.html:15
+#: commons/footer.html:16
 msgid "Footer_Compute"
-msgstr "Calcul …"
+msgstr "Calculer"
 
-#: www/views/user/userCalendar.html:142
-msgid "Footer_What"
-msgstr "Vos corvées ?"
+#: commons/footer.html:9
+msgid "Footer_ComputeDetailled"
+msgstr "Au travail !"
 
-#: www/views/login/loginIn.html:34
-msgid "for Better for Dust"
-msgstr "Pour le meilleur & la poussière"
-
-#: www/views/user/userCalendar.html:124 www/views/user/userCalendar.html:74
+#: user/userCalendar.html:112 user/userCalendar.html:170
 msgid "Friday"
 msgstr "Vendredi"
 
-#: www/views/chore/categoryAll.html:40 www/views/user/userCalendar.html:30
-msgid "Good"
-msgstr "Bien"
-
-#: www/views/chore/categoryAll.html:49
-msgid "Guider_Discover and click on all chore categories"
-msgstr "Découvrez ces catégories de tâches prédéfinies"
-
-#: www/views/chore/categoryAll.html:50
-msgid "Guider_Swipe them to unactivate it"
-msgstr "Cliquez dessus ou faites les glisser pour les désactiver…"
-
-#: www/views/user/userCalendar.html:36
-msgid "GUIDER_WorldwideStats"
-msgstr ""
-"Le saviez-vous<br>\n"
-"En 2015 le temps moyen quotidien consacré aux tâches ménagères est de 3h21 "
-"(201 min)."
-
-#: www/views/chore/categoryAll.html:76
-msgid "GuiderButton_BigJump"
-msgstr ""
-
-#: www/views/config/configItems.html:45
-msgid "HEADLINE"
-msgstr ""
-
-#: www/views/chore/categoryAll.html:88
-msgid "Here .. all the categories you've deselected (swipe left)..."
-msgstr ""
-
-#: www/views/dashboard/dashboardIndicator.html:60
-msgid "History of all done by"
-msgstr ""
-
-#: www/views/config/configItems.html:46
-msgid "INTRO_TEXT"
-msgstr ""
-
-#: www/views/user/userCalendar.html:23
-msgid "It's time to carry on"
-msgstr "Vos disponibilités"
-
-#: www/views/dashboard/dashboardUser.html:104
-#: www/views/dashboard/dashboardUser.html:128
-msgid "latest item :"
-msgstr "dernière fois :"
-
-#: www/views/user/userAll.html:56
+#: user/userCalendar.html:53
 msgid ""
-"Level0_You have defined who you are ?d sdsqdqsd sdq sdqsd sds sdsd qsdsdsd "
-"qsds dqsdq sdqsdsd azertyuiop qsqsdfghjklm"
+"GUIDER_CalendarWorldwideStats : Do you know that the\n"
+"                        average of time\n"
+"                        dedicated to home chore is 200 hours by week ?"
 msgstr " "
 
-#: www/views/login/loginIn.html:71 www/views/user/userAll.html:66
+#: chore/categoryAll.html:56
+msgid ""
+"GUIDER_ChoresWorldwideStats : Split your work on simple\n"
+"                        goal"
+msgstr ""
+"Saviez vous que la moyenne du temps\n"
+"consacré aux tâches ménagères \n"
+"est de 200 heures par semaine ?"
+
+#: chore/categoryAll.html:49 user/userCalendar.html:46
+msgid "Good"
+msgstr "Cohérent"
+
+#: chore/categoryAll.html:110
+msgid "GuiderButton_What"
+msgstr "Etape suivante"
+
+#: chore/categoryAll.html:82
+msgid "Guider_Discover and click on all chore categories"
+msgstr "Choisir les catégories pertinentes"
+
+#: chore/categoryAll.html:83
+msgid "Guider_Swipe them to unactivate it"
+msgstr "et glisser sur le côté pour désactiver"
+
+#: dashboard/dashboardIndicator.html:68
+msgid "History of all done by"
+msgstr "Historique de"
+
+#: dashboard/dashboardIndicator.html:33
+msgid "Last reset:"
+msgstr "dernier reset :"
+
+#: user/userAll.html:66
+msgid ""
+"Level0_You’ve set your profiles ? Ready for the next part : setting all the "
+"chores you have to deal with."
+msgstr " "
+
+#: login/loginIn.html:73 user/userAll.html:77
 msgid "LoginLanguage"
-msgstr "Langue"
+msgstr "langue"
 
-#: www/views/login/loginIn.html:64
+#: login/loginIn.html:66
 msgid "LoginNewPassword"
-msgstr "Votre mot de passe"
+msgstr "mot de passe"
 
-#: www/views/login/loginIn.html:85
+#: login/loginIn.html:89
 msgid "LoginSignin"
-msgstr "Rentrez"
+msgstr "Entrer"
 
-#: www/views/login/loginIn.html:50
+#: login/loginIn.html:47
 msgid "LoginWelcome"
-msgstr ""
+msgstr "Bienvenue"
 
-#: www/views/chore/categoryAll.html:36 www/views/user/userCalendar.html:26
-msgid "min / day."
-msgstr "mn / jour"
-
-#: www/views/user/userCalendar.html:46 www/views/user/userCalendar.html:96
-msgid "minutes in average dedicated per day"
-msgstr "mn de temps dédié en moyenne chaque jour de la semaine"
-
-#: www/views/dashboard/dashboardUser.html:103
-#: www/views/dashboard/dashboardUser.html:127
-msgid "minutes,"
-msgstr "minutes"
-
-#: www/views/chore/choreDetail.html:70 www/views/user/userCalendar.html:106
-#: www/views/user/userCalendar.html:111 www/views/user/userCalendar.html:116
-#: www/views/user/userCalendar.html:121 www/views/user/userCalendar.html:126
-#: www/views/user/userCalendar.html:131 www/views/user/userCalendar.html:136
-#: www/views/user/userCalendar.html:56 www/views/user/userCalendar.html:61
-#: www/views/user/userCalendar.html:66 www/views/user/userCalendar.html:71
-#: www/views/user/userCalendar.html:76 www/views/user/userCalendar.html:81
-#: www/views/user/userCalendar.html:86
-msgid "mn"
-msgstr "mn"
-
-#: www/views/user/modals.html:7
+#: user/modals.html:4
 msgid "ModalUserLogout"
-msgstr "Déconnection"
+msgstr "Se déconnecter ?"
 
-#: www/views/user/modals.html:18
+#: user/modals.html:15
 msgid "ModalUserWarningLogout"
-msgstr ""
-"Vous allez vous déconnecter. \n"
-"<br>Retrouvez vos données actuelles <br>en vous reconnectant avec <br>votre "
-"email."
+msgstr "Changer d’email implique de se déconnecter et de changer de session."
 
-#: www/views/user/userCalendar.html:104 www/views/user/userCalendar.html:54
+#: user/userCalendar.html:146 user/userCalendar.html:88
 msgid "Monday"
 msgstr "Lundi"
 
-#: www/views/chore/categoryChores.html:51
+#: chore/categoryChores.html:55
 msgid "New Item"
 msgstr "Nouvelle tâche"
 
-#: www/views/dashboard/dashboardUser.html:106
-#: www/views/dashboard/dashboardUser.html:130
-msgid "none"
-msgstr ""
+#: login/loginIn.html:28
+msgid "No connection, please verify your network."
+msgstr "Pas de connexion. Merci de vérifier votre réseau."
 
-#: www/views/chore/categoryAll.html:39 www/views/user/userCalendar.html:29
+#: chore/categoryAll.html:46 user/userCalendar.html:43
 msgid "NotBad"
-msgstr ""
+msgstr "Encore un effort"
 
-#: www/views/chore/categoryAll.html:38 www/views/user/userCalendar.html:28
+#: chore/categoryAll.html:44 user/userCalendar.html:41
 msgid "NotGood"
-msgstr ""
+msgstr "Insuffisant"
 
-#: www/views/chore/choreDetail.html:53
-msgid "NotRequired"
-msgstr "non prioritaire"
-
-#: www/views/dashboard/-dashboardAll.html:13
-#: www/views/dashboard/dashboardUser.html:41
+#: dashboard/dashboardUser.html:39
 msgid "PullToRefresh"
-msgstr ""
+msgstr "Rafraîchir "
 
-#: www/views/dashboard/-dashboardAll.html:32
-#: www/views/dashboard/dashboardUser.html:76
+#: dashboard/dashboardUser.html:69
 msgid "Report"
 msgstr "Rapport"
 
-#: www/views/chore/choreDetail.html:54
-msgid "Required <i class=\"icon ion-star\"></i>"
-msgstr "Prioritaire <i class=\"icon ion-star\"></i>"
-
-#: www/views/dashboard/dashboardIndicator.html:50
+#: dashboard/dashboardIndicator.html:30
 msgid "Reset"
-msgstr ""
+msgstr "Reset"
 
-#: www/views/user/userCalendar.html:129 www/views/user/userCalendar.html:79
+#: user/userCalendar.html:118 user/userCalendar.html:176
 msgid "Saturday"
 msgstr "Samedi"
 
-#: www/views/dashboard/dashboardIndicator.html:48
+#: dashboard/dashboardIndicator.html:26
 msgid "Seems Fair"
-msgstr ""
+msgstr "Sembre équitable"
 
-#: www/views/dashboard/dashboardIndicator.html:49
+#: dashboard/dashboardIndicator.html:28
 msgid "Seems not Fair"
-msgstr ""
+msgstr "Semble non équitable"
 
-#: www/views/user/userCalendar.html:134 www/views/user/userCalendar.html:84
+#: user/userCalendar.html:124 user/userCalendar.html:182
 msgid "Sunday"
 msgstr "Dimanche"
 
-#: www/views/user/configTabs.html:19
+#: user/configTabs.html:30
 msgid "TabWhat"
 msgstr "Quoi"
 
-#: www/views/user/configTabs.html:14
+#: user/configTabs.html:18
+msgid "TabWhatDetailled"
+msgstr "Vos tâches ménagères ?"
+
+#: user/configTabs.html:27
 msgid "TabWhen"
 msgstr "Quand"
 
-#: www/views/user/configTabs.html:9
+#: user/configTabs.html:13
+msgid "TabWhenDetailled"
+msgstr "Vos disponibilités ?"
+
+#: user/configTabs.html:24
 msgid "TabWho"
 msgstr "Qui"
 
-#: www/views/dashboard/dashboardUser.html:110
-#: www/views/dashboard/dashboardUser.html:143
-msgid "Terminated"
-msgstr "Fait"
+#: user/configTabs.html:8
+msgid "TabWhoDetailled"
+msgstr "Qui êtes vous ?"
 
-#: www/views/user/userCalendar.html:119 www/views/user/userCalendar.html:69
+#: dashboard/dashboardUser.html:124 dashboard/dashboardUser.html:158
+msgid "Terminated"
+msgstr "Fini"
+
+#: user/userCalendar.html:106 user/userCalendar.html:164
 msgid "Thursday"
 msgstr "Jeudi"
 
-#: www/views/user/userCalendar.html:26
+#: chore/categoryAll.html:64 user/userCalendar.html:57
 msgid "TimeAverageAvailable"
-msgstr ""
+msgstr "temps disponible moyen :"
 
-#: www/views/chore/categoryAll.html:36
+#: chore/categoryAll.html:40 chore/categoryAll.html:59
+#: user/userCalendar.html:62
 msgid "TimeAverageRequired"
-msgstr ""
+msgstr "en moyenne pour faire ces tâches :"
 
-#: www/views/user/userCalendar.html:109 www/views/user/userCalendar.html:59
+#: user/userCalendar.html:152 user/userCalendar.html:94
 msgid "Tuesday"
 msgstr "Mardi"
 
-#: www/views/dashboard/dashboardUser.html:90
+#: dashboard/dashboardUser.html:92
 msgid "Unforeseen item :"
-msgstr ""
+msgstr "Tâche imprévue :"
 
-#: www/views/chore/categoryAll.html:83 www/views/chore/categoryChores.html:56
+#: chore/categoryAll.html:118 chore/categoryChores.html:60
 msgid "Unusefull list"
-msgstr "Tâches inutiles"
+msgstr "Tâches désactivées"
 
-#: www/views/chore/categoryChores.html:21
+#: chore/categoryChores.html:23
 msgid "UsefullChoreList"
-msgstr ""
+msgstr " "
 
-#: www/views/user/modals.html:24
+#: user/modals.html:22
 msgid "UserBackToSession"
-msgstr "Annuler"
+msgstr "Retour"
 
-#: www/views/user/userAll.html:80
+#: user/userAll.html:92
 msgid "UserEmail"
-msgstr "Votre email"
+msgstr "email"
 
-#: www/views/user/userAll.html:79
+#: user/userAll.html:90
 msgid "UserEmailCouple"
-msgstr "Votre email"
+msgstr "Email"
 
-#: www/views/user/modals.html:19
+#: user/modals.html:16
 msgid "UserLogout"
-msgstr "Déconnection"
+msgstr "Se déconnecter"
 
-#: www/views/user/userAll.html:31
+#: user/userAll.html:36
 msgid "UserPseudoA"
-msgstr "Vous"
+msgstr "Pseudo"
 
-#: www/views/user/userAll.html:43
+#: user/userAll.html:51
 msgid "UserPseudoB"
-msgstr "Votre compagnon"
+msgstr "Pseudo"
 
-#: www/views/chore/categoryAll.html:27 www/views/chore/categoryChores.html:13
-#: www/views/dashboard/-dashboardAll.html:43
-#: www/views/dashboard/dashboardUser.html:58 www/views/user/userAll.html:18
-#: www/views/user/userCalendar.html:18
-msgid "Warning!"
-msgstr "Attention !"
-
-#: www/views/user/userCalendar.html:114 www/views/user/userCalendar.html:64
+#: user/userCalendar.html:100 user/userCalendar.html:158
 msgid "Wednesday"
 msgstr "Mercredi"
 
-#~ msgid "Guider_You have configure all your tasks"
-#~ msgstr ""
-#~ "Vous avez configuré toutes vos corvées ? Prêt pour le calcul de vos "
-#~ "tâches à faire … "
+#: chore/choreDetail.html:103 chore/choreDetail.html:92
+msgid "affinity for this item"
+msgstr "affinité pour cette tâche"
 
-#~ msgid "for Better<br>for Dust"
-#~ msgstr "Pour le meilleur<br>& la poussière"
+#: chore/choreDetail.html:81
+msgid "day(s)"
+msgstr "jour(s)"
 
-#~ msgid "Footer_BigJump"
-#~ msgstr "Calcul de votre agenda …"
+#: chore/choreDetail.html:81
+msgid "each"
+msgstr "tous les"
 
-#~ msgid "Guider_You have configure your calendar. Let jump"
-#~ msgstr "Vous avez configuré votre calendrier. Allons voir les tâches …"
+#: login/loginIn.html:17
+msgid "for Better for Dust"
+msgstr "pour le Meilleur et la Poussière"
 
-#~ msgid "UnusefullList"
-#~ msgstr "Tâches inutiles"
+#: user/userCalendar.html:38
+msgid "front of all todos"
+msgstr "pour rester en couple"
 
-#~ msgid "Footer_ButtonWhat"
-#~ msgstr "Quoi"
+#: dashboard/dashboardUser.html:115 dashboard/dashboardUser.html:148
+msgid "latest item :"
+msgstr "dernier item :"
 
-#~ msgid "Footer_When"
-#~ msgstr "Quand"
+#: chore/categoryAll.html:61 user/userCalendar.html:59
+msgid "min / day ?"
+msgstr "min par jour."
 
-#~ msgid "Les amoureux"
-#~ msgstr "Les amoureux"
+#: chore/categoryAll.html:66 user/userCalendar.html:64
+msgid "min / day."
+msgstr "min par jour."
 
-#~ msgid "valid.email@required.com"
-#~ msgstr "un.email@valide.com"
+#: chore/categoryAll.html:41
+msgid "min / week ?"
+msgstr "minutes par semaine"
+
+#: user/userCalendar.html:35
+msgid "min average by day"
+msgstr "min de dispo / jour"
+
+#: user/userCalendar.html:137 user/userCalendar.html:79
+msgid "minutes av./day"
+msgstr "minutes moyen par jour"
+
+#: dashboard/dashboardUser.html:114 dashboard/dashboardUser.html:147
+msgid "minutes,"
+msgstr "minutes,"
+
+#: chore/choreDetail.html:73 user/userCalendar.html:103
+#: user/userCalendar.html:109 user/userCalendar.html:115
+#: user/userCalendar.html:121 user/userCalendar.html:127
+#: user/userCalendar.html:149 user/userCalendar.html:155
+#: user/userCalendar.html:161 user/userCalendar.html:167
+#: user/userCalendar.html:173 user/userCalendar.html:179
+#: user/userCalendar.html:185 user/userCalendar.html:91
+#: user/userCalendar.html:97
+msgid "mn"
+msgstr "min"
+
+#: dashboard/dashboardUser.html:119 dashboard/dashboardUser.html:152
+msgid "none"
+msgstr "na"

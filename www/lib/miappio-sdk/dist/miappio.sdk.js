@@ -12890,7 +12890,7 @@ miappSdkEventable.mixin = function (destObject) {
                     };
                     xhr.onerror = function (response) {
                         clearTimeout(timeout);
-                        if (response && response.target && response.target.timeout === 2000) {
+                        if (response && response.target && response.target.timeout === 9000) {
                             response.error = "request_timeout";
                             response.error_description = "API Call timed out.";
                         }
@@ -12915,7 +12915,7 @@ miappSdkEventable.mixin = function (destObject) {
                         //MLE ? if (token) xhr.setRequestHeader('Cookie', "miappSdktoken=" + token);
                         //if (token) xhr.setRequestHeader('X-CSRF-Token', token);
                     }
-                    xhr.timeout = 2000; // time in milliseconds
+                    xhr.timeout = 9000; // time in milliseconds
                     timeout = setTimeout(function () {
                         xhr.abort();
                         p.done("API Call timed out.", null);

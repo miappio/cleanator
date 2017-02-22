@@ -36,7 +36,7 @@
                                   <select class="form-control" ng-model="thumbChoreObj" ng-options="thumbPath.description for thumbPath in categories | filter : 'choreDescription'" ng-change="choreSetThumb(thumbChoreObj)"></select>
                                 </div>-->
                                 <div class="col-xs-2 col-sm-2" style="position:relative">
-                                    <img src="{{getChoreCategoryThumbPath(choreToEdit[choreCols.category])}}"
+                                    <img src="{{dashboardGetChoreCategoryThumbPath(choreToEdit[choreCols.category])}}"
                                          class="img-circle" height="30px" style="position:absolute"/>
                                     <!--<img src="{{getChoreThumbPath(choreToEdit[choreCols.choreDescriptionCat])}}"class="img-circle" height="30px" style="position:absolute"/>-->
                                 </div>

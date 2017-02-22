@@ -1,12 +1,8 @@
 angular.module('myAngularApp.views.dashboard', [])
 
-
-//.config(function($routeProvider) {
-//	$routeProvider
     .config(function ($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
 
         $stateProvider
-
             .state('dashboard-user', {
                 url: '/dashboard/user/:userId',
                 cache: false,
@@ -23,21 +19,15 @@ angular.module('myAngularApp.views.dashboard', [])
         $urlRouterProvider.otherwise('/dashboard/user/a');
     })
 
-    .controller('DashboardCtrl', function ($scope, $timeout, $log, $q, $stateParams, $location, srvDataContainer, srvData, srvConfig) {
+    .controller('DashboardCtrl', function ($scope, $timeout, $log, $q, $stateParams, $location, $ionicModal, srvDataContainer, srvData, srvConfig) {
         'use strict';
 
-        //$scope.dashboardErrorMsg = "";
         $scope.dashboardHistorics = [];
-        //$scope.dashboardHistoricsDone = [];
         $scope.dashboardSearch = {};
         $scope.dashboardHistoricDisplay = "week";
-        //$scope.dashboardChoresToAdd = {'': []};
-        //$scope.dashboardChoresCategoriesToAdd = [''];
         $scope.dashboardChoresToAdd = {};
         $scope.dashboardChoresCategoriesToAdd = [];
 
-
-        //$scope.dashboardViewTitle = "a";
         $scope.dashboardInit = function () {
 
             if ($scope.navInit) $scope.navInit();
@@ -57,7 +47,6 @@ angular.module('myAngularApp.views.dashboard', [])
             if ($scope.userB && $scope.userB._id == userId) $scope.dashboardSearch.userId = $scope.userB._id;
 
         };
-
 
         $scope.dashboardGetTextIdentifier = function (text) {
 
@@ -84,9 +73,10 @@ angular.module('myAngularApp.views.dashboard', [])
             return str;
         };
 
-        // Spinner
+        // Spinner - begin
         $scope.dashboardInitSpinnerStopped = false;
         $scope.afterNavigationInitSpinnerShow = function () {
+            $scope.dashboardInitSpinnerStopped = false;
             $timeout(function () {
                 if (!srvConfig.isLoggedIn())
                     $scope.dashboardStopSpinnerWithMessage();
@@ -103,17 +93,16 @@ angular.module('myAngularApp.views.dashboard', [])
                             return $scope.dashboardStopSpinnerWithMessage(err);
                         });
                 }
-            }, 2000);
+            }, 1500);
         };
-
         $scope.dashboardStopSpinnerWithMessage = function (msg) {
             var text = msg || "";
-            //text = "aaaaaahhh   "+ text ;
             if (text) $scope.navAddErrorMessage(text);
             $scope.dashboardInitSpinnerStopped = true;
+            $scope.$broadcast('scroll.refreshComplete');
+            return $q.resolve(text);
         };
         //Spinner - end
-
 
         $scope.dashboardShowMore = function () {
             $scope.dashboardShowMoreVar = !$scope.dashboardShowMoreVar;
@@ -125,27 +114,25 @@ angular.module('myAngularApp.views.dashboard', [])
             $scope.dashboardIndicators = srvDataContainer.computeIndicators();
         };
 
-
-        // Synchronise DB
         $scope.dashboardDataSync = function () {
 
-            $scope.navDataSync()
-                .then(function (msg) {
-                    return $scope.dashboardDataBind();
-                })
-                .then(function (msg) {
-                    return $scope.dashboardStopSpinnerWithMessage(msg);
-                })
-                .catch(function (err) {
-                    return $scope.dashboardStopSpinnerWithMessage(err);
-                })
-                .finally(function (msg) {
-                    // Stop the ion-refresher from spinning
-                    $scope.$broadcast('scroll.refreshComplete');
+            $scope.dashboardInitSpinnerStopped = false;
+            return $q(function (resolve, reject) {
+                $timeout(function () {
+                    $scope.navDataSync()
+                        .then(function (msg) {
+                            return $scope.dashboardDataBind();
+                        })
+                        .then(function (msg) {
+                            $scope.dashboardStopSpinnerWithMessage(msg).then(resolve);
+                        })
+                        .catch(function (err) {
+                            $scope.dashboardStopSpinnerWithMessage(err).then(resolve);
+                        });
                 });
+            }, 1500);
         };
 
-        // Recherche données en BdD :
         $scope.dashboardDataBind = function () {
             var deferred = $q.defer();
             var self = this;
@@ -156,18 +143,18 @@ angular.module('myAngularApp.views.dashboard', [])
             promises.push($scope.dashboardComputeHistoricsByWeek());
             //promises.push($scope.dashboardComputeHistoricsDone());
             // execute as promises
-            $q.all(promises).then(function (result) {
-                //$scope.dashboardComputeIndicleanators();
-                $scope.dashboardIndicatorsCompute();
-                return deferred.resolve();
-            })
+            $q.all(promises)
+                .then(function (result) {
+                    //$scope.dashboardComputeIndicleanators();
+                    $scope.dashboardIndicatorsCompute();
+                    return deferred.resolve();
+                })
                 .catch(function (msg) {
                     return deferred.reject(msg);
                 });
 
             return deferred.promise;
         };
-
 
         $scope.dashboardComputeChoresToAdd = function () {
             if (!$scope.chores || $scope.chores.length === 0) return;
@@ -197,7 +184,6 @@ angular.module('myAngularApp.views.dashboard', [])
             $scope.dashboardToAdd = {'chore': null};
         };
 
-        // par calendrier
         $scope.dashboardComputeHistoricsByWeek = function () {
             var self = this;
             var deferred = $q.defer();
@@ -205,15 +191,14 @@ angular.module('myAngularApp.views.dashboard', [])
 
             // Creation liste
             srvDataContainer.computeTodoForAllUsers()
-                .then(function (historics, err) {
-                    $scope.dashboardErrorMsg = err;
+                .then(function (historics) {
                     historics.sort(function (a, b) {
                         return a[$scope.historicCols.actionTodoDate] > b[$scope.historicCols.actionTodoDate];
                     });
-                    miapp.safeApply($scope, function () {
+                    //miapp.safeApply($scope, function () {
                         $scope.dashboardHistorics = historics;
-                    });
-                    deferred.resolve(err);
+                    //});
+                    deferred.resolve();
                 })
                 .catch(function (err) {
                     $scope.dashboardErrorMsg = err;
@@ -223,70 +208,34 @@ angular.module('myAngularApp.views.dashboard', [])
             return deferred.promise;
         };
 
-        /*
-         // Find and bind historics marked as "done" in db
-         // into $scope.dashboardHistoricsDone
-         $scope.dashboardComputeHistoricsDone = function() {
-         var self = this;
-         var deferred = $q.defer();
-
-         srvData.Historic.findAll(true)
-         .then(function (historicsSavedInDb) {
-         $scope.dashboardHistoricsDone = historicsSavedInDb;
-         $scope.dashboardErrorMsg = "";
-         deferred.resolve(historicsSavedInDb);
-         })
-         .catch(function (msg) {
-         $scope.dashboardHistoricsDone = [];
-         $scope.dashboardErrorMsg = msg.message ? msg.message : msg;
-         deferred.reject(msg);
-         });
-
-         return deferred.promise;
-         };
-         */
-        //$scope.dashboardToAdd = {'chore':null};
-        // Appelée sur "Done" pour enlever de la liste et gérer historique
         $scope.dashboardTerminateHistoric = function (historic, list, index) {
-            if (!historic) return;
+            if (!historic) return $q.reject('no historic');
 
             var self = this;
-            var deferred = $q.defer();
             var historicToAdd = {};
 
-            $timeout(function () {
-
-
-                historic.tmpBeforeTerminate = true;
-                // copy chore to historic
+            return $q(function (resolve, reject) {
                 historicToAdd = angular.copy(historic);
-                // historicToAdd._id = null;
-                // historicToAdd[$scope.historicCols.choreId] = historic[$scope.historicCols.choreId];
-                // historicToAdd[$scope.historicCols.userId] = $scope.dashboardSearch[$scope.historicCols.userId];
-                // historicToAdd[$scope.historicCols.frequencyDays] = padInteger(historicToAdd[$scope.historicCols.frequencyDays]);
-
 
                 // historize what's done
-                //$scope.dashboardHistoricsDone.push(historicToAdd);
-                srvData.terminateHistoric($scope.chores, historicToAdd).then(function (historicsSavedInDb) {
-                    $scope.dashboardDataSync();
-                    deferred.resolve(historicsSavedInDb);
-
-                })
+                srvData.terminateHistoric($scope.chores, historicToAdd)
+                    .then(function (historicsSavedInDb) {
+                        historicToAdd = historicsSavedInDb;
+                        return $scope.dashboardDataSync();
+                    })
+                    .then(function () {
+                        resolve(historicToAdd);
+                    })
                     .catch(function (msg) {
                         $scope.dashboardErrorMsg = msg.message ? msg.message : msg;
                         $scope.dashboardStopSpinnerWithMessage($scope.dashboardErrorMsg);
-                        deferred.reject(msg);
+                        reject(msg);
                     });
-
-                //$scope.dashboardToAdd = {'chore':null};
-            }, 1000);
-
-            return deferred.promise;
+            });
         };
 
+        // Now section
         $scope.dashboardHistoricToDoNow = null;
-        //$scope.dashboardHistoricToDoNowDone = false;
         $scope.dashboardChoresFromCatToDoNow = null;
         $scope.dashboardSetCategoryToDoNow = function (catToDoNow) {
             $scope.dashboardChoresFromCatToDoNow = null;
@@ -302,22 +251,13 @@ angular.module('myAngularApp.views.dashboard', [])
             $scope.dashboardHistoricToDoNow[$scope.historicCols.userId] = $scope.dashboardSearch.userId;
             $scope.dashboardHistoricToDoNow._id = null;
         };
-
         $scope.dashboardTerminateHistoricNow = function (historic) {
-            //$scope.dashboardHistoricToDoNowDone = true;
-            $scope.dashboardTerminateHistoric(historic).finally(function () {
-                //$scope.dashboardHistoricToDoNow = null;
-                //$scope.dashboardComputeChoresToAdd();
-                $scope.dashboardSetCategoryToDoNow(null);
-                $scope.dashboardSetHistoricToDoNow(null);
-                //$scope.dashboardHistoricToDoNowDone = false;
-            });
+            $scope.dashboardTerminateHistoric(historic)
+                .finally(function () {
+                    $scope.dashboardSetCategoryToDoNow(null);
+                    $scope.dashboardSetHistoricToDoNow(null);
+                });
         };
-
-        //$scope.isDashboardHistoricToDoNowDone = function () {
-            //console.log('$scope.dashboardHistoricToDoNowDone :'+$scope.dashboardHistoricToDoNowDone);
-        //    return $scope.dashboardHistoricToDoNowDone;
-        //};
 
         $scope.dashboardNotForMe = function (historic) {
             if (!historic) return;
@@ -396,31 +336,22 @@ angular.module('myAngularApp.views.dashboard', [])
                 });
         };
 
-        $scope.dashboardAvailability = function(dateISO, userId ) {
+        $scope.dashboardAvailability = function (dateISO, userId) {
 
             var date = null;
             if (typeof dateISO === "string") date = new Date(dateISO);
-            else if (dateISO && dateISO instanceof Date) date = new Date(Date.UTC(dateISO.getFullYear(),dateISO.getMonth(),dateISO.getDate()));
+            else if (dateISO && dateISO instanceof Date) date = new Date(Date.UTC(dateISO.getFullYear(), dateISO.getMonth(), dateISO.getDate()));
             else date = new Date();
             //var res = date.toISOString().slice(0, 10).replace(/-/g, "/");
             var min = srvDataContainer.getHistoricsDoneTimeRemaining($scope.dashboardSearch.userId, date);
             return min;
         };
 
-        //
-        // $scope.dashboardDisplayHistoricFrequency = function(freqInDays){
-        // 	var i = parseInt(freqInDays);
-        // 	if (i <= 1) return "Frequently";
-        // 	if (i <= 10) return "When you can";
-        // 	if (i > 10) return "Why not now ?";
-        // 	return "";
-        // };
-
         $scope.dashboardDisplayHistoricDate = function (dateISO) {
 
             var date = null;
             if (typeof dateISO === "string") date = new Date(dateISO);
-            else if (dateISO && dateISO instanceof Date) date = new Date(Date.UTC(dateISO.getFullYear(),dateISO.getMonth(),dateISO.getDate()));
+            else if (dateISO && dateISO instanceof Date) date = new Date(Date.UTC(dateISO.getFullYear(), dateISO.getMonth(), dateISO.getDate()));
             else date = new Date();
 
             var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -440,83 +371,120 @@ angular.module('myAngularApp.views.dashboard', [])
             return day;
         };
 
-
         $scope.dashboardIsItToday = function (dateISO) {
 
             var date = null;
             if (typeof dateISO === "string") date = new Date(dateISO);
-            else if (dateISO && dateISO instanceof Date) date = new Date(Date.UTC(dateISO.getFullYear(),dateISO.getMonth(),dateISO.getDate()));
+            else if (dateISO && dateISO instanceof Date) date = new Date(Date.UTC(dateISO.getFullYear(), dateISO.getMonth(), dateISO.getDate()));
             else date = new Date();
             var now = new Date();
             var isToday = ((date.getDate() == now.getDate()) && (date.getMonth() == now.getMonth()) && (date.getFullYear() == now.getFullYear()));
             return isToday;
         };
 
-        $scope.dashboardCheckTodayIsEmpty = function(){
+        $scope.dashboardCheckTodayIsEmpty = function () {
             var now = new Date();
             var t = srvDataContainer.getHistoricsTodo($scope.dashboardSearch.userId, now);
             return (t && (t.length === 0));
 
         };
 
-
         $scope.dashboardDisplayHistoricCalendar = function (dateISO) {
 
             var date = null;
             if (typeof dateISO === "string") date = new Date(dateISO);
-            else if (dateISO && dateISO instanceof Date) date = new Date(Date.UTC(dateISO.getFullYear(),dateISO.getMonth(),dateISO.getDate()));
+            else if (dateISO && dateISO instanceof Date) date = new Date(Date.UTC(dateISO.getFullYear(), dateISO.getMonth(), dateISO.getDate()));
             else date = new Date();
-            var res = ''+date.getFullYear()+'-'+('0'+ (date.getMonth()+1)).slice(-2)+'-'+('0'+date.getDate()).slice(-2);//.toISOString();//.slice(0, 10).replace(/-/g, "/");
+            var res = '' + date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);//.toISOString();//.slice(0, 10).replace(/-/g, "/");
 
             var display = "" + $scope.dashboardDisplayHistoricDate(dateISO) + " <span class='small'>" + res + "</span>";
             //$log.log('dashboardDisplayHistoricCalendar: '+dateISO+' : '+display);
             return display;
         };
 
-        $scope.dashboardProfilFillColor = function (user) {
-            if (!$scope.userA || !$scope.userB) return "#FFFFFF";
-            if (user._id == $scope.userB._id)
-                return srvConfig.getProfilColors(1).fill;
-            return srvConfig.getProfilColors(0).fill;
-        };
-        $scope.dashboardProfilStrokeColor = function (user) {
-            if (!$scope.userA || !$scope.userB) return "#FFFFFF";
-            if (user._id == $scope.userB._id)
-                return srvConfig.getProfilColors(1).stroke;
-            return srvConfig.getProfilColors(0).stroke;
-        };
-        $scope.dashboardProfilHighlightColor = function (user) {
-            if (!$scope.userA || !$scope.userB) return "#FFFFFF";
-            if (user._id == $scope.userB._id)
-                return srvConfig.getProfilColors(1).hightlight;
-            return srvConfig.getProfilColors(0).hightlight;
-        };
+        /*
+         $scope.dashboardProfilFillColor = function (user) {
+         if (!$scope.userA || !$scope.userB) return "#FFFFFF";
+         if (user._id == $scope.userB._id)
+         return srvConfig.getProfilColors(1).fill;
+         return srvConfig.getProfilColors(0).fill;
+         };
 
-        $scope.dashboardProfilColor = function () {
-            if (!$scope.userA || !$scope.userB) return "#FFFFFF";
-
-            if ($scope.dashboardSearch.userId == $scope.userB._id)
-                return $scope.dashboardProfilFillColor($scope.userB);
-
-            return $scope.dashboardProfilFillColor($scope.userA);
-        };
+         $scope.dashboardProfilStrokeColor = function (user) {
+         if (!$scope.userA || !$scope.userB) return "#FFFFFF";
+         if (user._id == $scope.userB._id)
+         return srvConfig.getProfilColors(1).stroke;
+         return srvConfig.getProfilColors(0).stroke;
+         };
+         $scope.dashboardProfilHighlightColor = function (user) {
+         if (!$scope.userA || !$scope.userB) return "#FFFFFF";
+         if (user._id == $scope.userB._id)
+         return srvConfig.getProfilColors(1).hightlight;
+         return srvConfig.getProfilColors(0).hightlight;
+         };
 
 
-        $scope.getChoreCategoryThumbPath = function (category) {
+         $scope.dashboardProfilColor = function () {
+         if (!$scope.userA || !$scope.userB) return "#FFFFFF";
+
+         if ($scope.dashboardSearch.userId == $scope.userB._id)
+         return $scope.dashboardProfilFillColor($scope.userB);
+
+         return $scope.dashboardProfilFillColor($scope.userA);
+         };
+         */
+
+        $scope.dashboardGetChoreCategoryThumbPath = function (category) {
             return srvDataContainer.getChoreCategoryThumbPath(category);
         };
 
 
-        //------------------
+        // Modal
+        $scope.dashboardModalHistoric = null;
+        $ionicModal.fromTemplateUrl('views/dashboard/modals.html', {
+            scope: $scope,
+            animation: 'slide-in-up'
+        }).then(function (modal) {
+            $scope.modal = modal;
+        });
+
+        $scope.dashboardOpenModal = function (historic) {
+            if ($scope.modal) {
+                $scope.dashboardModalHistoric = historic;
+                $scope.dashboardModalOriginalTimeInMn = historic[$scope.historicCols.timeInMn];
+                $scope.modal.show();
+            }
+        };
+
+        $scope.dashboardCloseModal = function (historic) {
+            if ($scope.modal) $scope.modal.hide();
+            $scope.dashboardModalHistoric = null;
+            if (!historic) return;
+            $scope.dashboardTerminateHistoric(historic)
+                .then(function () {
+
+                });
+        };
+
+        $scope.$on('$destroy', function () {
+            if ($scope.modal) $scope.modal.remove();
+        });
+
+        $scope.$on('modal.hidden', function () {
+            // Execute action
+        });
+
+        $scope.$on('modal.removed', function () {
+            // Execute action
+        });
+
         // Initialization
         $scope.dashboardInit();
         if ($scope.navRedirect) $scope.navRedirect();
-        //$scope.dashboardModalIndicleanator(true);
-        //$scope.afterNavigationInitSpinnerShow();
 
     })
 
-    .controller('DashboardIndicatorCtrl', function ($scope, $timeout, $q, $stateParams, $location, srvDataContainer, srvData, srvConfig) {
+    .controller('DashboardIndicatorCtrl', function ($scope, $timeout, $q, $stateParams, $location, $ionicModal, srvDataContainer, srvData, srvConfig) {
         'use strict';
 
         //$scope.dashboardIndicatorUser = $stateParams.userId;
@@ -541,7 +509,6 @@ angular.module('myAngularApp.views.dashboard', [])
         };
         //Spinner - end
 
-
         function getDateText(dateText) {
             var dateT = null;
             if (!dateText) return dateT;
@@ -557,7 +524,6 @@ angular.module('myAngularApp.views.dashboard', [])
             return s.substr(s.length - size);
         }
 
-
         $scope.dashboardShowLastHistoricDateWithChoreId = function (choreId) {
             if (!choreId) return 'na';
             var lastDate = srvData.getDateOfLastChoreDoneByType($scope.chores, $scope.dashboardHistoricsDone, choreId);
@@ -571,7 +537,6 @@ angular.module('myAngularApp.views.dashboard', [])
             var str = $scope.dashboardShowLastHistoricDateWithChoreId(choreId);
             return str;
         };
-
 
         $scope.dashboardIndicatorsInit = function () {
             if (!srvConfig.isLoggedIn() || !$scope.userA) return $scope.navRedirect('/dashboard/user/a');
@@ -609,7 +574,6 @@ angular.module('myAngularApp.views.dashboard', [])
             }, 4000);
         };
 
-
         // Synchronise DB
         $scope.dashboardIndicatorLastResetDate = "";
         $scope.dashboardIndicatorReset = function () {
@@ -620,10 +584,7 @@ angular.module('myAngularApp.views.dashboard', [])
             $scope.dashboardIndicatorShowResetVar = false;
         };
 
-
-        // --------------------
         // Modals & Indicators display management
-        // --------------------
         $scope.dashboardIndicatorsChartColours = [
             { // userB
                 fillColor: "rgba(100,100,100,0.1)",//"#fff",//$scope.dashboardProfilFillColor($scope.userB),
@@ -642,7 +603,6 @@ angular.module('myAngularApp.views.dashboard', [])
                 pointHighlightStroke: "#ee5"//$scope.dashboardProfilHighlightColor($scope.userA)
             }
         ];
-
         $scope.dashboardIndicleanator = 0;
         $scope.dashboardIndicatorsComputed = {};
         $scope.dashboardIndicleanatorSquare = 0;
@@ -702,8 +662,6 @@ angular.module('myAngularApp.views.dashboard', [])
 
         };
 
-
-        //------------------
         // Initialization
         if ($scope.navRedirect) $scope.navRedirect();
 

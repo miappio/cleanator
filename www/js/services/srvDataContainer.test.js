@@ -114,7 +114,7 @@ describe('myAngularApp.services.srvDataContainer', function () {
 
             var srv = new SrvDataContainer(log, q, http, rootScope, _cordovaNetwork, filterFilter, srvData, srvConfig, srvMiapp);
             var indicators = srv.computeIndicators();
-            expect(indicators.indicPercent).toEqual([0, 0]);
+            expect(indicators.indicPercent).toEqual([50, 50]);
             expect(indicators.indicTimeSpent).toEqual([0, 0]);
             expect(indicators.indicUsersTimeAvailabity).toBe(0);
             expect(indicators.indicChoresTimeRequired).toBe(0);
@@ -142,7 +142,7 @@ describe('myAngularApp.services.srvDataContainer', function () {
 
         });
 
-        it('should compute historics', function () {
+        it('should compute historics : getHistoricsDone', function () {
 
             var srv = new SrvDataContainer(log, q, http, rootScope, _cordovaNetwork, filterFilter, srvData, srvConfig, srvMiapp);
             srv.userA = userA;
@@ -156,14 +156,13 @@ describe('myAngularApp.services.srvDataContainer', function () {
             var time = srv.getHistoricsDoneTimeRemaining(userId, now);
             expect(time).toEqual(41);
 
-
             //inject chores and historics
             srv.chores = [choreRefToCopy, choreRefToCopy, choreRefToCopy, choreRefToCopy];
             var historicsDone = [];
             for (var i = 0; i < 4; i++) {
                 var hist = angular.copy(histoRefToCopy);
                 hist._id = i;
-                hist.userId = (i == 1) ? userB._id : userA._id;
+                hist.userId = (i == 1 || i == 2 ) ? userB._id : userA._id;
                 hist.actionTodoDate = new Date(Date.UTC(2016, 0, i));
                 hist.actionDoneDate = new Date(Date.UTC(2016, 0, i + 1));
                 historicsDone.push(hist);
@@ -172,14 +171,13 @@ describe('myAngularApp.services.srvDataContainer', function () {
             srv.historicsTodo2 = historicsDone;
 
             hDone = srv.getHistoricsDone(userId);
-            expect(hDone.length).toEqual(3);
+            expect(hDone.length).toEqual(2);
 
             time = srv.getHistoricsDoneTimeRemaining(userId, now);
-            expect(time).toEqual(31);
+            expect(time).toEqual(41);
 
             var todos = srv.getHistoricsTodo(userId, now);
             expect(todos.length).toEqual(1);
-
 
         });
 
@@ -495,15 +493,12 @@ describe('myAngularApp.services.srvDataContainer', function () {
             srv.srvData.db = _pouchDBMockFull;
             srv.srvMiapp.miappService._db = _pouchDBMockFull;
             srv.srvMiapp.miappService._dbInitialized = true;
-
             $httpBackend.whenGET(/data\/init.*/).respond(200, '');
-
             expect(srv.isLoggedIn()).toBe(true);
 
             srv.sync()
                 .then(function (err) {
                     expect(err).toBeUndefined('should not resolve error ' + err);
-
                     expect(srv.getUserA()).toBeDefined('Need first User');
                     expect(srv.getUserB()).toBeDefined('Need second User');
                     expect(srv.getCouple()).toBeDefined('Need Couple');
@@ -516,7 +511,6 @@ describe('myAngularApp.services.srvDataContainer', function () {
                 .catch(function (err) {
                     done.fail(err);
                 });
-
 
             $httpBackend.flush();
             setTimeout(function () {

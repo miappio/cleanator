@@ -1,5 +1,6 @@
 <!DOCTYPE html><!DOCTYPE html>
 <ion-view view-title="{{dashboardViewTitle}}">
+
     <ion-nav-buttons side="left">
         <a class="button button-icon icon ion-arrow-left-b" ng-click="dashboardIndicatorsBack()"></a>
     </ion-nav-buttons>
@@ -12,12 +13,8 @@
              after-hide="afterNavigationInitSpinnerHide()">
             <div ng-include="'views/commons/computeChore.html'"></div>
         </div>
+
         <article ng-if="dashboardIndicatorsInitSpinnerStopped">
-
-            <!-- <button class="button button-block button-dark button-clear">
-               <h3><span translate>Fair indicator</span> {{dashboardIndicatorsSearch.user[userCols.firstName]}}</h3>
-             </button>-->
-
 
             <div class="list card">
                 <div class="item item-icon-left item-button-right">
@@ -41,7 +38,6 @@
                 </div>
             </div>
 
-
             <div style="position:relative; width:100%;">
                 <canvas id="doughnut" class="chart chart-doughnut"
                         chart-data="dashboardIndicatorsData"
@@ -58,6 +54,7 @@
                      style="position: absolute; top: 20%;left: 35%;width: 30%;">
 
             </div>
+
             <div style="position:relative; width:100%;">
                 <canvas id="radarDone"
                         class="chart chart-radar chart-xs"
@@ -67,10 +64,6 @@
                 </canvas>
             </div>
 
-
-            <!--<div class="row">
-                <button class="button button-clear">&nbsp;</button>
-            </div>-->
             <button class="button button-block button-dark button-clear">
                 <h3><span translate>History of all done by</span> {{dashboardIndicatorsSearch.user[userCols.firstName]}}
                 </h3>
@@ -87,5 +80,6 @@
             </div>
 
         </article>
+
     </ion-content>
 </ion-view>

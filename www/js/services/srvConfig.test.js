@@ -1,7 +1,6 @@
 describe('myAngularApp.services.srvConfig', function () {
     'use strict';
 
-
     describe('basics - new srvConfig', function () {
 
 
@@ -58,9 +57,7 @@ describe('myAngularApp.services.srvConfig', function () {
 
     });
 
-
     describe('login - injected srvConfig', function () {
-
 
         var log, q, rootScope, srvConfig, srvDataContainer, miappService, $httpBackend, $timeout;
         var uriMiappLocal = "http://localhost:3000/api";
@@ -92,7 +89,6 @@ describe('myAngularApp.services.srvConfig', function () {
         afterEach(function () {
         });
 
-
         it('should be correctly injected', function () {
             expect(srvConfig.isLoggedIn()).toBe(false, 'cause app');
         });
@@ -109,24 +105,22 @@ describe('myAngularApp.services.srvConfig', function () {
             done();
         });
 
-
         it('should remove all db', function (done) {
 
-            //$httpBackend.flush();
             srvDataContainer.srvMiapp.miappService.currentUser = {};
 
             srvDataContainer.logout()
                 .then(function (err) {
                     console.log('db destroy');
                     expect(err).toBeUndefined(err);
+                    //todo more test on logout ?
                     done();
                 })
                 .catch(function (err) {
                     expect(err).toBe('no error supposed to be catched', err);
-                    done();
+                    done.fail(err);
                 });
 
-            //$timeout.flush(200);
             setTimeout(function () {
                 rootScope.$apply();
                 setTimeout(function () {
@@ -148,6 +142,5 @@ describe('myAngularApp.services.srvConfig', function () {
 
         });
     });
-
 
 });

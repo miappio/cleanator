@@ -59,11 +59,13 @@
                         <span translate>TimeAverageRequired</span>
                         <span>{{categoryIndicators.indicChoresTimeRequired}}</span>
                         <span translate>min / day ?</span>
-
+                    </p>
+                    <p ng-show="navAppInitLevel() > 2">
                         <span translate>TimeAverageAvailable</span>
                         <span>{{categoryIndicators.indicUsersTimeAvailabity}}</span>
                         <span translate>min / day.</span>
-
+                    </p>
+                    <p ng-show="navAppInitLevel() > 2">
                         <span translate>Feasibility</span>
                         <span>{{categoryIndicators.indicChoresFeasibility}}</span>
                     </p>

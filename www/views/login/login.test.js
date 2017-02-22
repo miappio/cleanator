@@ -107,7 +107,7 @@ describe('myAngularApp.views.login', function () {
     var _originalTimeout;
     beforeEach(function () {
         _originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
     });
     afterEach(function () {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = _originalTimeout;
