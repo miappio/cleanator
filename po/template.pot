@@ -4,15 +4,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: \n"
 
-#: dashboard/dashboardUser.html:96
+#: dashboard/dashboardUser.html:98
 msgid "-- choose category --"
 msgstr ""
 
-#: dashboard/dashboardUser.html:105
+#: dashboard/dashboardUser.html:107
 msgid "-- choose chore --"
 msgstr ""
 
-#: login/loginIn.html:57
+#: login/loginIn.html:58
 msgid "01valid.email@required.com"
 msgstr ""
 
@@ -48,7 +48,7 @@ msgstr ""
 msgid "ChoreActivate"
 msgstr ""
 
-#: chore/categoryDetail.html:86
+#: chore/categoryDetail.html:87
 msgid "ChoreAffinity"
 msgstr ""
 
@@ -56,8 +56,8 @@ msgstr ""
 msgid "ChoreDeactivate"
 msgstr ""
 
-#: chore/categoryDetail.html:58
-#: chore/categoryDetail.html:60
+#: chore/categoryDetail.html:59
+#: chore/categoryDetail.html:61
 #: chore/choreDetail.html:65
 #: chore/choreDetail.html:67
 msgid "ChoreDescription"
@@ -67,37 +67,37 @@ msgstr ""
 msgid "ChoreDetailRemove"
 msgstr ""
 
-#: chore/categoryDetail.html:65
+#: chore/categoryDetail.html:66
 #: chore/choreDetail.html:72
 msgid "ChoreEstimate"
 msgstr ""
 
-#: chore/categoryDetail.html:65
+#: chore/categoryDetail.html:66
 msgid "ChoreEstimateMn"
 msgstr ""
 
-#: chore/categoryDetail.html:75
+#: chore/categoryDetail.html:76
 #: chore/choreDetail.html:80
 msgid "ChoreFrequency"
 msgstr ""
 
-#: chore/categoryDetail.html:75
+#: chore/categoryDetail.html:76
 msgid "ChoreFrequencyDays"
 msgstr ""
 
-#: chore/categoryDetail.html:29
-#: chore/categoryDetail.html:31
+#: chore/categoryDetail.html:30
+#: chore/categoryDetail.html:32
 #: chore/choreDetail.html:42
 #: chore/choreDetail.html:44
 msgid "ChoreName"
 msgstr ""
 
-#: chore/categoryDetail.html:45
+#: chore/categoryDetail.html:46
 #: chore/choreDetail.html:53
 msgid "ChorePriority"
 msgstr ""
 
-#: chore/categoryDetail.html:35
+#: chore/categoryDetail.html:36
 #: chore/choreDetail.html:48
 msgid "ChoreType"
 msgstr ""
@@ -126,7 +126,7 @@ msgstr ""
 msgid "DashboardModalTimesSpent"
 msgstr ""
 
-#: dashboard/dashboardUser.html:76
+#: dashboard/dashboardUser.html:78
 msgid "DashboardPleasePullToRefreshYourDashboard"
 msgstr ""
 
@@ -135,7 +135,7 @@ msgstr ""
 msgid "Feasibility"
 msgstr ""
 
-#: user/userAll.html:67
+#: user/userAll.html:68
 msgid "Footer_ButtonWhen"
 msgstr ""
 
@@ -190,24 +190,24 @@ msgstr ""
 msgid "Last reset:"
 msgstr ""
 
-#: user/userAll.html:66
+#: user/userAll.html:67
 msgid "Level0_You’ve set your profiles ? Ready for the next part : setting all the chores you have to deal with."
 msgstr ""
 
-#: login/loginIn.html:73
-#: user/userAll.html:77
+#: login/loginIn.html:74
+#: user/userAll.html:78
 msgid "LoginLanguage"
 msgstr ""
 
-#: login/loginIn.html:66
+#: login/loginIn.html:67
 msgid "LoginNewPassword"
 msgstr ""
 
-#: login/loginIn.html:89
+#: login/loginIn.html:90
 msgid "LoginSignin"
 msgstr ""
 
-#: login/loginIn.html:47
+#: login/loginIn.html:48
 msgid "LoginWelcome"
 msgstr ""
 
@@ -246,7 +246,7 @@ msgstr ""
 msgid "PullToRefresh"
 msgstr ""
 
-#: dashboard/dashboardUser.html:69
+#: dashboard/dashboardUser.html:71
 msgid "Report"
 msgstr ""
 
@@ -296,8 +296,8 @@ msgstr ""
 msgid "TabWhoDetailled"
 msgstr ""
 
-#: dashboard/dashboardUser.html:124
-#: dashboard/dashboardUser.html:158
+#: dashboard/dashboardUser.html:126
+#: dashboard/dashboardUser.html:160
 msgid "Terminated"
 msgstr ""
 
@@ -322,7 +322,7 @@ msgstr ""
 msgid "Tuesday"
 msgstr ""
 
-#: dashboard/dashboardUser.html:92
+#: dashboard/dashboardUser.html:94
 msgid "Unforeseen item :"
 msgstr ""
 
@@ -339,11 +339,11 @@ msgstr ""
 msgid "UserBackToSession"
 msgstr ""
 
-#: user/userAll.html:92
+#: user/userAll.html:93
 msgid "UserEmail"
 msgstr ""
 
-#: user/userAll.html:90
+#: user/userAll.html:91
 msgid "UserEmailCouple"
 msgstr ""
 
@@ -351,11 +351,11 @@ msgstr ""
 msgid "UserLogout"
 msgstr ""
 
-#: user/userAll.html:36
+#: user/userAll.html:37
 msgid "UserPseudoA"
 msgstr ""
 
-#: user/userAll.html:51
+#: user/userAll.html:52
 msgid "UserPseudoB"
 msgstr ""
 
@@ -385,8 +385,8 @@ msgstr ""
 msgid "front of all todos"
 msgstr ""
 
-#: dashboard/dashboardUser.html:115
-#: dashboard/dashboardUser.html:148
+#: dashboard/dashboardUser.html:117
+#: dashboard/dashboardUser.html:150
 msgid "latest item :"
 msgstr ""
 
@@ -413,8 +413,8 @@ msgstr ""
 msgid "minutes av./day"
 msgstr ""
 
-#: dashboard/dashboardUser.html:114
-#: dashboard/dashboardUser.html:147
+#: dashboard/dashboardUser.html:116
+#: dashboard/dashboardUser.html:149
 msgid "minutes,"
 msgstr ""
 
@@ -436,7 +436,7 @@ msgstr ""
 msgid "mn"
 msgstr ""
 
-#: dashboard/dashboardUser.html:119
-#: dashboard/dashboardUser.html:152
+#: dashboard/dashboardUser.html:121
+#: dashboard/dashboardUser.html:154
 msgid "none"
 msgstr ""

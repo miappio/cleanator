@@ -107,7 +107,7 @@ describe('myAngularApp.views.login', function () {
     var _originalTimeout;
     beforeEach(function () {
         _originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 9500;
     });
     afterEach(function () {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = _originalTimeout;
@@ -136,9 +136,8 @@ describe('myAngularApp.views.login', function () {
                 expect(_scope.loginWaitForLoginRequest).toBe(false);
                 expect(_scope.loginErrCode).toBe('loginNoConnection');
                 expect(_scope.loginErrMsgs).toBeDefined();
-                expect(_scope.loginErrMsgs.length).toBe(2);
+                expect(_scope.loginErrMsgs.length).toBe(1);
                 expect(_scope.loginErrMsgs[0]).toBe('Timeout');
-                expect(_scope.loginErrMsgs[1]).toBe('Miapp.io SDK request fail.');
                 done();
             })
             .catch(function (err) {
@@ -231,7 +230,7 @@ describe('myAngularApp.views.login', function () {
                     expect(_scope.loginWaitForLoginRequest).toBe(false);
                     expect(_scope.loginErrCode).toBe('loginBadCredential');
                     expect(_scope.loginErrMsgs).toBeDefined();
-                    expect(_scope.loginErrMsgs.length).toBe(2);
+                    expect(_scope.loginErrMsgs.length).toBe(1);
                     expect(_scope.loginErrMsgs[0]).toBe('400');
                     expect(msg).toBeUndefined();
                     done();
@@ -277,7 +276,7 @@ describe('myAngularApp.views.login', function () {
                     expect(_scope.loginWaitForLoginRequest).toBe(false);
                     expect(_scope.loginErrCode).toBe('loginBadCredential');
                     expect(_scope.loginErrMsgs).toBeDefined();
-                    expect(_scope.loginErrMsgs.length).toBe(2);
+                    expect(_scope.loginErrMsgs.length).toBe(1);
                     expect(_scope.loginErrMsgs[0]).toBe('401');
                     expect(msg).toBeUndefined();
                     done();
