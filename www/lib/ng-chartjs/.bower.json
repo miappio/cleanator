@@ -33,6 +33,6 @@
     "commit": "f64a94f67654d7798e18509d9bd2ea562616c83e"
   },
   "_source": "https://github.com/petermelias/angular-chartjs.git",
-  "_target": "~0.0.5",
+  "_target": "*",
   "_originalSource": "ng-chartjs"
 }

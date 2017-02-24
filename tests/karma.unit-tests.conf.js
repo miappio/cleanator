@@ -23,7 +23,8 @@ module.exports = function (config) {
         files: [
 
             'www/lib/ionic/js/ionic.bundle.js',
-            'www/lib/angular-mocks/angular-mocks.js',
+            'www/lib/ngCordova/dist/ng-cordova.min.js',
+            'tests/angular-mocks/angular-mocks.js',
             // 'node_modules/angular/angular.js',
             //'node_modules/angular-mocks/angular-mocks.js',
 
@@ -32,10 +33,9 @@ module.exports = function (config) {
             'www/lib/angular-filter/dist/angular-filter.min.js',
             'www/lib/chance/dist/chance.min.js',
             //'../node_modules/es5-shim/es5-shim.js',
-            'www/lib/Chart.js/Chart.min.js',
+            'www/lib/chart.js/dist/Chart.min.js',
             'www/lib/angular-chart.js/dist/angular-chart.min.js',
             //'www/lib/crypto-js/crypto-js.js',
-            'www/lib/ngCordova/dist/ng-cordova.min.js',
             'www/lib/miappio-sdk/dist/miappio.sdk.js',
 
             'www/js/app.js',

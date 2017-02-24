@@ -341,10 +341,17 @@ describe("Web", function () {
             });
         });
 
+        it("(format : 'name') returns a valide color name", function () {
+            _(1000).times(function () {
+
+                var color = chance.color({format: 'name'});
+                expect(color).to.be.a('string');
+            });
+        });
+
         it("({casing: upper}) returns upper cased color", function () {
             _(1000).times(function () {
                 var color = chance.color({format: 'hex', casing: 'upper'});
-                console.log(color);
                 expect(color).to.be.a('string');
                 expect(color).to.have.length(7);
                 expect(color.charAt(1).toUpperCase()).to.equal(color.charAt(1));
@@ -452,6 +459,15 @@ describe("Web", function () {
 
         it('should create a raw HMAC-MD5 hash of an UTF-8 value and key', function () {
             expect(chance.md5({ str: '日本', key: '日本', raw: true })).to.be.eql('\xc7\x8b\x8csW\x92i\x81\xcc\x04t\x0b\xd3\xe9\xd0\x15');
+        });
+    });
+
+    describe('port()', function () {
+        it('should create a number in the valid port range (0 - 65535)', function () {
+            var port = chance.port();
+            expect(port).to.be.a('number');
+            expect(port).to.be.at.least(0);
+            expect(port).to.be.at.most(65535);
         });
     });
 

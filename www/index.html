@@ -5,25 +5,23 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
     <title></title>
 
+    <link rel="manifest" href="manifest.json">
 
     <!-- compiled css output -->
-    <link href="css/ionic.app.css" rel="stylesheet">
+    <link href="css/ionic.app.css" rel="stylesheet"/>
 
-
-    <!-- ionic/angularjs js -->
-    <script src="lib/ionic/js/ionic.bundle.min.js"></script>
-    <script src="lib/angular-gettext/dist/angular-gettext.min.js"></script>
-    <script src="lib/pouchdb/dist/pouchdb.min.js"></script>
-    <script src="lib/angular-filter/dist/angular-filter.min.js"></script>
-    <script src="lib/chance/dist/chance.min.js"></script>
-    <script src="lib/Chart.js/Chart.min.js"></script>
-    <script src="lib/angular-chart.js/dist/angular-chart.css"></script>
-    <script src="lib/angular-chart.js/dist/angular-chart.min.js"></script>
-
-    <script src="lib/ngCordova/dist/ng-cordova.min.js"></script>
-    <!-- cordova script (this will be a 404 during development) -->
+    <!-- ionic/ng/cordova -->
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+    <script src="lib/ngCordova/dist/ng-cordova.js"></script>
     <script src="cordova.js"></script>
 
+    <!-- angular & modules -->
+    <script src="lib/angular-gettext/dist/angular-gettext.js"></script>
+    <script src="lib/pouchdb/dist/pouchdb.js"></script>
+    <script src="lib/angular-filter/dist/angular-filter.js"></script>
+    <script src="lib/chance/dist/chance.min.js"></script>
+    <script src="lib/Chart.js/dist/Chart.js"></script>
+    <script src="lib/angular-chart.js/dist/angular-chart.js"></script>
 
     <!-- miapp.io sdk -->
     <script src="lib/miappio-sdk/dist/miappio.sdk.js"></script>
@@ -37,6 +35,7 @@
     <script src="js/languages/en_US.js"></script>
     <script src="js/languages/fr_FR.js"></script>
     <script src="js/services/services.js"></script>
+    <script src="js/services/srvNavigation.js"></script>
     <script src="js/services/srvAnalytics.js"></script>
     <script src="js/services/srvConfig.js"></script>
     <script src="js/services/srvDataContainer.js"></script>
@@ -44,8 +43,8 @@
 
 
     <script src="views/views.js"></script>
-    <script src="views/controllers.js"></script>
-    <script src="views/ctrlNavigation.js"></script>
+    <!--<script src="views/controllers.js"></script>
+    <script src="views/ctrlNavigation.js"></script>-->
     <script src="views/chore/chore.js"></script>
     <script src="views/dashboard/dashboard.js"></script>
     <script src="views/login/login.js"></script>
@@ -53,13 +52,19 @@
 
 </head>
 <body ng-app="myAngularApp">
+<!-- ng-app="myAngularApp"
 
 <div ng-controller="ctrlNavigation">
     <ion-nav-bar align-title="center" class="bar-stable bar-flat has-tabs-top bar-dark">
         <ion-nav-title>Cleanator</ion-nav-title>
     </ion-nav-bar>
     <ion-nav-view></ion-nav-view>
-</div>
+</div>-->
+
+<ion-nav-bar align-title="center" class="bar-stable bar-flat has-tabs-top bar-dark">
+    <ion-nav-title>Cleanator</ion-nav-title>
+</ion-nav-bar>
+<ion-nav-view></ion-nav-view>
 
 </body>
 </html>

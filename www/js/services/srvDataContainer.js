@@ -12,6 +12,7 @@ var SrvDataContainer = (function () {
         var self = this;
         self.$log = $log;
         self.$q = $q;
+        self.$rootScope = $rootScope;
         self.$http = $http;
         self.filterFilter = filterFilter;
         self.srvData = srvData;
@@ -22,21 +23,20 @@ var SrvDataContainer = (function () {
         // Check Online Event based on Cordova
         self.isCordovaOnline = false;
         if (!self.appForceOffline) {
-            document.addEventListener("deviceready", function () {
-
-                if ($cordovaNetwork)
-                    self.isCordovaOnline = $cordovaNetwork.isCordovaOnline();
+            //if ($cordovaNetwork && $cordovaNetwork.isCordovaOnline)
+            //    self.isCordovaOnline = $cordovaNetwork.isCordovaOnline();
+            self.isCordovaOnline = true;
 
                 // listen for Online event
-                $rootScope.$on('$cordovaNetwork:online', function (event, networkState) {
-                    self.isCordovaOnline = true;
-                });
-                // listen for Offline event
-                $rootScope.$on('$cordovaNetwork:offline', function (event, networkState) {
-                    self.isCordovaOnline = false;
-                });
-
-            }, false);
+            $rootScope.$on('$cordovaNetwork:online', function (event, networkState) {
+                self.isCordovaOnline = true;
+                console.log('self.isCordovaOnline ON');
+            });
+            // listen for Offline event
+            $rootScope.$on('$cordovaNetwork:offline', function (event, networkState) {
+                self.isCordovaOnline = false;
+                console.log('self.isCordovaOnline OFF');
+            });
         }
 
         self.userA = null;
@@ -52,22 +52,75 @@ var SrvDataContainer = (function () {
         self.historicCols = srvData.Historic.columns;
         self.choreCols = srvData.Chore.columns;
         self.categoryCols = srvData.Category.columns;
+
+        /**
+         * [{title:'English', code:'en_US'},{title:'Français', code:'fr_FR'}, {title:'Espagnol', code:'es_ES'}];
+         */
+        self.$rootScope.navigLangs = self.getConfigLangs();
+        self.$rootScope.navigLang = self.getConfigLang();
+
+
+        self.$rootScope.navChangeLang = function (lang) {
+            self.setConfigLang(lang);
+        };
+
+        //this.$rootScope.Math = window.Math;
+        self.$rootScope.navMathRound = function (val) {
+            var ret = val;
+            if (window.Math) ret = window.Math.round(val);
+            return ret;
+        };
+
+        // All Data needed in Navigation RootScope
+        self.$rootScope.userA = null;
+        self.$rootScope.couple = null;
+        self.$rootScope.userB = null;
+        self.$rootScope.chores = null;
+        self.$rootScope.categories = null;
+        self.$rootScope.userCols = self.userCols;
+        self.$rootScope.coupleCols = self.coupleCols;
+        self.$rootScope.historicCols = self.historicCols;
+        self.$rootScope.choreCols = self.choreCols;
+        self.$rootScope.categoryCols = self.categoryCols;
+        self.$rootScope.navProfils = [
+            {id: 'g1', img: './img/profil/girl01.jpg'},
+            {id: 'b1', img: './img/profil/boy01.jpg'},
+            {id: 'g2', img: './img/profil/girl02.jpg'},
+            {id: 'b2', img: './img/profil/boy02.jpg'},
+            {id: 'g3', img: './img/profil/girl03.jpg'},
+            {id: 'b3', img: './img/profil/boy03.jpg'}
+        ];
+
+        self.$rootScope.navAppInitLevel = function () {
+            return self.getAppFirstInitLevel();
+        };
+
+        self.$rootScope.navSetAppInitLevel = function (level) {
+            return self.setAppFirstInitLevel(level);
+        };
+
+        self.$rootScope.navAppOnlineLevel = function () {
+            return self.isCordovaOnline ? 'o' : 'n';
+        };
+
     }
+
+    Service.prototype.init = function () {
+        this.srvData.init();
+    };
 
     Service.prototype.login = function (user) {
         var self = this;
         var login = null;
         var password = null;
-        var forceOnlineCheckin = self.isCordovaOnline;
         if (!!user) {
             login = user.email;
             password = user.password;
         }
 
-        self.$log.log('srvDataContainer.login : ', login);
-
+        self.$log.log('srvDataContainer.login : ', login, self.isCordovaOnline);
         return self.$q(function (resolve, reject) {
-            self.srvMiapp.login(login, password, forceOnlineCheckin)
+            self.srvMiapp.login(login, password, self.isCordovaOnline)
                 .then(function (miappUser) {
 
                     self.$log.log('srvDataContainer.login srvMiapp received: ', miappUser);
@@ -102,13 +155,14 @@ var SrvDataContainer = (function () {
 
         self.$log.log('srvDataContainer.sync');
         return new self.$q(function (resolve, reject) {
-            self.srvMiapp.sync(
-                function (miappSrv) {
-                    self.$log.log('srvDataContainer.sync first data');
-                    return self.initWithFirstData(lang, userMain);
-                },
-                self.isCordovaOnline
-            )
+            self.srvMiapp
+                .sync(
+                    function (miappSrv) {
+                        self.$log.log('srvDataContainer.sync first data');
+                        return self.initWithFirstData(lang, userMain);
+                    },
+                    self.isCordovaOnline
+                )
                 .then(function () {
                     return bindData(self);
                 })

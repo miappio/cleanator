@@ -1,7 +1,7 @@
 angular
     .module('myAngularApp.views.login', [])
 
-    .config(function ($stateProvider, $urlRouterProvider) {
+    .config(function ($stateProvider) {
         'use strict';
 
         $stateProvider
@@ -14,7 +14,7 @@ angular
 
     })
 
-    .controller('LoginCtrl', function ($scope, $log, $http, $q, $location, $timeout, $ionicHistory, $ionicNavBarDelegate, srvDataContainer) {
+    .controller('LoginCtrl', function ($scope, $log, $http, $q, $timeout, $ionicHistory, $ionicNavBarDelegate, srvDataContainer) {
         'use strict';
 
         $scope.loginInit = function () {
@@ -30,7 +30,6 @@ angular
         $scope.loginInitSpinnerStopped = false;
         $scope.loginWaitForLoginRequest = false;
         $scope.afterNavigationInitSpinnerShow = function () {
-            $scope.navInit();
 
             if (!$scope.loginWaitForLoginRequest) {
                 $timeout(function () {
@@ -54,7 +53,7 @@ angular
                 .then(function (user) {
 
                     $ionicNavBarDelegate.showBackButton(true);
-                    $scope.navRedirect('/config/couple');
+                    $scope.navRedirect(srvDataContainer, 'config.couple');
 
                 })
                 .catch(function (err) {
@@ -79,13 +78,13 @@ angular
             $scope.loginWaitForLoginRequest = true;
             return srvDataContainer.login(newUser)
                 .then(function (userStored) {
-                    return $scope.navDataSync();
+                    return $scope.navDataSync(srvDataContainer);
                 })
                 .then(function (err) {
                     if (err) return $q.reject(err);
 
                     $ionicNavBarDelegate.showBackButton(true);
-                    $scope.navRedirect('/config/couple');
+                    $scope.navRedirect(srvDataContainer, 'config.couple');
                 })
                 .catch(function (err) {
                     console.log('loginErr : ', err);
@@ -123,6 +122,6 @@ angular
 
         // Init
         $scope.loginInit();
-        if ($scope.navRedirect) $scope.navRedirect();
+        if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
 
     });

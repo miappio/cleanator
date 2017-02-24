@@ -136,10 +136,10 @@ var SrvDataPouchDB = (function () {
                 var deferred = self.$q.defer();
                 self.db.allDocs({include_docs: true, descending: true}, function (err, response) {
                     if (err) {
-                        deferred.reject("No doc found " + err);
-                        self.$log.log(err);
+                        self.$log.error(err);
+                        deferred.reject("No User found ById " + err);
                     }
-                    if (response) {
+                    else if (response) {
                         var respLength = response.rows.length;
                         if (!respLength) deferred.reject("No user list");
                         else {
@@ -167,8 +167,8 @@ var SrvDataPouchDB = (function () {
                 self.db.allDocs({include_docs: true, descending: true}, function (err, response) {
 
                     if (err || !response || !response.rows) {
-                        self.$log.log(err);
-                        return deferred.reject('No doc found : ' + err);
+                        self.$log.error(err);
+                        return deferred.reject('No User found ByEmail : ' + err);
                     }
 
                     var respLength = response.rows.length;
@@ -394,10 +394,10 @@ var SrvDataPouchDB = (function () {
                 var deferred = self.$q.defer();
                 self.db.allDocs({include_docs: true, descending: true}, function (err, response) {
                     if (err) {
-                        deferred.reject("No doc found " + err);
-                        self.$log.log(err);
+                        self.$log.error(err);
+                        deferred.reject("No Chore found ById " + err);
                     }
-                    if (response) {
+                    else if (response) {
                         var respLength = response.rows.length;
                         if (!respLength) deferred.reject("No chore list");
                         else {

@@ -33,6 +33,6 @@
     "commit": "2738311288ce2ea377cb2ebc573eb567043c0fa1"
   },
   "_source": "https://github.com/pouchdb/pouchdb.git",
-  "_target": "~5.1.0",
+  "_target": "5.1.0",
   "_originalSource": "pouchdb"
 }

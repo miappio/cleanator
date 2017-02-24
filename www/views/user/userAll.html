@@ -95,8 +95,24 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col">
+                                    <ul class="list">
+                                        <li class="item item-toggle">
+                                            Online mode ({{userIsCordovaOnline}})
+                                            <label class="toggle toggle-assertive">
+                                                <input type="checkbox" ng-model="userIsCordovaOnline"
+                                                       ng-change="userSetIsCordovaOnline(userIsCordovaOnline)">
+                                                <div class="track">
+                                                    <div class="handle"></div>
+                                                </div>
+                                            </label>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                         </form>
-                        <!--  <div class="row"><button class="button button-clear">&nbsp;</button><button class="button button-clear">&nbsp;</button></div> -->
+
                     </div>
                     <div class="col hidden-xs">&nbsp;</div>
                 </div>

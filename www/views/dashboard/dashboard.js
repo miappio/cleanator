@@ -1,6 +1,8 @@
-angular.module('myAngularApp.views.dashboard', [])
+angular
 
-    .config(function ($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
+    .module('myAngularApp.views.dashboard', [])
+
+    .config(function ($stateProvider) {
 
         $stateProvider
             .state('dashboard-user', {
@@ -16,10 +18,10 @@ angular.module('myAngularApp.views.dashboard', [])
                 controller: 'DashboardIndicatorCtrl'
             });
 
-        $urlRouterProvider.otherwise('/dashboard/user/a');
+        //$urlRouterProvider.otherwise('/dashboard/user/a');
     })
 
-    .controller('DashboardCtrl', function ($scope, $timeout, $log, $q, $stateParams, $location, $ionicModal, srvDataContainer, srvData, srvConfig) {
+    .controller('DashboardCtrl', function ($scope, $timeout, $log, $q, $stateParams, $ionicModal, srvDataContainer, srvData, srvConfig) {
         'use strict';
 
         $scope.dashboardHistorics = [];
@@ -29,8 +31,6 @@ angular.module('myAngularApp.views.dashboard', [])
         $scope.dashboardChoresCategoriesToAdd = [];
 
         $scope.dashboardInit = function () {
-
-            if ($scope.navInit) $scope.navInit();
 
             // var url = $location.url();
             // if (url.indexOf("dashboard-user")>=0){
@@ -81,7 +81,7 @@ angular.module('myAngularApp.views.dashboard', [])
                 if (!srvConfig.isLoggedIn())
                     $scope.dashboardStopSpinnerWithMessage();
                 else {
-                    $scope.navDataSync()
+                    $scope.navDataSync(srvDataContainer)
                         .then(function (err) {
                             if (err) return $scope.dashboardStopSpinnerWithMessage(err);
                             return $scope.dashboardDataBind();
@@ -119,7 +119,7 @@ angular.module('myAngularApp.views.dashboard', [])
             $scope.dashboardInitSpinnerStopped = false;
             return $q(function (resolve, reject) {
                 $timeout(function () {
-                    $scope.navDataSync()
+                    $scope.navDataSync(srvDataContainer)
                         .then(function (msg) {
                             return $scope.dashboardDataBind();
                         })
@@ -438,7 +438,6 @@ angular.module('myAngularApp.views.dashboard', [])
             return srvDataContainer.getChoreCategoryThumbPath(category);
         };
 
-
         // Modal
         $scope.dashboardModalHistoric = null;
         $ionicModal.fromTemplateUrl('views/dashboard/modals.html', {
@@ -480,11 +479,11 @@ angular.module('myAngularApp.views.dashboard', [])
 
         // Initialization
         $scope.dashboardInit();
-        if ($scope.navRedirect) $scope.navRedirect();
+        if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
 
     })
 
-    .controller('DashboardIndicatorCtrl', function ($scope, $timeout, $q, $stateParams, $location, $ionicModal, srvDataContainer, srvData, srvConfig) {
+    .controller('DashboardIndicatorCtrl', function ($scope, $timeout, $q, $stateParams, $ionicModal, srvDataContainer, srvData, srvConfig) {
         'use strict';
 
         //$scope.dashboardIndicatorUser = $stateParams.userId;
@@ -539,7 +538,7 @@ angular.module('myAngularApp.views.dashboard', [])
         };
 
         $scope.dashboardIndicatorsInit = function () {
-            if (!srvConfig.isLoggedIn() || !$scope.userA) return $scope.navRedirect('/dashboard/user/a');
+            if (!srvConfig.isLoggedIn() || !$scope.userA) return $scope.navRedirect(srvDataContainer, 'dashboard-user', {'userId': 'a'});
 
             // Set the userId
             $scope.dashboardIndicatorsSearch.userId = $stateParams.userId;
@@ -560,10 +559,10 @@ angular.module('myAngularApp.views.dashboard', [])
         };
 
         $scope.dashboardIndicatorsBack = function () {
-            var url = '/dashboard/user';
-            if ($scope.dashboardIndicatorsSearch.userId) url += '/' + $scope.dashboardIndicatorsSearch.userId;
-            else url += '/a';
-            $scope.navRedirect(url);
+            var arg = {'userId': 'a'};
+            if ($scope.dashboardIndicatorsSearch.userId)
+                arg = {'userId': $scope.dashboardIndicatorsSearch.userId};
+            $scope.navRedirect(srvDataContainer, 'dashboard-user', arg);
         };
 
         $scope.dashboardIndicatorShowResetVar = false;
@@ -663,7 +662,7 @@ angular.module('myAngularApp.views.dashboard', [])
         };
 
         // Initialization
-        if ($scope.navRedirect) $scope.navRedirect();
+        if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
 
     })
 ;

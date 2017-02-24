@@ -205,9 +205,24 @@ describe("Credit Card", function () {
             _(1000).times(function () {
                 var nowMonth = new Date().getMonth() + 1;
                 var expMonth = parseInt(chance.exp_month({ future: true }), 10);
-
-                expect(expMonth).to.be.above(nowMonth);
+                if (nowMonth !== 12) {
+                    expect(expMonth).to.be.above(nowMonth);
+                } else {
+                    expect(expMonth).to.be.within(1, 12);
+                }
             });
         });        
+    });
+});
+
+describe("IBAN", function () {
+    var iban, chance = new Chance();
+
+    it("returns an iban", function () {
+        _(1000).times(function () {
+            iban = chance.iban();
+            expect(iban).to.be.a('string');
+            expect(iban).to.match(/^[A-Z]{2}[0-9]{2}[A-Z0-9]{4}[0-9]{1,26}$/);
+        });
     });
 });

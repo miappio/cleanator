@@ -5,7 +5,7 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
         "-- choose chore --": "— choisissez une tâche —",
         "01valid.email@required.com": "votre.email@requis.fr",
         "AddOneChore..": "Rajouter une tâche",
-        "Authentication service problem, please contact support@miapp.io": "Problème d’authentification. Merci de contacter support@miapp.io",
+        "Authentication service problem, please contact support@miapp.io": "Problème d’authentification. Merci de contacter #miapp.io",
         "Bad login/password.": "Mauvais login / mot de passe.",
         "CatActivate": "Activer",
         "CatDeactivate": "Désactiver",

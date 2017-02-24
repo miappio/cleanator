@@ -4,6 +4,7 @@
 
 // Services
 angular.module('myAngularApp.services', [
+    'srvNavigation',
     'srvDataContainer',
     'srvAnalytics',
     //,'srvCordova',

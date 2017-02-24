@@ -1,6 +1,6 @@
 angular.module('myAngularApp.views.chore', [])
 
-    .config(function ($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
+    .config(function ($stateProvider) {
 
         $stateProvider
             .state('config.category', {
@@ -59,11 +59,10 @@ angular.module('myAngularApp.views.chore', [])
 
         $scope.choreInitSpinnerStopped = false;
         $scope.afterNavigationInitSpinnerShow = function () {
-            $scope.navInit();
-            if (!$scope.isAppLogin()) return;
+            //if (!$scope.isAppLogin()) return;
 
             $timeout(function () {
-                if (!$scope.isAppLogin()) return;
+                //if (!$scope.isAppLogin()) return;
 
                 $scope.choreDataSync();
             }, 200);
@@ -196,7 +195,7 @@ angular.module('myAngularApp.views.chore', [])
         });
 
         // Initialization
-        if ($scope.navRedirect) $scope.navRedirect();
+        if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
 
     })
 
@@ -405,7 +404,6 @@ angular.module('myAngularApp.views.chore', [])
         };
 
         $scope.afterNavigationInitSpinnerShow = function () {
-            $scope.navInit();
             $timeout(function () {
                 if (srvConfig.isLoggedIn()) {
                     $scope.categoryDataSync();
@@ -420,7 +418,7 @@ angular.module('myAngularApp.views.chore', [])
         $scope.categoryDataSync = function () {
             var self = this;
             var deferred = $q.defer();
-            $scope.navDataSync().then(function (msg) {
+            $scope.navDataSync(srvDataContainer).then(function (msg) {
                 $scope.categoryStopSpinnerWithMessage(msg);
 
                 //indicators
@@ -451,7 +449,7 @@ angular.module('myAngularApp.views.chore', [])
         //------------------
         // Initialization
         $scope.categoryInit();
-        if ($scope.navRedirect) $scope.navRedirect();
+        if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
 
 
     })
@@ -496,7 +494,7 @@ angular.module('myAngularApp.views.chore', [])
             choreToAdd[$scope.choreCols.priorityComputed] = 5;
 
             srvData.Chore.set(choreToAdd).then(function (choreAdded) {
-                $scope.navRedirect("/chore/" + choreAdded._id);
+                $scope.navRedirect(srvDataContainer, 'choreDetail', {'choreId': choreAdded._id});
             });
 
         };
@@ -504,8 +502,8 @@ angular.module('myAngularApp.views.chore', [])
 
         //------------------
         // Initialization
-        if (!$scope.chores && $scope.navRedirect) $scope.navRedirect("/config/category");
-        else if ($scope.navRedirect) $scope.navRedirect();
+        if (!$scope.chores && $scope.navRedirect) $scope.navRedirect(srvDataContainer, 'config.category');
+        else if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
 
         $scope.categoryChoresInit();
     })

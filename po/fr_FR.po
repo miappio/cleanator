@@ -30,7 +30,7 @@ msgstr "Rajouter une tâche"
 
 #: login/loginIn.html:26
 msgid "Authentication service problem, please contact support@miapp.io"
-msgstr "Problème d’authentification. Merci de contacter support@miapp.io"
+msgstr "Problème d’authentification. Merci de contacter #miapp.io"
 
 #: login/loginIn.html:24
 msgid "Bad login/password."

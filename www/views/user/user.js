@@ -1,5 +1,5 @@
 angular.module('myAngularApp.views.user', [])
-    .config(function ($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
+    .config(function ($stateProvider) {
 
         $stateProvider
 
@@ -31,7 +31,7 @@ angular.module('myAngularApp.views.user', [])
     })
 
     //.controller('UsersCtrl', function ($scope, $timeout, $routeParams, $location, $q, srvData, srvConfig) {
-    .controller('UsersCtrl', function ($scope, $log, $timeout, $location, $q, $ionicModal, srvDataContainer, srvData) {
+    .controller('UsersCtrl', function ($scope, $log, $timeout, $q, $ionicModal, srvDataContainer, srvData) {
         'use strict';
 
         //$scope.userId = userId;
@@ -47,13 +47,11 @@ angular.module('myAngularApp.views.user', [])
 
         $scope.userInitSpinnerStopped = false;
         $scope.afterNavigationInitSpinnerShow = function () {
-            $scope.navInit();
-
             $timeout(function () {
 
                 if (srvDataContainer.getAppFirstInitLevel() === 0) {
                     //One First sync needed just after login
-                    $scope.navDataSync()
+                    $scope.navDataSync(srvDataContainer)
                         .then(function (msg) {
                             // Followed by a real binding
                             $scope.userDataSync()
@@ -89,7 +87,7 @@ angular.module('myAngularApp.views.user', [])
         $scope.userDataSync = function () {
             var self = this;
             var deferred = $q.defer();
-            $scope.navDataSync()
+            $scope.navDataSync(srvDataContainer)
                 .then(function (msg) {
                     $scope.userStopSpinnerWithMessage(msg);
                     deferred.resolve();
@@ -219,8 +217,17 @@ angular.module('myAngularApp.views.user', [])
                     }
                 }
             }
-
         };
+
+
+        $scope.userGetIsCordovaOnline = function () {
+            $scope.userIsCordovaOnline = srvDataContainer.isCordovaOnline;
+            return $scope.userIsCordovaOnline;
+        };
+        $scope.userSetIsCordovaOnline = function (bool) {
+            srvDataContainer.isCordovaOnline = bool;
+        };
+        $scope.userGetIsCordovaOnline();
 
         //------------------
         // Modals
@@ -256,6 +263,6 @@ angular.module('myAngularApp.views.user', [])
 
         //------------------
         // Initialization
-        if ($scope.navRedirect) $scope.navRedirect();
+        if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
 
     });

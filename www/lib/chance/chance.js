@@ -1,4 +1,4 @@
-//  Chance.js 0.8.0
+//  Chance.js 1.0.6
 //  http://chancejs.com
 //  (c) 2013 Victor Quinn
 //  Chance may be freely distributed or modified under the MIT license.
@@ -62,7 +62,7 @@
         return this;
     }
 
-    Chance.prototype.VERSION = "0.8.0";
+    Chance.prototype.VERSION = "1.0.6";
 
     // Random helper functions
     function initOptions(options, defaults) {
@@ -256,6 +256,27 @@
     };
 
     /**
+     *  Return a random hex number as string
+     *
+     *  NOTE the max and min are INCLUDED in the range. So:
+     *  chance.hex({min: '9', max: 'B'});
+     *  would return either '9', 'A' or 'B'.
+     *
+     *  @param {Object} [options={}] can specify a min and/or max and/or casing
+     *  @returns {String} a single random string hex number
+     *  @throws {RangeError} min cannot be greater than max
+     */
+    Chance.prototype.hex = function (options) {
+        options = initOptions(options, {min: 0, max: MAX_INT, casing: 'lower'});
+        testRange(options.min < 0, "Chance: Min cannot be less than zero.");
+        var integer = this.natural({min: options.min, max: options.max});
+        if (options.casing === 'upper') {
+            return integer.toString(16).toUpperCase();
+        }
+        return integer.toString(16);
+    };
+
+    /**
      *  Return a random string
      *
      *  @param {Object} [options={}] can specify a length
@@ -303,19 +324,20 @@
             "Chance: The first argument must be a function."
         );
 
-        options = initOptions(options, {
-            // Default comparator to check that val is not already in arr.
-            // Should return `false` if item not in array, `true` otherwise
-            comparator: function(arr, val) {
-                return arr.indexOf(val) !== -1;
-            }
-        });
+        var comparator = function (arr, val) {
+            return arr.indexOf(val) !== -1;
+        };
+
+        if (options) {
+            comparator = options.comparator || comparator;
+        }
 
         var arr = [], count = 0, result, MAX_DUPLICATES = num * 50, params = slice.call(arguments, 2);
 
         while (arr.length < num) {
-            result = fn.apply(this, params);
-            if (!options.comparator(arr, result)) {
+            var clonedParams = JSON.parse(JSON.stringify(params));
+            result = fn.apply(this, clonedParams);
+            if (!comparator(arr, result)) {
                 arr.push(result);
                 // reset count when unique found
                 count = 0;
@@ -367,12 +389,39 @@
         return number.length >= width ? number : new Array(width - number.length + 1).join(pad) + number;
     };
 
+    // DEPRECATED on 2015-10-01
     Chance.prototype.pick = function (arr, count) {
         if (arr.length === 0) {
             throw new RangeError("Chance: Cannot pick() from an empty array");
         }
         if (!count || count === 1) {
             return arr[this.natural({max: arr.length - 1})];
+        } else {
+            return this.shuffle(arr).slice(0, count);
+        }
+    };
+
+    // Given an array, returns a single random element
+    Chance.prototype.pickone = function (arr) {
+        if (arr.length === 0) {
+            throw new RangeError("Chance: Cannot pickone() from an empty array");
+        }
+        return arr[this.natural({max: arr.length - 1})];
+    };
+
+    // Given an array, returns a random set with 'count' elements
+    Chance.prototype.pickset = function (arr, count) {
+        if (count === 0) {
+            return [];
+        }
+        if (arr.length === 0) {
+            throw new RangeError("Chance: Cannot pickset() from an empty array");
+        }
+        if (count < 0) {
+            throw new RangeError("Chance: count must be positive number");
+        }
+        if (!count || count === 1) {
+            return [this.pickone(arr)];
         } else {
             return this.shuffle(arr).slice(0, count);
         }
@@ -397,52 +446,59 @@
     };
 
     // Returns a single item from an array with relative weighting of odds
-    Chance.prototype.weighted = function(arr, weights) {
+    Chance.prototype.weighted = function (arr, weights, trim) {
         if (arr.length !== weights.length) {
             throw new RangeError("Chance: length of array and weights must match");
         }
 
-        // Handle weights that are less or equal to zero.
-        for (var weightIndex = weights.length - 1; weightIndex >= 0; --weightIndex) {
-            // If the weight is less or equal to zero, remove it and the value.
-            if (weights[weightIndex] <= 0) {
-                arr.splice(weightIndex,1);
-                weights.splice(weightIndex,1);
+        // scan weights array and sum valid entries
+        var sum = 0;
+        var val;
+        for (var weightIndex = 0; weightIndex < weights.length; ++weightIndex) {
+            val = weights[weightIndex];
+            if (isNaN(val)) {
+                throw new RangeError("all weights must be numbers");
+            }
+
+            if (val > 0) {
+                sum += val;
             }
         }
 
-        // If any of the weights are less than 1, we want to scale them up to whole
-        //   numbers for the rest of this logic to work
-        if (weights.some(function(weight) { return weight < 1; })) {
-            var min = weights.reduce(function(min, weight) {
-                return (weight < min) ? weight : min;
-            }, weights[0]);
-
-            var scaling_factor = 1 / min;
-
-            weights = weights.map(function(weight) {
-                return weight * scaling_factor;
-            });
+        if (sum === 0) {
+            throw new RangeError("Chance: no valid entries in array weights");
         }
 
-        var sum = weights.reduce(function(total, weight) {
-            return total + weight;
-        }, 0);
+        // select a value within range
+        var selected = this.random() * sum;
 
-        // get an index
-        var selected = this.natural({ min: 1, max: sum });
-
+        // find array entry corresponding to selected value
         var total = 0;
-        var chosen;
-        // Using some() here so we can bail as soon as we get our match
-        weights.some(function(weight, index) {
-            if (selected <= total + weight) {
-                chosen = arr[index];
-                return true;
+        var lastGoodIdx = -1;
+        var chosenIdx;
+        for (weightIndex = 0; weightIndex < weights.length; ++weightIndex) {
+            val = weights[weightIndex];
+            total += val;
+            if (val > 0) {
+                if (selected <= total) {
+                    chosenIdx = weightIndex;
+                    break;
+                }
+                lastGoodIdx = weightIndex;
             }
-            total += weight;
-            return false;
-        });
+
+            // handle any possible rounding error comparison to ensure something is picked
+            if (weightIndex === (weights.length - 1)) {
+                chosenIdx = lastGoodIdx;
+            }
+        }
+
+        var chosen = arr[chosenIdx];
+        trim = (typeof trim === 'undefined') ? false : trim;
+        if (trim) {
+            arr.splice(chosenIdx, 1);
+            weights.splice(chosenIdx, 1);
+        }
 
         return chosen;
     };
@@ -470,15 +526,15 @@
             text, word_array = this.n(this.word, words);
 
         text = word_array.join(' ');
-        
+
         // Capitalize first letter of sentence
         text = this.capitalize(text);
-        
+
         // Make sure punctuation has a usable value
         if (punctuation !== false && !/^[\.\?;!:]$/.test(punctuation)) {
             punctuation = '.';
         }
-        
+
         // Add punctuation mark
         if (punctuation) {
             text += punctuation;
@@ -514,6 +570,10 @@
             text += chr;
         }
 
+        if (options.capitalize) {
+            text = this.capitalize(text);
+        }
+
         return text;
     };
 
@@ -540,6 +600,11 @@
                 text += this.syllable();
             }
         }
+
+        if (options.capitalize) {
+            text = this.capitalize(text);
+        }
+
         return text;
     };
 
@@ -553,7 +618,7 @@
 
         switch (options.type) {
             case 'child':
-                ageRange = {min: 1, max: 12};
+                ageRange = {min: 0, max: 12};
                 break;
             case 'teen':
                 ageRange = {min: 13, max: 19};
@@ -565,7 +630,7 @@
                 ageRange = {min: 65, max: 100};
                 break;
             case 'all':
-                ageRange = {min: 1, max: 100};
+                ageRange = {min: 0, max: 100};
                 break;
             default:
                 ageRange = {min: 18, max: 65};
@@ -576,15 +641,34 @@
     };
 
     Chance.prototype.birthday = function (options) {
-        options = initOptions(options, {
-            year: (new Date().getFullYear() - this.age(options))
-        });
+        var age = this.age(options);
+        var currentYear = new Date().getFullYear();
+
+        if (options && options.type) {
+            var min = new Date();
+            var max = new Date();
+            min.setFullYear(currentYear - age - 1);
+            max.setFullYear(currentYear - age);
+
+            options = initOptions(options, {
+                min: min,
+                max: max
+            });
+        } else {
+            options = initOptions(options, {
+                year: currentYear - age
+            });
+        }
 
         return this.date(options);
     };
 
     // CPF; ID to identify taxpayers in Brazil
-    Chance.prototype.cpf = function () {
+    Chance.prototype.cpf = function (options) {
+        options = initOptions(options, {
+            formatted: true
+        });
+
         var n = this.n(this.natural, 9, { max: 9 });
         var d1 = n[8]*2+n[7]*3+n[6]*4+n[5]*5+n[4]*6+n[3]*7+n[2]*8+n[1]*9+n[0]*10;
         d1 = 11 - (d1 % 11);
@@ -596,22 +680,50 @@
         if (d2>=10) {
             d2 = 0;
         }
-        return ''+n[0]+n[1]+n[2]+'.'+n[3]+n[4]+n[5]+'.'+n[6]+n[7]+n[8]+'-'+d1+d2;
+        var cpf = '' + n[0] + n[1] + n[2] + '.' + n[3] + n[4] + n[5] + '.' + n[6] + n[7] + n[8] + '-' + d1 + d2;
+        return options.formatted ? cpf : cpf.replace(/\D/g, '');
+    };
+
+    // CNPJ: ID to identify companies in Brazil
+    Chance.prototype.cnpj = function (options) {
+        options = initOptions(options, {
+            formatted: true
+        });
+
+        var n = this.n(this.natural, 12, {max: 12});
+        var d1 = n[11] * 2 + n[10] * 3 + n[9] * 4 + n[8] * 5 + n[7] * 6 + n[6] * 7 + n[5] * 8 + n[4] * 9 + n[3] * 2 + n[2] * 3 + n[1] * 4 + n[0] * 5;
+        d1 = 11 - (d1 % 11);
+        if (d1 < 2) {
+            d1 = 0;
+        }
+        var d2 = d1 * 2 + n[11] * 3 + n[10] * 4 + n[9] * 5 + n[8] * 6 + n[7] * 7 + n[6] * 8 + n[5] * 9 + n[4] * 2 + n[3] * 3 + n[2] * 4 + n[1] * 5 + n[0] * 6;
+        d2 = 11 - (d2 % 11);
+        if (d2 < 2) {
+            d2 = 0;
+        }
+        var cnpj = '' + n[0] + n[1] + '.' + n[2] + n[3] + n[4] + '.' + n[5] + n[6] + n[7] + '/' + n[8] + n[9] + n[10] + n[11] + '-' + d1 + d2;
+        return options.formatted ? cnpj : cnpj.replace(/\D/g, '');
     };
 
     Chance.prototype.first = function (options) {
-        options = initOptions(options, {gender: this.gender()});
-        return this.pick(this.get("firstNames")[options.gender.toLowerCase()]);
+        options = initOptions(options, {gender: this.gender(), nationality: 'en'});
+        return this.pick(this.get("firstNames")[options.gender.toLowerCase()][options.nationality.toLowerCase()]);
     };
 
-    Chance.prototype.gender = function () {
-        return this.pick(['Male', 'Female']);
+    Chance.prototype.profession = function () {
+        return this.pick(this.get("professions"));
     };
 
-    Chance.prototype.last = function () {
-        return this.pick(this.get("lastNames"));
+    Chance.prototype.gender = function (options) {
+        options = initOptions(options, {extraGenders: []});
+        return this.pick(['Male', 'Female'].concat(options.extraGenders));
     };
-    
+
+    Chance.prototype.last = function (options) {
+        options = initOptions(options, {nationality: 'en'});
+        return this.pick(this.get("lastNames")[options.nationality.toLowerCase()]);
+    };
+
     Chance.prototype.israelId=function(){
         var x=this.string({pool: '0123456789',length:8});
         var y=0;
@@ -704,7 +816,7 @@
         options = initOptions(options);
 
         var first = this.first(options),
-            last = this.last(),
+            last = this.last(options),
             name;
 
         if (options.middle) {
@@ -727,6 +839,7 @@
     };
 
     // Return the list of available name prefixes based on supplied gender.
+    // @todo introduce internationalization
     Chance.prototype.name_prefixes = function (gender) {
         gender = gender || "all";
         gender = gender.toLowerCase();
@@ -758,6 +871,17 @@
             this.pick(this.name_prefixes(options.gender)).name :
             this.pick(this.name_prefixes(options.gender)).abbreviation;
     };
+    //Hungarian ID number
+    Chance.prototype.HIDN = function () {
+        //Hungarian ID nuber structure: XXXXXXYY (X=number,Y=Capital Latin letter)
+        var idn_pool = "0123456789";
+        var idn_chrs = "ABCDEFGHIJKLMNOPQRSTUVWXYXZ";
+        var idn = "";
+        idn += this.string({pool: idn_pool, length: 6});
+        idn += this.string({pool: idn_chrs, length: 2});
+        return idn;
+    };
+
 
     Chance.prototype.ssn = function (options) {
         options = initOptions(options, {ssnFour: false, dashes: true});
@@ -776,6 +900,7 @@
     };
 
     // Return the list of available name suffixes
+    // @todo introduce internationalization
     Chance.prototype.name_suffixes = function () {
         var suffixes = [
             { name: 'Doctor of Osteopathic Medicine', abbreviation: 'D.O.' },
@@ -806,6 +931,16 @@
         return options.full ?
             this.pick(this.name_suffixes()).name :
             this.pick(this.name_suffixes()).abbreviation;
+    };
+
+    Chance.prototype.nationalities = function () {
+        return this.get("nationalities");
+    };
+
+    // Generate random nationality based on json list
+    Chance.prototype.nationality = function () {
+        var nationality = this.pick(this.nationalities());
+        return nationality.name;
     };
 
     // -- End Person --
@@ -920,42 +1055,184 @@
         return url;
     };
 
+    /**
+     * #Description:
+     * ===============================================
+     * Generate random color value base on color type:
+     * -> hex
+     * -> rgb
+     * -> rgba
+     * -> 0x
+     * -> named color
+     *
+     * #Examples:
+     * ===============================================
+     * * Geerate random hex color
+     * chance.color() => '#79c157' / 'rgb(110,52,164)' / '0x67ae0b' / '#e2e2e2' / '#29CFA7'
+     *
+     * * Generate Hex based color value
+     * chance.color({format: 'hex'})    => '#d67118'
+     *
+     * * Generate simple rgb value
+     * chance.color({format: 'rgb'})    => 'rgb(110,52,164)'
+     *
+     * * Generate Ox based color value
+     * chance.color({format: '0x'})     => '0x67ae0b'
+     *
+     * * Generate graiscale based value
+     * chance.color({grayscale: true})  => '#e2e2e2'
+     *
+     * * Return valide color name
+     * chance.color({format: 'name'})   => 'red'
+     *
+     * * Make color uppercase
+     * chance.color({casing: 'upper'})  => '#29CFA7'
+
+     * * Min Max values for RGBA
+     * var light_red = chance.color({format: 'hex', min_red: 200, max_red: 255, max_green: 0, max_blue: 0, min_alpha: .2, max_alpha: .3});
+     *
+     * @param  [object] options
+     * @return [string] color value
+     */
     Chance.prototype.color = function (options) {
+        function pad(n, width, z) {
+            z = z || '0';
+            n = n + '';
+            return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+        }
+
         function gray(value, delimiter) {
             return [value, value, value].join(delimiter || '');
         }
 
+        function rgb(hasAlpha) {
+            var rgbValue = (hasAlpha) ? 'rgba' : 'rgb';
+            var alphaChannel = (hasAlpha) ? (',' + this.floating({min: min_alpha, max: max_alpha})) : "";
+            var colorValue = (isGrayscale) ? (gray(this.natural({
+                    min: min_rgb,
+                    max: max_rgb
+                }), ',')) : (this.natural({min: min_green, max: max_green}) + ',' + this.natural({
+                    min: min_blue,
+                    max: max_blue
+                }) + ',' + this.natural({max: 255}));
+            return rgbValue + '(' + colorValue + alphaChannel + ')';
+        }
+
+        function hex(start, end, withHash) {
+            var symbol = (withHash) ? "#" : "";
+            var hexstring = "";
+
+            if (isGrayscale) {
+                hexstring = gray(pad(this.hex({min: min_rgb, max: max_rgb}), 2));
+                if (options.format === "shorthex") {
+                    hexstring = gray(this.hex({min: 0, max: 15}));
+                    console.log("hex: " + hexstring);
+                }
+            }
+            else {
+                if (options.format === "shorthex") {
+                    hexstring = pad(this.hex({
+                            min: Math.floor(min_red / 16),
+                            max: Math.floor(max_red / 16)
+                        }), 1) + pad(this.hex({
+                            min: Math.floor(min_green / 16),
+                            max: Math.floor(max_green / 16)
+                        }), 1) + pad(this.hex({min: Math.floor(min_blue / 16), max: Math.floor(max_blue / 16)}), 1);
+                }
+                else if (min_red !== undefined || max_red !== undefined || min_green !== undefined || max_green !== undefined || min_blue !== undefined || max_blue !== undefined) {
+                    hexstring = pad(this.hex({min: min_red, max: max_red}), 2) + pad(this.hex({
+                            min: min_green,
+                            max: max_green
+                        }), 2) + pad(this.hex({min: min_blue, max: max_blue}), 2);
+                }
+                else {
+                    hexstring = pad(this.hex({min: min_rgb, max: max_rgb}), 2) + pad(this.hex({
+                            min: min_rgb,
+                            max: max_rgb
+                        }), 2) + pad(this.hex({min: min_rgb, max: max_rgb}), 2);
+                }
+            }
+
+            return symbol + hexstring;
+        }
+
         options = initOptions(options, {
-            format: this.pick(['hex', 'shorthex', 'rgb', 'rgba', '0x']),
+            format: this.pick(['hex', 'shorthex', 'rgb', 'rgba', '0x', 'name']),
             grayscale: false,
-            casing: 'lower'
+            casing: 'lower',
+            min: 0,
+            max: 255,
+            min_red: undefined,
+            max_red: undefined,
+            min_green: undefined,
+            max_green: undefined,
+            min_blue: undefined,
+            max_blue: undefined,
+            min_alpha: 0,
+            max_alpha: 1
         });
 
         var isGrayscale = options.grayscale;
+        var min_rgb = options.min;
+        var max_rgb = options.max;
+        var min_red = options.min_red;
+        var max_red = options.max_red;
+        var min_green = options.min_green;
+        var max_green = options.max_green;
+        var min_blue = options.min_blue;
+        var max_blue = options.max_blue;
+        var min_alpha = options.min_alpha;
+        var max_alpha = options.max_alpha;
+        if (options.min_red === undefined) {
+            min_red = min_rgb;
+        }
+        if (options.max_red === undefined) {
+            max_red = max_rgb;
+        }
+        if (options.min_green === undefined) {
+            min_green = min_rgb;
+        }
+        if (options.max_green === undefined) {
+            max_green = max_rgb;
+        }
+        if (options.min_blue === undefined) {
+            min_blue = min_rgb;
+        }
+        if (options.max_blue === undefined) {
+            max_blue = max_rgb;
+        }
+        if (options.min_alpha === undefined) {
+            min_alpha = 0;
+        }
+        if (options.max_alpha === undefined) {
+            max_alpha = 1;
+        }
+        if (isGrayscale && min_rgb === 0 && max_rgb === 255 && min_red !== undefined && max_red !== undefined) {
+            min_rgb = ((min_red + min_green + min_blue) / 3);
+            max_rgb = ((max_red + max_green + max_blue) / 3);
+        }
         var colorValue;
 
         if (options.format === 'hex') {
-            colorValue = '#' + (isGrayscale ? gray(this.hash({length: 2})) : this.hash({length: 6}));
-
-        } else if (options.format === 'shorthex') {
-            colorValue = '#' + (isGrayscale ? gray(this.hash({length: 1})) : this.hash({length: 3}));
-
-        } else if (options.format === 'rgb') {
-            if (isGrayscale) {
-                colorValue = 'rgb(' + gray(this.natural({max: 255}), ',') + ')';
-            } else {
-                colorValue = 'rgb(' + this.natural({max: 255}) + ',' + this.natural({max: 255}) + ',' + this.natural({max: 255}) + ')';
-            }
-        } else if (options.format === 'rgba') {
-            if (isGrayscale) {
-                colorValue = 'rgba(' + gray(this.natural({max: 255}), ',') + ',' + this.floating({min:0, max:1}) + ')';
-            } else {
-                colorValue = 'rgba(' + this.natural({max: 255}) + ',' + this.natural({max: 255}) + ',' + this.natural({max: 255}) + ',' + this.floating({min:0, max:1}) + ')';
-            }
-        } else if (options.format === '0x') {
-            colorValue = '0x' + (isGrayscale ? gray(this.hash({length: 2})) : this.hash({length: 6}));
-        } else {
-            throw new RangeError('Invalid format provided. Please provide one of "hex", "shorthex", "rgb", "rgba", or "0x".');
+            colorValue = hex.call(this, 2, 6, true);
+        }
+        else if (options.format === 'shorthex') {
+            colorValue = hex.call(this, 1, 3, true);
+        }
+        else if (options.format === 'rgb') {
+            colorValue = rgb.call(this, false);
+        }
+        else if (options.format === 'rgba') {
+            colorValue = rgb.call(this, true);
+        }
+        else if (options.format === '0x') {
+            colorValue = '0x' + hex.call(this, 2, 6);
+        }
+        else if (options.format === 'name') {
+            return this.pick(this.get("colorNames"));
+        }
+        else {
+            throw new RangeError('Invalid format provided. Please provide one of "hex", "shorthex", "rgb", "rgba", "0x" or "name".');
         }
 
         if (options.casing === 'upper' ) {
@@ -993,10 +1270,10 @@
     Chance.prototype.ip = function () {
         // Todo: This could return some reserved IPs. See http://vq.io/137dgYy
         // this should probably be updated to account for that rare as it may be
-        return this.natural({max: 255}) + '.' +
+        return this.natural({min: 1, max: 254}) + '.' +
                this.natural({max: 255}) + '.' +
                this.natural({max: 255}) + '.' +
-               this.natural({max: 255});
+            this.natural({min: 1, max: 254});
     };
 
     Chance.prototype.ipv6 = function () {
@@ -1009,8 +1286,23 @@
         return this.natural({min: 1, max: 99});
     };
 
+    Chance.prototype.semver = function (options) {
+        options = initOptions(options, {include_prerelease: true});
+
+        var range = this.pickone(["^", "~", "<", ">", "<=", ">=", "="]);
+        if (options.range) {
+            range = options.range;
+        }
+
+        var prerelease = "";
+        if (options.include_prerelease) {
+            prerelease = this.weighted(["", "-dev", "-beta", "-alpha"], [50, 10, 5, 1]);
+        }
+        return range + this.rpg('3d10').join('.') + prerelease;
+    };
+
     Chance.prototype.tlds = function () {
-        return ['com', 'org', 'edu', 'gov', 'co.uk', 'net', 'io'];
+        return ['com', 'org', 'edu', 'gov', 'co.uk', 'net', 'io', 'ac', 'ad', 'ae', 'af', 'ag', 'ai', 'al', 'am', 'an', 'ao', 'aq', 'ar', 'as', 'at', 'au', 'aw', 'ax', 'az', 'ba', 'bb', 'bd', 'be', 'bf', 'bg', 'bh', 'bi', 'bj', 'bm', 'bn', 'bo', 'bq', 'br', 'bs', 'bt', 'bv', 'bw', 'by', 'bz', 'ca', 'cc', 'cd', 'cf', 'cg', 'ch', 'ci', 'ck', 'cl', 'cm', 'cn', 'co', 'cr', 'cu', 'cv', 'cw', 'cx', 'cy', 'cz', 'de', 'dj', 'dk', 'dm', 'do', 'dz', 'ec', 'ee', 'eg', 'eh', 'er', 'es', 'et', 'eu', 'fi', 'fj', 'fk', 'fm', 'fo', 'fr', 'ga', 'gb', 'gd', 'ge', 'gf', 'gg', 'gh', 'gi', 'gl', 'gm', 'gn', 'gp', 'gq', 'gr', 'gs', 'gt', 'gu', 'gw', 'gy', 'hk', 'hm', 'hn', 'hr', 'ht', 'hu', 'id', 'ie', 'il', 'im', 'in', 'io', 'iq', 'ir', 'is', 'it', 'je', 'jm', 'jo', 'jp', 'ke', 'kg', 'kh', 'ki', 'km', 'kn', 'kp', 'kr', 'kw', 'ky', 'kz', 'la', 'lb', 'lc', 'li', 'lk', 'lr', 'ls', 'lt', 'lu', 'lv', 'ly', 'ma', 'mc', 'md', 'me', 'mg', 'mh', 'mk', 'ml', 'mm', 'mn', 'mo', 'mp', 'mq', 'mr', 'ms', 'mt', 'mu', 'mv', 'mw', 'mx', 'my', 'mz', 'na', 'nc', 'ne', 'nf', 'ng', 'ni', 'nl', 'no', 'np', 'nr', 'nu', 'nz', 'om', 'pa', 'pe', 'pf', 'pg', 'ph', 'pk', 'pl', 'pm', 'pn', 'pr', 'ps', 'pt', 'pw', 'py', 'qa', 're', 'ro', 'rs', 'ru', 'rw', 'sa', 'sb', 'sc', 'sd', 'se', 'sg', 'sh', 'si', 'sj', 'sk', 'sl', 'sm', 'sn', 'so', 'sr', 'ss', 'st', 'su', 'sv', 'sx', 'sy', 'sz', 'tc', 'td', 'tf', 'tg', 'th', 'tj', 'tk', 'tl', 'tm', 'tn', 'to', 'tp', 'tr', 'tt', 'tv', 'tw', 'tz', 'ua', 'ug', 'uk', 'us', 'uy', 'uz', 'va', 'vc', 've', 'vg', 'vi', 'vn', 'vu', 'wf', 'ws', 'ye', 'yt', 'za', 'zm', 'zw'];
     };
 
     Chance.prototype.tld = function () {
@@ -1028,6 +1320,10 @@
         var domain = options.domain_prefix ? options.domain_prefix + "." + options.domain : options.domain;
 
         return options.protocol + "://" + domain + "/" + options.path + extension;
+    };
+
+    Chance.prototype.port = function () {
+        return this.integer({min: 0, max: 65535});
     };
 
     // -- End Web --
@@ -1146,19 +1442,20 @@
                 if (!options.mobile) {
                     numPick = this.pick([
                         //valid area codes of major cities/counties followed by random numbers in required format.
+
                         { area: '01' + this.character({ pool: '234569' }) + '1 ', sections: [3,4] },
                         { area: '020 ' + this.character({ pool: '378' }), sections: [3,4] },
                         { area: '023 ' + this.character({ pool: '89' }), sections: [3,4] },
                         { area: '024 7', sections: [3,4] },
                         { area: '028 ' + this.pick(['25','28','37','71','82','90','92','95']), sections: [2,4] },
-                        { area: '012' + this.pick(['04','08','54','76','97','98']) + ' ', sections: [5] },
-                        { area: '013' + this.pick(['63','64','84','86']) + ' ', sections: [5] },
-                        { area: '014' + this.pick(['04','20','60','61','80','88']) + ' ', sections: [5] },
-                        { area: '015' + this.pick(['24','27','62','66']) + ' ', sections: [5] },
-                        { area: '016' + this.pick(['06','29','35','47','59','95']) + ' ', sections: [5] },
-                        { area: '017' + this.pick(['26','44','50','68']) + ' ', sections: [5] },
-                        { area: '018' + this.pick(['27','37','84','97']) + ' ', sections: [5] },
-                        { area: '019' + this.pick(['00','05','35','46','49','63','95']) + ' ', sections: [5] }
+                        {area: '012' + this.pick(['04', '08', '54', '76', '97', '98']) + ' ', sections: [6]},
+                        {area: '013' + this.pick(['63', '64', '84', '86']) + ' ', sections: [6]},
+                        {area: '014' + this.pick(['04', '20', '60', '61', '80', '88']) + ' ', sections: [6]},
+                        {area: '015' + this.pick(['24', '27', '62', '66']) + ' ', sections: [6]},
+                        {area: '016' + this.pick(['06', '29', '35', '47', '59', '95']) + ' ', sections: [6]},
+                        {area: '017' + this.pick(['26', '44', '50', '68']) + ' ', sections: [6]},
+                        {area: '018' + this.pick(['27', '37', '84', '97']) + ' ', sections: [6]},
+                        {area: '019' + this.pick(['00', '05', '35', '46', '49', '63', '95']) + ' ', sections: [6]}
                     ]);
                     phone = options.formatted ? ukNum(numPick) : ukNum(numPick).replace(' ', '', 'g');
                 } else {
@@ -1169,6 +1466,48 @@
                     phone = options.formatted ? ukNum(numPick) : ukNum(numPick).replace(' ', '');
                 }
                 break;
+            case 'za':
+                if (!options.mobile) {
+                    numPick = this.pick([
+                        '01' + this.pick(['0', '1', '2', '3', '4', '5', '6', '7', '8']) + self.string({
+                            pool: '0123456789',
+                            length: 7
+                        }),
+                        '02' + this.pick(['1', '2', '3', '4', '7', '8']) + self.string({pool: '0123456789', length: 7}),
+                        '03' + this.pick(['1', '2', '3', '5', '6', '9']) + self.string({pool: '0123456789', length: 7}),
+                        '04' + this.pick(['1', '2', '3', '4', '5', '6', '7', '8', '9']) + self.string({
+                            pool: '0123456789',
+                            length: 7
+                        }),
+                        '05' + this.pick(['1', '3', '4', '6', '7', '8']) + self.string({pool: '0123456789', length: 7}),
+                    ]);
+                    phone = options.formatted || numPick;
+                } else {
+                    numPick = this.pick([
+                        '060' + this.pick(['3', '4', '5', '6', '7', '8', '9']) + self.string({
+                            pool: '0123456789',
+                            length: 6
+                        }),
+                        '061' + this.pick(['0', '1', '2', '3', '4', '5', '8']) + self.string({
+                            pool: '0123456789',
+                            length: 6
+                        }),
+                        '06' + self.string({pool: '0123456789', length: 7}),
+                        '071' + this.pick(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']) + self.string({
+                            pool: '0123456789',
+                            length: 6
+                        }),
+                        '07' + this.pick(['2', '3', '4', '6', '7', '8', '9']) + self.string({
+                            pool: '0123456789',
+                            length: 7
+                        }),
+                        '08' + this.pick(['0', '1', '2', '3', '4', '5']) + self.string({pool: '0123456789', length: 7}),
+                    ]);
+                    phone = options.formatted || numPick;
+                }
+
+                break;
+
             case 'us':
                 var areacode = this.areacode(options).toString();
                 var exchange = this.natural({ min: 2, max: 9 }).toString() +
@@ -1191,14 +1530,24 @@
         return fsa + " " + ldu;
     };
 
-    Chance.prototype.provinces = function () {
-        return this.get("provinces");
+    Chance.prototype.counties = function (options) {
+        options = initOptions(options, {country: 'uk'});
+        return this.get("counties")[options.country.toLowerCase()];
+    };
+
+    Chance.prototype.county = function (options) {
+        return this.pick(this.counties(options)).name;
+    };
+
+    Chance.prototype.provinces = function (options) {
+        options = initOptions(options, {country: 'ca'});
+        return this.get("provinces")[options.country.toLowerCase()];
     };
 
     Chance.prototype.province = function (options) {
         return (options && options.full) ?
-            this.pick(this.provinces()).name :
-            this.pick(this.provinces()).abbreviation;
+            this.pick(this.provinces(options)).name :
+            this.pick(this.provinces(options)).abbreviation;
     };
 
     Chance.prototype.state = function (options) {
@@ -1208,47 +1557,72 @@
     };
 
     Chance.prototype.states = function (options) {
-        options = initOptions(options, { us_states_and_dc: true });
+        options = initOptions(options, {country: 'us', us_states_and_dc: true});
 
-        var states,
-            us_states_and_dc = this.get("us_states_and_dc"),
-            territories = this.get("territories"),
-            armed_forces = this.get("armed_forces");
+        var states;
 
-        states = [];
+        switch (options.country.toLowerCase()) {
+            case 'us':
+                var us_states_and_dc = this.get("us_states_and_dc"),
+                    territories = this.get("territories"),
+                    armed_forces = this.get("armed_forces");
 
-        if (options.us_states_and_dc) {
-            states = states.concat(us_states_and_dc);
-        }
-        if (options.territories) {
-            states = states.concat(territories);
-        }
-        if (options.armed_forces) {
-            states = states.concat(armed_forces);
+                states = [];
+
+                if (options.us_states_and_dc) {
+                    states = states.concat(us_states_and_dc);
+                }
+                if (options.territories) {
+                    states = states.concat(territories);
+                }
+                if (options.armed_forces) {
+                    states = states.concat(armed_forces);
+                }
+                break;
+            case 'it':
+                states = this.get("country_regions")[options.country.toLowerCase()];
+                break;
+            case 'uk':
+                states = this.get("counties")[options.country.toLowerCase()];
+                break;
         }
 
         return states;
     };
 
     Chance.prototype.street = function (options) {
-        options = initOptions(options);
+        options = initOptions(options, {country: 'us', syllables: 2});
+        var street;
 
-        var street = this.word({syllables: 2});
-        street = this.capitalize(street);
-        street += ' ';
-        street += options.short_suffix ?
-            this.street_suffix().abbreviation :
-            this.street_suffix().name;
+        switch (options.country.toLowerCase()) {
+            case 'us':
+                street = this.word({syllables: options.syllables});
+                street = this.capitalize(street);
+                street += ' ';
+                street += options.short_suffix ?
+                    this.street_suffix(options).abbreviation :
+                    this.street_suffix(options).name;
+                break;
+            case 'it':
+                street = this.word({syllables: options.syllables});
+                street = this.capitalize(street);
+                street = (options.short_suffix ?
+                        this.street_suffix(options).abbreviation :
+                        this.street_suffix(options).name) + " " + street;
+                break;
+        }
         return street;
     };
 
-    Chance.prototype.street_suffix = function () {
-        return this.pick(this.street_suffixes());
+    Chance.prototype.street_suffix = function (options) {
+        options = initOptions(options, {country: 'us'});
+        return this.pick(this.street_suffixes(options));
     };
 
-    Chance.prototype.street_suffixes = function () {
+    Chance.prototype.street_suffixes = function (options) {
+        options = initOptions(options, {country: 'us'});
         // These are the most common suffixes.
-        return this.get("street_suffixes");
+        return this.get("street_suffixes")[options.country.toLowerCase()];
     };
 
     // Note: only returning US zip codes, internationalization will be a whole
@@ -1285,7 +1659,7 @@
             // 100,000,000 days measured relative to midnight at the beginning of 01 January, 1970 UTC. http://es5.github.io/#x15.9.1.1
             var max = typeof options.max !== "undefined" ? options.max.getTime() : 8640000000000000;
 
-            date = new Date(this.natural({min: min, max: max}));
+            date = new Date(this.integer({min: min, max: max}));
         } else {
             var m = this.month({raw: true});
             var daysInMonth = m.days;
@@ -1301,7 +1675,7 @@
                 // for some reason.
                 month: m.numeric - 1,
                 day: this.natural({min: 1, max: daysInMonth}),
-                hour: this.hour(),
+                hour: this.hour({twentyfour: true}),
                 minute: this.minute(),
                 second: this.second(),
                 millisecond: this.millisecond(),
@@ -1328,10 +1702,13 @@
     };
 
     Chance.prototype.hour = function (options) {
-        options = initOptions(options, {min: 1, max: options && options.twentyfour ? 24 : 12});
+        options = initOptions(options, {
+            min: options && options.twentyfour ? 0 : 1,
+            max: options && options.twentyfour ? 23 : 12
+        });
 
-        testRange(options.min < 1, "Chance: Min cannot be less than 1.");
-        testRange(options.twentyfour && options.max > 24, "Chance: Max cannot be greater than 24 for twentyfour option.");
+        testRange(options.min < 0, "Chance: Min cannot be less than 0.");
+        testRange(options.twentyfour && options.max > 23, "Chance: Max cannot be greater than 23 for twentyfour option.");
         testRange(!options.twentyfour && options.max > 12, "Chance: Max cannot be greater than 12.");
         testRange(options.min > options.max, "Chance: Min cannot be greater than Max.");
 
@@ -1373,6 +1750,16 @@
 
     Chance.prototype.timestamp = function () {
         return this.natural({min: 1, max: parseInt(new Date().getTime() / 1000, 10)});
+    };
+
+    Chance.prototype.weekday = function (options) {
+        options = initOptions(options, {weekday_only: false});
+        var weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+        if (!options.weekday_only) {
+            weekdays.push("Saturday");
+            weekdays.push("Sunday");
+        }
+        return this.pickone(weekdays);
     };
 
     Chance.prototype.year = function (options) {
@@ -1448,6 +1835,16 @@
         return this.pick(this.currency_types());
     };
 
+    //return all timezones availabel
+    Chance.prototype.timezones = function () {
+        return this.get("timezones");
+    };
+
+    //return random timezone
+    Chance.prototype.timezone = function () {
+        return this.pick(this.timezones());
+    };
+
     //Return random correct currency exchange pair (e.g. EUR/USD) or array of currency code
     Chance.prototype.currency_pair = function (returnAsString) {
         var currencies = this.unique(this.currency, 2, {
@@ -1487,6 +1884,10 @@
         }
     };
 
+    Chance.prototype.euro = function (options) {
+        return Number(this.dollar(options).replace("$", "")).toLocaleString() + "€";
+    };
+
     Chance.prototype.exp = function (options) {
         options = initOptions(options);
         var exp = {};
@@ -1510,7 +1911,7 @@
             // Date object months are 0 indexed
             curMonth = new Date().getMonth() + 1;
 
-        if (options.future) {
+        if (options.future && (curMonth !== 12)) {
             do {
                 month = this.month({raw: true}).numeric;
                 month_int = parseInt(month, 10);
@@ -1523,12 +1924,128 @@
     };
 
     Chance.prototype.exp_year = function () {
-        return this.year({max: new Date().getFullYear() + 10});
+        var curMonth = new Date().getMonth() + 1,
+            curYear = new Date().getFullYear();
+
+        return this.year({min: ((curMonth === 12) ? (curYear + 1) : curYear), max: (curYear + 10)});
+    };
+
+    Chance.prototype.vat = function (options) {
+        options = initOptions(options, {country: 'it'});
+        switch (options.country.toLowerCase()) {
+            case 'it':
+                return this.it_vat();
+        }
+    };
+
+    /**
+     * Generate a string matching IBAN pattern (https://en.wikipedia.org/wiki/International_Bank_Account_Number).
+     * No country-specific formats support (yet)
+     */
+    Chance.prototype.iban = function () {
+        var alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        var alphanum = alpha + '0123456789';
+        var iban =
+            this.string({length: 2, pool: alpha}) +
+            this.pad(this.integer({min: 0, max: 99}), 2) +
+            this.string({length: 4, pool: alphanum}) +
+            this.pad(this.natural(), this.natural({min: 6, max: 26}));
+        return iban;
     };
 
     // -- End Finance
 
     // -- Regional
+
+    Chance.prototype.it_vat = function () {
+        var it_vat = this.natural({min: 1, max: 1800000});
+
+        it_vat = this.pad(it_vat, 7) + this.pad(this.pick(this.provinces({country: 'it'})).code, 3);
+        return it_vat + this.luhn_calculate(it_vat);
+    };
+
+    /*
+     * this generator is written following the official algorithm
+     * all data can be passed explicitely or randomized by calling chance.cf() without options
+     * the code does not check that the input data is valid (it goes beyond the scope of the generator)
+     *
+     * @param  [Object] options = { first: first name,
+     *                              last: last name,
+     *                              gender: female|male,
+     birthday: JavaScript date object,
+     city: string(4), 1 letter + 3 numbers
+     }
+     * @return [string] codice fiscale
+     *
+     */
+    Chance.prototype.cf = function (options) {
+        options = options || {};
+        var gender = !!options.gender ? options.gender : this.gender(),
+            first = !!options.first ? options.first : this.first({gender: gender, nationality: 'it'}),
+            last = !!options.last ? options.last : this.last({nationality: 'it'}),
+            birthday = !!options.birthday ? options.birthday : this.birthday(),
+            city = !!options.city ? options.city : this.pickone(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'L', 'M', 'Z']) + this.pad(this.natural({max: 999}), 3),
+            cf = [],
+            name_generator = function (name, isLast) {
+                var temp,
+                    return_value = [];
+
+                if (name.length < 3) {
+                    return_value = name.split("").concat("XXX".split("")).splice(0, 3);
+                }
+                else {
+                    temp = name.toUpperCase().split('').map(function (c) {
+                        return ("BCDFGHJKLMNPRSTVWZ".indexOf(c) !== -1) ? c : undefined;
+                    }).join('');
+                    if (temp.length > 3) {
+                        if (isLast) {
+                            temp = temp.substr(0, 3);
+                        } else {
+                            temp = temp[0] + temp.substr(2, 2);
+                        }
+                    }
+                    if (temp.length < 3) {
+                        return_value = temp;
+                        temp = name.toUpperCase().split('').map(function (c) {
+                            return ("AEIOU".indexOf(c) !== -1) ? c : undefined;
+                        }).join('').substr(0, 3 - return_value.length);
+                    }
+                    return_value = return_value + temp;
+                }
+
+                return return_value;
+            },
+            date_generator = function (birthday, gender, that) {
+                var lettermonths = ['A', 'B', 'C', 'D', 'E', 'H', 'L', 'M', 'P', 'R', 'S', 'T'];
+
+                return birthday.getFullYear().toString().substr(2) +
+                    lettermonths[birthday.getMonth()] +
+                    that.pad(birthday.getDate() + ((gender.toLowerCase() === "female") ? 40 : 0), 2);
+            },
+            checkdigit_generator = function (cf) {
+                var range1 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                    range2 = "ABCDEFGHIJABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                    evens = "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                    odds = "BAKPLCQDREVOSFTGUHMINJWZYX",
+                    digit = 0;
+
+
+                for (var i = 0; i < 15; i++) {
+                    if (i % 2 !== 0) {
+                        digit += evens.indexOf(range2[range1.indexOf(cf[i])]);
+                    }
+                    else {
+                        digit += odds.indexOf(range2[range1.indexOf(cf[i])]);
+                    }
+                }
+                return evens[digit % 26];
+            };
+
+        cf = cf.concat(name_generator(last, true), name_generator(first), date_generator(birthday, gender, this), city.toUpperCase().split("")).join("");
+        cf += checkdigit_generator(cf.toUpperCase(), this);
+
+        return cf.toUpperCase();
+    };
 
     Chance.prototype.pl_pesel = function () {
         var number = this.natural({min: 1, max: 9999999999});
@@ -1689,36 +2206,927 @@
         return this.bimd5.md5(opts.str, opts.key, opts.raw);
     };
 
+    /**
+     * #Description:
+     * =====================================================
+     * Generate random file name with extension
+     *
+     * The argument provide extension type
+     * -> raster
+     * -> vector
+     * -> 3d
+     * -> document
+     *
+     * If nothing is provided the function return random file name with random
+     * extension type of any kind
+     *
+     * The user can validate the file name length range
+     * If nothing provided the generated file name is random
+     *
+     * #Extension Pool :
+     * * Currently the supported extensions are
+     *  -> some of the most popular raster image extensions
+     *  -> some of the most popular vector image extensions
+     *  -> some of the most popular 3d image extensions
+     *  -> some of the most popular document extensions
+     *
+     * #Examples :
+     * =====================================================
+     *
+     * Return random file name with random extension. The file extension
+     * is provided by a predefined collection of extensions. More about the extension
+     * pool can be found in #Extension Pool section
+     *
+     * chance.file()
+     * => dsfsdhjf.xml
+     *
+     * In order to generate a file name with specific length, specify the
+     * length property and integer value. The extension is going to be random
+     *
+     * chance.file({length : 10})
+     * => asrtineqos.pdf
+     *
+     * In order to generate file with extension from some of the predefined groups
+     * of the extension pool just specify the extension pool category in fileType property
+     *
+     * chance.file({fileType : 'raster'})
+     * => dshgssds.psd
+     *
+     * You can provide specific extension for your files
+     * chance.file({extension : 'html'})
+     * => djfsd.html
+     *
+     * Or you could pass custom collection of extensions by array or by object
+     * chance.file({extensions : [...]})
+     * => dhgsdsd.psd
+     *
+     * chance.file({extensions : { key : [...], key : [...]}})
+     * => djsfksdjsd.xml
+     *
+     * @param  [collection] options
+     * @return [string]
+     *
+     */
+    Chance.prototype.file = function (options) {
+
+        var fileOptions = options || {};
+        var poolCollectionKey = "fileExtension";
+        var typeRange = Object.keys(this.get("fileExtension"));//['raster', 'vector', '3d', 'document'];
+        var fileName;
+        var fileExtension;
+
+        // Generate random file name
+        fileName = this.word({length: fileOptions.length});
+
+        // Generate file by specific extension provided by the user
+        if (fileOptions.extension) {
+
+            fileExtension = fileOptions.extension;
+            return (fileName + '.' + fileExtension);
+        }
+
+        // Generate file by specific extension collection
+        if (fileOptions.extensions) {
+
+            if (Array.isArray(fileOptions.extensions)) {
+
+                fileExtension = this.pickone(fileOptions.extensions);
+                return (fileName + '.' + fileExtension);
+            }
+            else if (fileOptions.extensions.constructor === Object) {
+
+                var extensionObjectCollection = fileOptions.extensions;
+                var keys = Object.keys(extensionObjectCollection);
+
+                fileExtension = this.pickone(extensionObjectCollection[this.pickone(keys)]);
+                return (fileName + '.' + fileExtension);
+            }
+
+            throw new Error("Expect collection of type Array or Object to be passed as an argument ");
+        }
+
+        // Generate file extension based on specific file type
+        if (fileOptions.fileType) {
+
+            var fileType = fileOptions.fileType;
+            if (typeRange.indexOf(fileType) !== -1) {
+
+                fileExtension = this.pickone(this.get(poolCollectionKey)[fileType]);
+                return (fileName + '.' + fileExtension);
+            }
+
+            throw new Error("Expect file type value to be 'raster', 'vector', '3d' or 'document' ");
+        }
+
+        // Generate random file name if no extension options are passed
+        fileExtension = this.pickone(this.get(poolCollectionKey)[this.pickone(typeRange)]);
+        return (fileName + '.' + fileExtension);
+    };
+
     var data = {
 
         firstNames: {
-            "male": ["James", "John", "Robert", "Michael", "William", "David", "Richard", "Joseph", "Charles", "Thomas", "Christopher", "Daniel", "Matthew", "George", "Donald", "Anthony", "Paul", "Mark", "Edward", "Steven", "Kenneth", "Andrew", "Brian", "Joshua", "Kevin", "Ronald", "Timothy", "Jason", "Jeffrey", "Frank", "Gary", "Ryan", "Nicholas", "Eric", "Stephen", "Jacob", "Larry", "Jonathan", "Scott", "Raymond", "Justin", "Brandon", "Gregory", "Samuel", "Benjamin", "Patrick", "Jack", "Henry", "Walter", "Dennis", "Jerry", "Alexander", "Peter", "Tyler", "Douglas", "Harold", "Aaron", "Jose", "Adam", "Arthur", "Zachary", "Carl", "Nathan", "Albert", "Kyle", "Lawrence", "Joe", "Willie", "Gerald", "Roger", "Keith", "Jeremy", "Terry", "Harry", "Ralph", "Sean", "Jesse", "Roy", "Louis", "Billy", "Austin", "Bruce", "Eugene", "Christian", "Bryan", "Wayne", "Russell", "Howard", "Fred", "Ethan", "Jordan", "Philip", "Alan", "Juan", "Randy", "Vincent", "Bobby", "Dylan", "Johnny", "Phillip", "Victor", "Clarence", "Ernest", "Martin", "Craig", "Stanley", "Shawn", "Travis", "Bradley", "Leonard", "Earl", "Gabriel", "Jimmy", "Francis", "Todd", "Noah", "Danny", "Dale", "Cody", "Carlos", "Allen", "Frederick", "Logan", "Curtis", "Alex", "Joel", "Luis", "Norman", "Marvin", "Glenn", "Tony", "Nathaniel", "Rodney", "Melvin", "Alfred", "Steve", "Cameron", "Chad", "Edwin", "Caleb", "Evan", "Antonio", "Lee", "Herbert", "Jeffery", "Isaac", "Derek", "Ricky", "Marcus", "Theodore", "Elijah", "Luke", "Jesus", "Eddie", "Troy", "Mike", "Dustin", "Ray", "Adrian", "Bernard", "Leroy", "Angel", "Randall", "Wesley", "Ian", "Jared", "Mason", "Hunter", "Calvin", "Oscar", "Clifford", "Jay", "Shane", "Ronnie", "Barry", "Lucas", "Corey", "Manuel", "Leo", "Tommy", "Warren", "Jackson", "Isaiah", "Connor", "Don", "Dean", "Jon", "Julian", "Miguel", "Bill", "Lloyd", "Charlie", "Mitchell", "Leon", "Jerome", "Darrell", "Jeremiah", "Alvin", "Brett", "Seth", "Floyd", "Jim", "Blake", "Micheal", "Gordon", "Trevor", "Lewis", "Erik", "Edgar", "Vernon", "Devin", "Gavin", "Jayden", "Chris", "Clyde", "Tom", "Derrick", "Mario", "Brent", "Marc", "Herman", "Chase", "Dominic", "Ricardo", "Franklin", "Maurice", "Max", "Aiden", "Owen", "Lester", "Gilbert", "Elmer", "Gene", "Francisco", "Glen", "Cory", "Garrett", "Clayton", "Sam", "Jorge", "Chester", "Alejandro", "Jeff", "Harvey", "Milton", "Cole", "Ivan", "Andre", "Duane", "Landon"],
-            "female": ["Mary", "Emma", "Elizabeth", "Minnie", "Margaret", "Ida", "Alice", "Bertha", "Sarah", "Annie", "Clara", "Ella", "Florence", "Cora", "Martha", "Laura", "Nellie", "Grace", "Carrie", "Maude", "Mabel", "Bessie", "Jennie", "Gertrude", "Julia", "Hattie", "Edith", "Mattie", "Rose", "Catherine", "Lillian", "Ada", "Lillie", "Helen", "Jessie", "Louise", "Ethel", "Lula", "Myrtle", "Eva", "Frances", "Lena", "Lucy", "Edna", "Maggie", "Pearl", "Daisy", "Fannie", "Josephine", "Dora", "Rosa", "Katherine", "Agnes", "Marie", "Nora", "May", "Mamie", "Blanche", "Stella", "Ellen", "Nancy", "Effie", "Sallie", "Nettie", "Della", "Lizzie", "Flora", "Susie", "Maud", "Mae", "Etta", "Harriet", "Sadie", "Caroline", "Katie", "Lydia", "Elsie", "Kate", "Susan", "Mollie", "Alma", "Addie", "Georgia", "Eliza", "Lulu", "Nannie", "Lottie", "Amanda", "Belle", "Charlotte", "Rebecca", "Ruth", "Viola", "Olive", "Amelia", "Hannah", "Jane", "Virginia", "Emily", "Matilda", "Irene", "Kathryn", "Esther", "Willie", "Henrietta", "Ollie", "Amy", "Rachel", "Sara", "Estella", "Theresa", "Augusta", "Ora", "Pauline", "Josie", "Lola", "Sophia", "Leona", "Anne", "Mildred", "Ann", "Beulah", "Callie", "Lou", "Delia", "Eleanor", "Barbara", "Iva", "Louisa", "Maria", "Mayme", "Evelyn", "Estelle", "Nina", "Betty", "Marion", "Bettie", "Dorothy", "Luella", "Inez", "Lela", "Rosie", "Allie", "Millie", "Janie", "Cornelia", "Victoria", "Ruby", "Winifred", "Alta", "Celia", "Christine", "Beatrice", "Birdie", "Harriett", "Mable", "Myra", "Sophie", "Tillie", "Isabel", "Sylvia", "Carolyn", "Isabelle", "Leila", "Sally", "Ina", "Essie", "Bertie", "Nell", "Alberta", "Katharine", "Lora", "Rena", "Mina", "Rhoda", "Mathilda", "Abbie", "Eula", "Dollie", "Hettie", "Eunice", "Fanny", "Ola", "Lenora", "Adelaide", "Christina", "Lelia", "Nelle", "Sue", "Johanna", "Lilly", "Lucinda", "Minerva", "Lettie", "Roxie", "Cynthia", "Helena", "Hilda", "Hulda", "Bernice", "Genevieve", "Jean", "Cordelia", "Marian", "Francis", "Jeanette", "Adeline", "Gussie", "Leah", "Lois", "Lura", "Mittie", "Hallie", "Isabella", "Olga", "Phoebe", "Teresa", "Hester", "Lida", "Lina", "Winnie", "Claudia", "Marguerite", "Vera", "Cecelia", "Bess", "Emilie", "John", "Rosetta", "Verna", "Myrtie", "Cecilia", "Elva", "Olivia", "Ophelia", "Georgie", "Elnora", "Violet", "Adele", "Lily", "Linnie", "Loretta", "Madge", "Polly", "Virgie", "Eugenia", "Lucile", "Lucille", "Mabelle", "Rosalie"]
+            "male": {
+                "en": ["James", "John", "Robert", "Michael", "William", "David", "Richard", "Joseph", "Charles", "Thomas", "Christopher", "Daniel", "Matthew", "George", "Donald", "Anthony", "Paul", "Mark", "Edward", "Steven", "Kenneth", "Andrew", "Brian", "Joshua", "Kevin", "Ronald", "Timothy", "Jason", "Jeffrey", "Frank", "Gary", "Ryan", "Nicholas", "Eric", "Stephen", "Jacob", "Larry", "Jonathan", "Scott", "Raymond", "Justin", "Brandon", "Gregory", "Samuel", "Benjamin", "Patrick", "Jack", "Henry", "Walter", "Dennis", "Jerry", "Alexander", "Peter", "Tyler", "Douglas", "Harold", "Aaron", "Jose", "Adam", "Arthur", "Zachary", "Carl", "Nathan", "Albert", "Kyle", "Lawrence", "Joe", "Willie", "Gerald", "Roger", "Keith", "Jeremy", "Terry", "Harry", "Ralph", "Sean", "Jesse", "Roy", "Louis", "Billy", "Austin", "Bruce", "Eugene", "Christian", "Bryan", "Wayne", "Russell", "Howard", "Fred", "Ethan", "Jordan", "Philip", "Alan", "Juan", "Randy", "Vincent", "Bobby", "Dylan", "Johnny", "Phillip", "Victor", "Clarence", "Ernest", "Martin", "Craig", "Stanley", "Shawn", "Travis", "Bradley", "Leonard", "Earl", "Gabriel", "Jimmy", "Francis", "Todd", "Noah", "Danny", "Dale", "Cody", "Carlos", "Allen", "Frederick", "Logan", "Curtis", "Alex", "Joel", "Luis", "Norman", "Marvin", "Glenn", "Tony", "Nathaniel", "Rodney", "Melvin", "Alfred", "Steve", "Cameron", "Chad", "Edwin", "Caleb", "Evan", "Antonio", "Lee", "Herbert", "Jeffery", "Isaac", "Derek", "Ricky", "Marcus", "Theodore", "Elijah", "Luke", "Jesus", "Eddie", "Troy", "Mike", "Dustin", "Ray", "Adrian", "Bernard", "Leroy", "Angel", "Randall", "Wesley", "Ian", "Jared", "Mason", "Hunter", "Calvin", "Oscar", "Clifford", "Jay", "Shane", "Ronnie", "Barry", "Lucas", "Corey", "Manuel", "Leo", "Tommy", "Warren", "Jackson", "Isaiah", "Connor", "Don", "Dean", "Jon", "Julian", "Miguel", "Bill", "Lloyd", "Charlie", "Mitchell", "Leon", "Jerome", "Darrell", "Jeremiah", "Alvin", "Brett", "Seth", "Floyd", "Jim", "Blake", "Micheal", "Gordon", "Trevor", "Lewis", "Erik", "Edgar", "Vernon", "Devin", "Gavin", "Jayden", "Chris", "Clyde", "Tom", "Derrick", "Mario", "Brent", "Marc", "Herman", "Chase", "Dominic", "Ricardo", "Franklin", "Maurice", "Max", "Aiden", "Owen", "Lester", "Gilbert", "Elmer", "Gene", "Francisco", "Glen", "Cory", "Garrett", "Clayton", "Sam", "Jorge", "Chester", "Alejandro", "Jeff", "Harvey", "Milton", "Cole", "Ivan", "Andre", "Duane", "Landon"],
+                // Data taken from http://www.dati.gov.it/dataset/comune-di-firenze_0163
+                "it": ["Adolfo", "Alberto", "Aldo", "Alessandro", "Alessio", "Alfredo", "Alvaro", "Andrea", "Angelo", "Angiolo", "Antonino", "Antonio", "Attilio", "Benito", "Bernardo", "Bruno", "Carlo", "Cesare", "Christian", "Claudio", "Corrado", "Cosimo", "Cristian", "Cristiano", "Daniele", "Dario", "David", "Davide", "Diego", "Dino", "Domenico", "Duccio", "Edoardo", "Elia", "Elio", "Emanuele", "Emiliano", "Emilio", "Enrico", "Enzo", "Ettore", "Fabio", "Fabrizio", "Federico", "Ferdinando", "Fernando", "Filippo", "Francesco", "Franco", "Gabriele", "Giacomo", "Giampaolo", "Giampiero", "Giancarlo", "Gianfranco", "Gianluca", "Gianmarco", "Gianni", "Gino", "Giorgio", "Giovanni", "Giuliano", "Giulio", "Giuseppe", "Graziano", "Gregorio", "Guido", "Iacopo", "Jacopo", "Lapo", "Leonardo", "Lorenzo", "Luca", "Luciano", "Luigi", "Manuel", "Marcello", "Marco", "Marino", "Mario", "Massimiliano", "Massimo", "Matteo", "Mattia", "Maurizio", "Mauro", "Michele", "Mirko", "Mohamed", "Nello", "Neri", "Niccolò", "Nicola", "Osvaldo", "Otello", "Paolo", "Pier Luigi", "Piero", "Pietro", "Raffaele", "Remo", "Renato", "Renzo", "Riccardo", "Roberto", "Rolando", "Romano", "Salvatore", "Samuele", "Sandro", "Sergio", "Silvano", "Simone", "Stefano", "Thomas", "Tommaso", "Ubaldo", "Ugo", "Umberto", "Valerio", "Valter", "Vasco", "Vincenzo", "Vittorio"]
+            },
+            "female": {
+                "en": ["Mary", "Emma", "Elizabeth", "Minnie", "Margaret", "Ida", "Alice", "Bertha", "Sarah", "Annie", "Clara", "Ella", "Florence", "Cora", "Martha", "Laura", "Nellie", "Grace", "Carrie", "Maude", "Mabel", "Bessie", "Jennie", "Gertrude", "Julia", "Hattie", "Edith", "Mattie", "Rose", "Catherine", "Lillian", "Ada", "Lillie", "Helen", "Jessie", "Louise", "Ethel", "Lula", "Myrtle", "Eva", "Frances", "Lena", "Lucy", "Edna", "Maggie", "Pearl", "Daisy", "Fannie", "Josephine", "Dora", "Rosa", "Katherine", "Agnes", "Marie", "Nora", "May", "Mamie", "Blanche", "Stella", "Ellen", "Nancy", "Effie", "Sallie", "Nettie", "Della", "Lizzie", "Flora", "Susie", "Maud", "Mae", "Etta", "Harriet", "Sadie", "Caroline", "Katie", "Lydia", "Elsie", "Kate", "Susan", "Mollie", "Alma", "Addie", "Georgia", "Eliza", "Lulu", "Nannie", "Lottie", "Amanda", "Belle", "Charlotte", "Rebecca", "Ruth", "Viola", "Olive", "Amelia", "Hannah", "Jane", "Virginia", "Emily", "Matilda", "Irene", "Kathryn", "Esther", "Willie", "Henrietta", "Ollie", "Amy", "Rachel", "Sara", "Estella", "Theresa", "Augusta", "Ora", "Pauline", "Josie", "Lola", "Sophia", "Leona", "Anne", "Mildred", "Ann", "Beulah", "Callie", "Lou", "Delia", "Eleanor", "Barbara", "Iva", "Louisa", "Maria", "Mayme", "Evelyn", "Estelle", "Nina", "Betty", "Marion", "Bettie", "Dorothy", "Luella", "Inez", "Lela", "Rosie", "Allie", "Millie", "Janie", "Cornelia", "Victoria", "Ruby", "Winifred", "Alta", "Celia", "Christine", "Beatrice", "Birdie", "Harriett", "Mable", "Myra", "Sophie", "Tillie", "Isabel", "Sylvia", "Carolyn", "Isabelle", "Leila", "Sally", "Ina", "Essie", "Bertie", "Nell", "Alberta", "Katharine", "Lora", "Rena", "Mina", "Rhoda", "Mathilda", "Abbie", "Eula", "Dollie", "Hettie", "Eunice", "Fanny", "Ola", "Lenora", "Adelaide", "Christina", "Lelia", "Nelle", "Sue", "Johanna", "Lilly", "Lucinda", "Minerva", "Lettie", "Roxie", "Cynthia", "Helena", "Hilda", "Hulda", "Bernice", "Genevieve", "Jean", "Cordelia", "Marian", "Francis", "Jeanette", "Adeline", "Gussie", "Leah", "Lois", "Lura", "Mittie", "Hallie", "Isabella", "Olga", "Phoebe", "Teresa", "Hester", "Lida", "Lina", "Winnie", "Claudia", "Marguerite", "Vera", "Cecelia", "Bess", "Emilie", "Rosetta", "Verna", "Myrtie", "Cecilia", "Elva", "Olivia", "Ophelia", "Georgie", "Elnora", "Violet", "Adele", "Lily", "Linnie", "Loretta", "Madge", "Polly", "Virgie", "Eugenia", "Lucile", "Lucille", "Mabelle", "Rosalie"],
+                // Data taken from http://www.dati.gov.it/dataset/comune-di-firenze_0162
+                "it": ["Ada", "Adriana", "Alessandra", "Alessia", "Alice", "Angela", "Anna", "Anna Maria", "Annalisa", "Annita", "Annunziata", "Antonella", "Arianna", "Asia", "Assunta", "Aurora", "Barbara", "Beatrice", "Benedetta", "Bianca", "Bruna", "Camilla", "Carla", "Carlotta", "Carmela", "Carolina", "Caterina", "Catia", "Cecilia", "Chiara", "Cinzia", "Clara", "Claudia", "Costanza", "Cristina", "Daniela", "Debora", "Diletta", "Dina", "Donatella", "Elena", "Eleonora", "Elisa", "Elisabetta", "Emanuela", "Emma", "Eva", "Federica", "Fernanda", "Fiorella", "Fiorenza", "Flora", "Franca", "Francesca", "Gabriella", "Gaia", "Gemma", "Giada", "Gianna", "Gina", "Ginevra", "Giorgia", "Giovanna", "Giulia", "Giuliana", "Giuseppa", "Giuseppina", "Grazia", "Graziella", "Greta", "Ida", "Ilaria", "Ines", "Iolanda", "Irene", "Irma", "Isabella", "Jessica", "Laura", "Leda", "Letizia", "Licia", "Lidia", "Liliana", "Lina", "Linda", "Lisa", "Livia", "Loretta", "Luana", "Lucia", "Luciana", "Lucrezia", "Luisa", "Manuela", "Mara", "Marcella", "Margherita", "Maria", "Maria Cristina", "Maria Grazia", "Maria Luisa", "Maria Pia", "Maria Teresa", "Marina", "Marisa", "Marta", "Martina", "Marzia", "Matilde", "Melissa", "Michela", "Milena", "Mirella", "Monica", "Natalina", "Nella", "Nicoletta", "Noemi", "Olga", "Paola", "Patrizia", "Piera", "Pierina", "Raffaella", "Rebecca", "Renata", "Rina", "Rita", "Roberta", "Rosa", "Rosanna", "Rossana", "Rossella", "Sabrina", "Sandra", "Sara", "Serena", "Silvana", "Silvia", "Simona", "Simonetta", "Sofia", "Sonia", "Stefania", "Susanna", "Teresa", "Tina", "Tiziana", "Tosca", "Valentina", "Valeria", "Vanda", "Vanessa", "Vanna", "Vera", "Veronica", "Vilma", "Viola", "Virginia", "Vittoria"]
+            }
         },
 
-        lastNames: ['Smith', 'Johnson', 'Williams', 'Jones', 'Brown', 'Davis', 'Miller', 'Wilson', 'Moore', 'Taylor', 'Anderson', 'Thomas', 'Jackson', 'White', 'Harris', 'Martin', 'Thompson', 'Garcia', 'Martinez', 'Robinson', 'Clark', 'Rodriguez', 'Lewis', 'Lee', 'Walker', 'Hall', 'Allen', 'Young', 'Hernandez', 'King', 'Wright', 'Lopez', 'Hill', 'Scott', 'Green', 'Adams', 'Baker', 'Gonzalez', 'Nelson', 'Carter', 'Mitchell', 'Perez', 'Roberts', 'Turner', 'Phillips', 'Campbell', 'Parker', 'Evans', 'Edwards', 'Collins', 'Stewart', 'Sanchez', 'Morris', 'Rogers', 'Reed', 'Cook', 'Morgan', 'Bell', 'Murphy', 'Bailey', 'Rivera', 'Cooper', 'Richardson', 'Cox', 'Howard', 'Ward', 'Torres', 'Peterson', 'Gray', 'Ramirez', 'James', 'Watson', 'Brooks', 'Kelly', 'Sanders', 'Price', 'Bennett', 'Wood', 'Barnes', 'Ross', 'Henderson', 'Coleman', 'Jenkins', 'Perry', 'Powell', 'Long', 'Patterson', 'Hughes', 'Flores', 'Washington', 'Butler', 'Simmons', 'Foster', 'Gonzales', 'Bryant', 'Alexander', 'Russell', 'Griffin', 'Diaz', 'Hayes', 'Myers', 'Ford', 'Hamilton', 'Graham', 'Sullivan', 'Wallace', 'Woods', 'Cole', 'West', 'Jordan', 'Owens', 'Reynolds', 'Fisher', 'Ellis', 'Harrison', 'Gibson', 'McDonald', 'Cruz', 'Marshall', 'Ortiz', 'Gomez', 'Murray', 'Freeman', 'Wells', 'Webb', 'Simpson', 'Stevens', 'Tucker', 'Porter', 'Hunter', 'Hicks', 'Crawford', 'Henry', 'Boyd', 'Mason', 'Morales', 'Kennedy', 'Warren', 'Dixon', 'Ramos', 'Reyes', 'Burns', 'Gordon', 'Shaw', 'Holmes', 'Rice', 'Robertson', 'Hunt', 'Black', 'Daniels', 'Palmer', 'Mills', 'Nichols', 'Grant', 'Knight', 'Ferguson', 'Rose', 'Stone', 'Hawkins', 'Dunn', 'Perkins', 'Hudson', 'Spencer', 'Gardner', 'Stephens', 'Payne', 'Pierce', 'Berry', 'Matthews', 'Arnold', 'Wagner', 'Willis', 'Ray', 'Watkins', 'Olson', 'Carroll', 'Duncan', 'Snyder', 'Hart', 'Cunningham', 'Bradley', 'Lane', 'Andrews', 'Ruiz', 'Harper', 'Fox', 'Riley', 'Armstrong', 'Carpenter', 'Weaver', 'Greene', 'Lawrence', 'Elliott', 'Chavez', 'Sims', 'Austin', 'Peters', 'Kelley', 'Franklin', 'Lawson', 'Fields', 'Gutierrez', 'Ryan', 'Schmidt', 'Carr', 'Vasquez', 'Castillo', 'Wheeler', 'Chapman', 'Oliver', 'Montgomery', 'Richards', 'Williamson', 'Johnston', 'Banks', 'Meyer', 'Bishop', 'McCoy', 'Howell', 'Alvarez', 'Morrison', 'Hansen', 'Fernandez', 'Garza', 'Harvey', 'Little', 'Burton', 'Stanley', 'Nguyen', 'George', 'Jacobs', 'Reid', 'Kim', 'Fuller', 'Lynch', 'Dean', 'Gilbert', 'Garrett', 'Romero', 'Welch', 'Larson', 'Frazier', 'Burke', 'Hanson', 'Day', 'Mendoza', 'Moreno', 'Bowman', 'Medina', 'Fowler', 'Brewer', 'Hoffman', 'Carlson', 'Silva', 'Pearson', 'Holland', 'Douglas', 'Fleming', 'Jensen', 'Vargas', 'Byrd', 'Davidson', 'Hopkins', 'May', 'Terry', 'Herrera', 'Wade', 'Soto', 'Walters', 'Curtis', 'Neal', 'Caldwell', 'Lowe', 'Jennings', 'Barnett', 'Graves', 'Jimenez', 'Horton', 'Shelton', 'Barrett', 'Obrien', 'Castro', 'Sutton', 'Gregory', 'McKinney', 'Lucas', 'Miles', 'Craig', 'Rodriquez', 'Chambers', 'Holt', 'Lambert', 'Fletcher', 'Watts', 'Bates', 'Hale', 'Rhodes', 'Pena', 'Beck', 'Newman', 'Haynes', 'McDaniel', 'Mendez', 'Bush', 'Vaughn', 'Parks', 'Dawson', 'Santiago', 'Norris', 'Hardy', 'Love', 'Steele', 'Curry', 'Powers', 'Schultz', 'Barker', 'Guzman', 'Page', 'Munoz', 'Ball', 'Keller', 'Chandler', 'Weber', 'Leonard', 'Walsh', 'Lyons', 'Ramsey', 'Wolfe', 'Schneider', 'Mullins', 'Benson', 'Sharp', 'Bowen', 'Daniel', 'Barber', 'Cummings', 'Hines', 'Baldwin', 'Griffith', 'Valdez', 'Hubbard', 'Salazar', 'Reeves', 'Warner', 'Stevenson', 'Burgess', 'Santos', 'Tate', 'Cross', 'Garner', 'Mann', 'Mack', 'Moss', 'Thornton', 'Dennis', 'McGee', 'Farmer', 'Delgado', 'Aguilar', 'Vega', 'Glover', 'Manning', 'Cohen', 'Harmon', 'Rodgers', 'Robbins', 'Newton', 'Todd', 'Blair', 'Higgins', 'Ingram', 'Reese', 'Cannon', 'Strickland', 'Townsend', 'Potter', 'Goodwin', 'Walton', 'Rowe', 'Hampton', 'Ortega', 'Patton', 'Swanson', 'Joseph', 'Francis', 'Goodman', 'Maldonado', 'Yates', 'Becker', 'Erickson', 'Hodges', 'Rios', 'Conner', 'Adkins', 'Webster', 'Norman', 'Malone', 'Hammond', 'Flowers', 'Cobb', 'Moody', 'Quinn', 'Blake', 'Maxwell', 'Pope', 'Floyd', 'Osborne', 'Paul', 'McCarthy', 'Guerrero', 'Lindsey', 'Estrada', 'Sandoval', 'Gibbs', 'Tyler', 'Gross', 'Fitzgerald', 'Stokes', 'Doyle', 'Sherman', 'Saunders', 'Wise', 'Colon', 'Gill', 'Alvarado', 'Greer', 'Padilla', 'Simon', 'Waters', 'Nunez', 'Ballard', 'Schwartz', 'McBride', 'Houston', 'Christensen', 'Klein', 'Pratt', 'Briggs', 'Parsons', 'McLaughlin', 'Zimmerman', 'French', 'Buchanan', 'Moran', 'Copeland', 'Roy', 'Pittman', 'Brady', 'McCormick', 'Holloway', 'Brock', 'Poole', 'Frank', 'Logan', 'Owen', 'Bass', 'Marsh', 'Drake', 'Wong', 'Jefferson', 'Park', 'Morton', 'Abbott', 'Sparks', 'Patrick', 'Norton', 'Huff', 'Clayton', 'Massey', 'Lloyd', 'Figueroa', 'Carson', 'Bowers', 'Roberson', 'Barton', 'Tran', 'Lamb', 'Harrington', 'Casey', 'Boone', 'Cortez', 'Clarke', 'Mathis', 'Singleton', 'Wilkins', 'Cain', 'Bryan', 'Underwood', 'Hogan', 'McKenzie', 'Collier', 'Luna', 'Phelps', 'McGuire', 'Allison', 'Bridges', 'Wilkerson', 'Nash', 'Summers', 'Atkins'],
+        lastNames: {
+            "en": ['Smith', 'Johnson', 'Williams', 'Jones', 'Brown', 'Davis', 'Miller', 'Wilson', 'Moore', 'Taylor', 'Anderson', 'Thomas', 'Jackson', 'White', 'Harris', 'Martin', 'Thompson', 'Garcia', 'Martinez', 'Robinson', 'Clark', 'Rodriguez', 'Lewis', 'Lee', 'Walker', 'Hall', 'Allen', 'Young', 'Hernandez', 'King', 'Wright', 'Lopez', 'Hill', 'Scott', 'Green', 'Adams', 'Baker', 'Gonzalez', 'Nelson', 'Carter', 'Mitchell', 'Perez', 'Roberts', 'Turner', 'Phillips', 'Campbell', 'Parker', 'Evans', 'Edwards', 'Collins', 'Stewart', 'Sanchez', 'Morris', 'Rogers', 'Reed', 'Cook', 'Morgan', 'Bell', 'Murphy', 'Bailey', 'Rivera', 'Cooper', 'Richardson', 'Cox', 'Howard', 'Ward', 'Torres', 'Peterson', 'Gray', 'Ramirez', 'James', 'Watson', 'Brooks', 'Kelly', 'Sanders', 'Price', 'Bennett', 'Wood', 'Barnes', 'Ross', 'Henderson', 'Coleman', 'Jenkins', 'Perry', 'Powell', 'Long', 'Patterson', 'Hughes', 'Flores', 'Washington', 'Butler', 'Simmons', 'Foster', 'Gonzales', 'Bryant', 'Alexander', 'Russell', 'Griffin', 'Diaz', 'Hayes', 'Myers', 'Ford', 'Hamilton', 'Graham', 'Sullivan', 'Wallace', 'Woods', 'Cole', 'West', 'Jordan', 'Owens', 'Reynolds', 'Fisher', 'Ellis', 'Harrison', 'Gibson', 'McDonald', 'Cruz', 'Marshall', 'Ortiz', 'Gomez', 'Murray', 'Freeman', 'Wells', 'Webb', 'Simpson', 'Stevens', 'Tucker', 'Porter', 'Hunter', 'Hicks', 'Crawford', 'Henry', 'Boyd', 'Mason', 'Morales', 'Kennedy', 'Warren', 'Dixon', 'Ramos', 'Reyes', 'Burns', 'Gordon', 'Shaw', 'Holmes', 'Rice', 'Robertson', 'Hunt', 'Black', 'Daniels', 'Palmer', 'Mills', 'Nichols', 'Grant', 'Knight', 'Ferguson', 'Rose', 'Stone', 'Hawkins', 'Dunn', 'Perkins', 'Hudson', 'Spencer', 'Gardner', 'Stephens', 'Payne', 'Pierce', 'Berry', 'Matthews', 'Arnold', 'Wagner', 'Willis', 'Ray', 'Watkins', 'Olson', 'Carroll', 'Duncan', 'Snyder', 'Hart', 'Cunningham', 'Bradley', 'Lane', 'Andrews', 'Ruiz', 'Harper', 'Fox', 'Riley', 'Armstrong', 'Carpenter', 'Weaver', 'Greene', 'Lawrence', 'Elliott', 'Chavez', 'Sims', 'Austin', 'Peters', 'Kelley', 'Franklin', 'Lawson', 'Fields', 'Gutierrez', 'Ryan', 'Schmidt', 'Carr', 'Vasquez', 'Castillo', 'Wheeler', 'Chapman', 'Oliver', 'Montgomery', 'Richards', 'Williamson', 'Johnston', 'Banks', 'Meyer', 'Bishop', 'McCoy', 'Howell', 'Alvarez', 'Morrison', 'Hansen', 'Fernandez', 'Garza', 'Harvey', 'Little', 'Burton', 'Stanley', 'Nguyen', 'George', 'Jacobs', 'Reid', 'Kim', 'Fuller', 'Lynch', 'Dean', 'Gilbert', 'Garrett', 'Romero', 'Welch', 'Larson', 'Frazier', 'Burke', 'Hanson', 'Day', 'Mendoza', 'Moreno', 'Bowman', 'Medina', 'Fowler', 'Brewer', 'Hoffman', 'Carlson', 'Silva', 'Pearson', 'Holland', 'Douglas', 'Fleming', 'Jensen', 'Vargas', 'Byrd', 'Davidson', 'Hopkins', 'May', 'Terry', 'Herrera', 'Wade', 'Soto', 'Walters', 'Curtis', 'Neal', 'Caldwell', 'Lowe', 'Jennings', 'Barnett', 'Graves', 'Jimenez', 'Horton', 'Shelton', 'Barrett', 'Obrien', 'Castro', 'Sutton', 'Gregory', 'McKinney', 'Lucas', 'Miles', 'Craig', 'Rodriquez', 'Chambers', 'Holt', 'Lambert', 'Fletcher', 'Watts', 'Bates', 'Hale', 'Rhodes', 'Pena', 'Beck', 'Newman', 'Haynes', 'McDaniel', 'Mendez', 'Bush', 'Vaughn', 'Parks', 'Dawson', 'Santiago', 'Norris', 'Hardy', 'Love', 'Steele', 'Curry', 'Powers', 'Schultz', 'Barker', 'Guzman', 'Page', 'Munoz', 'Ball', 'Keller', 'Chandler', 'Weber', 'Leonard', 'Walsh', 'Lyons', 'Ramsey', 'Wolfe', 'Schneider', 'Mullins', 'Benson', 'Sharp', 'Bowen', 'Daniel', 'Barber', 'Cummings', 'Hines', 'Baldwin', 'Griffith', 'Valdez', 'Hubbard', 'Salazar', 'Reeves', 'Warner', 'Stevenson', 'Burgess', 'Santos', 'Tate', 'Cross', 'Garner', 'Mann', 'Mack', 'Moss', 'Thornton', 'Dennis', 'McGee', 'Farmer', 'Delgado', 'Aguilar', 'Vega', 'Glover', 'Manning', 'Cohen', 'Harmon', 'Rodgers', 'Robbins', 'Newton', 'Todd', 'Blair', 'Higgins', 'Ingram', 'Reese', 'Cannon', 'Strickland', 'Townsend', 'Potter', 'Goodwin', 'Walton', 'Rowe', 'Hampton', 'Ortega', 'Patton', 'Swanson', 'Joseph', 'Francis', 'Goodman', 'Maldonado', 'Yates', 'Becker', 'Erickson', 'Hodges', 'Rios', 'Conner', 'Adkins', 'Webster', 'Norman', 'Malone', 'Hammond', 'Flowers', 'Cobb', 'Moody', 'Quinn', 'Blake', 'Maxwell', 'Pope', 'Floyd', 'Osborne', 'Paul', 'McCarthy', 'Guerrero', 'Lindsey', 'Estrada', 'Sandoval', 'Gibbs', 'Tyler', 'Gross', 'Fitzgerald', 'Stokes', 'Doyle', 'Sherman', 'Saunders', 'Wise', 'Colon', 'Gill', 'Alvarado', 'Greer', 'Padilla', 'Simon', 'Waters', 'Nunez', 'Ballard', 'Schwartz', 'McBride', 'Houston', 'Christensen', 'Klein', 'Pratt', 'Briggs', 'Parsons', 'McLaughlin', 'Zimmerman', 'French', 'Buchanan', 'Moran', 'Copeland', 'Roy', 'Pittman', 'Brady', 'McCormick', 'Holloway', 'Brock', 'Poole', 'Frank', 'Logan', 'Owen', 'Bass', 'Marsh', 'Drake', 'Wong', 'Jefferson', 'Park', 'Morton', 'Abbott', 'Sparks', 'Patrick', 'Norton', 'Huff', 'Clayton', 'Massey', 'Lloyd', 'Figueroa', 'Carson', 'Bowers', 'Roberson', 'Barton', 'Tran', 'Lamb', 'Harrington', 'Casey', 'Boone', 'Cortez', 'Clarke', 'Mathis', 'Singleton', 'Wilkins', 'Cain', 'Bryan', 'Underwood', 'Hogan', 'McKenzie', 'Collier', 'Luna', 'Phelps', 'McGuire', 'Allison', 'Bridges', 'Wilkerson', 'Nash', 'Summers', 'Atkins'],
+            // Data taken from http://www.dati.gov.it/dataset/comune-di-firenze_0164 (first 1000)
+            "it": ["Acciai", "Aglietti", "Agostini", "Agresti", "Ahmed", "Aiazzi", "Albanese", "Alberti", "Alessi", "Alfani", "Alinari", "Alterini", "Amato", "Ammannati", "Ancillotti", "Andrei", "Andreini", "Andreoni", "Angeli", "Anichini", "Antonelli", "Antonini", "Arena", "Ariani", "Arnetoli", "Arrighi", "Baccani", "Baccetti", "Bacci", "Bacherini", "Badii", "Baggiani", "Baglioni", "Bagni", "Bagnoli", "Baldassini", "Baldi", "Baldini", "Ballerini", "Balli", "Ballini", "Balloni", "Bambi", "Banchi", "Bandinelli", "Bandini", "Bani", "Barbetti", "Barbieri", "Barchielli", "Bardazzi", "Bardelli", "Bardi", "Barducci", "Bargellini", "Bargiacchi", "Barni", "Baroncelli", "Baroncini", "Barone", "Baroni", "Baronti", "Bartalesi", "Bartoletti", "Bartoli", "Bartolini", "Bartoloni", "Bartolozzi", "Basagni", "Basile", "Bassi", "Batacchi", "Battaglia", "Battaglini", "Bausi", "Becagli", "Becattini", "Becchi", "Becucci", "Bellandi", "Bellesi", "Belli", "Bellini", "Bellucci", "Bencini", "Benedetti", "Benelli", "Beni", "Benini", "Bensi", "Benucci", "Benvenuti", "Berlincioni", "Bernacchioni", "Bernardi", "Bernardini", "Berni", "Bernini", "Bertelli", "Berti", "Bertini", "Bessi", "Betti", "Bettini", "Biagi", "Biagini", "Biagioni", "Biagiotti", "Biancalani", "Bianchi", "Bianchini", "Bianco", "Biffoli", "Bigazzi", "Bigi", "Biliotti", "Billi", "Binazzi", "Bindi", "Bini", "Biondi", "Bizzarri", "Bocci", "Bogani", "Bolognesi", "Bonaiuti", "Bonanni", "Bonciani", "Boncinelli", "Bondi", "Bonechi", "Bongini", "Boni", "Bonini", "Borchi", "Boretti", "Borghi", "Borghini", "Borgioli", "Borri", "Borselli", "Boschi", "Bottai", "Bracci", "Braccini", "Brandi", "Braschi", "Bravi", "Brazzini", "Breschi", "Brilli", "Brizzi", "Brogelli", "Brogi", "Brogioni", "Brunelli", "Brunetti", "Bruni", "Bruno", "Brunori", "Bruschi", "Bucci", "Bucciarelli", "Buccioni", "Bucelli", "Bulli", "Burberi", "Burchi", "Burgassi", "Burroni", "Bussotti", "Buti", "Caciolli", "Caiani", "Calabrese", "Calamai", "Calamandrei", "Caldini", "Calo'", "Calonaci", "Calosi", "Calvelli", "Cambi", "Camiciottoli", "Cammelli", "Cammilli", "Campolmi", "Cantini", "Capanni", "Capecchi", "Caponi", "Cappelletti", "Cappelli", "Cappellini", "Cappugi", "Capretti", "Caputo", "Carbone", "Carboni", "Cardini", "Carlesi", "Carletti", "Carli", "Caroti", "Carotti", "Carrai", "Carraresi", "Carta", "Caruso", "Casalini", "Casati", "Caselli", "Casini", "Castagnoli", "Castellani", "Castelli", "Castellucci", "Catalano", "Catarzi", "Catelani", "Cavaciocchi", "Cavallaro", "Cavallini", "Cavicchi", "Cavini", "Ceccarelli", "Ceccatelli", "Ceccherelli", "Ceccherini", "Cecchi", "Cecchini", "Cecconi", "Cei", "Cellai", "Celli", "Cellini", "Cencetti", "Ceni", "Cenni", "Cerbai", "Cesari", "Ceseri", "Checcacci", "Checchi", "Checcucci", "Cheli", "Chellini", "Chen", "Cheng", "Cherici", "Cherubini", "Chiaramonti", "Chiarantini", "Chiarelli", "Chiari", "Chiarini", "Chiarugi", "Chiavacci", "Chiesi", "Chimenti", "Chini", "Chirici", "Chiti", "Ciabatti", "Ciampi", "Cianchi", "Cianfanelli", "Cianferoni", "Ciani", "Ciapetti", "Ciappi", "Ciardi", "Ciatti", "Cicali", "Ciccone", "Cinelli", "Cini", "Ciobanu", "Ciolli", "Cioni", "Cipriani", "Cirillo", "Cirri", "Ciucchi", "Ciuffi", "Ciulli", "Ciullini", "Clemente", "Cocchi", "Cognome", "Coli", "Collini", "Colombo", "Colzi", "Comparini", "Conforti", "Consigli", "Conte", "Conti", "Contini", "Coppini", "Coppola", "Corsi", "Corsini", "Corti", "Cortini", "Cosi", "Costa", "Costantini", "Costantino", "Cozzi", "Cresci", "Crescioli", "Cresti", "Crini", "Curradi", "D'Agostino", "D'Alessandro", "D'Amico", "D'Angelo", "Daddi", "Dainelli", "Dallai", "Danti", "Davitti", "De Angelis", "De Luca", "De Marco", "De Rosa", "De Santis", "De Simone", "De Vita", "Degl'Innocenti", "Degli Innocenti", "Dei", "Del Lungo", "Del Re", "Di Marco", "Di Stefano", "Dini", "Diop", "Dobre", "Dolfi", "Donati", "Dondoli", "Dong", "Donnini", "Ducci", "Dumitru", "Ermini", "Esposito", "Evangelisti", "Fabbri", "Fabbrini", "Fabbrizzi", "Fabbroni", "Fabbrucci", "Fabiani", "Facchini", "Faggi", "Fagioli", "Failli", "Faini", "Falciani", "Falcini", "Falcone", "Fallani", "Falorni", "Falsini", "Falugiani", "Fancelli", "Fanelli", "Fanetti", "Fanfani", "Fani", "Fantappie'", "Fantechi", "Fanti", "Fantini", "Fantoni", "Farina", "Fattori", "Favilli", "Fedi", "Fei", "Ferrante", "Ferrara", "Ferrari", "Ferraro", "Ferretti", "Ferri", "Ferrini", "Ferroni", "Fiaschi", "Fibbi", "Fiesoli", "Filippi", "Filippini", "Fini", "Fioravanti", "Fiore", "Fiorentini", "Fiorini", "Fissi", "Focardi", "Foggi", "Fontana", "Fontanelli", "Fontani", "Forconi", "Formigli", "Forte", "Forti", "Fortini", "Fossati", "Fossi", "Francalanci", "Franceschi", "Franceschini", "Franchi", "Franchini", "Franci", "Francini", "Francioni", "Franco", "Frassineti", "Frati", "Fratini", "Frilli", "Frizzi", "Frosali", "Frosini", "Frullini", "Fusco", "Fusi", "Gabbrielli", "Gabellini", "Gagliardi", "Galanti", "Galardi", "Galeotti", "Galletti", "Galli", "Gallo", "Gallori", "Gambacciani", "Gargani", "Garofalo", "Garuglieri", "Gashi", "Gasperini", "Gatti", "Gelli", "Gensini", "Gentile", "Gentili", "Geri", "Gerini", "Gheri", "Ghini", "Giachetti", "Giachi", "Giacomelli", "Gianassi", "Giani", "Giannelli", "Giannetti", "Gianni", "Giannini", "Giannoni", "Giannotti", "Giannozzi", "Gigli", "Giordano", "Giorgetti", "Giorgi", "Giovacchini", "Giovannelli", "Giovannetti", "Giovannini", "Giovannoni", "Giuliani", "Giunti", "Giuntini", "Giusti", "Gonnelli", "Goretti", "Gori", "Gradi", "Gramigni", "Grassi", "Grasso", "Graziani", "Grazzini", "Greco", "Grifoni", "Grillo", "Grimaldi", "Grossi", "Gualtieri", "Guarducci", "Guarino", "Guarnieri", "Guasti", "Guerra", "Guerri", "Guerrini", "Guidi", "Guidotti", "He", "Hoxha", "Hu", "Huang", "Iandelli", "Ignesti", "Innocenti", "Jin", "La Rosa", "Lai", "Landi", "Landini", "Lanini", "Lapi", "Lapini", "Lari", "Lascialfari", "Lastrucci", "Latini", "Lazzeri", "Lazzerini", "Lelli", "Lenzi", "Leonardi", "Leoncini", "Leone", "Leoni", "Lepri", "Li", "Liao", "Lin", "Linari", "Lippi", "Lisi", "Livi", "Lombardi", "Lombardini", "Lombardo", "Longo", "Lopez", "Lorenzi", "Lorenzini", "Lorini", "Lotti", "Lu", "Lucchesi", "Lucherini", "Lunghi", "Lupi", "Madiai", "Maestrini", "Maffei", "Maggi", "Maggini", "Magherini", "Magini", "Magnani", "Magnelli", "Magni", "Magnolfi", "Magrini", "Malavolti", "Malevolti", "Manca", "Mancini", "Manetti", "Manfredi", "Mangani", "Mannelli", "Manni", "Mannini", "Mannucci", "Manuelli", "Manzini", "Marcelli", "Marchese", "Marchetti", "Marchi", "Marchiani", "Marchionni", "Marconi", "Marcucci", "Margheri", "Mari", "Mariani", "Marilli", "Marinai", "Marinari", "Marinelli", "Marini", "Marino", "Mariotti", "Marsili", "Martelli", "Martinelli", "Martini", "Martino", "Marzi", "Masi", "Masini", "Masoni", "Massai", "Materassi", "Mattei", "Matteini", "Matteucci", "Matteuzzi", "Mattioli", "Mattolini", "Matucci", "Mauro", "Mazzanti", "Mazzei", "Mazzetti", "Mazzi", "Mazzini", "Mazzocchi", "Mazzoli", "Mazzoni", "Mazzuoli", "Meacci", "Mecocci", "Meini", "Melani", "Mele", "Meli", "Mengoni", "Menichetti", "Meoni", "Merlini", "Messeri", "Messina", "Meucci", "Miccinesi", "Miceli", "Micheli", "Michelini", "Michelozzi", "Migliori", "Migliorini", "Milani", "Miniati", "Misuri", "Monaco", "Montagnani", "Montagni", "Montanari", "Montelatici", "Monti", "Montigiani", "Montini", "Morandi", "Morandini", "Morelli", "Moretti", "Morganti", "Mori", "Morini", "Moroni", "Morozzi", "Mugnai", "Mugnaini", "Mustafa", "Naldi", "Naldini", "Nannelli", "Nanni", "Nannini", "Nannucci", "Nardi", "Nardini", "Nardoni", "Natali", "Ndiaye", "Nencetti", "Nencini", "Nencioni", "Neri", "Nesi", "Nesti", "Niccolai", "Niccoli", "Niccolini", "Nigi", "Nistri", "Nocentini", "Noferini", "Novelli", "Nucci", "Nuti", "Nutini", "Oliva", "Olivieri", "Olmi", "Orlandi", "Orlandini", "Orlando", "Orsini", "Ortolani", "Ottanelli", "Pacciani", "Pace", "Paci", "Pacini", "Pagani", "Pagano", "Paggetti", "Pagliai", "Pagni", "Pagnini", "Paladini", "Palagi", "Palchetti", "Palloni", "Palmieri", "Palumbo", "Pampaloni", "Pancani", "Pandolfi", "Pandolfini", "Panerai", "Panichi", "Paoletti", "Paoli", "Paolini", "Papi", "Papini", "Papucci", "Parenti", "Parigi", "Parisi", "Parri", "Parrini", "Pasquini", "Passeri", "Pecchioli", "Pecorini", "Pellegrini", "Pepi", "Perini", "Perrone", "Peruzzi", "Pesci", "Pestelli", "Petri", "Petrini", "Petrucci", "Pettini", "Pezzati", "Pezzatini", "Piani", "Piazza", "Piazzesi", "Piazzini", "Piccardi", "Picchi", "Piccini", "Piccioli", "Pieraccini", "Pieraccioni", "Pieralli", "Pierattini", "Pieri", "Pierini", "Pieroni", "Pietrini", "Pini", "Pinna", "Pinto", "Pinzani", "Pinzauti", "Piras", "Pisani", "Pistolesi", "Poggesi", "Poggi", "Poggiali", "Poggiolini", "Poli", "Pollastri", "Porciani", "Pozzi", "Pratellesi", "Pratesi", "Prosperi", "Pruneti", "Pucci", "Puccini", "Puccioni", "Pugi", "Pugliese", "Puliti", "Querci", "Quercioli", "Raddi", "Radu", "Raffaelli", "Ragazzini", "Ranfagni", "Ranieri", "Rastrelli", "Raugei", "Raveggi", "Renai", "Renzi", "Rettori", "Ricci", "Ricciardi", "Ridi", "Ridolfi", "Rigacci", "Righi", "Righini", "Rinaldi", "Risaliti", "Ristori", "Rizzo", "Rocchi", "Rocchini", "Rogai", "Romagnoli", "Romanelli", "Romani", "Romano", "Romei", "Romeo", "Romiti", "Romoli", "Romolini", "Rontini", "Rosati", "Roselli", "Rosi", "Rossetti", "Rossi", "Rossini", "Rovai", "Ruggeri", "Ruggiero", "Russo", "Sabatini", "Saccardi", "Sacchetti", "Sacchi", "Sacco", "Salerno", "Salimbeni", "Salucci", "Salvadori", "Salvestrini", "Salvi", "Salvini", "Sanesi", "Sani", "Sanna", "Santi", "Santini", "Santoni", "Santoro", "Santucci", "Sardi", "Sarri", "Sarti", "Sassi", "Sbolci", "Scali", "Scarpelli", "Scarselli", "Scopetani", "Secci", "Selvi", "Senatori", "Senesi", "Serafini", "Sereni", "Serra", "Sestini", "Sguanci", "Sieni", "Signorini", "Silvestri", "Simoncini", "Simonetti", "Simoni", "Singh", "Sodi", "Soldi", "Somigli", "Sorbi", "Sorelli", "Sorrentino", "Sottili", "Spina", "Spinelli", "Staccioli", "Staderini", "Stefanelli", "Stefani", "Stefanini", "Stella", "Susini", "Tacchi", "Tacconi", "Taddei", "Tagliaferri", "Tamburini", "Tanganelli", "Tani", "Tanini", "Tapinassi", "Tarchi", "Tarchiani", "Targioni", "Tassi", "Tassini", "Tempesti", "Terzani", "Tesi", "Testa", "Testi", "Tilli", "Tinti", "Tirinnanzi", "Toccafondi", "Tofanari", "Tofani", "Tognaccini", "Tonelli", "Tonini", "Torelli", "Torrini", "Tosi", "Toti", "Tozzi", "Trambusti", "Trapani", "Tucci", "Turchi", "Ugolini", "Ulivi", "Valente", "Valenti", "Valentini", "Vangelisti", "Vanni", "Vannini", "Vannoni", "Vannozzi", "Vannucchi", "Vannucci", "Ventura", "Venturi", "Venturini", "Vestri", "Vettori", "Vichi", "Viciani", "Vieri", "Vigiani", "Vignoli", "Vignolini", "Vignozzi", "Villani", "Vinci", "Visani", "Vitale", "Vitali", "Viti", "Viviani", "Vivoli", "Volpe", "Volpi", "Wang", "Wu", "Xu", "Yang", "Ye", "Zagli", "Zani", "Zanieri", "Zanobini", "Zecchi", "Zetti", "Zhang", "Zheng", "Zhou", "Zhu", "Zingoni", "Zini", "Zoppi"]
+        },
 
-        // Data taken from https://github.com/umpirsky/country-list/blob/master/country/cldr/en_US/country.json
-        countries: [{"name":"Afghanistan","abbreviation":"AF"},{"name":"Albania","abbreviation":"AL"},{"name":"Algeria","abbreviation":"DZ"},{"name":"American Samoa","abbreviation":"AS"},{"name":"Andorra","abbreviation":"AD"},{"name":"Angola","abbreviation":"AO"},{"name":"Anguilla","abbreviation":"AI"},{"name":"Antarctica","abbreviation":"AQ"},{"name":"Antigua and Barbuda","abbreviation":"AG"},{"name":"Argentina","abbreviation":"AR"},{"name":"Armenia","abbreviation":"AM"},{"name":"Aruba","abbreviation":"AW"},{"name":"Australia","abbreviation":"AU"},{"name":"Austria","abbreviation":"AT"},{"name":"Azerbaijan","abbreviation":"AZ"},{"name":"Bahamas","abbreviation":"BS"},{"name":"Bahrain","abbreviation":"BH"},{"name":"Bangladesh","abbreviation":"BD"},{"name":"Barbados","abbreviation":"BB"},{"name":"Belarus","abbreviation":"BY"},{"name":"Belgium","abbreviation":"BE"},{"name":"Belize","abbreviation":"BZ"},{"name":"Benin","abbreviation":"BJ"},{"name":"Bermuda","abbreviation":"BM"},{"name":"Bhutan","abbreviation":"BT"},{"name":"Bolivia","abbreviation":"BO"},{"name":"Bosnia and Herzegovina","abbreviation":"BA"},{"name":"Botswana","abbreviation":"BW"},{"name":"Bouvet Island","abbreviation":"BV"},{"name":"Brazil","abbreviation":"BR"},{"name":"British Antarctic Territory","abbreviation":"BQ"},{"name":"British Indian Ocean Territory","abbreviation":"IO"},{"name":"British Virgin Islands","abbreviation":"VG"},{"name":"Brunei","abbreviation":"BN"},{"name":"Bulgaria","abbreviation":"BG"},{"name":"Burkina Faso","abbreviation":"BF"},{"name":"Burundi","abbreviation":"BI"},{"name":"Cambodia","abbreviation":"KH"},{"name":"Cameroon","abbreviation":"CM"},{"name":"Canada","abbreviation":"CA"},{"name":"Canton and Enderbury Islands","abbreviation":"CT"},{"name":"Cape Verde","abbreviation":"CV"},{"name":"Cayman Islands","abbreviation":"KY"},{"name":"Central African Republic","abbreviation":"CF"},{"name":"Chad","abbreviation":"TD"},{"name":"Chile","abbreviation":"CL"},{"name":"China","abbreviation":"CN"},{"name":"Christmas Island","abbreviation":"CX"},{"name":"Cocos [Keeling] Islands","abbreviation":"CC"},{"name":"Colombia","abbreviation":"CO"},{"name":"Comoros","abbreviation":"KM"},{"name":"Congo - Brazzaville","abbreviation":"CG"},{"name":"Congo - Kinshasa","abbreviation":"CD"},{"name":"Cook Islands","abbreviation":"CK"},{"name":"Costa Rica","abbreviation":"CR"},{"name":"Croatia","abbreviation":"HR"},{"name":"Cuba","abbreviation":"CU"},{"name":"Cyprus","abbreviation":"CY"},{"name":"Czech Republic","abbreviation":"CZ"},{"name":"Côte d’Ivoire","abbreviation":"CI"},{"name":"Denmark","abbreviation":"DK"},{"name":"Djibouti","abbreviation":"DJ"},{"name":"Dominica","abbreviation":"DM"},{"name":"Dominican Republic","abbreviation":"DO"},{"name":"Dronning Maud Land","abbreviation":"NQ"},{"name":"East Germany","abbreviation":"DD"},{"name":"Ecuador","abbreviation":"EC"},{"name":"Egypt","abbreviation":"EG"},{"name":"El Salvador","abbreviation":"SV"},{"name":"Equatorial Guinea","abbreviation":"GQ"},{"name":"Eritrea","abbreviation":"ER"},{"name":"Estonia","abbreviation":"EE"},{"name":"Ethiopia","abbreviation":"ET"},{"name":"Falkland Islands","abbreviation":"FK"},{"name":"Faroe Islands","abbreviation":"FO"},{"name":"Fiji","abbreviation":"FJ"},{"name":"Finland","abbreviation":"FI"},{"name":"France","abbreviation":"FR"},{"name":"French Guiana","abbreviation":"GF"},{"name":"French Polynesia","abbreviation":"PF"},{"name":"French Southern Territories","abbreviation":"TF"},{"name":"French Southern and Antarctic Territories","abbreviation":"FQ"},{"name":"Gabon","abbreviation":"GA"},{"name":"Gambia","abbreviation":"GM"},{"name":"Georgia","abbreviation":"GE"},{"name":"Germany","abbreviation":"DE"},{"name":"Ghana","abbreviation":"GH"},{"name":"Gibraltar","abbreviation":"GI"},{"name":"Greece","abbreviation":"GR"},{"name":"Greenland","abbreviation":"GL"},{"name":"Grenada","abbreviation":"GD"},{"name":"Guadeloupe","abbreviation":"GP"},{"name":"Guam","abbreviation":"GU"},{"name":"Guatemala","abbreviation":"GT"},{"name":"Guernsey","abbreviation":"GG"},{"name":"Guinea","abbreviation":"GN"},{"name":"Guinea-Bissau","abbreviation":"GW"},{"name":"Guyana","abbreviation":"GY"},{"name":"Haiti","abbreviation":"HT"},{"name":"Heard Island and McDonald Islands","abbreviation":"HM"},{"name":"Honduras","abbreviation":"HN"},{"name":"Hong Kong SAR China","abbreviation":"HK"},{"name":"Hungary","abbreviation":"HU"},{"name":"Iceland","abbreviation":"IS"},{"name":"India","abbreviation":"IN"},{"name":"Indonesia","abbreviation":"ID"},{"name":"Iran","abbreviation":"IR"},{"name":"Iraq","abbreviation":"IQ"},{"name":"Ireland","abbreviation":"IE"},{"name":"Isle of Man","abbreviation":"IM"},{"name":"Israel","abbreviation":"IL"},{"name":"Italy","abbreviation":"IT"},{"name":"Jamaica","abbreviation":"JM"},{"name":"Japan","abbreviation":"JP"},{"name":"Jersey","abbreviation":"JE"},{"name":"Johnston Island","abbreviation":"JT"},{"name":"Jordan","abbreviation":"JO"},{"name":"Kazakhstan","abbreviation":"KZ"},{"name":"Kenya","abbreviation":"KE"},{"name":"Kiribati","abbreviation":"KI"},{"name":"Kuwait","abbreviation":"KW"},{"name":"Kyrgyzstan","abbreviation":"KG"},{"name":"Laos","abbreviation":"LA"},{"name":"Latvia","abbreviation":"LV"},{"name":"Lebanon","abbreviation":"LB"},{"name":"Lesotho","abbreviation":"LS"},{"name":"Liberia","abbreviation":"LR"},{"name":"Libya","abbreviation":"LY"},{"name":"Liechtenstein","abbreviation":"LI"},{"name":"Lithuania","abbreviation":"LT"},{"name":"Luxembourg","abbreviation":"LU"},{"name":"Macau SAR China","abbreviation":"MO"},{"name":"Macedonia","abbreviation":"MK"},{"name":"Madagascar","abbreviation":"MG"},{"name":"Malawi","abbreviation":"MW"},{"name":"Malaysia","abbreviation":"MY"},{"name":"Maldives","abbreviation":"MV"},{"name":"Mali","abbreviation":"ML"},{"name":"Malta","abbreviation":"MT"},{"name":"Marshall Islands","abbreviation":"MH"},{"name":"Martinique","abbreviation":"MQ"},{"name":"Mauritania","abbreviation":"MR"},{"name":"Mauritius","abbreviation":"MU"},{"name":"Mayotte","abbreviation":"YT"},{"name":"Metropolitan France","abbreviation":"FX"},{"name":"Mexico","abbreviation":"MX"},{"name":"Micronesia","abbreviation":"FM"},{"name":"Midway Islands","abbreviation":"MI"},{"name":"Moldova","abbreviation":"MD"},{"name":"Monaco","abbreviation":"MC"},{"name":"Mongolia","abbreviation":"MN"},{"name":"Montenegro","abbreviation":"ME"},{"name":"Montserrat","abbreviation":"MS"},{"name":"Morocco","abbreviation":"MA"},{"name":"Mozambique","abbreviation":"MZ"},{"name":"Myanmar [Burma]","abbreviation":"MM"},{"name":"Namibia","abbreviation":"NA"},{"name":"Nauru","abbreviation":"NR"},{"name":"Nepal","abbreviation":"NP"},{"name":"Netherlands","abbreviation":"NL"},{"name":"Netherlands Antilles","abbreviation":"AN"},{"name":"Neutral Zone","abbreviation":"NT"},{"name":"New Caledonia","abbreviation":"NC"},{"name":"New Zealand","abbreviation":"NZ"},{"name":"Nicaragua","abbreviation":"NI"},{"name":"Niger","abbreviation":"NE"},{"name":"Nigeria","abbreviation":"NG"},{"name":"Niue","abbreviation":"NU"},{"name":"Norfolk Island","abbreviation":"NF"},{"name":"North Korea","abbreviation":"KP"},{"name":"North Vietnam","abbreviation":"VD"},{"name":"Northern Mariana Islands","abbreviation":"MP"},{"name":"Norway","abbreviation":"NO"},{"name":"Oman","abbreviation":"OM"},{"name":"Pacific Islands Trust Territory","abbreviation":"PC"},{"name":"Pakistan","abbreviation":"PK"},{"name":"Palau","abbreviation":"PW"},{"name":"Palestinian Territories","abbreviation":"PS"},{"name":"Panama","abbreviation":"PA"},{"name":"Panama Canal Zone","abbreviation":"PZ"},{"name":"Papua New Guinea","abbreviation":"PG"},{"name":"Paraguay","abbreviation":"PY"},{"name":"People's Democratic Republic of Yemen","abbreviation":"YD"},{"name":"Peru","abbreviation":"PE"},{"name":"Philippines","abbreviation":"PH"},{"name":"Pitcairn Islands","abbreviation":"PN"},{"name":"Poland","abbreviation":"PL"},{"name":"Portugal","abbreviation":"PT"},{"name":"Puerto Rico","abbreviation":"PR"},{"name":"Qatar","abbreviation":"QA"},{"name":"Romania","abbreviation":"RO"},{"name":"Russia","abbreviation":"RU"},{"name":"Rwanda","abbreviation":"RW"},{"name":"Réunion","abbreviation":"RE"},{"name":"Saint Barthélemy","abbreviation":"BL"},{"name":"Saint Helena","abbreviation":"SH"},{"name":"Saint Kitts and Nevis","abbreviation":"KN"},{"name":"Saint Lucia","abbreviation":"LC"},{"name":"Saint Martin","abbreviation":"MF"},{"name":"Saint Pierre and Miquelon","abbreviation":"PM"},{"name":"Saint Vincent and the Grenadines","abbreviation":"VC"},{"name":"Samoa","abbreviation":"WS"},{"name":"San Marino","abbreviation":"SM"},{"name":"Saudi Arabia","abbreviation":"SA"},{"name":"Senegal","abbreviation":"SN"},{"name":"Serbia","abbreviation":"RS"},{"name":"Serbia and Montenegro","abbreviation":"CS"},{"name":"Seychelles","abbreviation":"SC"},{"name":"Sierra Leone","abbreviation":"SL"},{"name":"Singapore","abbreviation":"SG"},{"name":"Slovakia","abbreviation":"SK"},{"name":"Slovenia","abbreviation":"SI"},{"name":"Solomon Islands","abbreviation":"SB"},{"name":"Somalia","abbreviation":"SO"},{"name":"South Africa","abbreviation":"ZA"},{"name":"South Georgia and the South Sandwich Islands","abbreviation":"GS"},{"name":"South Korea","abbreviation":"KR"},{"name":"Spain","abbreviation":"ES"},{"name":"Sri Lanka","abbreviation":"LK"},{"name":"Sudan","abbreviation":"SD"},{"name":"Suriname","abbreviation":"SR"},{"name":"Svalbard and Jan Mayen","abbreviation":"SJ"},{"name":"Swaziland","abbreviation":"SZ"},{"name":"Sweden","abbreviation":"SE"},{"name":"Switzerland","abbreviation":"CH"},{"name":"Syria","abbreviation":"SY"},{"name":"São Tomé and Príncipe","abbreviation":"ST"},{"name":"Taiwan","abbreviation":"TW"},{"name":"Tajikistan","abbreviation":"TJ"},{"name":"Tanzania","abbreviation":"TZ"},{"name":"Thailand","abbreviation":"TH"},{"name":"Timor-Leste","abbreviation":"TL"},{"name":"Togo","abbreviation":"TG"},{"name":"Tokelau","abbreviation":"TK"},{"name":"Tonga","abbreviation":"TO"},{"name":"Trinidad and Tobago","abbreviation":"TT"},{"name":"Tunisia","abbreviation":"TN"},{"name":"Turkey","abbreviation":"TR"},{"name":"Turkmenistan","abbreviation":"TM"},{"name":"Turks and Caicos Islands","abbreviation":"TC"},{"name":"Tuvalu","abbreviation":"TV"},{"name":"U.S. Minor Outlying Islands","abbreviation":"UM"},{"name":"U.S. Miscellaneous Pacific Islands","abbreviation":"PU"},{"name":"U.S. Virgin Islands","abbreviation":"VI"},{"name":"Uganda","abbreviation":"UG"},{"name":"Ukraine","abbreviation":"UA"},{"name":"Union of Soviet Socialist Republics","abbreviation":"SU"},{"name":"United Arab Emirates","abbreviation":"AE"},{"name":"United Kingdom","abbreviation":"GB"},{"name":"United States","abbreviation":"US"},{"name":"Unknown or Invalid Region","abbreviation":"ZZ"},{"name":"Uruguay","abbreviation":"UY"},{"name":"Uzbekistan","abbreviation":"UZ"},{"name":"Vanuatu","abbreviation":"VU"},{"name":"Vatican City","abbreviation":"VA"},{"name":"Venezuela","abbreviation":"VE"},{"name":"Vietnam","abbreviation":"VN"},{"name":"Wake Island","abbreviation":"WK"},{"name":"Wallis and Futuna","abbreviation":"WF"},{"name":"Western Sahara","abbreviation":"EH"},{"name":"Yemen","abbreviation":"YE"},{"name":"Zambia","abbreviation":"ZM"},{"name":"Zimbabwe","abbreviation":"ZW"},{"name":"Åland Islands","abbreviation":"AX"}],
+        // Data taken from https://github.com/umpirsky/country-list/blob/master/data/en_US/country.json
+        countries: [{"name": "Afghanistan", "abbreviation": "AF"}, {
+            "name": "Åland Islands",
+            "abbreviation": "AX"
+        }, {"name": "Albania", "abbreviation": "AL"}, {
+            "name": "Algeria",
+            "abbreviation": "DZ"
+        }, {"name": "American Samoa", "abbreviation": "AS"}, {
+            "name": "Andorra",
+            "abbreviation": "AD"
+        }, {"name": "Angola", "abbreviation": "AO"}, {"name": "Anguilla", "abbreviation": "AI"}, {
+            "name": "Antarctica",
+            "abbreviation": "AQ"
+        }, {"name": "Antigua & Barbuda", "abbreviation": "AG"}, {
+            "name": "Argentina",
+            "abbreviation": "AR"
+        }, {"name": "Armenia", "abbreviation": "AM"}, {
+            "name": "Aruba",
+            "abbreviation": "AW"
+        }, {"name": "Ascension Island", "abbreviation": "AC"}, {
+            "name": "Australia",
+            "abbreviation": "AU"
+        }, {"name": "Austria", "abbreviation": "AT"}, {"name": "Azerbaijan", "abbreviation": "AZ"}, {
+            "name": "Bahamas",
+            "abbreviation": "BS"
+        }, {"name": "Bahrain", "abbreviation": "BH"}, {"name": "Bangladesh", "abbreviation": "BD"}, {
+            "name": "Barbados",
+            "abbreviation": "BB"
+        }, {"name": "Belarus", "abbreviation": "BY"}, {"name": "Belgium", "abbreviation": "BE"}, {
+            "name": "Belize",
+            "abbreviation": "BZ"
+        }, {"name": "Benin", "abbreviation": "BJ"}, {"name": "Bermuda", "abbreviation": "BM"}, {
+            "name": "Bhutan",
+            "abbreviation": "BT"
+        }, {"name": "Bolivia", "abbreviation": "BO"}, {
+            "name": "Bosnia & Herzegovina",
+            "abbreviation": "BA"
+        }, {"name": "Botswana", "abbreviation": "BW"}, {
+            "name": "Brazil",
+            "abbreviation": "BR"
+        }, {"name": "British Indian Ocean Territory", "abbreviation": "IO"}, {
+            "name": "British Virgin Islands",
+            "abbreviation": "VG"
+        }, {"name": "Brunei", "abbreviation": "BN"}, {
+            "name": "Bulgaria",
+            "abbreviation": "BG"
+        }, {"name": "Burkina Faso", "abbreviation": "BF"}, {
+            "name": "Burundi",
+            "abbreviation": "BI"
+        }, {"name": "Cambodia", "abbreviation": "KH"}, {"name": "Cameroon", "abbreviation": "CM"}, {
+            "name": "Canada",
+            "abbreviation": "CA"
+        }, {"name": "Canary Islands", "abbreviation": "IC"}, {
+            "name": "Cape Verde",
+            "abbreviation": "CV"
+        }, {"name": "Caribbean Netherlands", "abbreviation": "BQ"}, {
+            "name": "Cayman Islands",
+            "abbreviation": "KY"
+        }, {"name": "Central African Republic", "abbreviation": "CF"}, {
+            "name": "Ceuta & Melilla",
+            "abbreviation": "EA"
+        }, {"name": "Chad", "abbreviation": "TD"}, {"name": "Chile", "abbreviation": "CL"}, {
+            "name": "China",
+            "abbreviation": "CN"
+        }, {"name": "Christmas Island", "abbreviation": "CX"}, {
+            "name": "Cocos (Keeling) Islands",
+            "abbreviation": "CC"
+        }, {"name": "Colombia", "abbreviation": "CO"}, {
+            "name": "Comoros",
+            "abbreviation": "KM"
+        }, {"name": "Congo - Brazzaville", "abbreviation": "CG"}, {
+            "name": "Congo - Kinshasa",
+            "abbreviation": "CD"
+        }, {"name": "Cook Islands", "abbreviation": "CK"}, {
+            "name": "Costa Rica",
+            "abbreviation": "CR"
+        }, {"name": "Côte d'Ivoire", "abbreviation": "CI"}, {"name": "Croatia", "abbreviation": "HR"}, {
+            "name": "Cuba",
+            "abbreviation": "CU"
+        }, {"name": "Curaçao", "abbreviation": "CW"}, {
+            "name": "Cyprus",
+            "abbreviation": "CY"
+        }, {"name": "Czech Republic", "abbreviation": "CZ"}, {
+            "name": "Denmark",
+            "abbreviation": "DK"
+        }, {"name": "Diego Garcia", "abbreviation": "DG"}, {
+            "name": "Djibouti",
+            "abbreviation": "DJ"
+        }, {"name": "Dominica", "abbreviation": "DM"}, {
+            "name": "Dominican Republic",
+            "abbreviation": "DO"
+        }, {"name": "Ecuador", "abbreviation": "EC"}, {"name": "Egypt", "abbreviation": "EG"}, {
+            "name": "El Salvador",
+            "abbreviation": "SV"
+        }, {"name": "Equatorial Guinea", "abbreviation": "GQ"}, {
+            "name": "Eritrea",
+            "abbreviation": "ER"
+        }, {"name": "Estonia", "abbreviation": "EE"}, {
+            "name": "Ethiopia",
+            "abbreviation": "ET"
+        }, {"name": "Falkland Islands", "abbreviation": "FK"}, {
+            "name": "Faroe Islands",
+            "abbreviation": "FO"
+        }, {"name": "Fiji", "abbreviation": "FJ"}, {"name": "Finland", "abbreviation": "FI"}, {
+            "name": "France",
+            "abbreviation": "FR"
+        }, {"name": "French Guiana", "abbreviation": "GF"}, {
+            "name": "French Polynesia",
+            "abbreviation": "PF"
+        }, {"name": "French Southern Territories", "abbreviation": "TF"}, {
+            "name": "Gabon",
+            "abbreviation": "GA"
+        }, {"name": "Gambia", "abbreviation": "GM"}, {"name": "Georgia", "abbreviation": "GE"}, {
+            "name": "Germany",
+            "abbreviation": "DE"
+        }, {"name": "Ghana", "abbreviation": "GH"}, {"name": "Gibraltar", "abbreviation": "GI"}, {
+            "name": "Greece",
+            "abbreviation": "GR"
+        }, {"name": "Greenland", "abbreviation": "GL"}, {
+            "name": "Grenada",
+            "abbreviation": "GD"
+        }, {"name": "Guadeloupe", "abbreviation": "GP"}, {"name": "Guam", "abbreviation": "GU"}, {
+            "name": "Guatemala",
+            "abbreviation": "GT"
+        }, {"name": "Guernsey", "abbreviation": "GG"}, {
+            "name": "Guinea",
+            "abbreviation": "GN"
+        }, {"name": "Guinea-Bissau", "abbreviation": "GW"}, {"name": "Guyana", "abbreviation": "GY"}, {
+            "name": "Haiti",
+            "abbreviation": "HT"
+        }, {"name": "Honduras", "abbreviation": "HN"}, {
+            "name": "Hong Kong SAR China",
+            "abbreviation": "HK"
+        }, {"name": "Hungary", "abbreviation": "HU"}, {"name": "Iceland", "abbreviation": "IS"}, {
+            "name": "India",
+            "abbreviation": "IN"
+        }, {"name": "Indonesia", "abbreviation": "ID"}, {"name": "Iran", "abbreviation": "IR"}, {
+            "name": "Iraq",
+            "abbreviation": "IQ"
+        }, {"name": "Ireland", "abbreviation": "IE"}, {"name": "Isle of Man", "abbreviation": "IM"}, {
+            "name": "Israel",
+            "abbreviation": "IL"
+        }, {"name": "Italy", "abbreviation": "IT"}, {"name": "Jamaica", "abbreviation": "JM"}, {
+            "name": "Japan",
+            "abbreviation": "JP"
+        }, {"name": "Jersey", "abbreviation": "JE"}, {"name": "Jordan", "abbreviation": "JO"}, {
+            "name": "Kazakhstan",
+            "abbreviation": "KZ"
+        }, {"name": "Kenya", "abbreviation": "KE"}, {"name": "Kiribati", "abbreviation": "KI"}, {
+            "name": "Kosovo",
+            "abbreviation": "XK"
+        }, {"name": "Kuwait", "abbreviation": "KW"}, {"name": "Kyrgyzstan", "abbreviation": "KG"}, {
+            "name": "Laos",
+            "abbreviation": "LA"
+        }, {"name": "Latvia", "abbreviation": "LV"}, {"name": "Lebanon", "abbreviation": "LB"}, {
+            "name": "Lesotho",
+            "abbreviation": "LS"
+        }, {"name": "Liberia", "abbreviation": "LR"}, {"name": "Libya", "abbreviation": "LY"}, {
+            "name": "Liechtenstein",
+            "abbreviation": "LI"
+        }, {"name": "Lithuania", "abbreviation": "LT"}, {
+            "name": "Luxembourg",
+            "abbreviation": "LU"
+        }, {"name": "Macau SAR China", "abbreviation": "MO"}, {
+            "name": "Macedonia",
+            "abbreviation": "MK"
+        }, {"name": "Madagascar", "abbreviation": "MG"}, {"name": "Malawi", "abbreviation": "MW"}, {
+            "name": "Malaysia",
+            "abbreviation": "MY"
+        }, {"name": "Maldives", "abbreviation": "MV"}, {"name": "Mali", "abbreviation": "ML"}, {
+            "name": "Malta",
+            "abbreviation": "MT"
+        }, {"name": "Marshall Islands", "abbreviation": "MH"}, {
+            "name": "Martinique",
+            "abbreviation": "MQ"
+        }, {"name": "Mauritania", "abbreviation": "MR"}, {
+            "name": "Mauritius",
+            "abbreviation": "MU"
+        }, {"name": "Mayotte", "abbreviation": "YT"}, {"name": "Mexico", "abbreviation": "MX"}, {
+            "name": "Micronesia",
+            "abbreviation": "FM"
+        }, {"name": "Moldova", "abbreviation": "MD"}, {"name": "Monaco", "abbreviation": "MC"}, {
+            "name": "Mongolia",
+            "abbreviation": "MN"
+        }, {"name": "Montenegro", "abbreviation": "ME"}, {
+            "name": "Montserrat",
+            "abbreviation": "MS"
+        }, {"name": "Morocco", "abbreviation": "MA"}, {
+            "name": "Mozambique",
+            "abbreviation": "MZ"
+        }, {"name": "Myanmar (Burma)", "abbreviation": "MM"}, {
+            "name": "Namibia",
+            "abbreviation": "NA"
+        }, {"name": "Nauru", "abbreviation": "NR"}, {"name": "Nepal", "abbreviation": "NP"}, {
+            "name": "Netherlands",
+            "abbreviation": "NL"
+        }, {"name": "New Caledonia", "abbreviation": "NC"}, {
+            "name": "New Zealand",
+            "abbreviation": "NZ"
+        }, {"name": "Nicaragua", "abbreviation": "NI"}, {"name": "Niger", "abbreviation": "NE"}, {
+            "name": "Nigeria",
+            "abbreviation": "NG"
+        }, {"name": "Niue", "abbreviation": "NU"}, {
+            "name": "Norfolk Island",
+            "abbreviation": "NF"
+        }, {"name": "North Korea", "abbreviation": "KP"}, {
+            "name": "Northern Mariana Islands",
+            "abbreviation": "MP"
+        }, {"name": "Norway", "abbreviation": "NO"}, {"name": "Oman", "abbreviation": "OM"}, {
+            "name": "Pakistan",
+            "abbreviation": "PK"
+        }, {"name": "Palau", "abbreviation": "PW"}, {
+            "name": "Palestinian Territories",
+            "abbreviation": "PS"
+        }, {"name": "Panama", "abbreviation": "PA"}, {
+            "name": "Papua New Guinea",
+            "abbreviation": "PG"
+        }, {"name": "Paraguay", "abbreviation": "PY"}, {"name": "Peru", "abbreviation": "PE"}, {
+            "name": "Philippines",
+            "abbreviation": "PH"
+        }, {"name": "Pitcairn Islands", "abbreviation": "PN"}, {
+            "name": "Poland",
+            "abbreviation": "PL"
+        }, {"name": "Portugal", "abbreviation": "PT"}, {"name": "Puerto Rico", "abbreviation": "PR"}, {
+            "name": "Qatar",
+            "abbreviation": "QA"
+        }, {"name": "Réunion", "abbreviation": "RE"}, {"name": "Romania", "abbreviation": "RO"}, {
+            "name": "Russia",
+            "abbreviation": "RU"
+        }, {"name": "Rwanda", "abbreviation": "RW"}, {"name": "Samoa", "abbreviation": "WS"}, {
+            "name": "San Marino",
+            "abbreviation": "SM"
+        }, {"name": "São Tomé and Príncipe", "abbreviation": "ST"}, {
+            "name": "Saudi Arabia",
+            "abbreviation": "SA"
+        }, {"name": "Senegal", "abbreviation": "SN"}, {"name": "Serbia", "abbreviation": "RS"}, {
+            "name": "Seychelles",
+            "abbreviation": "SC"
+        }, {"name": "Sierra Leone", "abbreviation": "SL"}, {
+            "name": "Singapore",
+            "abbreviation": "SG"
+        }, {"name": "Sint Maarten", "abbreviation": "SX"}, {
+            "name": "Slovakia",
+            "abbreviation": "SK"
+        }, {"name": "Slovenia", "abbreviation": "SI"}, {
+            "name": "Solomon Islands",
+            "abbreviation": "SB"
+        }, {"name": "Somalia", "abbreviation": "SO"}, {
+            "name": "South Africa",
+            "abbreviation": "ZA"
+        }, {"name": "South Georgia & South Sandwich Islands", "abbreviation": "GS"}, {
+            "name": "South Korea",
+            "abbreviation": "KR"
+        }, {"name": "South Sudan", "abbreviation": "SS"}, {"name": "Spain", "abbreviation": "ES"}, {
+            "name": "Sri Lanka",
+            "abbreviation": "LK"
+        }, {"name": "St. Barthélemy", "abbreviation": "BL"}, {
+            "name": "St. Helena",
+            "abbreviation": "SH"
+        }, {"name": "St. Kitts & Nevis", "abbreviation": "KN"}, {
+            "name": "St. Lucia",
+            "abbreviation": "LC"
+        }, {"name": "St. Martin", "abbreviation": "MF"}, {
+            "name": "St. Pierre & Miquelon",
+            "abbreviation": "PM"
+        }, {"name": "St. Vincent & Grenadines", "abbreviation": "VC"}, {
+            "name": "Sudan",
+            "abbreviation": "SD"
+        }, {"name": "Suriname", "abbreviation": "SR"}, {
+            "name": "Svalbard & Jan Mayen",
+            "abbreviation": "SJ"
+        }, {"name": "Swaziland", "abbreviation": "SZ"}, {
+            "name": "Sweden",
+            "abbreviation": "SE"
+        }, {"name": "Switzerland", "abbreviation": "CH"}, {"name": "Syria", "abbreviation": "SY"}, {
+            "name": "Taiwan",
+            "abbreviation": "TW"
+        }, {"name": "Tajikistan", "abbreviation": "TJ"}, {
+            "name": "Tanzania",
+            "abbreviation": "TZ"
+        }, {"name": "Thailand", "abbreviation": "TH"}, {"name": "Timor-Leste", "abbreviation": "TL"}, {
+            "name": "Togo",
+            "abbreviation": "TG"
+        }, {"name": "Tokelau", "abbreviation": "TK"}, {
+            "name": "Tonga",
+            "abbreviation": "TO"
+        }, {"name": "Trinidad & Tobago", "abbreviation": "TT"}, {
+            "name": "Tristan da Cunha",
+            "abbreviation": "TA"
+        }, {"name": "Tunisia", "abbreviation": "TN"}, {"name": "Turkey", "abbreviation": "TR"}, {
+            "name": "Turkmenistan",
+            "abbreviation": "TM"
+        }, {"name": "Turks & Caicos Islands", "abbreviation": "TC"}, {
+            "name": "Tuvalu",
+            "abbreviation": "TV"
+        }, {"name": "U.S. Outlying Islands", "abbreviation": "UM"}, {
+            "name": "U.S. Virgin Islands",
+            "abbreviation": "VI"
+        }, {"name": "Uganda", "abbreviation": "UG"}, {
+            "name": "Ukraine",
+            "abbreviation": "UA"
+        }, {"name": "United Arab Emirates", "abbreviation": "AE"}, {
+            "name": "United Kingdom",
+            "abbreviation": "GB"
+        }, {"name": "United States", "abbreviation": "US"}, {
+            "name": "Uruguay",
+            "abbreviation": "UY"
+        }, {"name": "Uzbekistan", "abbreviation": "UZ"}, {
+            "name": "Vanuatu",
+            "abbreviation": "VU"
+        }, {"name": "Vatican City", "abbreviation": "VA"}, {
+            "name": "Venezuela",
+            "abbreviation": "VE"
+        }, {"name": "Vietnam", "abbreviation": "VN"}, {
+            "name": "Wallis & Futuna",
+            "abbreviation": "WF"
+        }, {"name": "Western Sahara", "abbreviation": "EH"}, {"name": "Yemen", "abbreviation": "YE"}, {
+            "name": "Zambia",
+            "abbreviation": "ZM"
+        }, {"name": "Zimbabwe", "abbreviation": "ZW"}],
 
-        provinces: [
-            {name: 'Alberta', abbreviation: 'AB'},
-            {name: 'British Columbia', abbreviation: 'BC'},
-            {name: 'Manitoba', abbreviation: 'MB'},
-            {name: 'New Brunswick', abbreviation: 'NB'},
-            {name: 'Newfoundland and Labrador', abbreviation: 'NL'},
-            {name: 'Nova Scotia', abbreviation: 'NS'},
-            {name: 'Ontario', abbreviation: 'ON'},
-            {name: 'Prince Edward Island', abbreviation: 'PE'},
-            {name: 'Quebec', abbreviation: 'QC'},
-            {name: 'Saskatchewan', abbreviation: 'SK'},
+        counties: {
+            // Data taken from http://www.downloadexcelfiles.com/gb_en/download-excel-file-list-counties-uk
+            "uk": [
+                {name: 'Bath and North East Somerset'},
+                {name: 'Aberdeenshire'},
+                {name: 'Anglesey'},
+                {name: 'Angus'},
+                {name: 'Bedford'},
+                {name: 'Blackburn with Darwen'},
+                {name: 'Blackpool'},
+                {name: 'Bournemouth'},
+                {name: 'Bracknell Forest'},
+                {name: 'Brighton & Hove'},
+                {name: 'Bristol'},
+                {name: 'Buckinghamshire'},
+                {name: 'Cambridgeshire'},
+                {name: 'Carmarthenshire'},
+                {name: 'Central Bedfordshire'},
+                {name: 'Ceredigion'},
+                {name: 'Cheshire East'},
+                {name: 'Cheshire West and Chester'},
+                {name: 'Clackmannanshire'},
+                {name: 'Conwy'},
+                {name: 'Cornwall'},
+                {name: 'County Antrim'},
+                {name: 'County Armagh'},
+                {name: 'County Down'},
+                {name: 'County Durham'},
+                {name: 'County Fermanagh'},
+                {name: 'County Londonderry'},
+                {name: 'County Tyrone'},
+                {name: 'Cumbria'},
+                {name: 'Darlington'},
+                {name: 'Denbighshire'},
+                {name: 'Derby'},
+                {name: 'Derbyshire'},
+                {name: 'Devon'},
+                {name: 'Dorset'},
+                {name: 'Dumfries and Galloway'},
+                {name: 'Dundee'},
+                {name: 'East Lothian'},
+                {name: 'East Riding of Yorkshire'},
+                {name: 'East Sussex'},
+                {name: 'Edinburgh?'},
+                {name: 'Essex'},
+                {name: 'Falkirk'},
+                {name: 'Fife'},
+                {name: 'Flintshire'},
+                {name: 'Gloucestershire'},
+                {name: 'Greater London'},
+                {name: 'Greater Manchester'},
+                {name: 'Gwent'},
+                {name: 'Gwynedd'},
+                {name: 'Halton'},
+                {name: 'Hampshire'},
+                {name: 'Hartlepool'},
+                {name: 'Herefordshire'},
+                {name: 'Hertfordshire'},
+                {name: 'Highlands'},
+                {name: 'Hull'},
+                {name: 'Isle of Wight'},
+                {name: 'Isles of Scilly'},
+                {name: 'Kent'},
+                {name: 'Lancashire'},
+                {name: 'Leicester'},
+                {name: 'Leicestershire'},
+                {name: 'Lincolnshire'},
+                {name: 'Lothian'},
+                {name: 'Luton'},
+                {name: 'Medway'},
+                {name: 'Merseyside'},
+                {name: 'Mid Glamorgan'},
+                {name: 'Middlesbrough'},
+                {name: 'Milton Keynes'},
+                {name: 'Monmouthshire'},
+                {name: 'Moray'},
+                {name: 'Norfolk'},
+                {name: 'North East Lincolnshire'},
+                {name: 'North Lincolnshire'},
+                {name: 'North Somerset'},
+                {name: 'North Yorkshire'},
+                {name: 'Northamptonshire'},
+                {name: 'Northumberland'},
+                {name: 'Nottingham'},
+                {name: 'Nottinghamshire'},
+                {name: 'Oxfordshire'},
+                {name: 'Pembrokeshire'},
+                {name: 'Perth and Kinross'},
+                {name: 'Peterborough'},
+                {name: 'Plymouth'},
+                {name: 'Poole'},
+                {name: 'Portsmouth'},
+                {name: 'Powys'},
+                {name: 'Reading'},
+                {name: 'Redcar and Cleveland'},
+                {name: 'Rutland'},
+                {name: 'Scottish Borders'},
+                {name: 'Shropshire'},
+                {name: 'Slough'},
+                {name: 'Somerset'},
+                {name: 'South Glamorgan'},
+                {name: 'South Gloucestershire'},
+                {name: 'South Yorkshire'},
+                {name: 'Southampton'},
+                {name: 'Southend-on-Sea'},
+                {name: 'Staffordshire'},
+                {name: 'Stirlingshire'},
+                {name: 'Stockton-on-Tees'},
+                {name: 'Stoke-on-Trent'},
+                {name: 'Strathclyde'},
+                {name: 'Suffolk'},
+                {name: 'Surrey'},
+                {name: 'Swindon'},
+                {name: 'Telford and Wrekin'},
+                {name: 'Thurrock'},
+                {name: 'Torbay'},
+                {name: 'Tyne and Wear'},
+                {name: 'Warrington'},
+                {name: 'Warwickshire'},
+                {name: 'West Berkshire'},
+                {name: 'West Glamorgan'},
+                {name: 'West Lothian'},
+                {name: 'West Midlands'},
+                {name: 'West Sussex'},
+                {name: 'West Yorkshire'},
+                {name: 'Western Isles'},
+                {name: 'Wiltshire'},
+                {name: 'Windsor and Maidenhead'},
+                {name: 'Wokingham'},
+                {name: 'Worcestershire'},
+                {name: 'Wrexham'},
+                {name: 'York'}]
+        },
+        provinces: {
+            "ca": [
+                {name: 'Alberta', abbreviation: 'AB'},
+                {name: 'British Columbia', abbreviation: 'BC'},
+                {name: 'Manitoba', abbreviation: 'MB'},
+                {name: 'New Brunswick', abbreviation: 'NB'},
+                {name: 'Newfoundland and Labrador', abbreviation: 'NL'},
+                {name: 'Nova Scotia', abbreviation: 'NS'},
+                {name: 'Ontario', abbreviation: 'ON'},
+                {name: 'Prince Edward Island', abbreviation: 'PE'},
+                {name: 'Quebec', abbreviation: 'QC'},
+                {name: 'Saskatchewan', abbreviation: 'SK'},
 
-            // The case could be made that the following are not actually provinces
-            // since they are technically considered "territories" however they all
-            // look the same on an envelope!
-            {name: 'Northwest Territories', abbreviation: 'NT'},
-            {name: 'Nunavut', abbreviation: 'NU'},
-            {name: 'Yukon', abbreviation: 'YT'}
+                // The case could be made that the following are not actually provinces
+                // since they are technically considered "territories" however they all
+                // look the same on an envelope!
+                {name: 'Northwest Territories', abbreviation: 'NT'},
+                {name: 'Nunavut', abbreviation: 'NU'},
+                {name: 'Yukon', abbreviation: 'YT'}
+            ],
+            "it": [
+                {name: "Agrigento", abbreviation: "AG", code: 84},
+                {name: "Alessandria", abbreviation: "AL", code: 6},
+                {name: "Ancona", abbreviation: "AN", code: 42},
+                {name: "Aosta", abbreviation: "AO", code: 7},
+                {name: "L'Aquila", abbreviation: "AQ", code: 66},
+                {name: "Arezzo", abbreviation: "AR", code: 51},
+                {name: "Ascoli-Piceno", abbreviation: "AP", code: 44},
+                {name: "Asti", abbreviation: "AT", code: 5},
+                {name: "Avellino", abbreviation: "AV", code: 64},
+                {name: "Bari", abbreviation: "BA", code: 72},
+                {name: "Barletta-Andria-Trani", abbreviation: "BT", code: 72},
+                {name: "Belluno", abbreviation: "BL", code: 25},
+                {name: "Benevento", abbreviation: "BN", code: 62},
+                {name: "Bergamo", abbreviation: "BG", code: 16},
+                {name: "Biella", abbreviation: "BI", code: 96},
+                {name: "Bologna", abbreviation: "BO", code: 37},
+                {name: "Bolzano", abbreviation: "BZ", code: 21},
+                {name: "Brescia", abbreviation: "BS", code: 17},
+                {name: "Brindisi", abbreviation: "BR", code: 74},
+                {name: "Cagliari", abbreviation: "CA", code: 92},
+                {name: "Caltanissetta", abbreviation: "CL", code: 85},
+                {name: "Campobasso", abbreviation: "CB", code: 70},
+                {name: "Carbonia Iglesias", abbreviation: "CI", code: 70},
+                {name: "Caserta", abbreviation: "CE", code: 61},
+                {name: "Catania", abbreviation: "CT", code: 87},
+                {name: "Catanzaro", abbreviation: "CZ", code: 79},
+                {name: "Chieti", abbreviation: "CH", code: 69},
+                {name: "Como", abbreviation: "CO", code: 13},
+                {name: "Cosenza", abbreviation: "CS", code: 78},
+                {name: "Cremona", abbreviation: "CR", code: 19},
+                {name: "Crotone", abbreviation: "KR", code: 101},
+                {name: "Cuneo", abbreviation: "CN", code: 4},
+                {name: "Enna", abbreviation: "EN", code: 86},
+                {name: "Fermo", abbreviation: "FM", code: 86},
+                {name: "Ferrara", abbreviation: "FE", code: 38},
+                {name: "Firenze", abbreviation: "FI", code: 48},
+                {name: "Foggia", abbreviation: "FG", code: 71},
+                {name: "Forli-Cesena", abbreviation: "FC", code: 71},
+                {name: "Frosinone", abbreviation: "FR", code: 60},
+                {name: "Genova", abbreviation: "GE", code: 10},
+                {name: "Gorizia", abbreviation: "GO", code: 31},
+                {name: "Grosseto", abbreviation: "GR", code: 53},
+                {name: "Imperia", abbreviation: "IM", code: 8},
+                {name: "Isernia", abbreviation: "IS", code: 94},
+                {name: "La-Spezia", abbreviation: "SP", code: 66},
+                {name: "Latina", abbreviation: "LT", code: 59},
+                {name: "Lecce", abbreviation: "LE", code: 75},
+                {name: "Lecco", abbreviation: "LC", code: 97},
+                {name: "Livorno", abbreviation: "LI", code: 49},
+                {name: "Lodi", abbreviation: "LO", code: 98},
+                {name: "Lucca", abbreviation: "LU", code: 46},
+                {name: "Macerata", abbreviation: "MC", code: 43},
+                {name: "Mantova", abbreviation: "MN", code: 20},
+                {name: "Massa-Carrara", abbreviation: "MS", code: 45},
+                {name: "Matera", abbreviation: "MT", code: 77},
+                {name: "Medio Campidano", abbreviation: "VS", code: 77},
+                {name: "Messina", abbreviation: "ME", code: 83},
+                {name: "Milano", abbreviation: "MI", code: 15},
+                {name: "Modena", abbreviation: "MO", code: 36},
+                {name: "Monza-Brianza", abbreviation: "MB", code: 36},
+                {name: "Napoli", abbreviation: "NA", code: 63},
+                {name: "Novara", abbreviation: "NO", code: 3},
+                {name: "Nuoro", abbreviation: "NU", code: 91},
+                {name: "Ogliastra", abbreviation: "OG", code: 91},
+                {name: "Olbia Tempio", abbreviation: "OT", code: 91},
+                {name: "Oristano", abbreviation: "OR", code: 95},
+                {name: "Padova", abbreviation: "PD", code: 28},
+                {name: "Palermo", abbreviation: "PA", code: 82},
+                {name: "Parma", abbreviation: "PR", code: 34},
+                {name: "Pavia", abbreviation: "PV", code: 18},
+                {name: "Perugia", abbreviation: "PG", code: 54},
+                {name: "Pesaro-Urbino", abbreviation: "PU", code: 41},
+                {name: "Pescara", abbreviation: "PE", code: 68},
+                {name: "Piacenza", abbreviation: "PC", code: 33},
+                {name: "Pisa", abbreviation: "PI", code: 50},
+                {name: "Pistoia", abbreviation: "PT", code: 47},
+                {name: "Pordenone", abbreviation: "PN", code: 93},
+                {name: "Potenza", abbreviation: "PZ", code: 76},
+                {name: "Prato", abbreviation: "PO", code: 100},
+                {name: "Ragusa", abbreviation: "RG", code: 88},
+                {name: "Ravenna", abbreviation: "RA", code: 39},
+                {name: "Reggio-Calabria", abbreviation: "RC", code: 35},
+                {name: "Reggio-Emilia", abbreviation: "RE", code: 35},
+                {name: "Rieti", abbreviation: "RI", code: 57},
+                {name: "Rimini", abbreviation: "RN", code: 99},
+                {name: "Roma", abbreviation: "Roma", code: 58},
+                {name: "Rovigo", abbreviation: "RO", code: 29},
+                {name: "Salerno", abbreviation: "SA", code: 65},
+                {name: "Sassari", abbreviation: "SS", code: 90},
+                {name: "Savona", abbreviation: "SV", code: 9},
+                {name: "Siena", abbreviation: "SI", code: 52},
+                {name: "Siracusa", abbreviation: "SR", code: 89},
+                {name: "Sondrio", abbreviation: "SO", code: 14},
+                {name: "Taranto", abbreviation: "TA", code: 73},
+                {name: "Teramo", abbreviation: "TE", code: 67},
+                {name: "Terni", abbreviation: "TR", code: 55},
+                {name: "Torino", abbreviation: "TO", code: 1},
+                {name: "Trapani", abbreviation: "TP", code: 81},
+                {name: "Trento", abbreviation: "TN", code: 22},
+                {name: "Treviso", abbreviation: "TV", code: 26},
+                {name: "Trieste", abbreviation: "TS", code: 32},
+                {name: "Udine", abbreviation: "UD", code: 30},
+                {name: "Varese", abbreviation: "VA", code: 12},
+                {name: "Venezia", abbreviation: "VE", code: 27},
+                {name: "Verbania", abbreviation: "VB", code: 27},
+                {name: "Vercelli", abbreviation: "VC", code: 2},
+                {name: "Verona", abbreviation: "VR", code: 23},
+                {name: "Vibo-Valentia", abbreviation: "VV", code: 102},
+                {name: "Vicenza", abbreviation: "VI", code: 24},
+                {name: "Viterbo", abbreviation: "VT", code: 56}
+            ]
+        },
+
+        // from: https://github.com/samsargent/Useful-Autocomplete-Data/blob/master/data/nationalities.json
+        nationalities: [
+            {name: 'Afghan'},
+            {name: 'Albanian'},
+            {name: 'Algerian'},
+            {name: 'American'},
+            {name: 'Andorran'},
+            {name: 'Angolan'},
+            {name: 'Antiguans'},
+            {name: 'Argentinean'},
+            {name: 'Armenian'},
+            {name: 'Australian'},
+            {name: 'Austrian'},
+            {name: 'Azerbaijani'},
+            {name: 'Bahami'},
+            {name: 'Bahraini'},
+            {name: 'Bangladeshi'},
+            {name: 'Barbadian'},
+            {name: 'Barbudans'},
+            {name: 'Batswana'},
+            {name: 'Belarusian'},
+            {name: 'Belgian'},
+            {name: 'Belizean'},
+            {name: 'Beninese'},
+            {name: 'Bhutanese'},
+            {name: 'Bolivian'},
+            {name: 'Bosnian'},
+            {name: 'Brazilian'},
+            {name: 'British'},
+            {name: 'Bruneian'},
+            {name: 'Bulgarian'},
+            {name: 'Burkinabe'},
+            {name: 'Burmese'},
+            {name: 'Burundian'},
+            {name: 'Cambodian'},
+            {name: 'Cameroonian'},
+            {name: 'Canadian'},
+            {name: 'Cape Verdean'},
+            {name: 'Central African'},
+            {name: 'Chadian'},
+            {name: 'Chilean'},
+            {name: 'Chinese'},
+            {name: 'Colombian'},
+            {name: 'Comoran'},
+            {name: 'Congolese'},
+            {name: 'Costa Rican'},
+            {name: 'Croatian'},
+            {name: 'Cuban'},
+            {name: 'Cypriot'},
+            {name: 'Czech'},
+            {name: 'Danish'},
+            {name: 'Djibouti'},
+            {name: 'Dominican'},
+            {name: 'Dutch'},
+            {name: 'East Timorese'},
+            {name: 'Ecuadorean'},
+            {name: 'Egyptian'},
+            {name: 'Emirian'},
+            {name: 'Equatorial Guinean'},
+            {name: 'Eritrean'},
+            {name: 'Estonian'},
+            {name: 'Ethiopian'},
+            {name: 'Fijian'},
+            {name: 'Filipino'},
+            {name: 'Finnish'},
+            {name: 'French'},
+            {name: 'Gabonese'},
+            {name: 'Gambian'},
+            {name: 'Georgian'},
+            {name: 'German'},
+            {name: 'Ghanaian'},
+            {name: 'Greek'},
+            {name: 'Grenadian'},
+            {name: 'Guatemalan'},
+            {name: 'Guinea-Bissauan'},
+            {name: 'Guinean'},
+            {name: 'Guyanese'},
+            {name: 'Haitian'},
+            {name: 'Herzegovinian'},
+            {name: 'Honduran'},
+            {name: 'Hungarian'},
+            {name: 'I-Kiribati'},
+            {name: 'Icelander'},
+            {name: 'Indian'},
+            {name: 'Indonesian'},
+            {name: 'Iranian'},
+            {name: 'Iraqi'},
+            {name: 'Irish'},
+            {name: 'Israeli'},
+            {name: 'Italian'},
+            {name: 'Ivorian'},
+            {name: 'Jamaican'},
+            {name: 'Japanese'},
+            {name: 'Jordanian'},
+            {name: 'Kazakhstani'},
+            {name: 'Kenyan'},
+            {name: 'Kittian and Nevisian'},
+            {name: 'Kuwaiti'},
+            {name: 'Kyrgyz'},
+            {name: 'Laotian'},
+            {name: 'Latvian'},
+            {name: 'Lebanese'},
+            {name: 'Liberian'},
+            {name: 'Libyan'},
+            {name: 'Liechtensteiner'},
+            {name: 'Lithuanian'},
+            {name: 'Luxembourger'},
+            {name: 'Macedonian'},
+            {name: 'Malagasy'},
+            {name: 'Malawian'},
+            {name: 'Malaysian'},
+            {name: 'Maldivan'},
+            {name: 'Malian'},
+            {name: 'Maltese'},
+            {name: 'Marshallese'},
+            {name: 'Mauritanian'},
+            {name: 'Mauritian'},
+            {name: 'Mexican'},
+            {name: 'Micronesian'},
+            {name: 'Moldovan'},
+            {name: 'Monacan'},
+            {name: 'Mongolian'},
+            {name: 'Moroccan'},
+            {name: 'Mosotho'},
+            {name: 'Motswana'},
+            {name: 'Mozambican'},
+            {name: 'Namibian'},
+            {name: 'Nauruan'},
+            {name: 'Nepalese'},
+            {name: 'New Zealander'},
+            {name: 'Nicaraguan'},
+            {name: 'Nigerian'},
+            {name: 'Nigerien'},
+            {name: 'North Korean'},
+            {name: 'Northern Irish'},
+            {name: 'Norwegian'},
+            {name: 'Omani'},
+            {name: 'Pakistani'},
+            {name: 'Palauan'},
+            {name: 'Panamanian'},
+            {name: 'Papua New Guinean'},
+            {name: 'Paraguayan'},
+            {name: 'Peruvian'},
+            {name: 'Polish'},
+            {name: 'Portuguese'},
+            {name: 'Qatari'},
+            {name: 'Romani'},
+            {name: 'Russian'},
+            {name: 'Rwandan'},
+            {name: 'Saint Lucian'},
+            {name: 'Salvadoran'},
+            {name: 'Samoan'},
+            {name: 'San Marinese'},
+            {name: 'Sao Tomean'},
+            {name: 'Saudi'},
+            {name: 'Scottish'},
+            {name: 'Senegalese'},
+            {name: 'Serbian'},
+            {name: 'Seychellois'},
+            {name: 'Sierra Leonean'},
+            {name: 'Singaporean'},
+            {name: 'Slovakian'},
+            {name: 'Slovenian'},
+            {name: 'Solomon Islander'},
+            {name: 'Somali'},
+            {name: 'South African'},
+            {name: 'South Korean'},
+            {name: 'Spanish'},
+            {name: 'Sri Lankan'},
+            {name: 'Sudanese'},
+            {name: 'Surinamer'},
+            {name: 'Swazi'},
+            {name: 'Swedish'},
+            {name: 'Swiss'},
+            {name: 'Syrian'},
+            {name: 'Taiwanese'},
+            {name: 'Tajik'},
+            {name: 'Tanzanian'},
+            {name: 'Thai'},
+            {name: 'Togolese'},
+            {name: 'Tongan'},
+            {name: 'Trinidadian or Tobagonian'},
+            {name: 'Tunisian'},
+            {name: 'Turkish'},
+            {name: 'Tuvaluan'},
+            {name: 'Ugandan'},
+            {name: 'Ukrainian'},
+            {name: 'Uruguaya'},
+            {name: 'Uzbekistani'},
+            {name: 'Venezuela'},
+            {name: 'Vietnamese'},
+            {name: 'Wels'},
+            {name: 'Yemenit'},
+            {name: 'Zambia'},
+            {name: 'Zimbabwe'},
         ],
 
         us_states_and_dc: [
@@ -1791,43 +3199,161 @@
             {name: 'Armed Forces the Americas', abbreviation: 'AA'}
         ],
 
-        street_suffixes: [
-            {name: 'Avenue', abbreviation: 'Ave'},
-            {name: 'Boulevard', abbreviation: 'Blvd'},
-            {name: 'Center', abbreviation: 'Ctr'},
-            {name: 'Circle', abbreviation: 'Cir'},
-            {name: 'Court', abbreviation: 'Ct'},
-            {name: 'Drive', abbreviation: 'Dr'},
-            {name: 'Extension', abbreviation: 'Ext'},
-            {name: 'Glen', abbreviation: 'Gln'},
-            {name: 'Grove', abbreviation: 'Grv'},
-            {name: 'Heights', abbreviation: 'Hts'},
-            {name: 'Highway', abbreviation: 'Hwy'},
-            {name: 'Junction', abbreviation: 'Jct'},
-            {name: 'Key', abbreviation: 'Key'},
-            {name: 'Lane', abbreviation: 'Ln'},
-            {name: 'Loop', abbreviation: 'Loop'},
-            {name: 'Manor', abbreviation: 'Mnr'},
-            {name: 'Mill', abbreviation: 'Mill'},
-            {name: 'Park', abbreviation: 'Park'},
-            {name: 'Parkway', abbreviation: 'Pkwy'},
-            {name: 'Pass', abbreviation: 'Pass'},
-            {name: 'Path', abbreviation: 'Path'},
-            {name: 'Pike', abbreviation: 'Pike'},
-            {name: 'Place', abbreviation: 'Pl'},
-            {name: 'Plaza', abbreviation: 'Plz'},
-            {name: 'Point', abbreviation: 'Pt'},
-            {name: 'Ridge', abbreviation: 'Rdg'},
-            {name: 'River', abbreviation: 'Riv'},
-            {name: 'Road', abbreviation: 'Rd'},
-            {name: 'Square', abbreviation: 'Sq'},
-            {name: 'Street', abbreviation: 'St'},
-            {name: 'Terrace', abbreviation: 'Ter'},
-            {name: 'Trail', abbreviation: 'Trl'},
-            {name: 'Turnpike', abbreviation: 'Tpke'},
-            {name: 'View', abbreviation: 'Vw'},
-            {name: 'Way', abbreviation: 'Way'}
-        ],
+        country_regions: {
+            it: [
+                {name: "Valle d'Aosta", abbreviation: "VDA"},
+                {name: "Piemonte", abbreviation: "PIE"},
+                {name: "Lombardia", abbreviation: "LOM"},
+                {name: "Veneto", abbreviation: "VEN"},
+                {name: "Trentino Alto Adige", abbreviation: "TAA"},
+                {name: "Friuli Venezia Giulia", abbreviation: "FVG"},
+                {name: "Liguria", abbreviation: "LIG"},
+                {name: "Emilia Romagna", abbreviation: "EMR"},
+                {name: "Toscana", abbreviation: "TOS"},
+                {name: "Umbria", abbreviation: "UMB"},
+                {name: "Marche", abbreviation: "MAR"},
+                {name: "Abruzzo", abbreviation: "ABR"},
+                {name: "Lazio", abbreviation: "LAZ"},
+                {name: "Campania", abbreviation: "CAM"},
+                {name: "Puglia", abbreviation: "PUG"},
+                {name: "Basilicata", abbreviation: "BAS"},
+                {name: "Molise", abbreviation: "MOL"},
+                {name: "Calabria", abbreviation: "CAL"},
+                {name: "Sicilia", abbreviation: "SIC"},
+                {name: "Sardegna", abbreviation: "SAR"}
+            ]
+        },
+
+        street_suffixes: {
+            'us': [
+                {name: 'Avenue', abbreviation: 'Ave'},
+                {name: 'Boulevard', abbreviation: 'Blvd'},
+                {name: 'Center', abbreviation: 'Ctr'},
+                {name: 'Circle', abbreviation: 'Cir'},
+                {name: 'Court', abbreviation: 'Ct'},
+                {name: 'Drive', abbreviation: 'Dr'},
+                {name: 'Extension', abbreviation: 'Ext'},
+                {name: 'Glen', abbreviation: 'Gln'},
+                {name: 'Grove', abbreviation: 'Grv'},
+                {name: 'Heights', abbreviation: 'Hts'},
+                {name: 'Highway', abbreviation: 'Hwy'},
+                {name: 'Junction', abbreviation: 'Jct'},
+                {name: 'Key', abbreviation: 'Key'},
+                {name: 'Lane', abbreviation: 'Ln'},
+                {name: 'Loop', abbreviation: 'Loop'},
+                {name: 'Manor', abbreviation: 'Mnr'},
+                {name: 'Mill', abbreviation: 'Mill'},
+                {name: 'Park', abbreviation: 'Park'},
+                {name: 'Parkway', abbreviation: 'Pkwy'},
+                {name: 'Pass', abbreviation: 'Pass'},
+                {name: 'Path', abbreviation: 'Path'},
+                {name: 'Pike', abbreviation: 'Pike'},
+                {name: 'Place', abbreviation: 'Pl'},
+                {name: 'Plaza', abbreviation: 'Plz'},
+                {name: 'Point', abbreviation: 'Pt'},
+                {name: 'Ridge', abbreviation: 'Rdg'},
+                {name: 'River', abbreviation: 'Riv'},
+                {name: 'Road', abbreviation: 'Rd'},
+                {name: 'Square', abbreviation: 'Sq'},
+                {name: 'Street', abbreviation: 'St'},
+                {name: 'Terrace', abbreviation: 'Ter'},
+                {name: 'Trail', abbreviation: 'Trl'},
+                {name: 'Turnpike', abbreviation: 'Tpke'},
+                {name: 'View', abbreviation: 'Vw'},
+                {name: 'Way', abbreviation: 'Way'}
+            ],
+            'it': [
+                {name: 'Accesso', abbreviation: 'Acc.'},
+                {name: 'Alzaia', abbreviation: 'Alz.'},
+                {name: 'Arco', abbreviation: 'Arco'},
+                {name: 'Archivolto', abbreviation: 'Acv.'},
+                {name: 'Arena', abbreviation: 'Arena'},
+                {name: 'Argine', abbreviation: 'Argine'},
+                {name: 'Bacino', abbreviation: 'Bacino'},
+                {name: 'Banchi', abbreviation: 'Banchi'},
+                {name: 'Banchina', abbreviation: 'Ban.'},
+                {name: 'Bastioni', abbreviation: 'Bas.'},
+                {name: 'Belvedere', abbreviation: 'Belv.'},
+                {name: 'Borgata', abbreviation: 'B.ta'},
+                {name: 'Borgo', abbreviation: 'B.go'},
+                {name: 'Calata', abbreviation: 'Cal.'},
+                {name: 'Calle', abbreviation: 'Calle'},
+                {name: 'Campiello', abbreviation: 'Cam.'},
+                {name: 'Campo', abbreviation: 'Cam.'},
+                {name: 'Canale', abbreviation: 'Can.'},
+                {name: 'Carraia', abbreviation: 'Carr.'},
+                {name: 'Cascina', abbreviation: 'Cascina'},
+                {name: 'Case sparse', abbreviation: 'c.s.'},
+                {name: 'Cavalcavia', abbreviation: 'Cv.'},
+                {name: 'Circonvallazione', abbreviation: 'Cv.'},
+                {name: 'Complanare', abbreviation: 'C.re'},
+                {name: 'Contrada', abbreviation: 'C.da'},
+                {name: 'Corso', abbreviation: 'C.so'},
+                {name: 'Corte', abbreviation: 'C.te'},
+                {name: 'Cortile', abbreviation: 'C.le'},
+                {name: 'Diramazione', abbreviation: 'Dir.'},
+                {name: 'Fondaco', abbreviation: 'F.co'},
+                {name: 'Fondamenta', abbreviation: 'F.ta'},
+                {name: 'Fondo', abbreviation: 'F.do'},
+                {name: 'Frazione', abbreviation: 'Fr.'},
+                {name: 'Isola', abbreviation: 'Is.'},
+                {name: 'Largo', abbreviation: 'L.go'},
+                {name: 'Litoranea', abbreviation: 'Lit.'},
+                {name: 'Lungolago', abbreviation: 'L.go lago'},
+                {name: 'Lungo Po', abbreviation: 'l.go Po'},
+                {name: 'Molo', abbreviation: 'Molo'},
+                {name: 'Mura', abbreviation: 'Mura'},
+                {name: 'Passaggio privato', abbreviation: 'pass. priv.'},
+                {name: 'Passeggiata', abbreviation: 'Pass.'},
+                {name: 'Piazza', abbreviation: 'P.zza'},
+                {name: 'Piazzale', abbreviation: 'P.le'},
+                {name: 'Ponte', abbreviation: 'P.te'},
+                {name: 'Portico', abbreviation: 'P.co'},
+                {name: 'Rampa', abbreviation: 'Rampa'},
+                {name: 'Regione', abbreviation: 'Reg.'},
+                {name: 'Rione', abbreviation: 'R.ne'},
+                {name: 'Rio', abbreviation: 'Rio'},
+                {name: 'Ripa', abbreviation: 'Ripa'},
+                {name: 'Riva', abbreviation: 'Riva'},
+                {name: 'Rondò', abbreviation: 'Rondò'},
+                {name: 'Rotonda', abbreviation: 'Rot.'},
+                {name: 'Sagrato', abbreviation: 'Sagr.'},
+                {name: 'Salita', abbreviation: 'Sal.'},
+                {name: 'Scalinata', abbreviation: 'Scal.'},
+                {name: 'Scalone', abbreviation: 'Scal.'},
+                {name: 'Slargo', abbreviation: 'Sl.'},
+                {name: 'Sottoportico', abbreviation: 'Sott.'},
+                {name: 'Strada', abbreviation: 'Str.'},
+                {name: 'Stradale', abbreviation: 'Str.le'},
+                {name: 'Strettoia', abbreviation: 'Strett.'},
+                {name: 'Traversa', abbreviation: 'Trav.'},
+                {name: 'Via', abbreviation: 'V.'},
+                {name: 'Viale', abbreviation: 'V.le'},
+                {name: 'Vicinale', abbreviation: 'Vic.le'},
+                {name: 'Vicolo', abbreviation: 'Vic.'}
+            ],
+            'uk': [
+                {name: 'Avenue', abbreviation: 'Ave'},
+                {name: 'Close', abbreviation: 'Cl'},
+                {name: 'Court', abbreviation: 'Ct'},
+                {name: 'Crescent', abbreviation: 'Cr'},
+                {name: 'Drive', abbreviation: 'Dr'},
+                {name: 'Garden', abbreviation: 'Gdn'},
+                {name: 'Gardens', abbreviation: 'Gdns'},
+                {name: 'Green', abbreviation: 'Gn'},
+                {name: 'Grove', abbreviation: 'Gr'},
+                {name: 'Lane', abbreviation: 'Ln'},
+                {name: 'Mount', abbreviation: 'Mt'},
+                {name: 'Place', abbreviation: 'Pl'},
+                {name: 'Park', abbreviation: 'Pk'},
+                {name: 'Ridge', abbreviation: 'Rdg'},
+                {name: 'Road', abbreviation: 'Rd'},
+                {name: 'Square', abbreviation: 'Sq'},
+                {name: 'Street', abbreviation: 'St'},
+                {name: 'Terrace', abbreviation: 'Ter'},
+                {name: 'Valley', abbreviation: 'Val'}
+            ]
+        },
 
         months: [
             {name: 'January', short_name: 'Jan', numeric: '01', days: 31},
@@ -2031,6 +3557,1762 @@
             {'code' : 'ZAR', 'name' : 'South Africa Rand'},
             {'code' : 'ZMW', 'name' : 'Zambia Kwacha'},
             {'code' : 'ZWD', 'name' : 'Zimbabwe Dollar'}
+        ],
+
+        // return the names of all valide colors
+        colorNames: ["AliceBlue", "Black", "Navy", "DarkBlue", "MediumBlue", "Blue", "DarkGreen", "Green", "Teal", "DarkCyan", "DeepSkyBlue", "DarkTurquoise", "MediumSpringGreen", "Lime", "SpringGreen",
+            "Aqua", "Cyan", "MidnightBlue", "DodgerBlue", "LightSeaGreen", "ForestGreen", "SeaGreen", "DarkSlateGray", "LimeGreen", "MediumSeaGreen", "Turquoise", "RoyalBlue", "SteelBlue", "DarkSlateBlue", "MediumTurquoise",
+            "Indigo", "DarkOliveGreen", "CadetBlue", "CornflowerBlue", "RebeccaPurple", "MediumAquaMarine", "DimGray", "SlateBlue", "OliveDrab", "SlateGray", "LightSlateGray", "MediumSlateBlue", "LawnGreen", "Chartreuse",
+            "Aquamarine", "Maroon", "Purple", "Olive", "Gray", "SkyBlue", "LightSkyBlue", "BlueViolet", "DarkRed", "DarkMagenta", "SaddleBrown", "Ivory", "White",
+            "DarkSeaGreen", "LightGreen", "MediumPurple", "DarkViolet", "PaleGreen", "DarkOrchid", "YellowGreen", "Sienna", "Brown", "DarkGray", "LightBlue", "GreenYellow", "PaleTurquoise", "LightSteelBlue", "PowderBlue",
+            "FireBrick", "DarkGoldenRod", "MediumOrchid", "RosyBrown", "DarkKhaki", "Silver", "MediumVioletRed", "IndianRed", "Peru", "Chocolate", "Tan", "LightGray", "Thistle", "Orchid", "GoldenRod", "PaleVioletRed",
+            "Crimson", "Gainsboro", "Plum", "BurlyWood", "LightCyan", "Lavender", "DarkSalmon", "Violet", "PaleGoldenRod", "LightCoral", "Khaki", "AliceBlue", "HoneyDew", "Azure", "SandyBrown", "Wheat", "Beige", "WhiteSmoke",
+            "MintCream", "GhostWhite", "Salmon", "AntiqueWhite", "Linen", "LightGoldenRodYellow", "OldLace", "Red", "Fuchsia", "Magenta", "DeepPink", "OrangeRed", "Tomato", "HotPink", "Coral", "DarkOrange", "LightSalmon", "Orange",
+            "LightPink", "Pink", "Gold", "PeachPuff", "NavajoWhite", "Moccasin", "Bisque", "MistyRose", "BlanchedAlmond", "PapayaWhip", "LavenderBlush", "SeaShell", "Cornsilk", "LemonChiffon", "FloralWhite", "Snow", "Yellow", "LightYellow"
+        ],
+
+        fileExtension: {
+            "raster": ["bmp", "gif", "gpl", "ico", "jpeg", "psd", "png", "psp", "raw", "tiff"],
+            "vector": ["3dv", "amf", "awg", "ai", "cgm", "cdr", "cmx", "dxf", "e2d", "egt", "eps", "fs", "odg", "svg", "xar"],
+            "3d": ["3dmf", "3dm", "3mf", "3ds", "an8", "aoi", "blend", "cal3d", "cob", "ctm", "iob", "jas", "max", "mb", "mdx", "obj", "x", "x3d"],
+            "document": ["doc", "docx", "dot", "html", "xml", "odt", "odm", "ott", "csv", "rtf", "tex", "xhtml", "xps"]
+        },
+
+        // Data taken from https://github.com/dmfilipenko/timezones.json/blob/master/timezones.json
+        timezones: [
+            {
+                "name": "Dateline Standard Time",
+                "abbr": "DST",
+                "offset": -12,
+                "isdst": false,
+                "text": "(UTC-12:00) International Date Line West",
+                "utc": [
+                    "Etc/GMT+12"
+                ]
+            },
+            {
+                "name": "UTC-11",
+                "abbr": "U",
+                "offset": -11,
+                "isdst": false,
+                "text": "(UTC-11:00) Coordinated Universal Time-11",
+                "utc": [
+                    "Etc/GMT+11",
+                    "Pacific/Midway",
+                    "Pacific/Niue",
+                    "Pacific/Pago_Pago"
+                ]
+            },
+            {
+                "name": "Hawaiian Standard Time",
+                "abbr": "HST",
+                "offset": -10,
+                "isdst": false,
+                "text": "(UTC-10:00) Hawaii",
+                "utc": [
+                    "Etc/GMT+10",
+                    "Pacific/Honolulu",
+                    "Pacific/Johnston",
+                    "Pacific/Rarotonga",
+                    "Pacific/Tahiti"
+                ]
+            },
+            {
+                "name": "Alaskan Standard Time",
+                "abbr": "AKDT",
+                "offset": -8,
+                "isdst": true,
+                "text": "(UTC-09:00) Alaska",
+                "utc": [
+                    "America/Anchorage",
+                    "America/Juneau",
+                    "America/Nome",
+                    "America/Sitka",
+                    "America/Yakutat"
+                ]
+            },
+            {
+                "name": "Pacific Standard Time (Mexico)",
+                "abbr": "PDT",
+                "offset": -7,
+                "isdst": true,
+                "text": "(UTC-08:00) Baja California",
+                "utc": [
+                    "America/Santa_Isabel"
+                ]
+            },
+            {
+                "name": "Pacific Standard Time",
+                "abbr": "PDT",
+                "offset": -7,
+                "isdst": true,
+                "text": "(UTC-08:00) Pacific Time (US & Canada)",
+                "utc": [
+                    "America/Dawson",
+                    "America/Los_Angeles",
+                    "America/Tijuana",
+                    "America/Vancouver",
+                    "America/Whitehorse",
+                    "PST8PDT"
+                ]
+            },
+            {
+                "name": "US Mountain Standard Time",
+                "abbr": "UMST",
+                "offset": -7,
+                "isdst": false,
+                "text": "(UTC-07:00) Arizona",
+                "utc": [
+                    "America/Creston",
+                    "America/Dawson_Creek",
+                    "America/Hermosillo",
+                    "America/Phoenix",
+                    "Etc/GMT+7"
+                ]
+            },
+            {
+                "name": "Mountain Standard Time (Mexico)",
+                "abbr": "MDT",
+                "offset": -6,
+                "isdst": true,
+                "text": "(UTC-07:00) Chihuahua, La Paz, Mazatlan",
+                "utc": [
+                    "America/Chihuahua",
+                    "America/Mazatlan"
+                ]
+            },
+            {
+                "name": "Mountain Standard Time",
+                "abbr": "MDT",
+                "offset": -6,
+                "isdst": true,
+                "text": "(UTC-07:00) Mountain Time (US & Canada)",
+                "utc": [
+                    "America/Boise",
+                    "America/Cambridge_Bay",
+                    "America/Denver",
+                    "America/Edmonton",
+                    "America/Inuvik",
+                    "America/Ojinaga",
+                    "America/Yellowknife",
+                    "MST7MDT"
+                ]
+            },
+            {
+                "name": "Central America Standard Time",
+                "abbr": "CAST",
+                "offset": -6,
+                "isdst": false,
+                "text": "(UTC-06:00) Central America",
+                "utc": [
+                    "America/Belize",
+                    "America/Costa_Rica",
+                    "America/El_Salvador",
+                    "America/Guatemala",
+                    "America/Managua",
+                    "America/Tegucigalpa",
+                    "Etc/GMT+6",
+                    "Pacific/Galapagos"
+                ]
+            },
+            {
+                "name": "Central Standard Time",
+                "abbr": "CDT",
+                "offset": -5,
+                "isdst": true,
+                "text": "(UTC-06:00) Central Time (US & Canada)",
+                "utc": [
+                    "America/Chicago",
+                    "America/Indiana/Knox",
+                    "America/Indiana/Tell_City",
+                    "America/Matamoros",
+                    "America/Menominee",
+                    "America/North_Dakota/Beulah",
+                    "America/North_Dakota/Center",
+                    "America/North_Dakota/New_Salem",
+                    "America/Rainy_River",
+                    "America/Rankin_Inlet",
+                    "America/Resolute",
+                    "America/Winnipeg",
+                    "CST6CDT"
+                ]
+            },
+            {
+                "name": "Central Standard Time (Mexico)",
+                "abbr": "CDT",
+                "offset": -5,
+                "isdst": true,
+                "text": "(UTC-06:00) Guadalajara, Mexico City, Monterrey",
+                "utc": [
+                    "America/Bahia_Banderas",
+                    "America/Cancun",
+                    "America/Merida",
+                    "America/Mexico_City",
+                    "America/Monterrey"
+                ]
+            },
+            {
+                "name": "Canada Central Standard Time",
+                "abbr": "CCST",
+                "offset": -6,
+                "isdst": false,
+                "text": "(UTC-06:00) Saskatchewan",
+                "utc": [
+                    "America/Regina",
+                    "America/Swift_Current"
+                ]
+            },
+            {
+                "name": "SA Pacific Standard Time",
+                "abbr": "SPST",
+                "offset": -5,
+                "isdst": false,
+                "text": "(UTC-05:00) Bogota, Lima, Quito",
+                "utc": [
+                    "America/Bogota",
+                    "America/Cayman",
+                    "America/Coral_Harbour",
+                    "America/Eirunepe",
+                    "America/Guayaquil",
+                    "America/Jamaica",
+                    "America/Lima",
+                    "America/Panama",
+                    "America/Rio_Branco",
+                    "Etc/GMT+5"
+                ]
+            },
+            {
+                "name": "Eastern Standard Time",
+                "abbr": "EDT",
+                "offset": -4,
+                "isdst": true,
+                "text": "(UTC-05:00) Eastern Time (US & Canada)",
+                "utc": [
+                    "America/Detroit",
+                    "America/Havana",
+                    "America/Indiana/Petersburg",
+                    "America/Indiana/Vincennes",
+                    "America/Indiana/Winamac",
+                    "America/Iqaluit",
+                    "America/Kentucky/Monticello",
+                    "America/Louisville",
+                    "America/Montreal",
+                    "America/Nassau",
+                    "America/New_York",
+                    "America/Nipigon",
+                    "America/Pangnirtung",
+                    "America/Port-au-Prince",
+                    "America/Thunder_Bay",
+                    "America/Toronto",
+                    "EST5EDT"
+                ]
+            },
+            {
+                "name": "US Eastern Standard Time",
+                "abbr": "UEDT",
+                "offset": -4,
+                "isdst": true,
+                "text": "(UTC-05:00) Indiana (East)",
+                "utc": [
+                    "America/Indiana/Marengo",
+                    "America/Indiana/Vevay",
+                    "America/Indianapolis"
+                ]
+            },
+            {
+                "name": "Venezuela Standard Time",
+                "abbr": "VST",
+                "offset": -4.5,
+                "isdst": false,
+                "text": "(UTC-04:30) Caracas",
+                "utc": [
+                    "America/Caracas"
+                ]
+            },
+            {
+                "name": "Paraguay Standard Time",
+                "abbr": "PST",
+                "offset": -4,
+                "isdst": false,
+                "text": "(UTC-04:00) Asuncion",
+                "utc": [
+                    "America/Asuncion"
+                ]
+            },
+            {
+                "name": "Atlantic Standard Time",
+                "abbr": "ADT",
+                "offset": -3,
+                "isdst": true,
+                "text": "(UTC-04:00) Atlantic Time (Canada)",
+                "utc": [
+                    "America/Glace_Bay",
+                    "America/Goose_Bay",
+                    "America/Halifax",
+                    "America/Moncton",
+                    "America/Thule",
+                    "Atlantic/Bermuda"
+                ]
+            },
+            {
+                "name": "Central Brazilian Standard Time",
+                "abbr": "CBST",
+                "offset": -4,
+                "isdst": false,
+                "text": "(UTC-04:00) Cuiaba",
+                "utc": [
+                    "America/Campo_Grande",
+                    "America/Cuiaba"
+                ]
+            },
+            {
+                "name": "SA Western Standard Time",
+                "abbr": "SWST",
+                "offset": -4,
+                "isdst": false,
+                "text": "(UTC-04:00) Georgetown, La Paz, Manaus, San Juan",
+                "utc": [
+                    "America/Anguilla",
+                    "America/Antigua",
+                    "America/Aruba",
+                    "America/Barbados",
+                    "America/Blanc-Sablon",
+                    "America/Boa_Vista",
+                    "America/Curacao",
+                    "America/Dominica",
+                    "America/Grand_Turk",
+                    "America/Grenada",
+                    "America/Guadeloupe",
+                    "America/Guyana",
+                    "America/Kralendijk",
+                    "America/La_Paz",
+                    "America/Lower_Princes",
+                    "America/Manaus",
+                    "America/Marigot",
+                    "America/Martinique",
+                    "America/Montserrat",
+                    "America/Port_of_Spain",
+                    "America/Porto_Velho",
+                    "America/Puerto_Rico",
+                    "America/Santo_Domingo",
+                    "America/St_Barthelemy",
+                    "America/St_Kitts",
+                    "America/St_Lucia",
+                    "America/St_Thomas",
+                    "America/St_Vincent",
+                    "America/Tortola",
+                    "Etc/GMT+4"
+                ]
+            },
+            {
+                "name": "Pacific SA Standard Time",
+                "abbr": "PSST",
+                "offset": -4,
+                "isdst": false,
+                "text": "(UTC-04:00) Santiago",
+                "utc": [
+                    "America/Santiago",
+                    "Antarctica/Palmer"
+                ]
+            },
+            {
+                "name": "Newfoundland Standard Time",
+                "abbr": "NDT",
+                "offset": -2.5,
+                "isdst": true,
+                "text": "(UTC-03:30) Newfoundland",
+                "utc": [
+                    "America/St_Johns"
+                ]
+            },
+            {
+                "name": "E. South America Standard Time",
+                "abbr": "ESAST",
+                "offset": -3,
+                "isdst": false,
+                "text": "(UTC-03:00) Brasilia",
+                "utc": [
+                    "America/Sao_Paulo"
+                ]
+            },
+            {
+                "name": "Argentina Standard Time",
+                "abbr": "AST",
+                "offset": -3,
+                "isdst": false,
+                "text": "(UTC-03:00) Buenos Aires",
+                "utc": [
+                    "America/Argentina/La_Rioja",
+                    "America/Argentina/Rio_Gallegos",
+                    "America/Argentina/Salta",
+                    "America/Argentina/San_Juan",
+                    "America/Argentina/San_Luis",
+                    "America/Argentina/Tucuman",
+                    "America/Argentina/Ushuaia",
+                    "America/Buenos_Aires",
+                    "America/Catamarca",
+                    "America/Cordoba",
+                    "America/Jujuy",
+                    "America/Mendoza"
+                ]
+            },
+            {
+                "name": "SA Eastern Standard Time",
+                "abbr": "SEST",
+                "offset": -3,
+                "isdst": false,
+                "text": "(UTC-03:00) Cayenne, Fortaleza",
+                "utc": [
+                    "America/Araguaina",
+                    "America/Belem",
+                    "America/Cayenne",
+                    "America/Fortaleza",
+                    "America/Maceio",
+                    "America/Paramaribo",
+                    "America/Recife",
+                    "America/Santarem",
+                    "Antarctica/Rothera",
+                    "Atlantic/Stanley",
+                    "Etc/GMT+3"
+                ]
+            },
+            {
+                "name": "Greenland Standard Time",
+                "abbr": "GDT",
+                "offset": -2,
+                "isdst": true,
+                "text": "(UTC-03:00) Greenland",
+                "utc": [
+                    "America/Godthab"
+                ]
+            },
+            {
+                "name": "Montevideo Standard Time",
+                "abbr": "MST",
+                "offset": -3,
+                "isdst": false,
+                "text": "(UTC-03:00) Montevideo",
+                "utc": [
+                    "America/Montevideo"
+                ]
+            },
+            {
+                "name": "Bahia Standard Time",
+                "abbr": "BST",
+                "offset": -3,
+                "isdst": false,
+                "text": "(UTC-03:00) Salvador",
+                "utc": [
+                    "America/Bahia"
+                ]
+            },
+            {
+                "name": "UTC-02",
+                "abbr": "U",
+                "offset": -2,
+                "isdst": false,
+                "text": "(UTC-02:00) Coordinated Universal Time-02",
+                "utc": [
+                    "America/Noronha",
+                    "Atlantic/South_Georgia",
+                    "Etc/GMT+2"
+                ]
+            },
+            {
+                "name": "Mid-Atlantic Standard Time",
+                "abbr": "MDT",
+                "offset": -1,
+                "isdst": true,
+                "text": "(UTC-02:00) Mid-Atlantic - Old"
+            },
+            {
+                "name": "Azores Standard Time",
+                "abbr": "ADT",
+                "offset": 0,
+                "isdst": true,
+                "text": "(UTC-01:00) Azores",
+                "utc": [
+                    "America/Scoresbysund",
+                    "Atlantic/Azores"
+                ]
+            },
+            {
+                "name": "Cape Verde Standard Time",
+                "abbr": "CVST",
+                "offset": -1,
+                "isdst": false,
+                "text": "(UTC-01:00) Cape Verde Is.",
+                "utc": [
+                    "Atlantic/Cape_Verde",
+                    "Etc/GMT+1"
+                ]
+            },
+            {
+                "name": "Morocco Standard Time",
+                "abbr": "MDT",
+                "offset": 1,
+                "isdst": true,
+                "text": "(UTC) Casablanca",
+                "utc": [
+                    "Africa/Casablanca",
+                    "Africa/El_Aaiun"
+                ]
+            },
+            {
+                "name": "UTC",
+                "abbr": "CUT",
+                "offset": 0,
+                "isdst": false,
+                "text": "(UTC) Coordinated Universal Time",
+                "utc": [
+                    "America/Danmarkshavn",
+                    "Etc/GMT"
+                ]
+            },
+            {
+                "name": "GMT Standard Time",
+                "abbr": "GDT",
+                "offset": 1,
+                "isdst": true,
+                "text": "(UTC) Dublin, Edinburgh, Lisbon, London",
+                "utc": [
+                    "Atlantic/Canary",
+                    "Atlantic/Faeroe",
+                    "Atlantic/Madeira",
+                    "Europe/Dublin",
+                    "Europe/Guernsey",
+                    "Europe/Isle_of_Man",
+                    "Europe/Jersey",
+                    "Europe/Lisbon",
+                    "Europe/London"
+                ]
+            },
+            {
+                "name": "Greenwich Standard Time",
+                "abbr": "GST",
+                "offset": 0,
+                "isdst": false,
+                "text": "(UTC) Monrovia, Reykjavik",
+                "utc": [
+                    "Africa/Abidjan",
+                    "Africa/Accra",
+                    "Africa/Bamako",
+                    "Africa/Banjul",
+                    "Africa/Bissau",
+                    "Africa/Conakry",
+                    "Africa/Dakar",
+                    "Africa/Freetown",
+                    "Africa/Lome",
+                    "Africa/Monrovia",
+                    "Africa/Nouakchott",
+                    "Africa/Ouagadougou",
+                    "Africa/Sao_Tome",
+                    "Atlantic/Reykjavik",
+                    "Atlantic/St_Helena"
+                ]
+            },
+            {
+                "name": "W. Europe Standard Time",
+                "abbr": "WEDT",
+                "offset": 2,
+                "isdst": true,
+                "text": "(UTC+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna",
+                "utc": [
+                    "Arctic/Longyearbyen",
+                    "Europe/Amsterdam",
+                    "Europe/Andorra",
+                    "Europe/Berlin",
+                    "Europe/Busingen",
+                    "Europe/Gibraltar",
+                    "Europe/Luxembourg",
+                    "Europe/Malta",
+                    "Europe/Monaco",
+                    "Europe/Oslo",
+                    "Europe/Rome",
+                    "Europe/San_Marino",
+                    "Europe/Stockholm",
+                    "Europe/Vaduz",
+                    "Europe/Vatican",
+                    "Europe/Vienna",
+                    "Europe/Zurich"
+                ]
+            },
+            {
+                "name": "Central Europe Standard Time",
+                "abbr": "CEDT",
+                "offset": 2,
+                "isdst": true,
+                "text": "(UTC+01:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague",
+                "utc": [
+                    "Europe/Belgrade",
+                    "Europe/Bratislava",
+                    "Europe/Budapest",
+                    "Europe/Ljubljana",
+                    "Europe/Podgorica",
+                    "Europe/Prague",
+                    "Europe/Tirane"
+                ]
+            },
+            {
+                "name": "Romance Standard Time",
+                "abbr": "RDT",
+                "offset": 2,
+                "isdst": true,
+                "text": "(UTC+01:00) Brussels, Copenhagen, Madrid, Paris",
+                "utc": [
+                    "Africa/Ceuta",
+                    "Europe/Brussels",
+                    "Europe/Copenhagen",
+                    "Europe/Madrid",
+                    "Europe/Paris"
+                ]
+            },
+            {
+                "name": "Central European Standard Time",
+                "abbr": "CEDT",
+                "offset": 2,
+                "isdst": true,
+                "text": "(UTC+01:00) Sarajevo, Skopje, Warsaw, Zagreb",
+                "utc": [
+                    "Europe/Sarajevo",
+                    "Europe/Skopje",
+                    "Europe/Warsaw",
+                    "Europe/Zagreb"
+                ]
+            },
+            {
+                "name": "W. Central Africa Standard Time",
+                "abbr": "WCAST",
+                "offset": 1,
+                "isdst": false,
+                "text": "(UTC+01:00) West Central Africa",
+                "utc": [
+                    "Africa/Algiers",
+                    "Africa/Bangui",
+                    "Africa/Brazzaville",
+                    "Africa/Douala",
+                    "Africa/Kinshasa",
+                    "Africa/Lagos",
+                    "Africa/Libreville",
+                    "Africa/Luanda",
+                    "Africa/Malabo",
+                    "Africa/Ndjamena",
+                    "Africa/Niamey",
+                    "Africa/Porto-Novo",
+                    "Africa/Tunis",
+                    "Etc/GMT-1"
+                ]
+            },
+            {
+                "name": "Namibia Standard Time",
+                "abbr": "NST",
+                "offset": 1,
+                "isdst": false,
+                "text": "(UTC+01:00) Windhoek",
+                "utc": [
+                    "Africa/Windhoek"
+                ]
+            },
+            {
+                "name": "GTB Standard Time",
+                "abbr": "GDT",
+                "offset": 3,
+                "isdst": true,
+                "text": "(UTC+02:00) Athens, Bucharest",
+                "utc": [
+                    "Asia/Nicosia",
+                    "Europe/Athens",
+                    "Europe/Bucharest",
+                    "Europe/Chisinau"
+                ]
+            },
+            {
+                "name": "Middle East Standard Time",
+                "abbr": "MEDT",
+                "offset": 3,
+                "isdst": true,
+                "text": "(UTC+02:00) Beirut",
+                "utc": [
+                    "Asia/Beirut"
+                ]
+            },
+            {
+                "name": "Egypt Standard Time",
+                "abbr": "EST",
+                "offset": 2,
+                "isdst": false,
+                "text": "(UTC+02:00) Cairo",
+                "utc": [
+                    "Africa/Cairo"
+                ]
+            },
+            {
+                "name": "Syria Standard Time",
+                "abbr": "SDT",
+                "offset": 3,
+                "isdst": true,
+                "text": "(UTC+02:00) Damascus",
+                "utc": [
+                    "Asia/Damascus"
+                ]
+            },
+            {
+                "name": "E. Europe Standard Time",
+                "abbr": "EEDT",
+                "offset": 3,
+                "isdst": true,
+                "text": "(UTC+02:00) E. Europe"
+            },
+            {
+                "name": "South Africa Standard Time",
+                "abbr": "SAST",
+                "offset": 2,
+                "isdst": false,
+                "text": "(UTC+02:00) Harare, Pretoria",
+                "utc": [
+                    "Africa/Blantyre",
+                    "Africa/Bujumbura",
+                    "Africa/Gaborone",
+                    "Africa/Harare",
+                    "Africa/Johannesburg",
+                    "Africa/Kigali",
+                    "Africa/Lubumbashi",
+                    "Africa/Lusaka",
+                    "Africa/Maputo",
+                    "Africa/Maseru",
+                    "Africa/Mbabane",
+                    "Etc/GMT-2"
+                ]
+            },
+            {
+                "name": "FLE Standard Time",
+                "abbr": "FDT",
+                "offset": 3,
+                "isdst": true,
+                "text": "(UTC+02:00) Helsinki, Kyiv, Riga, Sofia, Tallinn, Vilnius",
+                "utc": [
+                    "Europe/Helsinki",
+                    "Europe/Kiev",
+                    "Europe/Mariehamn",
+                    "Europe/Riga",
+                    "Europe/Sofia",
+                    "Europe/Tallinn",
+                    "Europe/Uzhgorod",
+                    "Europe/Vilnius",
+                    "Europe/Zaporozhye"
+                ]
+            },
+            {
+                "name": "Turkey Standard Time",
+                "abbr": "TDT",
+                "offset": 3,
+                "isdst": true,
+                "text": "(UTC+02:00) Istanbul",
+                "utc": [
+                    "Europe/Istanbul"
+                ]
+            },
+            {
+                "name": "Israel Standard Time",
+                "abbr": "JDT",
+                "offset": 3,
+                "isdst": true,
+                "text": "(UTC+02:00) Jerusalem",
+                "utc": [
+                    "Asia/Jerusalem"
+                ]
+            },
+            {
+                "name": "Libya Standard Time",
+                "abbr": "LST",
+                "offset": 2,
+                "isdst": false,
+                "text": "(UTC+02:00) Tripoli",
+                "utc": [
+                    "Africa/Tripoli"
+                ]
+            },
+            {
+                "name": "Jordan Standard Time",
+                "abbr": "JST",
+                "offset": 3,
+                "isdst": false,
+                "text": "(UTC+03:00) Amman",
+                "utc": [
+                    "Asia/Amman"
+                ]
+            },
+            {
+                "name": "Arabic Standard Time",
+                "abbr": "AST",
+                "offset": 3,
+                "isdst": false,
+                "text": "(UTC+03:00) Baghdad",
+                "utc": [
+                    "Asia/Baghdad"
+                ]
+            },
+            {
+                "name": "Kaliningrad Standard Time",
+                "abbr": "KST",
+                "offset": 3,
+                "isdst": false,
+                "text": "(UTC+03:00) Kaliningrad, Minsk",
+                "utc": [
+                    "Europe/Kaliningrad",
+                    "Europe/Minsk"
+                ]
+            },
+            {
+                "name": "Arab Standard Time",
+                "abbr": "AST",
+                "offset": 3,
+                "isdst": false,
+                "text": "(UTC+03:00) Kuwait, Riyadh",
+                "utc": [
+                    "Asia/Aden",
+                    "Asia/Bahrain",
+                    "Asia/Kuwait",
+                    "Asia/Qatar",
+                    "Asia/Riyadh"
+                ]
+            },
+            {
+                "name": "E. Africa Standard Time",
+                "abbr": "EAST",
+                "offset": 3,
+                "isdst": false,
+                "text": "(UTC+03:00) Nairobi",
+                "utc": [
+                    "Africa/Addis_Ababa",
+                    "Africa/Asmera",
+                    "Africa/Dar_es_Salaam",
+                    "Africa/Djibouti",
+                    "Africa/Juba",
+                    "Africa/Kampala",
+                    "Africa/Khartoum",
+                    "Africa/Mogadishu",
+                    "Africa/Nairobi",
+                    "Antarctica/Syowa",
+                    "Etc/GMT-3",
+                    "Indian/Antananarivo",
+                    "Indian/Comoro",
+                    "Indian/Mayotte"
+                ]
+            },
+            {
+                "name": "Iran Standard Time",
+                "abbr": "IDT",
+                "offset": 4.5,
+                "isdst": true,
+                "text": "(UTC+03:30) Tehran",
+                "utc": [
+                    "Asia/Tehran"
+                ]
+            },
+            {
+                "name": "Arabian Standard Time",
+                "abbr": "AST",
+                "offset": 4,
+                "isdst": false,
+                "text": "(UTC+04:00) Abu Dhabi, Muscat",
+                "utc": [
+                    "Asia/Dubai",
+                    "Asia/Muscat",
+                    "Etc/GMT-4"
+                ]
+            },
+            {
+                "name": "Azerbaijan Standard Time",
+                "abbr": "ADT",
+                "offset": 5,
+                "isdst": true,
+                "text": "(UTC+04:00) Baku",
+                "utc": [
+                    "Asia/Baku"
+                ]
+            },
+            {
+                "name": "Russian Standard Time",
+                "abbr": "RST",
+                "offset": 4,
+                "isdst": false,
+                "text": "(UTC+04:00) Moscow, St. Petersburg, Volgograd",
+                "utc": [
+                    "Europe/Moscow",
+                    "Europe/Samara",
+                    "Europe/Simferopol",
+                    "Europe/Volgograd"
+                ]
+            },
+            {
+                "name": "Mauritius Standard Time",
+                "abbr": "MST",
+                "offset": 4,
+                "isdst": false,
+                "text": "(UTC+04:00) Port Louis",
+                "utc": [
+                    "Indian/Mahe",
+                    "Indian/Mauritius",
+                    "Indian/Reunion"
+                ]
+            },
+            {
+                "name": "Georgian Standard Time",
+                "abbr": "GST",
+                "offset": 4,
+                "isdst": false,
+                "text": "(UTC+04:00) Tbilisi",
+                "utc": [
+                    "Asia/Tbilisi"
+                ]
+            },
+            {
+                "name": "Caucasus Standard Time",
+                "abbr": "CST",
+                "offset": 4,
+                "isdst": false,
+                "text": "(UTC+04:00) Yerevan",
+                "utc": [
+                    "Asia/Yerevan"
+                ]
+            },
+            {
+                "name": "Afghanistan Standard Time",
+                "abbr": "AST",
+                "offset": 4.5,
+                "isdst": false,
+                "text": "(UTC+04:30) Kabul",
+                "utc": [
+                    "Asia/Kabul"
+                ]
+            },
+            {
+                "name": "West Asia Standard Time",
+                "abbr": "WAST",
+                "offset": 5,
+                "isdst": false,
+                "text": "(UTC+05:00) Ashgabat, Tashkent",
+                "utc": [
+                    "Antarctica/Mawson",
+                    "Asia/Aqtau",
+                    "Asia/Aqtobe",
+                    "Asia/Ashgabat",
+                    "Asia/Dushanbe",
+                    "Asia/Oral",
+                    "Asia/Samarkand",
+                    "Asia/Tashkent",
+                    "Etc/GMT-5",
+                    "Indian/Kerguelen",
+                    "Indian/Maldives"
+                ]
+            },
+            {
+                "name": "Pakistan Standard Time",
+                "abbr": "PST",
+                "offset": 5,
+                "isdst": false,
+                "text": "(UTC+05:00) Islamabad, Karachi",
+                "utc": [
+                    "Asia/Karachi"
+                ]
+            },
+            {
+                "name": "India Standard Time",
+                "abbr": "IST",
+                "offset": 5.5,
+                "isdst": false,
+                "text": "(UTC+05:30) Chennai, Kolkata, Mumbai, New Delhi",
+                "utc": [
+                    "Asia/Calcutta"
+                ]
+            },
+            {
+                "name": "Sri Lanka Standard Time",
+                "abbr": "SLST",
+                "offset": 5.5,
+                "isdst": false,
+                "text": "(UTC+05:30) Sri Jayawardenepura",
+                "utc": [
+                    "Asia/Colombo"
+                ]
+            },
+            {
+                "name": "Nepal Standard Time",
+                "abbr": "NST",
+                "offset": 5.75,
+                "isdst": false,
+                "text": "(UTC+05:45) Kathmandu",
+                "utc": [
+                    "Asia/Katmandu"
+                ]
+            },
+            {
+                "name": "Central Asia Standard Time",
+                "abbr": "CAST",
+                "offset": 6,
+                "isdst": false,
+                "text": "(UTC+06:00) Astana",
+                "utc": [
+                    "Antarctica/Vostok",
+                    "Asia/Almaty",
+                    "Asia/Bishkek",
+                    "Asia/Qyzylorda",
+                    "Asia/Urumqi",
+                    "Etc/GMT-6",
+                    "Indian/Chagos"
+                ]
+            },
+            {
+                "name": "Bangladesh Standard Time",
+                "abbr": "BST",
+                "offset": 6,
+                "isdst": false,
+                "text": "(UTC+06:00) Dhaka",
+                "utc": [
+                    "Asia/Dhaka",
+                    "Asia/Thimphu"
+                ]
+            },
+            {
+                "name": "Ekaterinburg Standard Time",
+                "abbr": "EST",
+                "offset": 6,
+                "isdst": false,
+                "text": "(UTC+06:00) Ekaterinburg",
+                "utc": [
+                    "Asia/Yekaterinburg"
+                ]
+            },
+            {
+                "name": "Myanmar Standard Time",
+                "abbr": "MST",
+                "offset": 6.5,
+                "isdst": false,
+                "text": "(UTC+06:30) Yangon (Rangoon)",
+                "utc": [
+                    "Asia/Rangoon",
+                    "Indian/Cocos"
+                ]
+            },
+            {
+                "name": "SE Asia Standard Time",
+                "abbr": "SAST",
+                "offset": 7,
+                "isdst": false,
+                "text": "(UTC+07:00) Bangkok, Hanoi, Jakarta",
+                "utc": [
+                    "Antarctica/Davis",
+                    "Asia/Bangkok",
+                    "Asia/Hovd",
+                    "Asia/Jakarta",
+                    "Asia/Phnom_Penh",
+                    "Asia/Pontianak",
+                    "Asia/Saigon",
+                    "Asia/Vientiane",
+                    "Etc/GMT-7",
+                    "Indian/Christmas"
+                ]
+            },
+            {
+                "name": "N. Central Asia Standard Time",
+                "abbr": "NCAST",
+                "offset": 7,
+                "isdst": false,
+                "text": "(UTC+07:00) Novosibirsk",
+                "utc": [
+                    "Asia/Novokuznetsk",
+                    "Asia/Novosibirsk",
+                    "Asia/Omsk"
+                ]
+            },
+            {
+                "name": "China Standard Time",
+                "abbr": "CST",
+                "offset": 8,
+                "isdst": false,
+                "text": "(UTC+08:00) Beijing, Chongqing, Hong Kong, Urumqi",
+                "utc": [
+                    "Asia/Hong_Kong",
+                    "Asia/Macau",
+                    "Asia/Shanghai"
+                ]
+            },
+            {
+                "name": "North Asia Standard Time",
+                "abbr": "NAST",
+                "offset": 8,
+                "isdst": false,
+                "text": "(UTC+08:00) Krasnoyarsk",
+                "utc": [
+                    "Asia/Krasnoyarsk"
+                ]
+            },
+            {
+                "name": "Singapore Standard Time",
+                "abbr": "MPST",
+                "offset": 8,
+                "isdst": false,
+                "text": "(UTC+08:00) Kuala Lumpur, Singapore",
+                "utc": [
+                    "Asia/Brunei",
+                    "Asia/Kuala_Lumpur",
+                    "Asia/Kuching",
+                    "Asia/Makassar",
+                    "Asia/Manila",
+                    "Asia/Singapore",
+                    "Etc/GMT-8"
+                ]
+            },
+            {
+                "name": "W. Australia Standard Time",
+                "abbr": "WAST",
+                "offset": 8,
+                "isdst": false,
+                "text": "(UTC+08:00) Perth",
+                "utc": [
+                    "Antarctica/Casey",
+                    "Australia/Perth"
+                ]
+            },
+            {
+                "name": "Taipei Standard Time",
+                "abbr": "TST",
+                "offset": 8,
+                "isdst": false,
+                "text": "(UTC+08:00) Taipei",
+                "utc": [
+                    "Asia/Taipei"
+                ]
+            },
+            {
+                "name": "Ulaanbaatar Standard Time",
+                "abbr": "UST",
+                "offset": 8,
+                "isdst": false,
+                "text": "(UTC+08:00) Ulaanbaatar",
+                "utc": [
+                    "Asia/Choibalsan",
+                    "Asia/Ulaanbaatar"
+                ]
+            },
+            {
+                "name": "North Asia East Standard Time",
+                "abbr": "NAEST",
+                "offset": 9,
+                "isdst": false,
+                "text": "(UTC+09:00) Irkutsk",
+                "utc": [
+                    "Asia/Irkutsk"
+                ]
+            },
+            {
+                "name": "Tokyo Standard Time",
+                "abbr": "TST",
+                "offset": 9,
+                "isdst": false,
+                "text": "(UTC+09:00) Osaka, Sapporo, Tokyo",
+                "utc": [
+                    "Asia/Dili",
+                    "Asia/Jayapura",
+                    "Asia/Tokyo",
+                    "Etc/GMT-9",
+                    "Pacific/Palau"
+                ]
+            },
+            {
+                "name": "Korea Standard Time",
+                "abbr": "KST",
+                "offset": 9,
+                "isdst": false,
+                "text": "(UTC+09:00) Seoul",
+                "utc": [
+                    "Asia/Pyongyang",
+                    "Asia/Seoul"
+                ]
+            },
+            {
+                "name": "Cen. Australia Standard Time",
+                "abbr": "CAST",
+                "offset": 9.5,
+                "isdst": false,
+                "text": "(UTC+09:30) Adelaide",
+                "utc": [
+                    "Australia/Adelaide",
+                    "Australia/Broken_Hill"
+                ]
+            },
+            {
+                "name": "AUS Central Standard Time",
+                "abbr": "ACST",
+                "offset": 9.5,
+                "isdst": false,
+                "text": "(UTC+09:30) Darwin",
+                "utc": [
+                    "Australia/Darwin"
+                ]
+            },
+            {
+                "name": "E. Australia Standard Time",
+                "abbr": "EAST",
+                "offset": 10,
+                "isdst": false,
+                "text": "(UTC+10:00) Brisbane",
+                "utc": [
+                    "Australia/Brisbane",
+                    "Australia/Lindeman"
+                ]
+            },
+            {
+                "name": "AUS Eastern Standard Time",
+                "abbr": "AEST",
+                "offset": 10,
+                "isdst": false,
+                "text": "(UTC+10:00) Canberra, Melbourne, Sydney",
+                "utc": [
+                    "Australia/Melbourne",
+                    "Australia/Sydney"
+                ]
+            },
+            {
+                "name": "West Pacific Standard Time",
+                "abbr": "WPST",
+                "offset": 10,
+                "isdst": false,
+                "text": "(UTC+10:00) Guam, Port Moresby",
+                "utc": [
+                    "Antarctica/DumontDUrville",
+                    "Etc/GMT-10",
+                    "Pacific/Guam",
+                    "Pacific/Port_Moresby",
+                    "Pacific/Saipan",
+                    "Pacific/Truk"
+                ]
+            },
+            {
+                "name": "Tasmania Standard Time",
+                "abbr": "TST",
+                "offset": 10,
+                "isdst": false,
+                "text": "(UTC+10:00) Hobart",
+                "utc": [
+                    "Australia/Currie",
+                    "Australia/Hobart"
+                ]
+            },
+            {
+                "name": "Yakutsk Standard Time",
+                "abbr": "YST",
+                "offset": 10,
+                "isdst": false,
+                "text": "(UTC+10:00) Yakutsk",
+                "utc": [
+                    "Asia/Chita",
+                    "Asia/Khandyga",
+                    "Asia/Yakutsk"
+                ]
+            },
+            {
+                "name": "Central Pacific Standard Time",
+                "abbr": "CPST",
+                "offset": 11,
+                "isdst": false,
+                "text": "(UTC+11:00) Solomon Is., New Caledonia",
+                "utc": [
+                    "Antarctica/Macquarie",
+                    "Etc/GMT-11",
+                    "Pacific/Efate",
+                    "Pacific/Guadalcanal",
+                    "Pacific/Kosrae",
+                    "Pacific/Noumea",
+                    "Pacific/Ponape"
+                ]
+            },
+            {
+                "name": "Vladivostok Standard Time",
+                "abbr": "VST",
+                "offset": 11,
+                "isdst": false,
+                "text": "(UTC+11:00) Vladivostok",
+                "utc": [
+                    "Asia/Sakhalin",
+                    "Asia/Ust-Nera",
+                    "Asia/Vladivostok"
+                ]
+            },
+            {
+                "name": "New Zealand Standard Time",
+                "abbr": "NZST",
+                "offset": 12,
+                "isdst": false,
+                "text": "(UTC+12:00) Auckland, Wellington",
+                "utc": [
+                    "Antarctica/McMurdo",
+                    "Pacific/Auckland"
+                ]
+            },
+            {
+                "name": "UTC+12",
+                "abbr": "U",
+                "offset": 12,
+                "isdst": false,
+                "text": "(UTC+12:00) Coordinated Universal Time+12",
+                "utc": [
+                    "Etc/GMT-12",
+                    "Pacific/Funafuti",
+                    "Pacific/Kwajalein",
+                    "Pacific/Majuro",
+                    "Pacific/Nauru",
+                    "Pacific/Tarawa",
+                    "Pacific/Wake",
+                    "Pacific/Wallis"
+                ]
+            },
+            {
+                "name": "Fiji Standard Time",
+                "abbr": "FST",
+                "offset": 12,
+                "isdst": false,
+                "text": "(UTC+12:00) Fiji",
+                "utc": [
+                    "Pacific/Fiji"
+                ]
+            },
+            {
+                "name": "Magadan Standard Time",
+                "abbr": "MST",
+                "offset": 12,
+                "isdst": false,
+                "text": "(UTC+12:00) Magadan",
+                "utc": [
+                    "Asia/Anadyr",
+                    "Asia/Kamchatka",
+                    "Asia/Magadan",
+                    "Asia/Srednekolymsk"
+                ]
+            },
+            {
+                "name": "Kamchatka Standard Time",
+                "abbr": "KDT",
+                "offset": 13,
+                "isdst": true,
+                "text": "(UTC+12:00) Petropavlovsk-Kamchatsky - Old"
+            },
+            {
+                "name": "Tonga Standard Time",
+                "abbr": "TST",
+                "offset": 13,
+                "isdst": false,
+                "text": "(UTC+13:00) Nuku'alofa",
+                "utc": [
+                    "Etc/GMT-13",
+                    "Pacific/Enderbury",
+                    "Pacific/Fakaofo",
+                    "Pacific/Tongatapu"
+                ]
+            },
+            {
+                "name": "Samoa Standard Time",
+                "abbr": "SST",
+                "offset": 13,
+                "isdst": false,
+                "text": "(UTC+13:00) Samoa",
+                "utc": [
+                    "Pacific/Apia"
+                ]
+            }
+        ],
+        //List source: http://answers.google.com/answers/threadview/id/589312.html
+        profession: [
+            "Airline Pilot",
+            "Academic Team",
+            "Accountant",
+            "Account Executive",
+            "Actor",
+            "Actuary",
+            "Acquisition Analyst",
+            "Administrative Asst.",
+            "Administrative Analyst",
+            "Administrator",
+            "Advertising Director",
+            "Aerospace Engineer",
+            "Agent",
+            "Agricultural Inspector",
+            "Agricultural Scientist",
+            "Air Traffic Controller",
+            "Animal Trainer",
+            "Anthropologist",
+            "Appraiser",
+            "Architect",
+            "Art Director",
+            "Artist",
+            "Astronomer",
+            "Athletic Coach",
+            "Auditor",
+            "Author",
+            "Baker",
+            "Banker",
+            "Bankruptcy Attorney",
+            "Benefits Manager",
+            "Biologist",
+            "Bio-feedback Specialist",
+            "Biomedical Engineer",
+            "Biotechnical Researcher",
+            "Broadcaster",
+            "Broker",
+            "Building Manager",
+            "Building Contractor",
+            "Building Inspector",
+            "Business Analyst",
+            "Business Planner",
+            "Business Manager",
+            "Buyer",
+            "Call Center Manager",
+            "Career Counselor",
+            "Cash Manager",
+            "Ceramic Engineer",
+            "Chief Executive Officer",
+            "Chief Operation Officer",
+            "Chef",
+            "Chemical Engineer",
+            "Chemist",
+            "Child Care Manager",
+            "Chief Medical Officer",
+            "Chiropractor",
+            "Cinematographer",
+            "City Housing Manager",
+            "City Manager",
+            "Civil Engineer",
+            "Claims Manager",
+            "Clinical Research Assistant",
+            "Collections Manager.",
+            "Compliance Manager",
+            "Comptroller",
+            "Computer Manager",
+            "Commercial Artist",
+            "Communications Affairs Director",
+            "Communications Director",
+            "Communications Engineer",
+            "Compensation Analyst",
+            "Computer Programmer",
+            "Computer Ops. Manager",
+            "Computer Engineer",
+            "Computer Operator",
+            "Computer Graphics Specialist",
+            "Construction Engineer",
+            "Construction Manager",
+            "Consultant",
+            "Consumer Relations Manager",
+            "Contract Administrator",
+            "Copyright Attorney",
+            "Copywriter",
+            "Corporate Planner",
+            "Corrections Officer",
+            "Cosmetologist",
+            "Credit Analyst",
+            "Cruise Director",
+            "Chief Information Officer",
+            "Chief Technology Officer",
+            "Customer Service Manager",
+            "Cryptologist",
+            "Dancer",
+            "Data Security Manager",
+            "Database Manager",
+            "Day Care Instructor",
+            "Dentist",
+            "Designer",
+            "Design Engineer",
+            "Desktop Publisher",
+            "Developer",
+            "Development Officer",
+            "Diamond Merchant",
+            "Dietitian",
+            "Direct Marketer",
+            "Director",
+            "Distribution Manager",
+            "Diversity Manager",
+            "Economist",
+            "EEO Compliance Manager",
+            "Editor",
+            "Education Adminator",
+            "Electrical Engineer",
+            "Electro Optical Engineer",
+            "Electronics Engineer",
+            "Embassy Management",
+            "Employment Agent",
+            "Engineer Technician",
+            "Entrepreneur",
+            "Environmental Analyst",
+            "Environmental Attorney",
+            "Environmental Engineer",
+            "Environmental Specialist",
+            "Escrow Officer",
+            "Estimator",
+            "Executive Assistant",
+            "Executive Director",
+            "Executive Recruiter",
+            "Facilities Manager",
+            "Family Counselor",
+            "Fashion Events Manager",
+            "Fashion Merchandiser",
+            "Fast Food Manager",
+            "Film Producer",
+            "Film Production Assistant",
+            "Financial Analyst",
+            "Financial Planner",
+            "Financier",
+            "Fine Artist",
+            "Wildlife Specialist",
+            "Fitness Consultant",
+            "Flight Attendant",
+            "Flight Engineer",
+            "Floral Designer",
+            "Food & Beverage Director",
+            "Food Service Manager",
+            "Forestry Technician",
+            "Franchise Management",
+            "Franchise Sales",
+            "Fraud Investigator",
+            "Freelance Writer",
+            "Fund Raiser",
+            "General Manager",
+            "Geologist",
+            "General Counsel",
+            "Geriatric Specialist",
+            "Gerontologist",
+            "Glamour Photographer",
+            "Golf Club Manager",
+            "Gourmet Chef",
+            "Graphic Designer",
+            "Grounds Keeper",
+            "Hazardous Waste Manager",
+            "Health Care Manager",
+            "Health Therapist",
+            "Health Service Administrator",
+            "Hearing Officer",
+            "Home Economist",
+            "Horticulturist",
+            "Hospital Administrator",
+            "Hotel Manager",
+            "Human Resources Manager",
+            "Importer",
+            "Industrial Designer",
+            "Industrial Engineer",
+            "Information Director",
+            "Inside Sales",
+            "Insurance Adjuster",
+            "Interior Decorator",
+            "Internal Controls Director",
+            "International Acct.",
+            "International Courier",
+            "International Lawyer",
+            "Interpreter",
+            "Investigator",
+            "Investment Banker",
+            "Investment Manager",
+            "IT Architect",
+            "IT Project Manager",
+            "IT Systems Analyst",
+            "Jeweler",
+            "Joint Venture Manager",
+            "Journalist",
+            "Labor Negotiator",
+            "Labor Organizer",
+            "Labor Relations Manager",
+            "Lab Services Director",
+            "Lab Technician",
+            "Land Developer",
+            "Landscape Architect",
+            "Law Enforcement Officer",
+            "Lawyer",
+            "Lead Software Engineer",
+            "Lead Software Test Engineer",
+            "Leasing Manager",
+            "Legal Secretary",
+            "Library Manager",
+            "Litigation Attorney",
+            "Loan Officer",
+            "Lobbyist",
+            "Logistics Manager",
+            "Maintenance Manager",
+            "Management Consultant",
+            "Managed Care Director",
+            "Managing Partner",
+            "Manufacturing Director",
+            "Manpower Planner",
+            "Marine Biologist",
+            "Market Res. Analyst",
+            "Marketing Director",
+            "Materials Manager",
+            "Mathematician",
+            "Membership Chairman",
+            "Mechanic",
+            "Mechanical Engineer",
+            "Media Buyer",
+            "Medical Investor",
+            "Medical Secretary",
+            "Medical Technician",
+            "Mental Health Counselor",
+            "Merchandiser",
+            "Metallurgical Engineering",
+            "Meteorologist",
+            "Microbiologist",
+            "MIS Manager",
+            "Motion Picture Director",
+            "Multimedia Director",
+            "Musician",
+            "Network Administrator",
+            "Network Specialist",
+            "Network Operator",
+            "New Product Manager",
+            "Novelist",
+            "Nuclear Engineer",
+            "Nuclear Specialist",
+            "Nutritionist",
+            "Nursing Administrator",
+            "Occupational Therapist",
+            "Oceanographer",
+            "Office Manager",
+            "Operations Manager",
+            "Operations Research Director",
+            "Optical Technician",
+            "Optometrist",
+            "Organizational Development Manager",
+            "Outplacement Specialist",
+            "Paralegal",
+            "Park Ranger",
+            "Patent Attorney",
+            "Payroll Specialist",
+            "Personnel Specialist",
+            "Petroleum Engineer",
+            "Pharmacist",
+            "Photographer",
+            "Physical Therapist",
+            "Physician",
+            "Physician Assistant",
+            "Physicist",
+            "Planning Director",
+            "Podiatrist",
+            "Political Analyst",
+            "Political Scientist",
+            "Politician",
+            "Portfolio Manager",
+            "Preschool Management",
+            "Preschool Teacher",
+            "Principal",
+            "Private Banker",
+            "Private Investigator",
+            "Probation Officer",
+            "Process Engineer",
+            "Producer",
+            "Product Manager",
+            "Product Engineer",
+            "Production Engineer",
+            "Production Planner",
+            "Professional Athlete",
+            "Professional Coach",
+            "Professor",
+            "Project Engineer",
+            "Project Manager",
+            "Program Manager",
+            "Property Manager",
+            "Public Administrator",
+            "Public Safety Director",
+            "PR Specialist",
+            "Publisher",
+            "Purchasing Agent",
+            "Publishing Director",
+            "Quality Assurance Specialist",
+            "Quality Control Engineer",
+            "Quality Control Inspector",
+            "Radiology Manager",
+            "Railroad Engineer",
+            "Real Estate Broker",
+            "Recreational Director",
+            "Recruiter",
+            "Redevelopment Specialist",
+            "Regulatory Affairs Manager",
+            "Registered Nurse",
+            "Rehabilitation Counselor",
+            "Relocation Manager",
+            "Reporter",
+            "Research Specialist",
+            "Restaurant Manager",
+            "Retail Store Manager",
+            "Risk Analyst",
+            "Safety Engineer",
+            "Sales Engineer",
+            "Sales Trainer",
+            "Sales Promotion Manager",
+            "Sales Representative",
+            "Sales Manager",
+            "Service Manager",
+            "Sanitation Engineer",
+            "Scientific Programmer",
+            "Scientific Writer",
+            "Securities Analyst",
+            "Security Consultant",
+            "Security Director",
+            "Seminar Presenter",
+            "Ship's Officer",
+            "Singer",
+            "Social Director",
+            "Social Program Planner",
+            "Social Research",
+            "Social Scientist",
+            "Social Worker",
+            "Sociologist",
+            "Software Developer",
+            "Software Engineer",
+            "Software Test Engineer",
+            "Soil Scientist",
+            "Special Events Manager",
+            "Special Education Teacher",
+            "Special Projects Director",
+            "Speech Pathologist",
+            "Speech Writer",
+            "Sports Event Manager",
+            "Statistician",
+            "Store Manager",
+            "Strategic Alliance Director",
+            "Strategic Planning Director",
+            "Stress Reduction Specialist",
+            "Stockbroker",
+            "Surveyor",
+            "Structural Engineer",
+            "Superintendent",
+            "Supply Chain Director",
+            "System Engineer",
+            "Systems Analyst",
+            "Systems Programmer",
+            "System Administrator",
+            "Tax Specialist",
+            "Teacher",
+            "Technical Support Specialist",
+            "Technical Illustrator",
+            "Technical Writer",
+            "Technology Director",
+            "Telecom Analyst",
+            "Telemarketer",
+            "Theatrical Director",
+            "Title Examiner",
+            "Tour Escort",
+            "Tour Guide Director",
+            "Traffic Manager",
+            "Trainer Translator",
+            "Transportation Manager",
+            "Travel Agent",
+            "Treasurer",
+            "TV Programmer",
+            "Underwriter",
+            "Union Representative",
+            "University Administrator",
+            "University Dean",
+            "Urban Planner",
+            "Veterinarian",
+            "Vendor Relations Director",
+            "Viticulturist",
+            "Warehouse Manager"
         ]
     };
 
@@ -2103,7 +5385,18 @@
     };
 
     Chance.prototype.normal = function (options) {
-        options = initOptions(options, {mean : 0, dev : 1});
+        options = initOptions(options, {mean: 0, dev: 1, pool: []});
+
+        testRange(
+            options.pool.constructor !== Array,
+            "Chance: The pool option must be a valid array."
+        );
+
+        // If a pool has been passed, then we are returning an item from that pool,
+        // using the normal distribution settings that were passed in
+        if (options.pool.length > 0) {
+            return this.normal_pool(options);
+        }
 
         // The Marsaglia Polar method
         var s, u, v, norm,
@@ -2123,6 +5416,20 @@
 
         // Shape and scale
         return dev * norm + mean;
+    };
+
+    Chance.prototype.normal_pool = function (options) {
+        var performanceCounter = 0;
+        do {
+            var idx = Math.round(this.normal({mean: options.mean, dev: options.dev}));
+            if (idx < options.pool.length && idx >= 0) {
+                return options.pool[idx];
+            } else {
+                performanceCounter++;
+            }
+        } while (performanceCounter < 100);
+
+        throw new RangeError("Chance: Your pool is too small for the given mean and standard deviation. Please adjust.");
     };
 
     Chance.prototype.radio = function (options) {

@@ -25,8 +25,10 @@ describe('myAngularApp.views.login', function () {
             //if (url === 'undefined') todo += 'expect(request).toBeUndefined();';
             //else todo += 'expect(request.url).toBe("' + url + '");';
             todo += 'if (_rootScope) {_rootScope.$apply();}';
+            //todo += 'if (_httpBackend) {_httpBackend.flush();}';
 
-            filo = 'setTimeout(function() {' + todo + filo + '},100);';
+
+            filo = 'setTimeout(function() {' + todo + filo + '},200);';
         }
         //filo = 'var request = jasmine.Ajax.requests.mostRecent();' + filo;
 
@@ -74,7 +76,7 @@ describe('myAngularApp.views.login', function () {
             _scope = _rootScope.$new();
             _q = $injector.get('$q');
             _timeout = $injector.get('$timeout');
-            _log = $injector.get('$log');
+            _log = console;//$injector.get('$log');
             _http = $injector.get('$http');
             _location = $injector.get('$location');
             _controller = $injector.get('$controller');
@@ -101,6 +103,7 @@ describe('myAngularApp.views.login', function () {
             _srvDataContainer.$log = console;
             _srvDataContainer.logout().finally(done);
             _rootScope.$apply();
+            //_httpBackend.flush();
         })
     });
 

@@ -233,7 +233,7 @@ describe('myAngularApp.services.srvDataContainer', function () {
         beforeEach(module('myAngularApp'));
         beforeEach(function (done) {
             inject(function ($injector) {
-                log = console;//$injector.get('$log');
+                log = $injector.get('$log');
                 q = $injector.get('$q');
                 http = $injector.get('$http');
                 filterFilter = $injector.get('filterFilter');

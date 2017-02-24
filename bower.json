@@ -2,19 +2,20 @@
   "name": "bowerapp",
   "private": "false",
   "devDependencies": {
-    "ionic": "driftyco/ionic-bower#1.1.1",
-    "crypto-js": "^3.1.6"
+    "ionic": "driftyco/ionic-bower#1.1.1"
   },
   "dependencies": {
     "angular-gettext": "*",
-    "pouchdb": "~5.1.0",
-    "angular-filter": "~0.5.8",
-    "chance": "~0.8.0",
-    "ionic-material": "~0.4.2",
-    "Chart.js": "~1.0.2",
-    "ng-chartjs": "~0.0.5",
-    "angular-chart.js": "~0.8.8",
+    "angular-mocks": "*",
+    "pouchdb": "5.1.0",
+    "angular-filter": "*",
+    "chance": "*",
+    "ng-chartjs": "*",
+    "angular-chart.js": "*",
     "miappio-sdk": "*",
-    "angular-mocks": "1.4.3"
+    "ngCordova": "*"
+  },
+  "resolutions": {
+    "angular": "1.4.3"
   }
 }

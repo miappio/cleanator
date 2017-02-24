@@ -11,7 +11,7 @@ describe("Basics", function () {
     describe("Data", function () {
         it("get data", function () {
             data = chance.get("lastNames");
-            expect(data).to.be.an('array');
+            expect(data).to.be.an('object');
         });
 
         it("set custom data", function () {
@@ -144,11 +144,11 @@ describe("Basics", function () {
             expect(function () { chance.natural({min: -23}); }).to.throw(RangeError);
         });
 
-        it("is always positive", function () {
+        it("is always positive or zero", function () {
             var positive_count = 0;
             _(1000).times(function () {
                 natural = chance.natural();
-                if (natural > 0) {
+                if (natural >= 0) {
                     positive_count++;
                 }
             });

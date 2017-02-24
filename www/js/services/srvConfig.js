@@ -15,7 +15,6 @@ var SrvConfig = (function (){
 
         this.$log = $log;
         this.$q = $q;
-        this.$log.log('srvConfig - init');
         //this.srvMiapp = MiappService;
         //this.srvMiappInitDone = false;
 
