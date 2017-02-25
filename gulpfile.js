@@ -134,13 +134,26 @@ gulp.task('config-test-js', function () {
         .pipe(rename('config.js'))
         .pipe(gulp.dest("./www/js/config/"));
 });
+gulp.task('config-demo-js', function () {
+    return gulp
+        .src([".config.demo.js"])
+        .pipe(preprocess(({
+            context: {
+                PACKAGE_JSON_VERSION: require('./package').version,
+                PACKAGE_JSON_NAME: require('./package').name
+
+            }
+        })))
+        .pipe(rename('config.demo.js'))
+        .pipe(gulp.dest("./www/js/config/"));
+});
 
 
 /**
  * Defaut & Watch
  */
 
-gulp.task('default', ['sass', 'config', 'config-js', 'nggettext_extract', 'nggettext_compile']);
+gulp.task('default', ['sass', 'config', 'config-demo-js', 'config-js', 'nggettext_extract', 'nggettext_compile']);
 
 gulp.task('watch', function () {
     gulp.watch(paths.sass, ['sass']);

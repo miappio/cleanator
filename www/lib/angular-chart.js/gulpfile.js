@@ -1,44 +1,47 @@
 (function () {
   'use strict';
 
-    var bumper = require('gulp-bump');
   var fs = require('fs');
-    var git = require('gulp-git');
+  var path = require('path');
   var gulp = require('gulp');
-    var gzip = require('gulp-gzip');
-    var header = require('gulp-header');
-    var istanbul = require('gulp-istanbul');
-    var istanbulReport = require('gulp-istanbul-report');
+  var less = require('gulp-less');
+  var sourcemaps = require('gulp-sourcemaps');
+  var uglify = require('gulp-uglify');
+  var csso = require('gulp-csso');
   var jshint = require('gulp-jshint');
+  var stylish = require('jshint-stylish');
   var jscs = require('gulp-jscs');
   var mocha = require('gulp-spawn-mocha');
-    var mochaPhantomJS = require('gulp-mocha-phantomjs');
-    var path = require('path');
-    var pkg = require('./package.json');
+  var tar = require('gulp-tar');
+  var gzip = require('gulp-gzip');
+  var bumper = require('gulp-bump');
+  var git = require('gulp-git');
+  var shell = require('gulp-shell');
   var rename = require('gulp-rename');
+  var sequence = require('gulp-sequence');
   var rimraf = require('gulp-rimraf');
-    var sequence = require('gulp-sequence');
-    var shell = require('gulp-shell');
-    var sourcemaps = require('gulp-sourcemaps');
-    var stylish = require('jshint-stylish');
-    var tar = require('gulp-tar');
-    var uglify = require('gulp-uglify');
-
-    var banner = ['/*!',
-        ' * <%= pkg.name %> - <%= pkg.description %>',
-        ' * <%= pkg.homepage %>',
-        ' * Version: <%= version %>',
-        ' *',
-        ' * Copyright 2016 Jerome Touffe-Blin',
-        ' * Released under the <%= pkg.license %> license',
-        ' * https://github.com/jtblin/angular-chart.js/blob/master/LICENSE',
-        ' */',
-        ''
-    ].join('\n');
+  var istanbul = require('gulp-istanbul');
+  var istanbulReport = require('gulp-istanbul-report');
+  var mochaPhantomJS = require('gulp-mocha-phantomjs');
 
   gulp.task('clean', function () {
     return gulp.src('./dist/*', { read: false })
       .pipe(rimraf());
+  });
+
+  gulp.task('less', function () {
+    return gulp.src('./*.less')
+      .pipe(less())
+      .pipe(gulp.dest('./dist'));
+  });
+
+  gulp.task('css-min', function () {
+    return gulp.src('./dist/*.css')
+      .pipe(sourcemaps.init())
+      .pipe(csso())
+      .pipe(rename({ suffix: '.min' }))
+      .pipe(sourcemaps.write('./'))
+      .pipe(gulp.dest('./dist'));
   });
 
   gulp.task('lint', function () {
@@ -66,7 +69,7 @@
           hooks: 'mocha-phantomjs-istanbul',
           coverageFile: 'coverage/coverage.json'
         },
-          reporter: process.env.REPORTER || 'spec'
+        reporter: 'spec'
     }));
   });
 
@@ -86,16 +89,14 @@
 
   gulp.task('bower', function () {
     return gulp.src('./angular-chart.js')
-        .pipe(header(banner, {pkg: pkg, version: version()}))
       .pipe(gulp.dest('./dist'));
   });
 
   gulp.task('js', ['lint', 'style', 'bower'], function () {
     return gulp.src('./angular-chart.js')
-        .pipe(header(banner, {pkg: pkg, version: version()}))
       .pipe(rename('angular-chart.min.js'))
       .pipe(sourcemaps.init())
-        .pipe(uglify({preserveComments: 'license'}))
+      .pipe(uglify())
       .pipe(sourcemaps.write('./'))
       .pipe(gulp.dest('./dist'));
   });
@@ -140,12 +141,9 @@
 
   gulp.task('watch', function () {
     gulp.watch('./*.js', ['js']);
+    gulp.watch('./*.less', ['less']);
     return true;
   });
-
-    gulp.task('docker-test', shell.task([
-        'npm run docker-test'
-    ]));
 
   function bump (level) {
     return function () {
@@ -159,12 +157,12 @@
     return JSON.parse(fs.readFileSync('package.json', 'utf8')).version;
   }
 
-    gulp.task('default', sequence('docker-test', 'assets'));
-    gulp.task('assets', sequence('clean', 'js', 'build'));
+  gulp.task('default', sequence('check', 'assets'));
+  gulp.task('assets', sequence('clean', ['less', 'js'], 'css-min', 'build'));
   gulp.task('test', sequence('cover', 'unit', 'integration', 'report'));
   gulp.task('check', sequence(['lint', 'style'], 'test'));
-    gulp.task('deploy-patch', sequence('docker-test', 'bump-patch', 'assets', 'update', 'git-commit', 'git-push', 'npm'));
-    gulp.task('deploy-minor', sequence('docker-test', 'bump-minor', 'assets', 'update', 'git-commit', 'git-push', 'npm'));
-    gulp.task('deploy-major', sequence('docker-test', 'bump-patch', 'assets', 'update', 'git-commit', 'git-push', 'npm'));
+  gulp.task('deploy-patch', sequence('default', 'bump-patch', 'update', 'git-commit', 'git-push', 'npm'));
+  gulp.task('deploy-minor', sequence('default', 'bump-minor', 'update', 'git-commit', 'git-push', 'npm'));
+  gulp.task('deploy-major', sequence('default', 'bump-patch', 'update', 'git-commit', 'git-push', 'npm'));
 
 })();

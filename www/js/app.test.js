@@ -62,14 +62,14 @@ describe('myAngularApp', function () {
 
             inject(function ($injector) {
                 var miappId = $injector.get('miappId');
-                expect(miappId).toBe('xxxxxx');
+                expect(miappId).toBe('demo');
 
                 //var appIsTest = $injector.get('appIsTest');
                 //expect(appIsTest).toBe(true);
                 var appForceOffline = $injector.get('appForceOffline');
                 expect(appForceOffline).toBe(true);
                 var appAuthEndpoint = $injector.get('appAuthEndpoint');
-                expect(appAuthEndpoint).toBe('http://testmocksite.com/api');
+                expect(appAuthEndpoint).toBe('demo.com/api');
 
 
             });

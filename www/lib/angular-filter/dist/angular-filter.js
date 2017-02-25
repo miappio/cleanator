@@ -1798,22 +1798,22 @@ angular.module('a8m.match', [])
     }
   });
 
-    /**
-     * @ngdoc filter
-     * @name phone-us
-     * @kind function
-     *
-     * @description
-     * format a string or a number into a us-style
-     * phone number in the form (***) ***-****
-     */
-    angular.module('a8m.phoneUS', [])
-        .filter('phoneUS', function () {
-            return function (num) {
-                num += '';
-                return '(' + num.slice(0, 3) + ') ' + num.slice(3, 6) + '-' + num.slice(6);
-            }
-        });
+/**
+ * @ngdoc filter
+ * @name phone-us
+ * @kind function
+ *
+ * @description
+ * format a string or a number into a us-style
+ * phone number in the form (***) ***-****
+ */
+angular.module('a8m.phoneUS', [])
+  .filter('phoneUS', function () {
+    return function(num) {
+      num += '';
+      return '(' + num.slice(0, 3) + ') ' + num.slice(3, 6) + '-' + num.slice(6);
+    }
+  });
 
 /**
  * @ngdoc filter
@@ -1892,46 +1892,46 @@ angular.module('a8m.slugify', [])
     }
   }]);
 
-    /**
-     * @ngdoc filter
-     * @name split
-     * @kind function
-     *
-     * @description
-     * split a string by a provided delimiter (none '' by default) and skip first n-delimiters
-     */
-    angular.module('a8m.split', [])
-        .filter('split', function () {
-            function escapeRegExp(str) {
-                return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-            }
+/**
+ * @ngdoc filter
+ * @name split
+ * @kind function
+ *
+ * @description
+ * split a string by a provided delimiter (none '' by default) and skip first n-delimiters
+ */
+angular.module('a8m.split', [])
+  .filter('split', function () {
+    function escapeRegExp(str) {
+      return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+    }
 
-            return function (input, delimiter, skip) {
-                var _regexp, _matches, _splitted, _temp;
+    return function (input, delimiter, skip) {
+      var _regexp, _matches, _splitted, _temp;
 
-                if (isUndefined(input) || !isString(input)) {
-                    return null;
-                }
-                if (isUndefined(delimiter)) delimiter = '';
-                if (isNaN(skip)) skip = 0;
+      if (isUndefined(input) || !isString(input)) {
+        return null;
+      }
+      if (isUndefined(delimiter)) delimiter = '';
+      if (isNaN(skip)) skip = 0;
 
-                _regexp = new RegExp(escapeRegExp(delimiter), 'g');
-                _matches = input.match(_regexp);
+      _regexp = new RegExp(escapeRegExp(delimiter), 'g');
+      _matches = input.match(_regexp);
+      
+      if (isNull(_matches) || skip >= _matches.length) {
+        return [input];
+      }
 
-                if (isNull(_matches) || skip >= _matches.length) {
-                    return [input];
-                }
-
-                if (skip === 0) return input.split(delimiter);
-
-                _splitted = input.split(delimiter);
-                _temp = _splitted.splice(0, skip + 1);
-                _splitted.unshift(_temp.join(delimiter));
-
-                return _splitted;
-            };
-        })
-    ;
+      if (skip === 0) return input.split(delimiter);
+      
+      _splitted = input.split(delimiter);
+      _temp = _splitted.splice(0, skip + 1);
+      _splitted.unshift(_temp.join(delimiter));
+    
+      return _splitted;
+    };
+  })
+;
 
 /**
  * @ngdoc filter
@@ -2067,23 +2067,23 @@ angular.module('a8m.truncate', [])
  * ucfirst
  */
 angular.module('a8m.ucfirst', [])
-    .filter({
-        ucfirst: ucfirstFilter,
-        titleize: ucfirstFilter
-    });
+  .filter({
+    ucfirst: ucfirstFilter,
+    titleize: ucfirstFilter
+  });
 
-    function ucfirstFilter() {
-        return function (input) {
-            return isString(input)
-                ? input
-                    .split(' ')
-                    .map(function (ch) {
-                        return ch.charAt(0).toUpperCase() + ch.substring(1);
-                    })
-                    .join(' ')
-                : input;
-        }
-    }
+function ucfirstFilter() {
+  return function (input) {
+    return isString(input)
+      ? input
+      .split(' ')
+      .map(function (ch) {
+        return ch.charAt(0).toUpperCase() + ch.substring(1);
+      })
+      .join(' ')
+      : input;
+  }
+}
 
 /**
  * @ngdoc filter
@@ -2311,7 +2311,7 @@ angular.module('angular.filter', [
   'a8m.repeat',
   'a8m.test',
   'a8m.match',
-    'a8m.split',
+  'a8m.split',
 
   'a8m.to-array',
   'a8m.concat',

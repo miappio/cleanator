@@ -65,9 +65,13 @@ var srvNavigation = (function () {
         self.$rootScope.navRedirect = function (srvDataContainer, pathToGo, args) {
             //var url = self.$location.url();
             //var path = self.$location.path();
-            var loggedIn = srvDataContainer ? srvDataContainer.isLoggedIn() : true;
+            var myappHasBeenEverLaunched = localStorage.getItem('myappHasBeenEverLaunched');
+            if (!myappHasBeenEverLaunched)
+                localStorage.setItem('myappHasBeenEverLaunched', true);
+
+            var loggedIn = srvDataContainer ? srvDataContainer.isLoggedIn() : !!myappHasBeenEverLaunched;
             var level = srvDataContainer ? srvDataContainer.getAppFirstInitLevel() : 3;
-            var completed = srvDataContainer ? srvDataContainer.isAppFirstInitCompleted() : true;
+            var completed = srvDataContainer ? srvDataContainer.isAppFirstInitCompleted() : false;
 
             console.log('navRedirect : ', pathToGo, loggedIn, level, completed, args);
 
@@ -119,10 +123,8 @@ var srvNavigation = (function () {
                 })
                 .catch(errFn);
 
-
             return deferred.promise;
         };
-
 
         self.$rootScope.navRedirect(null, 'dashboard-user', {'userId': 'a'});
         //self.$rootScope.navRedirect(null, 'login');

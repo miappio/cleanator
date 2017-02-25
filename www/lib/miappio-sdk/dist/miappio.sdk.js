@@ -16091,7 +16091,7 @@ var SrvMiapp = (function () {
 
     function Service(logger, promise) {
 
-        this.logger = console;
+        this.logger = logger;
         this.promise = promise;
         //this.$q = $q;
         //this.$timeout = $timeout;

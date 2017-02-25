@@ -242,8 +242,15 @@ angular.module('myAngularApp.views.user', [])
             if ($scope.modal) $scope.modal.show();
         };
 
-        $scope.closeModal = function () {
+        $scope.closeModal = function (logout) {
             if ($scope.modal) $scope.modal.hide();
+            if (logout) {
+                srvDataContainer
+                    .logout()
+                    .then(function () {
+                        if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
+                    });
+            }
         };
 
         //Cleanup the modal when we're done with it!

@@ -6,12 +6,10 @@
   },
   "dependencies": {
     "angular-gettext": "*",
-    "angular-mocks": "*",
+    "angular-mocks": "1.4.3",
     "pouchdb": "5.1.0",
     "angular-filter": "*",
-    "chance": "*",
-    "ng-chartjs": "*",
-    "angular-chart.js": "*",
+    "angular-chart.js": "0.8.9",
     "miappio-sdk": "*",
     "ngCordova": "*"
   },

@@ -36,9 +36,6 @@ describe('myAngularApp.views.login', function () {
     }
 
     var myAngularApp = angular.module('myLoginApp', [
-        //'MiappService',
-        //'miapp.services',
-        //'myAngularApp.views.login',
         'ionic',
         'angular.filter',
         'chart.js',
@@ -48,7 +45,6 @@ describe('myAngularApp.views.login', function () {
         'ngCordova',
         'gettext',
         'myAngularApp.config',
-        'myAngularApp.controllers',
         'myAngularApp.services',
         'myAngularApp.directives',
         'myAngularApp.filters',
@@ -85,12 +81,12 @@ describe('myAngularApp.views.login', function () {
             _srvMiapp = $injector.get('MiappService');
             _srvDataContainer = $injector.get('srvDataContainer');
             _createController = function () {
+                //$scope, $log, $http, $q, $timeout, $ionicHistory, $ionicNavBarDelegate, srvDataContainer
                 return _controller('LoginCtrl', {
                     $scope: _scope,
                     $log: _log,
                     $http: _http,
                     $q: _q,
-                    $location: _location,
                     $timeout: _timeout,
                     $ionicHistory: _ionicHistory,
                     $ionicNavBarDelegate: _ionicNavBarDelegate,

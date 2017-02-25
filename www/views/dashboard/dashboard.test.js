@@ -1,7 +1,7 @@
 describe('myAngularApp.views.dashboard', function () {
     'use strict';
-    var $httpBackend, $rootScope, $timeout, $routeParams, $q, srvData, srvConfig, createController, authRequestHandler;
-    var $stateProvider, $urlRouterProvider, $ionicConfigProvider;
+    var $httpBackend, $rootScope, _scope, $timeout, $routeParams, $q, srvData, srvConfig, srvDataContainer, createController, authRequestHandler;
+    var $stateProvider, $stateParams, $ionicModal, $urlRouterProvider, $ionicConfigProvider;
 
     beforeEach(module('myAngularApp'));
     beforeEach(module('myAngularApp.views.dashboard'));
@@ -14,12 +14,16 @@ describe('myAngularApp.views.dashboard', function () {
 
         // Get hold of a scope (i.e. the root scope)
         $rootScope = $injector.get('$rootScope');
+        _scope = $rootScope.$new();
         $timeout = $injector.get('$timeout');
         //$routeParams = $injector.get('$routeParams');
         $stateProvider = $injector.get('$state');
+        $stateParams = $injector.get('$stateParams');
         $urlRouterProvider = $injector.get('$urlRouter');
         $ionicConfigProvider = $injector.get('$ionicConfig');
+        $ionicModal = $injector.get('$ionicModal');
         $q = $injector.get('$q');
+        srvDataContainer = $injector.get('srvDataContainer');
         srvData = $injector.get('srvData');
         srvConfig = $injector.get('srvConfig');
         var $controller = $injector.get('$controller');
@@ -30,10 +34,14 @@ describe('myAngularApp.views.dashboard', function () {
 
             //$scope, $timeout, $routeParams, $q, srvData, srvConfig
             //$scope, $timeout, $q, srvData, srvConfig)
+            // $scope, $timeout, $log, $q, $stateParams, $ionicModal, srvDataContainer, srvData, srvConfig) {
             return $controller('DashboardCtrl', {
-                '$scope': $rootScope,
+                '$scope': _scope,
                 '$timeout': $timeout,
                 '$q': $q,
+                '$stateParams': $stateParams,
+                '$ionicModal':$ionicModal,
+                'srvDataContainer': srvDataContainer,
                 'srvData': srvData,
                 'srvConfig': srvConfig
             });
@@ -56,11 +64,11 @@ describe('myAngularApp.views.dashboard', function () {
             srvConfig.setUserLoggedIn(user);
             //srvData.setUserLoggedIn(user);
 
-            $rootScope.dashboardDataBind();
-            //$rootScope.dashboardComputeHistoricsByPrior();
-            expect($rootScope.dashboardHistorics).toBeDefined();
-            //expect($rootScope.dashboardHistorics.length).toBe(3);
-            expect($rootScope.dashboardInitSpinnerStopped).toBe(false);
+            _scope.dashboardDataBind();
+            //_scope.dashboardComputeHistoricsByPrior();
+            expect(_scope.dashboardHistorics).toBeDefined();
+            //expect(_scope.dashboardHistorics.length).toBe(3);
+            expect(_scope.dashboardInitSpinnerStopped).toBe(false);
         });
     });
 
@@ -76,15 +84,15 @@ describe('myAngularApp.views.dashboard', function () {
 
             //var dateAsYYMMDD = '31/12/1812';
             var dateDay = 'Wednesday';
-            var displayDate = $rootScope.dashboardDisplayHistoricDate('2011/11/30');
+            var displayDate = _scope.dashboardDisplayHistoricDate('2011/11/30');
             expect(displayDate).toBe(dateDay);
-            var displayDate = $rootScope.dashboardDisplayHistoricDate('2011-11-30');
+            var displayDate = _scope.dashboardDisplayHistoricDate('2011-11-30');
             expect(displayDate).toBe(dateDay);
-            var displayDate = $rootScope.dashboardDisplayHistoricDate(new Date(2011,10,30));
+            var displayDate = _scope.dashboardDisplayHistoricDate(new Date(2011,10,30));
             expect(displayDate).toBe(dateDay);
 
             //todo Prefer this UTC Date way !
-            var displayDate = $rootScope.dashboardDisplayHistoricDate(new Date(Date.UTC(2011, 10, 30)));
+            var displayDate = _scope.dashboardDisplayHistoricDate(new Date(Date.UTC(2011, 10, 30)));
             expect(displayDate).toBe(dateDay);
         });
 
@@ -97,11 +105,11 @@ describe('myAngularApp.views.dashboard', function () {
             var dateAsYYYYMMDDUTC = new Date(Date.UTC(2011,0,31));
             //var offset = dateAsYYYYMMDDUTC.getTimezoneOffset();
             //expect(offset).toBe(0);
-            var displayDate = $rootScope.dashboardDisplayHistoricCalendar(dateAsYYYYMMDDUTC);
+            var displayDate = _scope.dashboardDisplayHistoricCalendar(dateAsYYYYMMDDUTC);
             expect(displayDate).toBe(dateAsString);
             var dateISO = dateAsYYYYMMDDUTC.toISOString();
             expect(dateISO).toBe('2011-01-31T00:00:00.000Z');
-            displayDate = $rootScope.dashboardDisplayHistoricCalendar(dateISO);
+            displayDate = _scope.dashboardDisplayHistoricCalendar(dateISO);
             expect(displayDate).toBe(dateAsString);
 
 
@@ -110,11 +118,11 @@ describe('myAngularApp.views.dashboard', function () {
             var dateAsYYYYMMDDUTC = new Date(Date.UTC(2011,11,31));
             //var offset = dateAsYYYYMMDDUTC.getTimezoneOffset();
             //expect(offset).toBe(0);
-            var displayDate = $rootScope.dashboardDisplayHistoricCalendar(dateAsYYYYMMDDUTC);
+            var displayDate = _scope.dashboardDisplayHistoricCalendar(dateAsYYYYMMDDUTC);
             expect(displayDate).toBe(dateAsString);
             var dateISO = dateAsYYYYMMDDUTC.toISOString();
             expect(dateISO).toBe('2011-12-31T00:00:00.000Z');
-            displayDate = $rootScope.dashboardDisplayHistoricCalendar(dateISO);
+            displayDate = _scope.dashboardDisplayHistoricCalendar(dateISO);
             expect(displayDate).toBe(dateAsString);
         });
 
@@ -133,7 +141,7 @@ describe('myAngularApp.views.dashboard', function () {
 
              spyOn(foo, 'fn').and.returnValue("Foo"); // <----------- HERE
 
-             $scope = $rootScope.$new();
+             $scope = _scope.$new();
 
              ctrl = $controller('MainCtrl', {$scope: $scope , foo: foo });
 
@@ -141,10 +149,10 @@ describe('myAngularApp.views.dashboard', function () {
 
 
              $controller('FirstController', {
-             $scope: $rootScope
+             $scope: _scope
              });
 
-             var $scope = $rootScope.$new();
+             var $scope = _scope.$new();
              $scope.$index = 1;
 
              ctrl = $controller('SecondController', {
@@ -163,21 +171,21 @@ describe('myAngularApp.views.dashboard', function () {
             srvConfig.setUserLoggedIn(user);
             //srvData.setUserLoggedIn(user);
 
-            $rootScope.dashboardDataBind();
-            expect($rootScope.dashboardHistorics).toBeDefined();
-            //expect($rootScope.dashboardHistorics.length).toBe(3);
-            //expect($rootScope.dashboardInitSpinnerStopped).toBe(true);
+            _scope.dashboardDataBind();
+            expect(_scope.dashboardHistorics).toBeDefined();
+            //expect(_scope.dashboardHistorics.length).toBe(3);
+            //expect(_scope.dashboardInitSpinnerStopped).toBe(true);
 
 
-            //$rootScope.dashboardNotForMe(h);
+            //_scope.dashboardNotForMe(h);
             //chore should change
 
             //historics should change
-            //expect($rootScope.dashboardHistorics.length).toBe(2);
-            //$rootScope.dashboardNotForUs(h);
+            //expect(_scope.dashboardHistorics.length).toBe(2);
+            //_scope.dashboardNotForUs(h);
             //chore should change
             //historics should change
-            //expect($rootScope.dashboardHistorics.length).toBe(1);
+            //expect(_scope.dashboardHistorics.length).toBe(1);
 
         });
     });

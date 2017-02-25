@@ -353,9 +353,9 @@ var SrvDataContainer = (function () {
                             self.$log.log('srvDataContainer.initWithFirstData put B :', newUserB);
 
                             var couple = {};
-                            var chanceCouple = new Chance(chanceBaseCouple + i);
-                            couple[self.coupleCols.name] = chanceCouple.sentence({words: 2});
-                            couple[self.coupleCols.description] = chanceCouple.sentence({words: 5});
+                            //var chanceCouple = new Chance(chanceBaseCouple + i);
+                            couple[self.coupleCols.name] = 'we are happy';//chanceCouple.sentence({words: 2});
+                            couple[self.coupleCols.description] = 'happy couple';//chanceCouple.sentence({words: 5});
 
                             couple[self.coupleCols.userAId] = firstUserLoggedIn._id;
                             couple[self.coupleCols.userBId] = newUserB._id;
