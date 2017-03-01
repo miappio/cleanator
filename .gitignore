@@ -24,3 +24,5 @@ res/
 
 www/lib/**/*.html
 www/lib/**/*.htm
+
+.config.example.js
