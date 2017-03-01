@@ -1,6 +1,7 @@
 {
   "name": "cleanator",
   "version": "17.1.16",
+  "id" : "io.miapp.cleanator",
   "description": "cleanator",
   "author": "mlefree",
   "homepage": "https://miapp.github.io/cleanator",

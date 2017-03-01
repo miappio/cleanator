@@ -11,13 +11,11 @@ var preprocess = require('gulp-preprocess');
 var gettext = require('gulp-angular-gettext');
 //var bump = require('gulp-bump');
 
-
 var paths = {
     sass: ['./scss/**/*.scss']
     , config: ['./package.json', './.config.js']
     , html: ['./www/views/**/*.html']
 };
-
 
 gulp.task('nggettext_extract', function () {
     return gulp.src(['www/views/**/*.html'])
@@ -36,7 +34,6 @@ gulp.task('nggettext_compile', function () {
         .pipe(gulp.dest('www/js/languages/'));
 });
 
-
 gulp.task('sass', function (done) {
     gulp.src('./scss/ionic.app.scss')
         .pipe(sass())
@@ -49,7 +46,6 @@ gulp.task('sass', function (done) {
         .pipe(gulp.dest('./www/css/'))
         .on('end', done);
 });
-
 
 gulp.task('install', ['git-check'], function () {
     return bower.commands.install()
@@ -71,13 +67,13 @@ gulp.task('git-check', function (done) {
     done();
 });
 
-
 gulp.task('config', function () {
     return gulp.src(['config.xml'])
         .pipe(cheerio({
             run: function ($) {
                 // get the version number from package.json
                 $('widget').attr('version', require('./package').version);
+                $('widget').attr('id', require('./package').id);
                 $('name').text(require('./package').name);
                 $('description').text(require('./package').description);
                 $('author').text(require('./package').author);
@@ -121,6 +117,7 @@ gulp.task('config-js', function () {
         .pipe(rename('config.js'))
         .pipe(gulp.dest("./www/js/config/"));
 });
+
 gulp.task('config-test-js', function () {
     return gulp
         .src([".config.test.js"])
@@ -134,6 +131,7 @@ gulp.task('config-test-js', function () {
         .pipe(rename('config.js'))
         .pipe(gulp.dest("./www/js/config/"));
 });
+
 gulp.task('config-demo-js', function () {
     return gulp
         .src([".config.demo.js"])
@@ -147,7 +145,6 @@ gulp.task('config-demo-js', function () {
         .pipe(rename('config.demo.js'))
         .pipe(gulp.dest("./www/js/config/"));
 });
-
 
 /**
  * Defaut & Watch
