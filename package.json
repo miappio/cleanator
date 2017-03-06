@@ -8,7 +8,6 @@
   "main": "www/index.html",
   "dependencies": {
     "bower": "*",
-    "codeclimate-test-reporter": "*",
     "gulp": "^3.9.0",
     "gulp-angular-gettext": "^2.2.0",
     "gulp-bump": "^2.4.0",
