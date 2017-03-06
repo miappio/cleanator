@@ -24,5 +24,6 @@ res/
 
 www/lib/**/*.html
 www/lib/**/*.htm
+www/lib/Chart.js/samples/
 
 .config.example.js
