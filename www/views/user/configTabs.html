@@ -9,12 +9,12 @@ navigation history that also transitions its views in and out.
     <ion-nav-view name="config-couple"></ion-nav-view>
   </ion-tab>
 </ion-tabs>
-<ion-tabs class="tabs-dark" ng-if="navAppInitLevel() == 1">
+<ion-tabs class="tabs-dark" ng-if="navAppInitLevel() == 2">
   <ion-tab title="{{'TabWhenDetailled'|translate}}" href="#/config/cal" >
     <ion-nav-view name="config-cal"></ion-nav-view>
   </ion-tab>
 </ion-tabs>
-<ion-tabs class="tabs-dark" ng-if="navAppInitLevel() == 2">
+<ion-tabs class="tabs-dark" ng-if="navAppInitLevel() == 1">
   <ion-tab title="{{'TabWhatDetailled'|translate}}" href="#/config/category" >
     <ion-nav-view name="config-category"></ion-nav-view>
   </ion-tab>

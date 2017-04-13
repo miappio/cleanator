@@ -1,7 +1,7 @@
 {
   "name": "cleanator",
   "version": "17.1.16",
-  "id" : "io.miapp.cleanator",
+  "id": "io.miapp.cleanator",
   "description": "cleanator",
   "author": "mlefree",
   "homepage": "https://miapp.github.io/cleanator",
@@ -30,6 +30,10 @@
     "phantomjs": "*",
     "shelljs": "^0.7.5"
   },
+  "devDependencies": {
+    "jasmine-ajax": "^3.3.1",
+    "karma-jasmine-ajax": "^0.1.13"
+  },
   "cordovaPlugins": [
     "cordova-plugin-device",
     "cordova-plugin-console",
@@ -49,17 +53,11 @@
   ],
   "scripts": {
     "bower:install": "./node_modules/.bin/bower install",
-    "gulp:default": "npm version patch; ./node_modules/.bin/gulp",
-    "test": "./node_modules/.bin/karma start tests/karma.unit-tests.conf.js",
-    "test:old": "./node_modules/.bin/karma start tests/karma.unit-tests.conf.js --reporters coverage",
-    "test:watch": "./node_modules/.bin/karma start tests/karma.unit-tests.conf.js --no-single-run  --no-auto-watch --reporters progress --browsers PhantomJS",
-    "start": "./node_modules/.bin/gulp 'config-test-js'; ./node_modules/.bin/http-server -a 0.0.0.0 -p 8080 ./www/",
-    "dev:serve_notused": "ionic serve",
-    "dev:build": "npm version patch; ./node_modules/.bin/gulp; ionic platform add android ios; ionic build android ios",
-    "dev:run": "ionic run android --device"
-  },
-  "devDependencies": {
-    "jasmine-ajax": "^3.3.1",
-    "karma-jasmine-ajax": "^0.1.13"
+    "build:prod": "./node_modules/.bin/gulp default",
+    "build:add-demo": "./node_modules/.bin/gulp config-as-demo-js",
+    "build:demo": "npm run build:prod && npm run build:add-demo",
+    "test": "npm run build:demo && node_modules/.bin/karma start tests/karma.unit-tests.conf.js",
+    "start": "npm run build:demo && node_modules/.bin/http-server -a 0.0.0.0 -p 8080 www/",
+    "android": "npm run build:prod && ionic platform add android && ionic build android && ionic run android --device"
   }
 }

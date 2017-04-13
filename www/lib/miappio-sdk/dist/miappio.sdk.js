@@ -12546,7 +12546,7 @@ miapp.angularService = (function () {
      * @memberof miapp.angularService
      */
     Service.prototype.isLoggedIn = function () {
-        if (!this.miappService) return this.promise.reject('miapp.sdk.angular.isLoggedIn : not initialized.');
+        if (!this.miappService) return false;
         return this.miappService.miappIsLogin();
     };
 
@@ -12562,7 +12562,7 @@ miapp.angularService = (function () {
     /**
      *
      * Synchronize DB
-     * @param fnInitFirstData  fnInitFirstData(this._db) {return Promise;} : call if DB is empty
+     * @param fnInitFirstData  a function with db as input and that return promise: call if DB is empty
      * @param service
      * @param forceOnline
      * @returns {*} promise with this._db
@@ -12582,6 +12582,18 @@ miapp.angularService = (function () {
     Service.prototype.put = function (data) {
         if (!this.miappService) return this.promise.reject('miapp.sdk.angular.put : not initialized.');
         return this.miappService.miappPutInDb(data);
+    };
+
+
+    /**
+     *
+     * @param data
+     * @returns {*}
+     * @memberof miapp.angularService
+     */
+    Service.prototype.remove = function (data) {
+        if (!this.miappService) return this.promise.reject('miapp.sdk.angular.remove : not initialized.');
+        return this.miappService.miappRemoveInDb(data);
     };
 
     /**
@@ -12627,6 +12639,7 @@ if (typeof angular !== 'undefined') {
         });
 
 
+    //todo : enforce miapp.services with all internal modules made with love
     angular
         .module('miapp.services', [])
         .factory('srvLocalStorage', function () {
@@ -12634,6 +12647,25 @@ if (typeof angular !== 'undefined') {
             var LocalStorage = miapp.LocalStorageFactory(window.localStorage);
             return new LocalStorage();
 
+        })
+        .directive('miappLazyLoad', function($animate) {
+            return {
+                scope: {
+                    'miappLazyLoad': '=',
+                    'afterShow': '&',
+                    'afterHide': '&'
+                },
+                link: function(scope, element) {
+                    scope.$watch('miappLazyLoad', function(show, oldShow) {
+                        if (show) {
+                            $animate.removeClass(element, 'ng-hide').then(scope.afterShow);
+                        }
+                        if (show === false) {
+                            $animate.addClass(element, 'ng-hide').then(scope.afterHide);
+                        }
+                    });
+                }
+            };
         });
 }
 
@@ -12883,7 +12915,6 @@ miappSdkEventable.mixin = function (destObject) {
                                 //clearTimeout(timeout);
                                 xhr.abort();
                                 var error = new miappSdkError('Miapp.io SDK request fail.', errStatus);
-                                //console.log('error', error);
                                 p.done(error, null);
                             }
                         }
@@ -16093,10 +16124,7 @@ var SrvMiapp = (function () {
 
         this.logger = logger;
         this.promise = promise;
-        //this.$q = $q;
-        //this.$timeout = $timeout;
         this.logger.log('miapp.sdk.service : init');
-        //self.logger.log('miapp.sdk.service : init');
 
         this.miappClient = null;
         this.currentUser = _getObjectFromLocalStorage('miappCurrentUser') || null;
@@ -16120,6 +16148,7 @@ var SrvMiapp = (function () {
         this._db = new PouchDB('miapp_db', {adapter: 'websql'});
         this._dbRecordCount = 0;
         this._dbInitialized = false;
+        this._dbFirstSyncDone = false;
     }
 
 
@@ -16213,7 +16242,7 @@ var SrvMiapp = (function () {
                     if (!isEmpty && self.currentUser) {
 
                         self.logger.log('miapp.sdk.service.miappLogin : self.miappAuthEndDate ? ', self.miappAuthEndDate);
-                        self._dbInitialized = true
+                        self._dbInitialized = true;
                         resolve(self.currentUser); // already set
                         return;
                     }
@@ -16284,7 +16313,7 @@ var SrvMiapp = (function () {
 
     /**
      * Synchronize DB
-     * @param fnInitFirstData  fnInitFirstData(this._db) {return Promise;} : call if DB is empty
+     * @param fnInitFirstData a function with db as input and that return promise: call if DB is empty
      * @param service
      * @param forceOnline
      * @returns {*} promise with this._db
@@ -16297,23 +16326,26 @@ var SrvMiapp = (function () {
 
         if (forceOnline) self.setOffline(false);
 
+        var firstSync = !self._dbFirstSyncDone;
+
         return new self.promise(function (resolve, reject) {
-            self.isDbEmpty()
+
+            self.syncDb()
+                .then(function () {
+                    self.logger.log('miapp.sdk.service.miappSync syncDb resolved');
+                    return self.isDbEmpty();
+                })
                 .then(function (isEmpty) {
-                    if (isEmpty && fnInitFirstData) {
+                    self.logger.log('miapp.sdk.service.miappSync isEmpty : ', isEmpty, firstSync);
+                    if (isEmpty && firstSync && fnInitFirstData) {
                         var ret = fnInitFirstData(service);
                         if (ret && ret["catch"] instanceof Function) return ret;
                         if (typeof ret === 'string') self.logger.log(ret);
                     }
-                    return self.promise.resolve('miapp.sdk.service.miappSync : ready to sync');
+                    return self.promise.resolve();
                 })
-                .then(function (ret) {
-                    if (typeof ret === 'string') self.logger.log(ret);
-                    return self.syncDb();
-                })
-                .then(function (err) {
-                    if (err) return reject(err);
-                    self.logger.log('miapp.sdk.service.miappSync sync resolved');
+                .then(function () {
+                    self.logger.log('miapp.sdk.service.miappSync fnInitFirstData resolved');
                     return self._db.info();
                 })
                 .then(function (result) {
@@ -16331,7 +16363,6 @@ var SrvMiapp = (function () {
         });
     };
 
-
     /**
      *
      * @param data
@@ -16339,8 +16370,7 @@ var SrvMiapp = (function () {
      */
     Service.prototype.miappPutInDb = function (data) {
         var self = this;
-        self.logger.log('miapp.sdk.service.miappPutInDb');
-        self.logger.log(data);
+        self.logger.log('miapp.sdk.service.miappPutInDb :', data);
 
         if (!self.currentUser || !self.currentUser._id || !self._db)
             return self.promise.reject('miapp.sdk.service.miappPutInDb : DB put impossible. Need a user logged in. (' + self.currentUser + ')');
@@ -16365,6 +16395,38 @@ var SrvMiapp = (function () {
                 }
                 reject(err);
             });
+        });
+
+    };
+
+    /**
+     *
+     * @param data
+     * @returns {*}
+     */
+    // todo test : miappRemoveInDb
+    Service.prototype.miappRemoveInDb = function (data) {
+        var self = this;
+        self.logger.log('miapp.sdk.service.miappRemoveInDb ', data);
+
+        if (!self._db)
+            return self.promise.reject('miapp.sdk.service.miappRemoveInDb : DB put impossible. Need a user logged in. (' + self.currentUser + ')');
+
+        if (!data._id)
+            return self.promise.reject('miapp.sdk.service.miappRemoveInDb : DB put impossible. Need the data._id.');
+
+        return new self.promise(function (resolve, reject) {
+            self._db.get(data._id)
+                .then(function (doc) {
+                    doc._deleted = true;
+                    return self._db.put(doc);
+                })
+                .then(function (result) {
+                    resolve();
+                })
+                .catch(function (err) {
+                    reject(err);
+                });
         });
 
     };
@@ -16432,9 +16494,9 @@ var SrvMiapp = (function () {
                 //var encrypted = CryptoJS.AES.encrypt(password, 'SALT_TOKEN');
                 //var encrypted_json_str = encrypted.toString();
                 var encrypted_json_str = password;
-            self.logger.log('miapp.sdk.service.loginInternal : ' + login + ' / ' + encrypted_json_str);
+                self.logger.log('miapp.sdk.service.loginInternal : ' + login + ' / ' + encrypted_json_str);
 
-            if (!self.miappClient || self.miappIsOffline) { // || !miapp.BrowserCapabilities.isConnectionOnline()) {
+                if (!self.miappClient || self.miappIsOffline) { // || !miapp.BrowserCapabilities.isConnectionOnline()) {
                     var offlineUser = {};
                     if (login) offlineUser.email = login;
                     if (encrypted_json_str) offlineUser.password = encrypted_json_str;
@@ -16444,15 +16506,15 @@ var SrvMiapp = (function () {
                 }
 
 
-            var fullLogin = function () {
+                var fullLogin = function () {
 
                     // Check a full Login
-                self.logger.log('miapp.sdk.service.loginInternal Check Full Login');
+                    self.logger.log('miapp.sdk.service.loginInternal Check Full Login');
 
-                // Need a refresh token
-                self.miappClient.logout();
-                if (self.currentUser && self.currentUser.access_token)
-                    delete self.currentUser.access_token;
+                    // Need a refresh token
+                    self.miappClient.logout();
+                    if (self.currentUser && self.currentUser.access_token)
+                        delete self.currentUser.access_token;
 
                     self.miappClient.loginMLE(self.miappId, login, encrypted_json_str, updateProperties, function (err, loginUser) {
                         // self.logger.log('miapp.sdk.service.loginInternal done :' + err + ' user:' + user);
@@ -16480,34 +16542,34 @@ var SrvMiapp = (function () {
                         resolve(self.currentUser);
 
                     });
-            };
+                };
 
 
-            var sameUser = self.currentUser && (self.currentUser.email === login && self.currentUser.password === encrypted_json_str);
-            var noUser = (!login && !password);
-            if (self.currentUser && self.currentUser.access_token && (noUser || sameUser)) {
-                login = self.currentUser.email;
-                //todo ! encrypted_json_str = self.currentUser.password;
+                var sameUser = self.currentUser && (self.currentUser.email === login && self.currentUser.password === encrypted_json_str);
+                var noUser = (!login && !password);
+                if (self.currentUser && self.currentUser.access_token && (noUser || sameUser)) {
+                    login = self.currentUser.email;
+                    //todo ! encrypted_json_str = self.currentUser.password;
 
-                // Check Token
-                self.logger.log('miapp.sdk.service.loginInternal Check Token');
-                self.miappClient.reAuthenticateMLE(function (err) {
-                    if (err) {
-                        // Error - could not reLog user in
-                        self.logger.error('miapp.sdk.service.loginInternal Check Token error : ' + err);
-                        if (!noUser)
-                            fullLogin();
-                        else
-                            reject('Need to login again ...');
-                    }
-                    else {
+                    // Check Token
+                    self.logger.log('miapp.sdk.service.loginInternal Check Token');
+                    self.miappClient.reAuthenticateMLE(function (err) {
+                        if (err) {
+                            // Error - could not reLog user in
+                            self.logger.error('miapp.sdk.service.loginInternal Check Token error : ' + err);
+                            if (!noUser)
+                                fullLogin();
+                            else
+                                reject('Need to login again ...');
+                        }
+                        else {
                             resolve(self.currentUser);
                         }
                     });
                 }
-            else {
-                fullLogin();
-            }
+                else {
+                    fullLogin();
+                }
 
             }
         );
@@ -16600,7 +16662,8 @@ var SrvMiapp = (function () {
                         }
                     })
                     .on('complete', function (info) {
-                        self.logger.log('miapp.sdk.service.syncDb : db complete : ' + info);
+                        self.logger.log('miapp.sdk.service.syncDb : db complete : ', info);
+                        self._dbFirstSyncDone = true;
                         resolve();
                     })
                     .on('error', function (err) {
@@ -16732,6 +16795,8 @@ var SrvMiapp = (function () {
                 //_removeObjectFromLocalStorage('miappCurrentUser');
 
                 self._dbRecordCount = 0;
+                self._dbInitialized = false;
+                self._dbFirstSyncDone = false;
                 self.logger.log('miapp.sdk.service.becarefulCleanDb .. done : ' + info);
                 return resolve();
             });

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<ion-view>
+<ion-view cache-view="false">
     <ion-content class="has-footer">
 
         <div ng-if="!userInitSpinnerStopped"
@@ -30,11 +30,11 @@
                     <img src="img/icone_coeur.jpg"/>
                     <!--<h2 ng-if="navAppInitLevel() <= 1" translate>CalendarDidYouKnow?</h2>
                     <p ng-if="navAppInitLevel() <= 1" translate>CalendarWorldWideStats</p>-->
-                    <h3 ng-show="navAppInitLevel() <= 1">
+                    <h3 ng-show="navAppInitLevel() <= 2">
                         {{userIndicators.indicUsersTimeAvailabity}}
                         <span translate>min average by day</span>
                     </h3>
-                    <p ng-show="navAppInitLevel() <= 1">
+                    <p ng-show="navAppInitLevel() <= 2">
                         <span translate>front of all todos</span>
                     </p>
                     <div>
@@ -50,7 +50,7 @@
                 </div>
 
                 <div class="item item-body" ng-show="toggleStats">
-                    <p ng-show="navAppInitLevel() <= 1" translate>GUIDER_CalendarWorldwideStats : Do you know that the
+                    <p ng-show="navAppInitLevel() <= 2" translate>GUIDER_CalendarWorldwideStats : Do you know that the
                         average of time
                         dedicated to home chore is 200 hours by week ?</p>
                     <p>

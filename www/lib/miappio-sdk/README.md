@@ -40,6 +40,44 @@ npm install
 ```
 and pull request ...
 
+### Connection
+
+
+First Login (login , password, deviceIsOnline):
+
+| Mode (dev / prod) | Device online | Miapp.io connection 	|
+| --- | --- | --- |
+| dev				|  				| **no** 				|
+| prod				| yes			| **yes** 				|
+| 					| no			| **reject with error**	| 
+
+Renew authentication with Login (,, deviceIsOnline):
+
+| Mode (dev / prod) | Device online | Miapp.io token still valid 	| Miapp.io connection 	|
+| --- | --- | --- | --- |
+| dev				|  				|  								| **no** 				|
+| prod				| yes			| yes							| **yes** 				|
+| 					| yes			| no							| **yes** 				| 
+| 					| no			| yes							| **no**				|
+| 					| no			| no							| **reject with error**	|
+
+
+First DB Sync (deviceIsOnline):
+
+| Mode (dev / prod) | Device online | Miapp.io connection 	|
+| --- | --- | --- |
+| dev				|  				| **no** 				|
+| prod				| yes			| **yes** 				|
+| 					| no			| **reject with error**	| 
+
+Current DB Sync (deviceIsOnline):
+
+| Mode (dev / prod) | Device online | Miapp.io connection 	|
+| --- | --- | --- |
+| dev				|  				| **no** 				|
+| prod				| yes			| **yes** 				|
+| 					| no			| **no**				| 
+
 ### Testing
 
 With npm :

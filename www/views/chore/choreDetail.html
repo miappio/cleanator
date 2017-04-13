@@ -2,27 +2,42 @@
 
 <ion-view>
 
+
     <ion-nav-buttons side="left">
-        <a class="button button-icon  icon ion-arrow-left-b"
-           ng-click="choreSaveDetail();"
-           ng-href="#/config/category"
-           ng-show="choreToEdit[choreCols.name]"
-           translate></a>
-        <!-- ng-href="#/config/categorychores/{{choreToEdit[choreCols.category]}}" -->
-    </ion-nav-buttons>
-    <ion-nav-buttons side="right">
-        <button class="button button-outline button-assertive" disabled>
-            {{choreToEdit[choreCols.category]}}
+        <button class="button button-icon icon ion-arrow-left-b"
+                ng-click="choreSaveDetail(); navBack();">
         </button>
     </ion-nav-buttons>
-    <!--
 
     <ion-nav-buttons side="right">
-            <button class="button clear" style="margin-left:20px;" disabled>
-              <img src="{{getChoreCategoryThumbPath(choreToEdit[choreCols.category])}}"class="img-circle" height="30px" />
-            </button>
-      </ion-nav-buttons>  -->
+        <a class="button button-icon icon ion-arrow-right-b"
+                ng-show="nextChoreToEdit"
+                ng-click="choreSaveDetail();"
+                ng-href="#/chore/{{nextChoreToEdit._id}}">
+            
+        </a>
+    </ion-nav-buttons>
+
     <ion-content class="has-footer">
+
+
+        <!-- ng show="choreToEdit[choreCols.name]"
+        <ion-nav-back-button>
+            <button class="button button-icon icon ion-arrow-left-b"
+                    ng-click="choreSaveDetail();"
+                    ng-href="#/categorychores/{{choreToEdit[choreCols.category]}}">
+            </button>
+        </ion-nav-back-button>-->
+
+        <!-- ng show="nextChoreToEdit"
+        <ion-nav-button side="right">
+            <button  class="button button-icon icon ion-arrow-right-b"
+                    ng-click="choreSaveDetail();"
+                    ng-href="#/chore/{{nextChoreToEdit._id}}"
+                    >
+                Next
+            </button>
+        </ion-nav-button>-->
 
 
         <article class="container">
@@ -78,7 +93,8 @@
                     <li class="item range range-assertive">
                         <label class="input-label">
                             <span translate>ChoreFrequency</span><br>
-                            <small><span translate>each</span> {{choreToEdit[choreCols.frequencyDays]}} <span translate>day(s)</span>
+                            <small><span translate>each</span> {{choreToEdit[choreCols.frequencyDays]}} <span
+                                    translate>day(s)</span>
                             </small>
                         </label>
                         <input type="range" min="1" max="60" ng-model="choreToEdit[choreCols.frequencyDays]">

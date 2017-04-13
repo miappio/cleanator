@@ -21,6 +21,7 @@ angular.module('myAngularApp.views.user', [])
             })
             .state('config.cal', {
                 url: '/cal',
+                cache: false,
                 views: {
                     'config-cal': {
                         templateUrl: 'views/user/userCalendar.html',

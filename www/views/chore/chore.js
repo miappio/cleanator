@@ -13,15 +13,11 @@ angular.module('myAngularApp.views.chore', [])
                     }
                 }
             })
-            .state('config.categoryChores', {
+            .state('categoryChores', {
                 url: '/categorychores/:categoryId',
                 cache: false,
-                views: {
-                    'config-category': {
-                        templateUrl: 'views/chore/categoryChores.html',
-                        controller: 'CategoryChoresCtrl'
-                    }
-                }
+                templateUrl: 'views/chore/categoryChores.html',
+                controller: 'CategoryChoresCtrl'
             })
             .state('categoryDetail', {
                 url: '/category/:categoryId',
@@ -34,168 +30,6 @@ angular.module('myAngularApp.views.chore', [])
                 controller: 'ChoresDetailCtrl'
             });
 
-
-    })
-
-    .controller('ChoresCtrl', function ($scope, $timeout, $stateParams, srvData, srvConfig) {
-
-        $scope.getDateText = function (dateText) {
-            var dateT = null;
-            if (!dateText) return dateT;
-
-            var date = new Date(dateText);
-            dateT = '' + padInteger(date.getDate(), 2) + '/' + padInteger(date.getMonth(), 2) + '/' + padInteger(date.getFullYear(), 4) + ' ' + padInteger(date.getHours(), 2) + ':' + padInteger(date.getMinutes(), 2);
-            return dateT;
-        };
-
-        function padInteger(num, size) {
-            if (!size) size = 10;
-            var s = "000000000" + num;
-            return s.substr(s.length - size);
-        }
-
-        $scope.choreInit = function () {
-        };
-
-        $scope.choreInitSpinnerStopped = false;
-        $scope.afterNavigationInitSpinnerShow = function () {
-            //if (!$scope.isAppLogin()) return;
-
-            $timeout(function () {
-                //if (!$scope.isAppLogin()) return;
-
-                $scope.choreDataSync();
-            }, 200);
-        };
-
-        // Synchronise DB
-        $scope.choreDataSync = function () {
-            //srvData.sync()
-            //.then(function(msg){
-            $scope.choreDataBind();
-            //})
-            //.catch(function(msg){
-            //	$scope.choreErrMessage = msg;
-            //	$scope.choreDataBind();
-            //});
-
-        };
-
-        $scope.saveAllChores = function () {
-            console.log('all saved');
-        };
-
-        $scope.choreSaveJeton = false;
-        $scope.saveChore = function (chore, reBindData) {
-            if (chore && !$scope.choreSaveJeton) {
-                //$scope.safeApply(function(){
-                $scope.choreSaveJeton = true;
-                //chore[$scope.choreCols.percentAB] = chorePercent;
-
-
-                srvData.Chore.set(chore)
-                    .then(function (res) {
-                        $scope.choreSaveJeton = false;
-                        $scope.choreResetEditModal();
-                        console.log('saved');
-
-                        // is it an add ? -> refresh chore list $scope.chores ?
-                        if (reBindData === true) $scope.choreDataSync();
-                    })
-                    .catch(function (err) {
-                        $scope.choreSaveJeton = false;
-                        $scope.choreResetEditModal();
-                        $scope.navAddErrorMessage(err);
-                    });
-                //});
-            }
-        };
-
-        $scope.choreAddChore = function (category) {
-
-            $scope.choreToEdit = {};
-            $scope.choreToEdit[$scope.choreCols.category] = category;
-            $scope.choreToEdit[$scope.choreCols.percentAB] = 50;
-            $scope.choreToEdit[$scope.choreCols.timeInMn] = 5;
-            $scope.choreToEdit[$scope.choreCols.frequencyDays] = 3;
-            $scope.choreToEdit[$scope.choreCols.priority] = 5;
-            $scope.choreToEdit[$scope.choreCols.priorityComputed] = 5;
-
-            // synchronise right thumbs
-            var thumb = $scope.categories[0];
-            //$scope.choreToEdit[$scope.choreCols.choreDescriptionCat] = thumb.categoryName;
-            $scope.thumbChoreObj = thumb;
-
-            $scope.thumbCategoryObj = $scope.categories[0];
-            for (var i = 0; i < $scope.categories.length; i++) {
-                var t2 = $scope.categories[i];
-                if (t2.categoryName == category) {
-                    $scope.thumbCategoryObj = t2;
-                    break;
-                }
-            }
-
-        };
-
-        $scope.choreAddCategory = function () {
-
-        };
-
-        $scope.choreDelete = function (chore, reBindData) {
-            srvData.Chore.remove(chore).then(function (msg) {
-                // is it an add ? -> refresh chore list $scope.chores ?
-                if (reBindData === true) $scope.choreDataSync();
-            }).catch(function (msg) {
-                //$scope.choreErrMessage = msg;
-                $scope.navAddErrorMessage(msg);
-            });
-        };
-
-        $scope.choreTogglePriority = function (chore) {
-            if (!chore) return;
-
-            var prio = chore[$scope.choreCols.priority];
-            if (prio == 1) prio = 5;
-            else prio = 1;
-
-            chore[$scope.choreCols.priority] = prio;
-        };
-
-        $scope.choreResetEditModal = function () {
-            $scope.choreToEdit = null;
-        };
-
-        $scope.choreShowLastHistoricDate = function (chore, previousValue) {
-
-            //if (!dateH) return 'na';
-            //var str = getDateText(dateH);
-            //return str;
-            if (!chore) return previousValue ? previousValue : 'na';
-            var choreId = chore._id;
-            if (!choreId) return previousValue ? previousValue : 'na';
-            //var lastDate = srvData.getDateOfLastChoreDoneByType($scope.dashboardHistoricsDone, choreId);
-            var lastDate = chore[$scope.choreCols.lastTimeDone];
-            var str = getDateText(lastDate);
-            return str;
-        };
-
-        //Cleanup the modal when we're done with it!
-        $scope.$on('$destroy', function () {
-            //if ($scope.modal) $scope.modal.remove();
-        });
-        // Execute action on chore state
-        $scope.$on('chore.added', function () {
-            // Execute action
-            console.log('chore.added');
-        });
-        $scope.$on('chore.changed', function () {
-            // Execute action
-            console.log('chore.changed');
-            $scope.choreDataSync();
-        });
-
-        // Initialization
-        if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
 
     })
 
@@ -242,25 +76,47 @@ angular.module('myAngularApp.views.chore', [])
 
     })
 
-    .controller('ChoresDetailCtrl', function ($scope, $timeout, $stateParams, srvData, srvConfig) {
+    .controller('ChoresDetailCtrl', function ($scope, $timeout, $stateParams, srvData, srvDataContainer) {
 
         $scope.choreId = $stateParams.choreId;
         $scope.choreToEdit = {};
+        $scope.nextChoreToEdit = {};
 
         $scope.choreFindDetail = function () {
             var self = this;
-            srvData.Chore.findOneById($scope.choreId).then(function (chore) {
-                $scope.choreToEdit = chore;
-                $scope.choresDetailSyncroThumb();
+            $scope.choreToEdit = {};
+            $scope.nextChoreToEdit = {};
+            if (!$scope.choreId) return;
 
-                // retrieve UserAffinity
-                if (typeof $scope.choreToEdit[$scope.choreCols.AUserAffinity] === 'undefined' || typeof $scope.choreToEdit[$scope.choreCols.BUserAffinity] === 'undefined') {
-                    var per = $scope.choreToEdit[$scope.choreCols.percentAB];
-                    $scope.choreToEdit[$scope.choreCols.AUserAffinity] = per;
-                    $scope.choreToEdit[$scope.choreCols.BUserAffinity] = 100 - per;
-                }
+            srvData.Chore.findOneById($scope.choreId)
+                .then(function (chore) {
+                    $scope.choreToEdit = chore;
+                    $scope.choresDetailSyncroThumb();
 
-            });
+                    // retrieve UserAffinity
+                    if (typeof $scope.choreToEdit[$scope.choreCols.AUserAffinity] === 'undefined' || typeof $scope.choreToEdit[$scope.choreCols.BUserAffinity] === 'undefined') {
+                        var per = $scope.choreToEdit[$scope.choreCols.percentAB];
+                        $scope.choreToEdit[$scope.choreCols.AUserAffinity] = per;
+                        $scope.choreToEdit[$scope.choreCols.BUserAffinity] = 100 - per;
+                    }
+
+
+                    var category = $scope.choreToEdit[$scope.choreCols.category];
+                    var i = 0;
+                    var foundChore = false;
+                    delete $scope.nextChoreToEdit;
+                    for (; ($scope.chores) && (i < $scope.chores.length) && (!$scope.nextChoreToEdit); i++) {
+                        var c = $scope.chores[i];
+                        if (foundChore && c[$scope.choreCols.category] === category)
+                            $scope.nextChoreToEdit = c;
+
+                        if (c._id === $scope.choreToEdit._id) {
+                            // next in the category
+                            foundChore = true;
+                        }
+                    }
+
+                });
         };
 
         $scope.choreSaveDetail = function () {
@@ -273,15 +129,19 @@ angular.module('myAngularApp.views.chore', [])
             srvData.Chore.set($scope.choreToEdit)
                 .then(function (res) {
                     console.log('saved');
+                    $scope.choreFindDetail();
                 })
                 .catch(function (err) {
                     console.log('pb :' + err);
+                    $scope.choreFindDetail();
                 });
         };
 
         $scope.choreRemove = function (choreToRemove) {
             srvData.Chore.remove(choreToRemove)
                 .then(function (msg) {
+
+                    $scope.choreFindDetail();
 
                 })
                 .catch(function (err) {
@@ -389,13 +249,6 @@ angular.module('myAngularApp.views.chore', [])
         // Indicators
         $scope.categoryIndicators = {};
 
-        // Init
-        $scope.categoryInit = function () {
-            $ionicHistory.nextViewOptions({
-                disableBack: false
-            });
-        };
-
         $scope.categoryInitSpinnerStopped = false;
         $scope.categoryErrMessage = "";
         $scope.categoryStopSpinnerWithMessage = function (msg) {
@@ -405,35 +258,47 @@ angular.module('myAngularApp.views.chore', [])
 
         $scope.afterNavigationInitSpinnerShow = function () {
             $timeout(function () {
-                if (srvConfig.isLoggedIn()) {
-                    $scope.categoryDataSync();
-                }
-                else {
-                    $scope.categoryStopSpinnerWithMessage();
-                }
-            }, 200);
+                // if (srvConfig.isLoggedIn()) {
+                $scope.categoryDataSync();
+                // }
+                // else {
+                //     $scope.categoryStopSpinnerWithMessage();
+                // }
+            }, 500);
+        };
+
+
+        // Init
+        $scope.categoryInit = function () {
+            //  $ionicHistory.nextViewOptions({
+            //      disableBack: false
+            //  });
+            console.log('categoryInit');
         };
 
         // Synchronise DB
         $scope.categoryDataSync = function () {
             var self = this;
             var deferred = $q.defer();
-            $scope.navDataSync(srvDataContainer).then(function (msg) {
-                $scope.categoryStopSpinnerWithMessage(msg);
-
-                //indicators
-                $scope.categoryIndicators = srvDataContainer.computeIndicators();
-
-                deferred.resolve();
-            });
+            $scope.navDataSync(srvDataContainer)
+                .then(function () {
+                    //indicators
+                    $scope.categoryIndicators = srvDataContainer.computeIndicators();
+                    $scope.categoryStopSpinnerWithMessage();
+                    deferred.resolve();
+                })
+                .catch(function (err) {
+                    $scope.categoryStopSpinnerWithMessage(err);
+                    deferred.reject(err);
+                });
 
             return deferred.promise;
         };
 
         //Cleanup the modal when we're done with it!
-        $scope.$on('$destroy', function () {
-            //if ($scope.modal) $scope.modal.remove();
-        });
+        //$scope.$on('$destroy', function () {
+        //if ($scope.modal) $scope.modal.remove();
+        //});
         // Execute action on chore state
         $scope.$on('chore.added', function () {
             // Execute action
@@ -448,8 +313,8 @@ angular.module('myAngularApp.views.chore', [])
 
         //------------------
         // Initialization
+        //if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
         $scope.categoryInit();
-        if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
 
 
     })
@@ -465,19 +330,38 @@ angular.module('myAngularApp.views.chore', [])
         $scope.categoryChoresFilter[$scope.choreCols.category] = 'empty';
         $scope.categoryChoresInit = function () {
 
+            console.log('categoryChoresInit');
             $scope.categoryChoresCategoryId = $stateParams.categoryId;
             $scope.categoryChoresFilter[$scope.choreCols.category] = $stateParams.categoryId;
             $scope.categoryChoresCategoryName = srvDataContainer.getChoreCategoryName($stateParams.categoryId);
             $scope.categoryChoresCategoryThumb = srvDataContainer.getChoreCategoryThumbPath($stateParams.categoryId);
-            //srvDataContainer.find
 
             $scope.categoryChores = [];
-            var i = 0;
-            for (; ($scope.chores) && (i < $scope.chores.length); i++) {
-                var chore = $scope.chores[i];
-                if (chore[$scope.choreCols.category] == $scope.categoryChoresCategoryId)
-                    $scope.categoryChores.push(chore);
-            }
+            $timeout(function () {
+                var i = 0;
+                for (; ($scope.chores) && (i < $scope.chores.length); i++) {
+                    var chore = $scope.chores[i];
+                    if (chore[$scope.choreCols.category] == $scope.categoryChoresCategoryId)
+                        $scope.categoryChores.push(chore);
+                }
+                console.log('categoryChoresInit :', $scope.categoryChores.length);
+            }, 200);
+        };
+
+
+
+        $scope.categoryChoreDataSync = function () {
+            $timeout(function () {
+                $scope.navDataSync(srvDataContainer)
+                    .then(function (msg) {
+                        //return $scope.dashboardDataBind();
+                        $scope.categoryChoresInit();
+                        $scope.$broadcast('scroll.refreshComplete');
+                    })
+                    .catch(function (err) {
+                        $scope.$broadcast('scroll.refreshComplete');
+                    });
+            }, 200);
         };
 
 
@@ -493,17 +377,19 @@ angular.module('myAngularApp.views.chore', [])
             choreToAdd[$scope.choreCols.priority] = 5;
             choreToAdd[$scope.choreCols.priorityComputed] = 5;
 
-            srvData.Chore.set(choreToAdd).then(function (choreAdded) {
-                $scope.navRedirect(srvDataContainer, 'choreDetail', {'choreId': choreAdded._id});
-            });
+            srvData.Chore.set(choreToAdd)
+                .then(function (choreAdded) {
+                    $scope.chores.push(choreAdded);
+                    $scope.navRedirect(srvDataContainer, 'choreDetail', {'choreId': choreAdded._id});
+                });
 
         };
 
 
         //------------------
         // Initialization
-        if (!$scope.chores && $scope.navRedirect) $scope.navRedirect(srvDataContainer, 'config.category');
-        else if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
+        //if (!$scope.chores && $scope.navRedirect) $scope.navRedirect(srvDataContainer, 'config.category');
+        //else if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
 
         $scope.categoryChoresInit();
     })

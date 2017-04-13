@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <ion-view cache-view="false">
-    <ion-content class="has-footer"><!--  class="has-subheader" hide-nav-bar="true"-->
+    <ion-content class="has-footer">
 
         <div ng-if="!categoryInitSpinnerStopped"
              mle-animateshow="!categoryInitSpinnerStopped"
@@ -89,7 +89,7 @@
                 <ion-item
                         class="item item-icon-right item-icon-left"
                         ng-repeat="category in categories | filter:{desactivate: false}  | filter : categoryFilter"
-                        ng-href="#/config/categorychores/{{category[categoryCols.name]}}">
+                        ng-href="#/categorychores/{{category[categoryCols.name]}}">
 
                     <img class="icon padding" ng-src="{{category[categoryCols.thumbPath]}}">
                     <span class="padding">{{category[categoryCols.description]}}</span>
@@ -99,17 +99,11 @@
                     </ion-option-button>
 
                 </ion-item>
-                <!--  <ion-item class="item item-button">
-                    <button class="button button-block button-outline">
-                      <span translate>CategoryYouNeedMore</span> <i class="icon ion-plus-round"></i>
-                    </button>
-                  </ion-item>
 
-                -->
-                <div class="item item-button" ng-if="navAppInitLevel() == 2">
+                <div class="item item-button" ng-show="navAppInitLevel() <= 2">
                     <a class="button button-block icon-right ion-chevron-right button-assertive"
                        ng-href="#/config/cal"
-                       ng-click="navSetAppInitLevel(1);" translate>GuiderButton_What</a>
+                       ng-click="navSetAppInitLevel(2);" translate>GuiderButton_What</a>
                 </div>
 
             </ion-list>
@@ -125,7 +119,7 @@
                 <ion-item
                         class="item item-icon-right item-icon-left item-stable"
                         ng-repeat="category in categories | filter:{desactivate: true}  | filter : categoryFilter"
-                        ng-href="#/config/categorychores/{{category[categoryCols.name]}}">
+                        ng-href="#/categorychores/{{category[categoryCols.name]}}">
 
                     <img class="icon padding" ng-src="{{category[categoryCols.thumbPath]}}">
                     <span class="padding">{{category[categoryCols.description]}}</span>

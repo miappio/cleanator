@@ -16,7 +16,7 @@ msgstr ""
 msgid "01valid.email@required.com"
 msgstr ""
 
-#: chore/categoryChores.html:55
+#: chore/categoryChores.html:63
 msgid "AddOneChore.."
 msgstr ""
 
@@ -28,7 +28,7 @@ msgstr ""
 msgid "Bad login/password."
 msgstr ""
 
-#: chore/categoryAll.html:132
+#: chore/categoryAll.html:126
 msgid "CatActivate"
 msgstr ""
 
@@ -44,61 +44,61 @@ msgstr ""
 msgid "Changing your email means logout and loosing this Cleanator session"
 msgstr ""
 
-#: chore/categoryChores.html:70
+#: chore/categoryChores.html:78
 msgid "ChoreActivate"
 msgstr ""
 
-#: chore/categoryDetail.html:87
+#: chore/categoryDetail.html:80
 msgid "ChoreAffinity"
 msgstr ""
 
-#: chore/categoryChores.html:42
+#: chore/categoryChores.html:50
 msgid "ChoreDeactivate"
 msgstr ""
 
-#: chore/categoryDetail.html:59
-#: chore/categoryDetail.html:61
-#: chore/choreDetail.html:65
-#: chore/choreDetail.html:67
+#: chore/categoryDetail.html:52
+#: chore/categoryDetail.html:54
+#: chore/choreDetail.html:80
+#: chore/choreDetail.html:82
 msgid "ChoreDescription"
 msgstr ""
 
-#: chore/choreDetail.html:113
+#: chore/choreDetail.html:129
 msgid "ChoreDetailRemove"
 msgstr ""
 
-#: chore/categoryDetail.html:66
-#: chore/choreDetail.html:72
+#: chore/categoryDetail.html:59
+#: chore/choreDetail.html:87
 msgid "ChoreEstimate"
 msgstr ""
 
-#: chore/categoryDetail.html:66
+#: chore/categoryDetail.html:59
 msgid "ChoreEstimateMn"
 msgstr ""
 
-#: chore/categoryDetail.html:76
-#: chore/choreDetail.html:80
+#: chore/categoryDetail.html:69
+#: chore/choreDetail.html:95
 msgid "ChoreFrequency"
 msgstr ""
 
-#: chore/categoryDetail.html:76
+#: chore/categoryDetail.html:69
 msgid "ChoreFrequencyDays"
 msgstr ""
 
-#: chore/categoryDetail.html:30
-#: chore/categoryDetail.html:32
-#: chore/choreDetail.html:42
-#: chore/choreDetail.html:44
+#: chore/categoryDetail.html:23
+#: chore/categoryDetail.html:25
+#: chore/choreDetail.html:57
+#: chore/choreDetail.html:59
 msgid "ChoreName"
 msgstr ""
 
-#: chore/categoryDetail.html:46
-#: chore/choreDetail.html:53
+#: chore/categoryDetail.html:39
+#: chore/choreDetail.html:68
 msgid "ChorePriority"
 msgstr ""
 
-#: chore/categoryDetail.html:36
-#: chore/choreDetail.html:48
+#: chore/categoryDetail.html:29
+#: chore/choreDetail.html:63
 msgid "ChoreType"
 msgstr ""
 
@@ -139,11 +139,11 @@ msgstr ""
 msgid "Footer_ButtonWhen"
 msgstr ""
 
-#: commons/footer.html:16
+#: commons/footer.html:12
 msgid "Footer_Compute"
 msgstr ""
 
-#: commons/footer.html:9
+#: commons/footer.html:5
 msgid "Footer_ComputeDetailled"
 msgstr ""
 
@@ -170,7 +170,7 @@ msgstr ""
 msgid "Good"
 msgstr ""
 
-#: chore/categoryAll.html:110
+#: chore/categoryAll.html:104
 msgid "GuiderButton_What"
 msgstr ""
 
@@ -224,7 +224,7 @@ msgstr ""
 msgid "Monday"
 msgstr ""
 
-#: chore/categoryChores.html:55
+#: chore/categoryChores.html:63
 msgid "New Item"
 msgstr ""
 
@@ -242,6 +242,7 @@ msgstr ""
 msgid "NotGood"
 msgstr ""
 
+#: chore/categoryChores.html:11
 #: dashboard/dashboardUser.html:39
 msgid "PullToRefresh"
 msgstr ""
@@ -326,12 +327,12 @@ msgstr ""
 msgid "Unforeseen item :"
 msgstr ""
 
-#: chore/categoryAll.html:118
-#: chore/categoryChores.html:60
+#: chore/categoryAll.html:112
+#: chore/categoryChores.html:68
 msgid "Unusefull list"
 msgstr ""
 
-#: chore/categoryChores.html:23
+#: chore/categoryChores.html:31
 msgid "UsefullChoreList"
 msgstr ""
 
@@ -364,16 +365,16 @@ msgstr ""
 msgid "Wednesday"
 msgstr ""
 
-#: chore/choreDetail.html:103
-#: chore/choreDetail.html:92
+#: chore/choreDetail.html:108
+#: chore/choreDetail.html:119
 msgid "affinity for this item"
 msgstr ""
 
-#: chore/choreDetail.html:81
+#: chore/choreDetail.html:96
 msgid "day(s)"
 msgstr ""
 
-#: chore/choreDetail.html:81
+#: chore/choreDetail.html:96
 msgid "each"
 msgstr ""
 
@@ -418,7 +419,7 @@ msgstr ""
 msgid "minutes,"
 msgstr ""
 
-#: chore/choreDetail.html:73
+#: chore/choreDetail.html:88
 #: user/userCalendar.html:103
 #: user/userCalendar.html:109
 #: user/userCalendar.html:115

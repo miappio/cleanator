@@ -146,6 +146,20 @@ gulp.task('config-demo-js', function () {
         .pipe(gulp.dest("./www/js/config/"));
 });
 
+gulp.task('config-as-demo-js', function () {
+    return gulp
+        .src([".config.demo.js"])
+        .pipe(preprocess(({
+            context: {
+                PACKAGE_JSON_VERSION: require('./package').version,
+                PACKAGE_JSON_NAME: require('./package').name
+
+            }
+        })))
+        .pipe(rename('config.js'))
+        .pipe(gulp.dest("./www/js/config/"));
+});
+
 /**
  * Defaut & Watch
  */
