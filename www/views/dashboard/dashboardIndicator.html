@@ -65,7 +65,7 @@
             </div>
 
             <button class="button button-block button-dark button-clear">
-                <h3><span translate>History of all done by</span> {{dashboardIndicatorsSearch.user[userCols.firstName]}}
+                <h3><span translate>Record of anything done by</span> {{dashboardIndicatorsSearch.user[userCols.firstName]}}
                 </h3>
             </button>
 
@@ -74,7 +74,8 @@
                           ng-repeat="historic in dashboardIndicatorsHistoricsForOneUser | orderBy : 'actionDoneDate' : true">
                     <ion-item class="item item-icon-left item-toggle item-dark">
                         {{historic[historicCols.name]}}
-                        <p>{{historic[historicCols.actionDoneDate]}}</p>
+                        <p>{{historic[historicCols.actionDoneDate].substring(0,10)}} {{historic[historicCols.actionDoneDate].substring(11,16)}} ({{historic[historicCols.timeInMn]}} mn)</p>
+                        <p>{{historic[historicCols.histoComment]}}</p>
                     </ion-item>
                 </ion-list>
             </div>

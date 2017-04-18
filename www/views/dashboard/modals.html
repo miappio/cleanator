@@ -18,13 +18,6 @@
                 </div>
 
                 <div class="item item-body">
-                    <!--<img class="full-image" src="delorean.jpg">
-                    <p>
-                        <a href="#" class="subdued">Last {{dashboardModalHistoric[historicCols.timeInMn]}} minutes</a>
-                        <a href="#" class="subdued">{{dashboardShowLastHistoricDate(dashboardModalHistoric)}}</a>
-                    </p>-->
-
-
                     <label class="item">
                         <span translate>DashboardModalTimesSpent</span>
                         <span class="badge">{{dashboardModalHistoric[historicCols.timeInMn]}} mn</span>
@@ -35,8 +28,10 @@
                         <input type="range" min="0" ng-model="dashboardModalHistoric[historicCols.timeInMn]">
                         <i class="icon ion-ios-time-outline"></i>
                     </div>
-
-
+                    <label class="item item-input">
+                        <textarea placeholder="{{'Comments'|translate}}" ng-model="dashboardModalHistoric[historicCols.histoComment]"></textarea>
+                    </label>
+                    <!--
                     <label class="item">
                         <span translate>DashboardModalHowDidYouFeel</span>
                     </label>
@@ -47,6 +42,7 @@
                                ng-model="dashboardModalHistoric[historicCols.AUserAffinity]">
                         <i class="icon ion-happy-outline"></i>
                     </div>
+                    -->
                 </div>
 
                 <button type="button" class="button button-block button-assertive"

@@ -4,27 +4,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: \n"
 
-#: dashboard/dashboardUser.html:98
+#: dashboard/dashboardUser.html:93
 msgid "-- choose category --"
 msgstr ""
 
-#: dashboard/dashboardUser.html:107
+#: dashboard/dashboardUser.html:102
 msgid "-- choose chore --"
 msgstr ""
 
-#: login/loginIn.html:58
+#: login/loginIn.html:49
 msgid "01valid.email@required.com"
 msgstr ""
 
-#: chore/categoryChores.html:63
+#: chore/categoryChores.html:64
 msgid "AddOneChore.."
 msgstr ""
 
-#: login/loginIn.html:26
+#: login/loginIn.html:24
 msgid "Authentication service problem, please contact support@miapp.io"
 msgstr ""
 
-#: login/loginIn.html:24
+#: login/loginIn.html:22
 msgid "Bad login/password."
 msgstr ""
 
@@ -44,60 +44,40 @@ msgstr ""
 msgid "Changing your email means logout and loosing this Cleanator session"
 msgstr ""
 
-#: chore/categoryChores.html:78
+#: chore/categoryChores.html:79
 msgid "ChoreActivate"
 msgstr ""
 
-#: chore/categoryDetail.html:80
-msgid "ChoreAffinity"
-msgstr ""
-
-#: chore/categoryChores.html:50
+#: chore/categoryChores.html:51
 msgid "ChoreDeactivate"
 msgstr ""
 
-#: chore/categoryDetail.html:52
-#: chore/categoryDetail.html:54
-#: chore/choreDetail.html:80
-#: chore/choreDetail.html:82
+#: chore/choreDetail.html:77
+#: chore/choreDetail.html:79
 msgid "ChoreDescription"
 msgstr ""
 
-#: chore/choreDetail.html:129
+#: chore/choreDetail.html:125
 msgid "ChoreDetailRemove"
 msgstr ""
 
-#: chore/categoryDetail.html:59
-#: chore/choreDetail.html:87
+#: chore/choreDetail.html:84
 msgid "ChoreEstimate"
 msgstr ""
 
-#: chore/categoryDetail.html:59
-msgid "ChoreEstimateMn"
-msgstr ""
-
-#: chore/categoryDetail.html:69
-#: chore/choreDetail.html:95
+#: chore/choreDetail.html:92
 msgid "ChoreFrequency"
 msgstr ""
 
-#: chore/categoryDetail.html:69
-msgid "ChoreFrequencyDays"
-msgstr ""
-
-#: chore/categoryDetail.html:23
-#: chore/categoryDetail.html:25
 #: chore/choreDetail.html:57
 #: chore/choreDetail.html:59
 msgid "ChoreName"
 msgstr ""
 
-#: chore/categoryDetail.html:39
 #: chore/choreDetail.html:68
 msgid "ChorePriority"
 msgstr ""
 
-#: chore/categoryDetail.html:29
 #: chore/choreDetail.html:63
 msgid "ChoreType"
 msgstr ""
@@ -106,11 +86,15 @@ msgstr ""
 msgid "Clean History"
 msgstr ""
 
-#: dashboard/modals.html:57
+#: dashboard/modals.html:32
+msgid "Comments"
+msgstr ""
+
+#: dashboard/modals.html:53
 msgid "DashboardModalCancel"
 msgstr ""
 
-#: dashboard/modals.html:52
+#: dashboard/modals.html:48
 msgid "DashboardModalDidIt"
 msgstr ""
 
@@ -118,11 +102,7 @@ msgstr ""
 msgid "DashboardModalDone"
 msgstr ""
 
-#: dashboard/modals.html:41
-msgid "DashboardModalHowDidYouFeel"
-msgstr ""
-
-#: dashboard/modals.html:29
+#: dashboard/modals.html:22
 msgid "DashboardModalTimesSpent"
 msgstr ""
 
@@ -182,10 +162,6 @@ msgstr ""
 msgid "Guider_Swipe them to unactivate it"
 msgstr ""
 
-#: dashboard/dashboardIndicator.html:68
-msgid "History of all done by"
-msgstr ""
-
 #: dashboard/dashboardIndicator.html:33
 msgid "Last reset:"
 msgstr ""
@@ -194,21 +170,19 @@ msgstr ""
 msgid "Level0_You’ve set your profiles ? Ready for the next part : setting all the chores you have to deal with."
 msgstr ""
 
-#: login/loginIn.html:74
+#: login/loginIn.html:61
+#: login/loginIn.html:96
 #: user/userAll.html:78
 msgid "LoginLanguage"
 msgstr ""
 
-#: login/loginIn.html:67
+#: login/loginIn.html:56
 msgid "LoginNewPassword"
 msgstr ""
 
-#: login/loginIn.html:90
+#: login/loginIn.html:102
+#: login/loginIn.html:72
 msgid "LoginSignin"
-msgstr ""
-
-#: login/loginIn.html:48
-msgid "LoginWelcome"
 msgstr ""
 
 #: user/modals.html:4
@@ -224,11 +198,11 @@ msgstr ""
 msgid "Monday"
 msgstr ""
 
-#: chore/categoryChores.html:63
+#: chore/categoryChores.html:64
 msgid "New Item"
 msgstr ""
 
-#: login/loginIn.html:28
+#: login/loginIn.html:26
 msgid "No connection, please verify your network."
 msgstr ""
 
@@ -245,6 +219,10 @@ msgstr ""
 #: chore/categoryChores.html:11
 #: dashboard/dashboardUser.html:39
 msgid "PullToRefresh"
+msgstr ""
+
+#: dashboard/dashboardIndicator.html:68
+msgid "Record of anything done by"
 msgstr ""
 
 #: dashboard/dashboardUser.html:71
@@ -297,8 +275,8 @@ msgstr ""
 msgid "TabWhoDetailled"
 msgstr ""
 
-#: dashboard/dashboardUser.html:126
-#: dashboard/dashboardUser.html:160
+#: dashboard/dashboardUser.html:121
+#: dashboard/dashboardUser.html:155
 msgid "Terminated"
 msgstr ""
 
@@ -323,12 +301,12 @@ msgstr ""
 msgid "Tuesday"
 msgstr ""
 
-#: dashboard/dashboardUser.html:94
+#: dashboard/dashboardUser.html:89
 msgid "Unforeseen item :"
 msgstr ""
 
 #: chore/categoryAll.html:112
-#: chore/categoryChores.html:68
+#: chore/categoryChores.html:69
 msgid "Unusefull list"
 msgstr ""
 
@@ -365,20 +343,24 @@ msgstr ""
 msgid "Wednesday"
 msgstr ""
 
-#: chore/choreDetail.html:108
-#: chore/choreDetail.html:119
+#: login/loginIn.html:93
+msgid "You are in demo mode"
+msgstr ""
+
+#: chore/choreDetail.html:104
+#: chore/choreDetail.html:115
 msgid "affinity for this item"
 msgstr ""
 
-#: chore/choreDetail.html:96
+#: chore/choreDetail.html:93
 msgid "day(s)"
 msgstr ""
 
-#: chore/choreDetail.html:96
+#: chore/choreDetail.html:93
 msgid "each"
 msgstr ""
 
-#: login/loginIn.html:17
+#: login/loginIn.html:16
 msgid "for Better for Dust"
 msgstr ""
 
@@ -386,8 +368,8 @@ msgstr ""
 msgid "front of all todos"
 msgstr ""
 
-#: dashboard/dashboardUser.html:117
-#: dashboard/dashboardUser.html:150
+#: dashboard/dashboardUser.html:112
+#: dashboard/dashboardUser.html:145
 msgid "latest item :"
 msgstr ""
 
@@ -414,12 +396,12 @@ msgstr ""
 msgid "minutes av./day"
 msgstr ""
 
-#: dashboard/dashboardUser.html:116
-#: dashboard/dashboardUser.html:149
+#: dashboard/dashboardUser.html:111
+#: dashboard/dashboardUser.html:144
 msgid "minutes,"
 msgstr ""
 
-#: chore/choreDetail.html:88
+#: chore/choreDetail.html:85
 #: user/userCalendar.html:103
 #: user/userCalendar.html:109
 #: user/userCalendar.html:115
@@ -437,7 +419,7 @@ msgstr ""
 msgid "mn"
 msgstr ""
 
-#: dashboard/dashboardUser.html:121
-#: dashboard/dashboardUser.html:154
+#: dashboard/dashboardUser.html:116
+#: dashboard/dashboardUser.html:149
 msgid "none"
 msgstr ""

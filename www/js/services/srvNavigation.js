@@ -96,7 +96,7 @@ var srvNavigation = (function () {
                 self.$rootScope.userB = srvDataContainer.getUserB();
                 self.$rootScope.chores = srvDataContainer.getChores();
                 self.$rootScope.categories = srvDataContainer.getCategories();
-                //this.$rootScope.historics = srvDataContainer.getHistorics();
+                //self.$rootScope.historics = srvDataContainer.getHistorics(); compute
                 deferred.resolve();
             };
 
@@ -116,7 +116,7 @@ var srvNavigation = (function () {
                             return srvDataContainer.sync();
                         })
                         .catch(errFn)
-                        .finally(setData);
+                        .then(setData);
                 })
                 .catch(errFn);
 

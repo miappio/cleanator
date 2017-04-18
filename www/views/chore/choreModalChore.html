@@ -45,9 +45,9 @@
                                 <label class="col-sm-2 control-label">Priority</label>
                                 <div class="col-sm-10">
                                     <a class="btn btn-default col-xs-12" ng-click="choreTogglePriority(choreToEdit)">
-                                        <i ng-show="choreToEdit[choreCols.priority] == 1"
+                                        <i ng-show="choreToEdit[choreCols.priority] < 3"
                                            class="glyphicon glyphicon-star"> Required</i>
-                                        <i ng-hide="choreToEdit[choreCols.priority] == 1"
+                                        <i ng-hide="choreToEdit[choreCols.priority] < 3"
                                            class="glyphicon glyphicon-star-empty"> Low</i>
                                     </a>
                                 </div>

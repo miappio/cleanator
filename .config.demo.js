@@ -14,9 +14,8 @@ if (!configModule) {
         .constant("miappId", "demo")
         .constant("miappSalt", "demo")
 
-        // for your backend
-        .constant("appForceOffline", true)
-        .constant("appAuthEndpoint", 'demo.com/api')
+        // for backend
+        .constant('demoMode', true)
 
         // from google analytics
         .constant("appGAID", "UA-xxxxx");

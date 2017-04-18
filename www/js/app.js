@@ -1,20 +1,3 @@
-// hack
-/*console.log('######HACK cordova : ', typeof cordova);
- if (typeof cordova !== 'undefined') {
- document.addEventListener('deviceready', function () {
- console.log('######HACK cordova  2: ');
- angular.bootstrap(document, ['myAngularApp']);
- console.log('######HACK cordova 3: ');
- }, false);
- }
- else {
- document.addEventListener('DOMContentLoaded', function () {
- console.log('######HACK cordova  4: ');
- angular.bootstrap(document, ['myAngularApp']);
- console.log('######HACK cordova  5: ');
- });
- }*/
-
 angular
     .module('myAngularApp', [
         'ionic',
@@ -43,12 +26,12 @@ angular
 
     })
 
-    .run(function ($ionicPlatform, $rootScope, $state, $ionicHistory, gettextCatalog, MiappService, srvNavigation, srvData, miappId, miappSalt, appForceOffline, appAuthEndpoint) {
+    .run(function ($ionicPlatform, $rootScope, $state, $ionicHistory, gettextCatalog, MiappService, srvNavigation, srvData, miappId, miappSalt, demoMode) {
 
         $ionicPlatform.ready(function () {
 
             //alert('miapp.$ionicPlatform ready');
-            console.log('miapp.$ionicPlatform ready :', miappId, appAuthEndpoint);
+            //console.log('miapp.$ionicPlatform ready :', miappId);
             if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
                 cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
                 cordova.plugins.Keyboard.disableScroll(true);
@@ -60,10 +43,10 @@ angular
 
             gettextCatalog.currentLanguage = 'en_US';
             gettextCatalog.setCurrentLanguage('en_US');
-            gettextCatalog.debug = true;
+            gettextCatalog.debug = demoMode;
 
             // miapp.io
-            MiappService.init(miappId, miappSalt, !appForceOffline, appAuthEndpoint);
+            MiappService.init(miappId, miappSalt, !demoMode);
 
             // app services
             srvData.init();

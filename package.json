@@ -1,8 +1,8 @@
 {
   "name": "cleanator",
-  "version": "17.4.12",
+  "version": "17.4.14",
   "id": "io.miapp.cleanator",
-  "description": "cleanator",
+  "description": "smart couple organizer",
   "author": "mlefree",
   "homepage": "https://miapp.github.io/cleanator",
   "main": "www/index.html",
@@ -54,8 +54,9 @@
   "scripts": {
     "bower:install": "./node_modules/.bin/bower install",
     "build:prod": "./node_modules/.bin/gulp default",
+    "build:device-demo": "./node_modules/.bin/gulp config-demo-xml",
     "build:add-demo": "./node_modules/.bin/gulp config-as-demo-js",
-    "build:demo": "npm run build:prod && npm run build:add-demo",
+    "build:demo": "npm run build:prod && npm run build:add-demo && npm run build:device-demo",
     "test": "npm run build:demo && node_modules/.bin/karma start tests/karma.unit-tests.conf.js",
     "start": "npm run build:demo && node_modules/.bin/http-server -a 0.0.0.0 -p 8080 www/",
     "android": "npm run build:prod && ionic platform add android && ionic build android && ionic run android --device"

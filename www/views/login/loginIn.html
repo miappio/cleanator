@@ -1,21 +1,19 @@
 <!DOCTYPE html>
 <ion-view view-title="" cache-view="false">
     <ion-content>
-
         <div ng-if="!loginInitSpinnerStopped"
              mle-animateshow="!loginInitSpinnerStopped"
              after-show="afterNavigationInitSpinnerShow()"
              after-hide="afterNavigationInitSpinnerHide()">
             <div ng-include="'views/commons/computeChore.html'"></div>
         </div>
-
         <article ng-if="loginInitSpinnerStopped" class="container">
 
             <div class="box" style="position: relative;height: 100%;text-align: center;">
                 <img src="img/login/screen01.gif" style="width:100%; max-width:500px;">
             </div>
-            <h2 style='text-align: center;width: 100%;font-family: cleanator;' translate>for Better for Dust</h2>
 
+            <h2 style='text-align: center;width: 100%;font-family: cleanator;' translate>for Better for Dust</h2>
 
             <ion-list show-delete="true" ng-show="loginErrMsgs.length">
                 <ion-item class="item item-icon-left item-dark item-text-wrap">
@@ -37,38 +35,27 @@
                 </ion-item>
             </ion-list>
 
-
-            <div class="row responsive-md">
+            <!-- ProdMode -->
+            <div class="row responsive-md" ng-hide="demoMode">
                 <div class="col hidden-xs">&nbsp;</div>
                 <div class="col">
-
                     <div class="list">
-                        <!--<div class="item item-image">
-                          <img src="img/login_1.gif">
-                          <h3>{{'LoginWelcome'|translate}}</h3>
-                        </div>-->
-
                         <form name="loginForm"
                               ng-submit="loginSubmit(userLoginEmail,userLoginPassword,loginForm.$valid)"
                               class="form-inline col-xs-12 col-sm-8 col-sm-offset-2" role="form" novalidate>
                             <div class="form-group col-xs-12"
                                  ng-class="{ 'has-error' : loginForm.email.$invalid && !loginForm.email.$pristine }">
-
                                 <label class="item item-input item-stacked-label">
                                     <input placeholder="{{'01valid.email@required.com'|translate}}" name="email"
                                            type="email"
                                            ng-model="userLoginEmail" required
                                            pattern=".{1,}@[_a-z0-9A-Z]+(\.[a-z0-9A-Z]+)+">
                                 </label>
-
-
                                 <label class="item item-input item-stacked-label">
                                     <input name="password" type="password"
                                            placeholder="{{'LoginNewPassword'|translate}}"
                                            ng-model="userLoginPassword" required>
                                 </label>
-
-
                                 <label class="item item-input item-select">
                                     <div class="input-label">
                                         {{'LoginLanguage'|translate}}
@@ -76,13 +63,8 @@
                                     <select ng-model="navigLang" class="form-control input-lg"
                                             ng-options="style.title for style in navigLangs"
                                             ng-change="navChangeLang(navigLang.code); navGAClick('langChange_'+navigLang.title);"></select>
-
-
                                 </label>
-
                             </div>
-
-
                             <div class="form-group col-xs-12" style="margin-top:20px;">
                                 <button type="submit"
                                         class="col-xs-12 button button-full button-positive btn btn-lg btn-primary"
@@ -94,6 +76,32 @@
                             <br><br><span style="float:right;font-size:10px;"><span app-version></span> {{navAppOnlineLevel()}}</span>
 
 
+                        </form>
+                    </div>
+                </div>
+                <div class="col hidden-xs">&nbsp;</div>
+            </div>
+
+            <!-- DemoMode -->
+            <div class="row responsive-md" ng-show="demoMode">
+                <div class="col hidden-xs">&nbsp;</div>
+                <div class="col">
+
+                    <div class="list">
+                        <form name="loginDemoForm" ng-submit="loginInDemoMode()" novalidate>
+
+                            <h3 translate>You are in demo mode</h3>
+
+                            <label class="item item-input item-select">
+                                <span class="input-label" translate>LoginLanguage</span>
+                                <select ng-model="loginLang" class="form-control input-lg"
+                                        ng-options="style.title for style in loginLangs"
+                                        ng-change="loginSetLang(loginLang.code)"></select>
+                            </label>
+
+                            <button class='button button-block button-positive' ng-click="loginInDemoMode()"
+                                    translate>LoginSignin
+                            </button>
                         </form>
                     </div>
                 </div>

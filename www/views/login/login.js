@@ -14,8 +14,10 @@ angular
 
     })
 
-    .controller('LoginCtrl', function ($scope, $log, $http, $q, $timeout, $ionicHistory, $ionicNavBarDelegate, srvDataContainer) {
+    .controller('LoginCtrl', function ($scope, $log, $http, $q, $timeout, $ionicHistory, $ionicNavBarDelegate, srvDataContainer, demoMode) {
         'use strict';
+
+        $scope.demoMode = demoMode;
 
         $scope.loginInit = function () {
 
@@ -110,6 +112,14 @@ angular
                 });
 
         };
+
+        $scope.loginInDemoMode = function () {
+            var newUser = {};
+            newUser.email = 'demo';
+            newUser.password = 'demo';
+            return $scope.loginSignupANewUser(newUser);
+        };
+
 
         $scope.loginSubmit = function (email, password, validForm) {
             if (!validForm) return;

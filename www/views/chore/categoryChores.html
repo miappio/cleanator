@@ -4,7 +4,7 @@
     <ion-nav-buttons side="left">
         <a class="button button-icon icon ion-arrow-left-b" ng-href="#/config/category"></a>
     </ion-nav-buttons>
-    <ion-content  class="has-footer">
+    <ion-content class="has-footer">
 
 
         <ion-refresher
@@ -44,8 +44,9 @@
 
                     <section id="{{chore._id}}"></section>
                     {{chore[choreCols.name]}}
-                    <span class="badge" ng-show="{{chore[choreCols.priority] < 3}}"><i
-                            class="ion-icon ion-star"></i></span>
+                    <span class="badge" ng-show="{{chore[choreCols.priority] < 3}}">
+                        <i class="ion-icon ion-star"></i>
+                    </span>
 
                     <ion-option-button class="button-info" ng-click="choreDeactivate(chore)" translate>
                         ChoreDeactivate
@@ -73,7 +74,7 @@
                           ng-href="#/chore/{{chore._id}}">
 
 
-                    <section id="{{chore._id}}"></section>
+                    <section></section>
                     {{chore[choreCols.name]}}
                     <ion-option-button class="button-info" ng-click="choreActivate(chore)" translate>
                         ChoreActivate

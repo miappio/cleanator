@@ -4,21 +4,13 @@
 
 > :hamburger:  tasty and useful chore organizer for couple.
 
-> [Running](#running) | [Testing](#testing) | [APIs](#apis) | [DevOps](#devops) | [Thanks!](#thanks)
+>  [Thanks!](#thanks)
 
-# Roll up our sleeves 
 
-### Running
-
-### Testing
-
-### DevOps
-
-### Deploy
 
 # Thanks
 
-[@miapp.io](https://miapp.io) @mat_cloud @gandhi @dalai_lama @my_wife !  :)
+[@miapp.io](https://miapp.io) @mat_cloud
 
 
                                               proudly supported by miapp.io

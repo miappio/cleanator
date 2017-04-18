@@ -1,13 +1,13 @@
 angular
     .module('srvDataContainer', ['srvData.pouchdb'])
-    .factory('srvDataContainer', function ($log, $q, $http, $rootScope, $cordovaNetwork, filterFilter, srvData, srvConfig, MiappService, appForceOffline) {
-        return new SrvDataContainer($log, $q, $http, $rootScope, $cordovaNetwork, filterFilter, srvData, srvConfig, MiappService, appForceOffline);
+    .factory('srvDataContainer', function ($log, $q, $http, $rootScope, $cordovaNetwork, filterFilter, srvData, srvConfig, MiappService, demoMode) {
+        return new SrvDataContainer($log, $q, $http, $rootScope, $cordovaNetwork, filterFilter, srvData, srvConfig, MiappService, demoMode);
     });
 
 var SrvDataContainer = (function () {
     'use strict';
 
-    function Service($log, $q, $http, $rootScope, $cordovaNetwork, filterFilter, srvData, srvConfig, MiappService, appForceOffline) {
+    function Service($log, $q, $http, $rootScope, $cordovaNetwork, filterFilter, srvData, srvConfig, MiappService, demoMode) {
 
         var self = this;
         self.$log = $log;
@@ -19,15 +19,15 @@ var SrvDataContainer = (function () {
         self.srvConfig = srvConfig;
         self.srvMiapp = MiappService;
 
-        self.appForceOffline = appForceOffline;
+        self.demoMode = demoMode;
         // Check Online Event based on Cordova
         self.isCordovaOnline = false;
-        if (!self.appForceOffline) {
+        if (!self.demoMode) {
             //if ($cordovaNetwork && $cordovaNetwork.isCordovaOnline)
             //    self.isCordovaOnline = $cordovaNetwork.isCordovaOnline();
             self.isCordovaOnline = true;
 
-                // listen for Online event
+            // listen for Online event
             $rootScope.$on('$cordovaNetwork:online', function (event, networkState) {
                 self.isCordovaOnline = true;
                 console.log('self.isCordovaOnline ON');
@@ -528,6 +528,8 @@ var SrvDataContainer = (function () {
         var indicAPer = indicAB ? (Math.round((indicA * 100 / (indicAB)))) : 50;
         var indicBPer = indicAB ? (Math.round((indicB * 100 / (indicAB)))) : 50;
         choresIndicFeasibility = choresIndicTimeRequired ? (usersIndicTimeAvailabity * 2 / choresIndicTimeRequired) : 0;
+
+        console.log('computeIndicators :', indicAPer, indicBPer, userATimeSpent, userBTimeSpent, usersIndicTimeAvailabity, choresIndicTimeRequired, choresIndicFeasibility);
 
         return {
             indicPercent: [indicAPer, indicBPer],

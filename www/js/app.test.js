@@ -27,13 +27,13 @@ describe('myAngularApp', function () {
 
     describe('myAngularApp injection', function () {
 
-        var _launched, _appForceOffline;
+        var _launched, _demoMode;
 
         beforeEach(module('myAngularApp'));
         beforeEach(function (done) {
             inject(function ($injector) {
                 _launched = $injector.get('launched');
-                _appForceOffline = $injector.get('appForceOffline');
+                _demoMode = $injector.get('demoMode');
                 done();
             });
         });
@@ -43,7 +43,7 @@ describe('myAngularApp', function () {
 
         it('should provide app constants', function () {
 
-            expect(_appForceOffline).toBeTruthy();
+            expect(_demoMode).toBeTruthy();
             expect(_launched).toBeDefined();
             expect(typeof _launched).toBe('object');
 
@@ -66,8 +66,8 @@ describe('myAngularApp', function () {
 
                 //var appIsTest = $injector.get('appIsTest');
                 //expect(appIsTest).toBe(true);
-                var appForceOffline = $injector.get('appForceOffline');
-                expect(appForceOffline).toBe(true);
+                var demoMode = $injector.get('demoMode');
+                expect(demoMode).toBe(true);
                 var appAuthEndpoint = $injector.get('appAuthEndpoint');
                 expect(appAuthEndpoint).toBe('demo.com/api');
 

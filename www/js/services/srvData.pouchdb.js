@@ -94,7 +94,8 @@ var SrvDataPouchDB = (function () {
             actionDoneDate: 'actionDoneDate',
             internalWeight: 'internalWeight',
             internalLate: 'internalLate',
-            lastModified: 'lastModified'
+            lastModified: 'lastModified',
+            histoComment: 'histoComment'
         };
         self.categoryColumns = {
             type: 'docType',
@@ -606,7 +607,7 @@ var SrvDataPouchDB = (function () {
 
                 if (late >= -maxDays && isAvailable) {
                     var prioWeight = 1;
-                    if (historic[self.historicColumns.priority] == 1) prioWeight = 2;
+                    if (historic[self.historicColumns.priority] < 3) prioWeight = 2;
                     var weight = ((late + 40 - freq) / freq) * prioWeight;
                     if (weight < 0) {
                         console.log("weight" + weight);

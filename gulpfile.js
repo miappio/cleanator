@@ -67,7 +67,7 @@ gulp.task('git-check', function (done) {
     done();
 });
 
-gulp.task('config', function () {
+gulp.task('config-xml', function () {
     return gulp.src(['config.xml'])
         .pipe(cheerio({
             run: function ($) {
@@ -83,6 +83,22 @@ gulp.task('config', function () {
                 // in development launch the app with a different html file
                 //$('content').attr('src', process.env.NODE_ENV == 'development' ? 'debug.html' : 'index.html');
 
+            },
+            parserOptions: {
+                xmlMode: true
+            }
+        }))
+        .pipe(gulp.dest('.'));
+});
+
+gulp.task('config-demo-xml', function () {
+    return gulp.src(['config.xml'])
+        .pipe(cheerio({
+            run: function ($) {
+                // get the id from package.json
+                $('widget').attr('id', ''+require('./package').id+'demo');
+                $('name').text(''+require('./package').name+' (demo)');
+                $('description').text(''+require('./package').description+' (demo)');
             },
             parserOptions: {
                 xmlMode: true
@@ -164,10 +180,9 @@ gulp.task('config-as-demo-js', function () {
  * Defaut & Watch
  */
 
-gulp.task('default', ['sass', 'config', 'config-demo-js', 'config-js', 'nggettext_extract', 'nggettext_compile']);
+gulp.task('default', ['sass', 'config-xml', 'config-demo-js', 'config-js', 'nggettext_extract', 'nggettext_compile']);
 
 gulp.task('watch', function () {
     gulp.watch(paths.sass, ['sass']);
-    //gulp.watch(paths.config, ['config', 'config-www2', 'config-www3']);
     gulp.watch(paths.html, ['nggettext_extract', 'nggettext_compile']);
 });

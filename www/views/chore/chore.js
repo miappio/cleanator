@@ -19,11 +19,6 @@ angular.module('myAngularApp.views.chore', [])
                 templateUrl: 'views/chore/categoryChores.html',
                 controller: 'CategoryChoresCtrl'
             })
-            .state('categoryDetail', {
-                url: '/category/:categoryId',
-                templateUrl: 'views/chore/categoryDetail.html',
-                controller: 'CategoryDetailCtrl'
-            })
             .state('choreDetail', {
                 url: '/chore/:choreId',
                 templateUrl: 'views/chore/choreDetail.html',
@@ -91,6 +86,7 @@ angular.module('myAngularApp.views.chore', [])
             srvData.Chore.findOneById($scope.choreId)
                 .then(function (chore) {
                     $scope.choreToEdit = chore;
+                    $scope.choreSetPriority($scope.choreToEdit[$scope.choreCols.priority]);
                     $scope.choresDetailSyncroThumb();
 
                     // retrieve UserAffinity
@@ -177,8 +173,16 @@ angular.module('myAngularApp.views.chore', [])
 
         $scope.choreDetailComputeAffinity = function (AUserAffinity, BUserAffinity) {
             var total = (AUserAffinity && BUserAffinity) ? (parseInt(AUserAffinity) + parseInt(BUserAffinity)) : 0;
-            var percent = (total && total > 0) ? (parseInt(AUserAffinity) * 100 / total) : 50;
+            var percent = (total && total > 0) ? (parseInt(BUserAffinity) * 100 / total) : 50;
             $scope.choreToEdit[$scope.choreCols.percentAB] = Math.round(percent);
+            console.log('choreDetailComputeAffinity : ', AUserAffinity, BUserAffinity, total, percent, $scope.choreToEdit);
+        };
+
+        $scope.chorePriority = false;
+        $scope.choreSetPriority = function (bool) {
+            var priorityLevel = !!bool ? 0 : 5;
+            $scope.choreToEdit[$scope.choreCols.priority] = priorityLevel;
+            console.log('choreSetPriority : ', bool, priorityLevel, $scope.choreToEdit);
         };
 
         // Initialization
@@ -347,7 +351,6 @@ angular.module('myAngularApp.views.chore', [])
                 console.log('categoryChoresInit :', $scope.categoryChores.length);
             }, 200);
         };
-
 
 
         $scope.categoryChoreDataSync = function () {

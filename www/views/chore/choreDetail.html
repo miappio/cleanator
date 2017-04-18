@@ -66,11 +66,8 @@
                     -->
                     <li class="item item-toggle">
                         {{'ChorePriority'|translate}}
-                        <!--
-                       <span style="color:red;font-style: italic;padding-left: 20px;" ng-show="choreToEdit && (choreToEdit[choreCols.priority] == 1)"><i class="icon ion-star"></i></span>
-                       -->
                         <label class="toggle toggle-assertive">
-                            <input type="checkbox" ng-model="choreToEdit[choreCols.priority]">
+                            <input type="checkbox" ng-model="chorePriority" ng-change="choreSetPriority(chorePriority)">
                             <div class="track">
                                 <div class="handle"></div>
                             </div>
@@ -100,7 +97,6 @@
                         <input type="range" min="1" max="60" ng-model="choreToEdit[choreCols.frequencyDays]">
                         <i class="icon ion-stats-bars"></i>
                     </li>
-
 
                     <li class="item item-avatar" style="border-bottom:0;">
                         <img ng-src="{{navProfils[userA[userCols.profilID]].img}}">

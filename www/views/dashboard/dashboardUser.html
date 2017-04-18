@@ -83,11 +83,6 @@
                 <ion-list>
                     <div class="item item-divider">
                         <span ng-bind-html="dashboardDisplayHistoricCalendar()"></span>
-                        <!--<span ng-show="(dashboardAvailability(null, dashboardSearch.userId) <= 0) || dashboardCheckTodayIsEmpty()"
-                              class="badge badge-balanced" translate>Did it !</span>
-                        <span ng-show="dashboardAvailability(null, dashboardSearch.userId) > 0 && !dashboardCheckTodayIsEmpty()"
-                              class="badge badge-assertive">{{dashboardAvailability(null, dashboardSearch.userId)}}&nbsp;
-                        <span translate>mn</span>-->
                     </span>
                     </div>
                     <label class="item item-input item-select" style="border:0">
@@ -121,7 +116,7 @@
                         <small ng-hide="dashboardShowLastHistoricDate(dashboardHistoricToDoNow)" translate>none</small>
                         <p>{{dashboardHistoricToDoNow[historicCols.description]}}</p>
                         <button class="button button-dark"
-                                ng-click="dashboardTerminateHistoricNow(dashboardHistoricToDoNow); dashboardChoresCategoryFilter= null;"
+                                ng-click="dashboardOpenModal(dashboardHistoricToDoNow); dashboardChoresCategoryFilter= null;"
                                 style="margin-top:20px;">
                             <small translate>Terminated</small>
                         </button>
