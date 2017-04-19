@@ -1,6 +1,6 @@
 {
   "name": "cleanator",
-  "version": "17.4.14",
+  "version": "17.4.19",
   "id": "io.miapp.cleanator",
   "description": "smart couple organizer",
   "author": "mlefree",
@@ -59,6 +59,7 @@
     "build:demo": "npm run build:prod && npm run build:add-demo && npm run build:device-demo",
     "test": "npm run build:demo && node_modules/.bin/karma start tests/karma.unit-tests.conf.js",
     "start": "npm run build:demo && node_modules/.bin/http-server -a 0.0.0.0 -p 8080 www/",
-    "android": "npm run build:prod && ionic platform add android && ionic build android && ionic run android --device"
+    "android": "npm run build:prod && ionic platform add android && ionic build android && ionic run android --device",
+    "android:demo": "npm run build:demo && ionic platform add android && ionic build android && ionic run android --device"
   }
 }
