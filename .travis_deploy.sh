@@ -24,5 +24,5 @@ touch "travis.did.the.job.$today"
 rm .travis.yml
 
 git add -A .
-git commit -m "travis rev: ${rev}"
+git commit -m "[ci skip] travis rev: ${rev}"
 git push -q upstream HEAD:_travis
