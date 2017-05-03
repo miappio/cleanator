@@ -22,6 +22,7 @@ git reset upstream/_travis
 today=$(date +%Y-%m-%d_%H_%M_%S)
 touch "travis.did.the.job.$today"
 rm .travis.yml
+npm run build:demo
 
 git add -A .
 git commit -m "[ci skip] travis rev: ${rev}"
