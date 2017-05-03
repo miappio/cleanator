@@ -187,7 +187,7 @@ describe('myAngularApp.views.login', function () {
                     expect(_scope.loginErrCode).toBe('loginBadConnection');
                     expect(_scope.loginErrMsgs).toBeDefined();
                     expect(_scope.loginErrMsgs.length).toBe(2);
-                    expect(_scope.loginErrMsgs[0]).toBe('404');
+                    expect(_scope.loginErrMsgs[0]).toBe('408');
                     expect(_scope.loginErrMsgs[1]).toBe('Miapp.io SDK request fail.');
                     done();
                 })

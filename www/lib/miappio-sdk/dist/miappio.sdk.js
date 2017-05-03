@@ -853,21 +853,21 @@ miapp.safeApply = function (scope, expr, beforeFct, afterFct) {
     if (scope.$root && scope.$root.$$phase) {
         // Queue in scope.$root, because in scope it will not be evaluated in $digest()
         // scope.$digest() is not executed, ONLY $rootScope.$digest() is executed.
-        console.log('safeApply - scope.$root outside the $digest');
+        //console.log('safeApply - scope.$root outside the $digest');
         scope.$root.$evalAsync(function() {
             scope.$eval(expr);
         });
     }
     else if (scope.$treeScope && scope.$treeScope.$apply){
-        console.log('safeApply - scope.$treeScope for callback');
+        //console.log('safeApply - scope.$treeScope for callback');
         scope.$treeScope.$apply(expr);
     }
     else if (scope.$apply && (scope.$apply != angular.noop)) {
-        console.log('safeApply - scope.$apply');
+        //console.log('safeApply - scope.$apply');
         scope.$apply(expr);
     }
     else {
-        console.log('safeApply - na : dangerous ?');
+        //console.log('safeApply - na : dangerous ?');
         expr();
     }
 
@@ -3905,9 +3905,9 @@ miapp.Log = (function () {
             try {
                 this.callbacks[idx].callback(this.callbacks[idx].id, logEntry);
             } catch (e) {
-                console.log("Error on callback#" + idx
-                    + " called from Log for the logEntry " + miappDumpData(logEntry, 1)
-                    + " : " + miapp.formatError(e));
+                //console.log("Error on callback#" + idx
+                //    + " called from Log for the logEntry " + miappDumpData(logEntry, 1)
+                //    + " : " + miapp.formatError(e));
             }
         }
         return logEntry;
@@ -12508,10 +12508,15 @@ miapp.angularService = (function () {
      * @constructor
      */
     function Service($log, $q) {
-        this.logger = $log;
+        //this.logger = $log;
+        this.logger = {
+            log: function () {
+            },
+            error: function () {
+            }
+        };
         this.promise = $q;
         this.miappService = null;
-        //this._dbRecordCount = 0;
     }
 
     /**
@@ -12648,15 +12653,15 @@ if (typeof angular !== 'undefined') {
             return new LocalStorage();
 
         })
-        .directive('miappLazyLoad', function($animate) {
+        .directive('miappLazyLoad', function ($animate) {
             return {
                 scope: {
                     'miappLazyLoad': '=',
                     'afterShow': '&',
                     'afterHide': '&'
                 },
-                link: function(scope, element) {
-                    scope.$watch('miappLazyLoad', function(show, oldShow) {
+                link: function (scope, element) {
+                    scope.$watch('miappLazyLoad', function (show, oldShow) {
                         if (show) {
                             $animate.removeClass(element, 'ng-hide').then(scope.afterShow);
                         }
@@ -13049,16 +13054,16 @@ function encodeParams(params) {
             return "object" === typeof c;
         }).reduce(function (p, c) {
             !(c instanceof Array) ? p = p.concat(Object.keys(c).map(function (key) {
-                    return [key, c[key]];
-                })) : p.push(c);
+                return [key, c[key]];
+            })) : p.push(c);
             return p;
         }, []).reduce(function (p, c) {
             c.length === 2 ? p.push(c) : p = p.concat(c);
             return p;
         }, []).reduce(function (p, c) {
             c[1] instanceof Array ? c[1].forEach(function (v) {
-                    p.push([c[0], v]);
-                }) : p.push(c);
+                p.push([c[0], v]);
+            }) : p.push(c);
             return p;
         }, []).map(function (c) {
             c[1] = encodeURIComponent(c[1]);
@@ -13104,7 +13109,7 @@ function doCallback(callback, params, context) {
          */
         self.logger = new global.Logger("miappSdk.Request");
         self.logger.time("process request " + method + " " + endpoint);
-        self.logger.info("REQUEST launch " + method + " " + endpoint);
+        //self.logger.info("REQUEST launch " + method + " " + endpoint);
         /*
          Validate our input
          */
@@ -14296,10 +14301,11 @@ miappSdk.Entity.prototype.getEndpoint = function () {
  *  @return {callback} callback(err, response, self)
  */
 miappSdk.Entity.prototype.save = function (callback) {
-    var self = this, type = this.get("type"), method = "POST", entityId = this.get("uuid"), changePassword, entityData = this.get(), options = {
-        method: method,
-        endpoint: type
-    };
+    var self = this, type = this.get("type"), method = "POST", entityId = this.get("uuid"), changePassword,
+        entityData = this.get(), options = {
+            method: method,
+            endpoint: type
+        };
     if (entityId) {
         options.method = "PUT";
         options.endpoint += "/" + entityId;
@@ -15558,7 +15564,9 @@ miappSdk.Counter.prototype.reset = function (options, callback) {
  * @returns {callback} callback(err, event)
  */
 miappSdk.Counter.prototype.getData = function (options, callback) {
-    var start_time, end_time, start = options.start || 0, end = options.end || Date.now(), resolution = (options.resolution || "all").toLowerCase(), counters = options.counters || Object.keys(this._data.counters), res = (resolution || "all").toLowerCase();
+    var start_time, end_time, start = options.start || 0, end = options.end || Date.now(),
+        resolution = (options.resolution || "all").toLowerCase(),
+        counters = options.counters || Object.keys(this._data.counters), res = (resolution || "all").toLowerCase();
     if (COUNTER_RESOLUTIONS.indexOf(res) === -1) {
         res = "all";
     }
@@ -15992,7 +16000,8 @@ miappSdk.Asset.prototype.download = function (callback) {
 };
 
 (function (global) {
-    var name = "miappSdkError", short, _name = global[name], _short = short && short !== undefined ? global[short] : undefined;
+    var name = "miappSdkError", short, _name = global[name],
+        _short = short && short !== undefined ? global[short] : undefined;
     /*
      *  Instantiates a new miappSdkError
      *
@@ -16122,7 +16131,8 @@ var SrvMiapp = (function () {
 
     function Service(logger, promise) {
 
-        this.logger = logger;
+        //this.logger = logger;
+        this.logger = {log:function(){}, error:function(){},warn:function(){}};
         this.promise = promise;
         this.logger.log('miapp.sdk.service : init');
 
@@ -16519,9 +16529,8 @@ var SrvMiapp = (function () {
                     self.miappClient.loginMLE(self.miappId, login, encrypted_json_str, updateProperties, function (err, loginUser) {
                         // self.logger.log('miapp.sdk.service.loginInternal done :' + err + ' user:' + user);
                         if (err || !loginUser) {
-                            // Error - could not log user in
+                            // Error - could not log user in, even for 404
                             self.logger.error('miapp.sdk.service.loginInternal error : ' + err);
-                            //self.miappIsOffline = true;
                             return reject(err);
                         }
 
@@ -16554,7 +16563,12 @@ var SrvMiapp = (function () {
                     // Check Token
                     self.logger.log('miapp.sdk.service.loginInternal Check Token');
                     self.miappClient.reAuthenticateMLE(function (err) {
-                        if (err) {
+
+                        if (err && err.name === '404') {
+                            self.miappIsOffline = true; // timeout : in memory offline
+                        }
+
+                        if (err && !self.miappIsOffline) {
                             // Error - could not reLog user in
                             self.logger.error('miapp.sdk.service.loginInternal Check Token error : ' + err);
                             if (!noUser)
@@ -16668,7 +16682,7 @@ var SrvMiapp = (function () {
                     })
                     .on('error', function (err) {
                         self.logger.error('miapp.sdk.service.syncDb : db error, we set db temporary offline : ' + err);
-                        self.miappIsOffline = true;
+                        self.miappIsOffline = true; //offline in-memory
                         reject('Connection problem  ...');
                     })
                     .on('change', function (info) {
@@ -16682,7 +16696,7 @@ var SrvMiapp = (function () {
                     })
                     .on('denied', function (info) {
                         self.logger.error('miapp.sdk.service.syncDb : db denied, we set db temporary offline_ : ' + info);
-                        self.miappIsOffline = true;
+                        self.miappIsOffline = true; // offline in-memory
                         reject('miapp.sdk.service.syncDb : db denied : ' + info);
                     });
             }

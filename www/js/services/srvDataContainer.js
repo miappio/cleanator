@@ -507,7 +507,14 @@ var SrvDataContainer = (function () {
         for (var j = 0; self.chores && j < self.chores.length; j++) {
             var chore = self.chores[j];
             if (!chore[self.choreCols.desactivate]) {
-                choresIndicTimeRequired += chore[self.choreCols.timeInMn] / chore[self.choreCols.frequencyDays];
+                var mn = chore[self.choreCols.timeInMn];
+                var freq = chore[self.choreCols.frequencyDays];
+                if (mn && freq)
+                    choresIndicTimeRequired += parseFloat( mn / freq);
+                else {
+                    console.log('chore pb to remove : ', chore);
+                    self.srvMiapp.remove(chore);
+                }
             }
         }
 

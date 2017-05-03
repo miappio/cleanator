@@ -389,6 +389,36 @@ angular
 
         };
 
+        //todo refactor getDateText ?
+        function getDateText(dateText) {
+            var dateT = null;
+            if (!dateText) return dateT;
+
+            var date = new Date(dateText);
+            dateT = '' + padInteger(date.getDate(), 2) + '/' + padInteger(date.getMonth(), 2) + '/' + padInteger(date.getFullYear(), 4) + ' ' + padInteger(date.getHours(), 2) + ':' + padInteger(date.getMinutes(), 2);
+            return dateT;
+        }
+        function padInteger(num, size) {
+            if (!size) size = 10;
+            var s = "000000000" + num;
+            return s.substr(s.length - size);
+        }
+
+
+        $scope.dashboardShowLastHistoricDateWithChoreId = function (choreId) {
+            if (!choreId) return 'na';
+            var lastDate = srvData.getDateOfLastChoreDoneByType($scope.chores, $scope.dashboardHistoricsDone, choreId);
+            var str = getDateText(lastDate);
+            return str;
+        };
+
+        $scope.dashboardShowLastHistoricDate = function (historic) {
+            if (!historic) return 'na';
+            var choreId = historic[$scope.historicCols.choreId];
+            var str = $scope.dashboardShowLastHistoricDateWithChoreId(choreId);
+            return str;
+        };
+
         $scope.dashboardDisplayHistoricCalendar = function (dateISO) {
 
             var date = null;
@@ -523,19 +553,6 @@ angular
             return s.substr(s.length - size);
         }
 
-        $scope.dashboardShowLastHistoricDateWithChoreId = function (choreId) {
-            if (!choreId) return 'na';
-            var lastDate = srvData.getDateOfLastChoreDoneByType($scope.chores, $scope.dashboardHistoricsDone, choreId);
-            var str = getDateText(lastDate);
-            return str;
-        };
-
-        $scope.dashboardShowLastHistoricDate = function (historic) {
-            if (!historic) return 'na';
-            var choreId = historic[$scope.historicCols.choreId];
-            var str = $scope.dashboardShowLastHistoricDateWithChoreId(choreId);
-            return str;
-        };
 
         $scope.dashboardIndicatorsInit = function () {
             if (!srvConfig.isLoggedIn() || !$scope.userA) return $scope.navRedirect(srvDataContainer, 'dashboard-user', {'userId': 'a'});

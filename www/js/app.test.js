@@ -68,8 +68,8 @@ describe('myAngularApp', function () {
                 //expect(appIsTest).toBe(true);
                 var demoMode = $injector.get('demoMode');
                 expect(demoMode).toBe(true);
-                var appAuthEndpoint = $injector.get('appAuthEndpoint');
-                expect(appAuthEndpoint).toBe('demo.com/api');
+                //var appAuthEndpoint = $injector.get('appAuthEndpoint');
+                //expect(appAuthEndpoint).toBe('demo.com/api');
 
 
             });

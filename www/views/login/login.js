@@ -14,12 +14,17 @@ angular
 
     })
 
-    .controller('LoginCtrl', function ($scope, $log, $http, $q, $timeout, $ionicHistory, $ionicNavBarDelegate, srvDataContainer, demoMode) {
+    .controller('LoginCtrl', function ($scope, $log, $http, $q, $timeout, $ionicHistory, $ionicNavBarDelegate, srvDataContainer, demoMode, srvLocalStorage) {
         'use strict';
 
         $scope.demoMode = demoMode;
+        $scope.userLoginEmail = '';
 
         $scope.loginInit = function () {
+
+            var emailStored = srvLocalStorage.get('userLoginEmail');
+            if (emailStored)
+                $scope.userLoginEmail = emailStored;
 
             $ionicHistory.clearHistory();
             $ionicHistory.nextViewOptions({
@@ -60,7 +65,7 @@ angular
                 })
                 .catch(function (err) {
                     //console.log('loginErr : ', err);
-                    if (err && err.name === '404') {
+                    if (err && err.name === '408') {
                         $scope.loginErrCode = 'loginBadConnection';
                         $scope.loginErrMsgs.push(err.name);
                     } else if (err && err.name === '0') {
@@ -90,7 +95,7 @@ angular
                 })
                 .catch(function (err) {
                     console.log('loginErr : ', err);
-                    if (err && err.name === '404') {
+                    if (err && err.name === '408') {
                         $scope.loginErrCode = 'loginBadConnection';
                         $scope.loginErrMsgs.push(err.name);
                         if (err && err.message) $scope.loginErrMsgs.push(err.message);
@@ -126,6 +131,8 @@ angular
 
             var newUser = {};
             newUser.email = email;
+            srvLocalStorage.set('userLoginEmail', email);
+
             newUser.password = password; //todo : offuscate or encrypt Pass;
             return $scope.loginSignupANewUser(newUser);
         };
