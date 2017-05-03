@@ -119,7 +119,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
     });
 
-    describe('algoritm', function () {
+    xdescribe('algoritm', function () {
 
         //beforeEach(module('myAngularApp'));
         beforeEach(function () {
