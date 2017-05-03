@@ -184,7 +184,7 @@ describe('myAngularApp.services.srvDataContainer', function () {
 
     });
 
-    describe('injected', function () {
+    xdescribe('injected', function () {
 
         var log, q, http, srvData, srvDataContainer, srvConfig, srvMiapp, timeout, rootScope;
         var $httpBackend, filterFilter, _pouchDBMockEmpty, _pouchDBMockFull;
