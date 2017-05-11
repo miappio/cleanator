@@ -12918,12 +12918,17 @@ miappSdkEventable.mixin = function (destObject) {
                                 //console.log('xhr.status :', errStatus);
                                 //console.log('statusGroup :', statusGroup);
                                 //clearTimeout(timeout);
+
+                                //if (errStatus === '404')
+                                //    errStatus = '408'; // The client did not produce a request within the time that the server was prepared to wait.
+
                                 xhr.abort();
                                 var error = new miappSdkError('Miapp.io SDK request fail.', errStatus);
                                 p.done(error, null);
                             }
                         }
                     };
+
                     xhr.onerror = function (response) {
                         clearTimeout(timeout);
                         if (response && response.target && response.target.timeout === 9000) {
@@ -12952,9 +12957,20 @@ miappSdkEventable.mixin = function (destObject) {
                         //if (token) xhr.setRequestHeader('X-CSRF-Token', token);
                     }
                     xhr.timeout = 9000; // time in milliseconds
+                    xhr.ontimeout = function (e) {
+
+                        clearTimeout(timeout);
+                        var errStatus = '' + xhr.status;
+                        console.log('timeout xhr.status :', errStatus);
+                        errStatus = '408'; // The client did not produce a request within the time that the server was prepared to wait.
+                        xhr.abort();
+                        var error = new miappSdkError('Miapp.io SDK request fail.', errStatus, new Date(), 9000);
+                        console.log('timeout error :', error);
+                        p.done(error, null);
+                    };
                     timeout = setTimeout(function () {
                         xhr.abort();
-                        p.done("API Call timed out.", null);
+                        p.done("API Call timed out.", '408');
                     }, 3e4);
                     xhr.send(encode(d));
                 }
@@ -16142,7 +16158,7 @@ var SrvMiapp = (function () {
         this.miappId = null;
         this.miappSalt = 'miappDefaultSalt';
         this.miappOrg = 'miapp.io';
-        this.miappAppVersion = 'draft';
+        this.miappAppVersion = '1.0.81';
         //this.miappTestURI = null;
 
         this.miappIsOffline = _getObjectFromLocalStorage('miappIsOffline') || false;
@@ -16160,7 +16176,6 @@ var SrvMiapp = (function () {
         this._dbInitialized = false;
         this._dbFirstSyncDone = false;
     }
-
 
     /**
      *
@@ -16356,6 +16371,7 @@ var SrvMiapp = (function () {
                 })
                 .then(function () {
                     self.logger.log('miapp.sdk.service.miappSync fnInitFirstData resolved');
+                    self._dbFirstSyncDone = true;
                     return self._db.info();
                 })
                 .then(function (result) {
@@ -16564,7 +16580,7 @@ var SrvMiapp = (function () {
                     self.logger.log('miapp.sdk.service.loginInternal Check Token');
                     self.miappClient.reAuthenticateMLE(function (err) {
 
-                        if (err && err.name === '404') {
+                        if (err && err.name === '408') {
                             self.miappIsOffline = true; // timeout : in memory offline
                         }
 
@@ -16677,7 +16693,6 @@ var SrvMiapp = (function () {
                     })
                     .on('complete', function (info) {
                         self.logger.log('miapp.sdk.service.syncDb : db complete : ', info);
-                        self._dbFirstSyncDone = true;
                         resolve();
                     })
                     .on('error', function (err) {

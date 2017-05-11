@@ -6,8 +6,6 @@ angular.module('srvConfig', [])
         return new SrvConfig($log, $q, gettextCatalog, MiappService);
 });
 
-
-
 var SrvConfig = (function (){
 //'use strict';
 
@@ -20,7 +18,7 @@ var SrvConfig = (function (){
 
         this.gettextCatalog = gettextCatalog;
         this.configUserLoggedIn = null;
-        this.configAppFirstInitLevel = 0;
+        this.configAppFirstInitLevel = getObjectFromLocalStorage('configAppFirstInitLevel') || 0;
         this.configAppFirstInitLevelMax = 3;
 
         // Init lang
@@ -32,7 +30,6 @@ var SrvConfig = (function (){
         var lang = this.getConfigLang() ? this.getConfigLang().code : 'en_US';
         this.setConfigLang(lang);
     }
-
 
     // used in srvDataContainer.logout()
     service.prototype.logout = function () {
@@ -61,10 +58,9 @@ var SrvConfig = (function (){
         return b;
     };
 
-
     service.prototype.getAppFirstInitLevel = function () {
-      var obj = getObjectFromLocalStorage('configAppFirstInitLevel');
-      this.configAppFirstInitLevel = obj || 0;
+      //var obj = getObjectFromLocalStorage('configAppFirstInitLevel');
+      //this.configAppFirstInitLevel = obj || 0;
       return this.configAppFirstInitLevel;
     };
     service.prototype.setAppFirstInitLevel = function (level) {
@@ -77,7 +73,6 @@ var SrvConfig = (function (){
       if (level == this.configAppFirstInitLevelMax) b = true;
       return b;
     };
-
 
     // @return langs formatted as [{title:'English', code:'en_US'},{}...]
     service.prototype.getConfigLangs = function () {
@@ -102,7 +97,6 @@ var SrvConfig = (function (){
     };
 
 
-
     //Local Storage utilities
     function setObjectFromLocalStorage(id, object){
       if(typeof(Storage) === "undefined") return null;
@@ -114,7 +108,6 @@ var SrvConfig = (function (){
       //self.$log.log('retrievedObject: ', JSON.parse(retrievedObject));
       return jsonObj;
     }
-
     function getObjectFromLocalStorage(id){
         if(typeof(Storage) === "undefined") return null;
 

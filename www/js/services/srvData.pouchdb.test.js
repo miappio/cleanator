@@ -86,6 +86,8 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
         });
 
         afterEach(function () {
+            $httpBackend.verifyNoOutstandingExpectation(false);
+            $httpBackend.verifyNoOutstandingRequest();
         });
 
         it('should be correctly initialized', function () {
@@ -119,7 +121,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
     });
 
-    xdescribe('algoritm', function () {
+    describe('algoritm', function () {
 
         //beforeEach(module('myAngularApp'));
         beforeEach(function () {

@@ -123,7 +123,7 @@ var srvNavigation = (function () {
             return deferred.promise;
         };
 
-        self.$rootScope.navRedirect(null, 'dashboard-user');//, {'userId': 'a'});
+        //self.$rootScope.navRedirect(null, 'dashboard-user');//, {'userId': 'a'});
         //self.$rootScope.navRedirect(null, 'login');
         self.initDone = true;
     };

@@ -46,7 +46,7 @@ angular
             gettextCatalog.debug = demoMode;
 
             // miapp.io
-            MiappService.init(miappId, miappSalt, !demoMode);
+            MiappService.init(miappId, miappSalt, !demoMode,'http://localhost:3000/api');
 
             // app services
             srvData.init();

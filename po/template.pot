@@ -115,7 +115,7 @@ msgstr ""
 msgid "Feasibility"
 msgstr ""
 
-#: user/userAll.html:68
+#: user/userAll.html:72
 msgid "Footer_ButtonWhen"
 msgstr ""
 
@@ -166,13 +166,13 @@ msgstr ""
 msgid "Last reset:"
 msgstr ""
 
-#: user/userAll.html:67
+#: user/userAll.html:71
 msgid "Level0_You’ve set your profiles ? Ready for the next part : setting all the chores you have to deal with."
 msgstr ""
 
 #: login/loginIn.html:61
 #: login/loginIn.html:96
-#: user/userAll.html:78
+#: user/userAll.html:82
 msgid "LoginLanguage"
 msgstr ""
 
@@ -318,11 +318,11 @@ msgstr ""
 msgid "UserBackToSession"
 msgstr ""
 
-#: user/userAll.html:93
+#: user/userAll.html:97
 msgid "UserEmail"
 msgstr ""
 
-#: user/userAll.html:91
+#: user/userAll.html:95
 msgid "UserEmailCouple"
 msgstr ""
 
@@ -330,11 +330,11 @@ msgstr ""
 msgid "UserLogout"
 msgstr ""
 
-#: user/userAll.html:37
+#: user/userAll.html:41
 msgid "UserPseudoA"
 msgstr ""
 
-#: user/userAll.html:52
+#: user/userAll.html:56
 msgid "UserPseudoB"
 msgstr ""
 

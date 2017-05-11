@@ -11,11 +11,11 @@ if (!configModule) {
         .constant("appVersion", "17.4.19")
 
         // from miapp.io
-        .constant("miappId", "demo")
+        .constant("miappId", "59136b2075a64b02bc31689b")
         .constant("miappSalt", "demo")
 
         // for backend
-        .constant('demoMode', true)
+        .constant('demoMode', false)
 
         // from google analytics
         .constant("appGAID", "UA-xxxxx");

@@ -59,7 +59,6 @@ var SrvDataContainer = (function () {
         self.$rootScope.navigLangs = self.getConfigLangs();
         self.$rootScope.navigLang = self.getConfigLang();
 
-
         self.$rootScope.navChangeLang = function (lang) {
             self.setConfigLang(lang);
         };
@@ -102,6 +101,14 @@ var SrvDataContainer = (function () {
         self.$rootScope.navAppOnlineLevel = function () {
             return self.isCordovaOnline ? 'o' : 'n';
         };
+
+        // BindFunction
+        self.bindDone = false;
+        self.bindData = bindData;
+        self.bindCategories = bindCategories;
+        self.bindChores = bindChores;
+        self.bindCouple = bindCouple;
+        self.bindHistoricsDone = bindHistoricsDone;
 
     }
 
@@ -154,21 +161,29 @@ var SrvDataContainer = (function () {
         if (!userMain || !userMain.email) return self.$q.reject('srvDataContainer.sync : Need one user logged in.');
 
         self.$log.log('srvDataContainer.sync');
+        var firstSyncDone = false;
         return new self.$q(function (resolve, reject) {
             self.srvMiapp
                 .sync(
                     function (miappSrv) {
-                        self.$log.log('srvDataContainer.sync first data');
+                        self.$log.log('srvDataContainer.sync first data. ', firstSyncDone);
+                        firstSyncDone = true;
                         return self.initWithFirstData(lang, userMain);
                     },
                     self.isCordovaOnline
                 )
                 .then(function () {
-                    return bindData(self);
+                    return self.bindData();
                 })
                 .then(function (err) {
                     if (err) return reject(err);
-                    self.$log.log('srvDataContainer.sync resolved');
+                    self.$log.log('srvDataContainer.sync resolved. ', firstSyncDone);
+                    if (!firstSyncDone && !self.bindDone) {
+                        // we have data
+                        self.srvConfig.setAppFirstInitLevel(3);
+                    }
+
+                    self.bindDone = true;
                     resolve();
                 })
                 .catch(function (err) {
@@ -550,9 +565,9 @@ var SrvDataContainer = (function () {
     // --------------------------
     // Private functions
     // --------------------------
+    var bindData = function () {
 
-    var bindData = function (self) {
-
+        var self = this;
         self.$log.log('srvDataContainer.bindData');
         var deferred = self.$q.defer();
         var userMain = self.srvConfig.getUserLoggedIn();
@@ -564,19 +579,19 @@ var SrvDataContainer = (function () {
             self.srvData.User.findOneByEmail(userMain.email)
                 .then(function (user) {
                     self.$log.log('srvDataContainer.bindData user:' + user.email);
-                    return bindCouple(self);
+                    return self.bindCouple();
                 })
                 .then(function (couple) {
                     self.$log.log('srvDataContainer.bindData couple:' + couple);
-                    return bindCategories(self);
+                    return self.bindCategories();
                 })
                 .then(function (categories) {
                     self.$log.log('srvDataContainer.bindData categories:' + categories.length);
-                    return bindChores(self);
+                    return self.bindChores();
                 })
                 .then(function (chores) {
                     self.$log.log('srvDataContainer.bindData chores:' + chores.length);
-                    return bindHistoricsDone(self);
+                    return self.bindHistoricsDone();
                 })
                 .then(function (historics) {
                     self.$log.log('srvDataContainer.bindData historics:' + historics.length);
@@ -591,8 +606,8 @@ var SrvDataContainer = (function () {
         return deferred.promise;
     };
 
-    var bindCouple = function (self) {
-        //var self = this;
+    var bindCouple = function () {
+        var self = this;
         var deferred = self.$q.defer();
 
         var userMain = self.srvConfig.getUserLoggedIn();
@@ -617,8 +632,8 @@ var SrvDataContainer = (function () {
         return deferred.promise;
     };
 
-    var bindChores = function (self) {
-        //var self = this;
+    var bindChores = function () {
+        var self = this;
         var deferred = self.$q.defer();
         //deferred.resolve(this.chores);
         //deferred.reject(err);
@@ -637,8 +652,8 @@ var SrvDataContainer = (function () {
         return deferred.promise;
     };
 
-    var bindCategories = function (self) {
-        //var self = this;
+    var bindCategories = function () {
+        var self = this;
         var deferred = self.$q.defer();
         self.srvData.Category.findAll().then(function (categories) {
             self.categories = categories;
@@ -648,8 +663,8 @@ var SrvDataContainer = (function () {
     };
 
     // Find and bind historics marked as "done" in db
-    var bindHistoricsDone = function (self) {
-        //var self = this;
+    var bindHistoricsDone = function () {
+        var self = this;
         var deferred = self.$q.defer();
 
         self.srvData.Historic.findAll(true)

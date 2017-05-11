@@ -139,6 +139,6 @@ angular
 
         // Init
         $scope.loginInit();
-        if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
+        //if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
 
     });

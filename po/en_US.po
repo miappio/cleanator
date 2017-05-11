@@ -24,7 +24,7 @@ msgstr "-- choose chore --"
 msgid "01valid.email@required.com"
 msgstr "valid.email@required.com"
 
-#: chore/categoryChores.html:65
+#: chore/categoryChores.html:64
 msgid "AddOneChore.."
 msgstr "add one chore"
 
@@ -52,27 +52,27 @@ msgstr "got it"
 msgid "Changing your email means logout and loosing this Cleanator session"
 msgstr "Changing your email means logout"
 
-#: chore/categoryChores.html:80
+#: chore/categoryChores.html:79
 msgid "ChoreActivate"
 msgstr "activate"
 
-#: chore/categoryChores.html:52
+#: chore/categoryChores.html:51
 msgid "ChoreDeactivate"
 msgstr "deactivate"
 
-#: chore/choreDetail.html:78 chore/choreDetail.html:80
+#: chore/choreDetail.html:77 chore/choreDetail.html:79
 msgid "ChoreDescription"
 msgstr "Description"
 
-#: chore/choreDetail.html:130
+#: chore/choreDetail.html:125
 msgid "ChoreDetailRemove"
 msgstr "Remove"
 
-#: chore/choreDetail.html:85
+#: chore/choreDetail.html:84
 msgid "ChoreEstimate"
 msgstr "Estimate"
 
-#: chore/choreDetail.html:93
+#: chore/choreDetail.html:92
 msgid "ChoreFrequency"
 msgstr "Frequency"
 
@@ -167,10 +167,6 @@ msgstr "Choose the categories you need"
 msgid "Guider_Swipe them to unactivate it"
 msgstr "and swipe what is unrelevant…"
 
-#: dashboard/dashboardIndicator.html:68
-msgid "History of all done by"
-msgstr "History of all done by"
-
 #: dashboard/dashboardIndicator.html:33
 msgid "Last reset:"
 msgstr "Last reset:"
@@ -207,7 +203,7 @@ msgstr ""
 msgid "Monday"
 msgstr "Monday"
 
-#: chore/categoryChores.html:65
+#: chore/categoryChores.html:64
 msgid "New Item"
 msgstr "New item"
 
@@ -226,6 +222,10 @@ msgstr "Looks not relevant"
 #: chore/categoryChores.html:11 dashboard/dashboardUser.html:39
 msgid "PullToRefresh"
 msgstr "Pull to refresh …"
+
+#: dashboard/dashboardIndicator.html:68
+msgid "Record of anything done by"
+msgstr "All done by"
 
 #: dashboard/dashboardUser.html:71
 msgid "Report"
@@ -300,7 +300,7 @@ msgstr "Tuesday"
 msgid "Unforeseen item :"
 msgstr "Unforeseen item :"
 
-#: chore/categoryAll.html:112 chore/categoryChores.html:70
+#: chore/categoryAll.html:112 chore/categoryChores.html:69
 msgid "Unusefull list"
 msgstr "not for us :"
 
@@ -340,15 +340,15 @@ msgstr "Wednesday"
 msgid "You are in demo mode"
 msgstr "You are in demo mode"
 
-#: chore/choreDetail.html:109 chore/choreDetail.html:120
+#: chore/choreDetail.html:104 chore/choreDetail.html:115
 msgid "affinity for this item"
 msgstr "affinity for this item"
 
-#: chore/choreDetail.html:94
+#: chore/choreDetail.html:93
 msgid "day(s)"
 msgstr "day(s)"
 
-#: chore/choreDetail.html:94
+#: chore/choreDetail.html:93
 msgid "each"
 msgstr "each"
 
@@ -388,7 +388,7 @@ msgstr "minutes av./day"
 msgid "minutes,"
 msgstr "minutes,"
 
-#: chore/choreDetail.html:86 user/userCalendar.html:103
+#: chore/choreDetail.html:85 user/userCalendar.html:103
 #: user/userCalendar.html:109 user/userCalendar.html:115
 #: user/userCalendar.html:121 user/userCalendar.html:127
 #: user/userCalendar.html:149 user/userCalendar.html:155

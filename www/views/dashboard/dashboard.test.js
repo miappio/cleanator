@@ -1,15 +1,15 @@
 describe('myAngularApp.views.dashboard', function () {
     'use strict';
-    var $httpBackend, $rootScope, _scope, $timeout, $routeParams, $q, srvData, srvConfig, srvDataContainer, createController, authRequestHandler;
+    var _httpBackend, $rootScope, _scope, $timeout, $routeParams, $q, srvData, srvConfig, srvDataContainer, createController, authRequestHandler;
     var $stateProvider, $stateParams, $ionicModal, $urlRouterProvider, $ionicConfigProvider;
 
     beforeEach(module('myAngularApp'));
     beforeEach(module('myAngularApp.views.dashboard'));
     beforeEach(inject(function ($injector) {
         // Set up the mock http service responses
-        $httpBackend = $injector.get('$httpBackend');
+        _httpBackend = $injector.get('$httpBackend');
         // backend definition common for all tests
-        //authRequestHandler = $httpBackend.when('GET', '/auth.py')
+        //authRequestHandler = _httpBackend.when('GET', '/auth.py')
         //                       .respond({userId: 'userX'}, {'A-Token': 'xxx'});
 
         // Get hold of a scope (i.e. the root scope)
@@ -30,7 +30,7 @@ describe('myAngularApp.views.dashboard', function () {
 
         createController = function () {
             var fakedMainResponse = {};
-            $httpBackend.when('GET', 'views/user/userCalendar.html').respond(fakedMainResponse);
+            _httpBackend.when('GET', 'views/user/userCalendar.html').respond(fakedMainResponse);
 
             //$scope, $timeout, $routeParams, $q, srvData, srvConfig
             //$scope, $timeout, $q, srvData, srvConfig)
@@ -48,6 +48,10 @@ describe('myAngularApp.views.dashboard', function () {
         };
     }));
 
+    afterEach(function () {
+        _httpBackend.verifyNoOutstandingExpectation(false);
+        _httpBackend.verifyNoOutstandingRequest();
+    });
 
     describe('initialisation', function () {
         // before each test in this block, generates a fresh directive

@@ -15,7 +15,7 @@ if (!configModule) {
         .constant("miappSalt", "demo")
 
         // for backend
-        .constant('demoMode', true)
+        .constant('demoMode', demo)
 
         // from google analytics
         .constant("appGAID", "UA-xxxxx");

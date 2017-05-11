@@ -2,7 +2,7 @@ angular
 
     .module('myAngularApp.views.dashboard', [])
 
-    .config(function ($stateProvider) {
+    .config(function ($stateProvider, $urlRouterProvider) {
 
         $stateProvider
             .state('dashboard-user', {
@@ -18,7 +18,9 @@ angular
                 controller: 'DashboardIndicatorCtrl'
             });
 
-        //$urlRouterProvider.otherwise('/dashboard/user/a');
+        //$stateProvider.otherwise('dashboard-user');
+
+        $urlRouterProvider.otherwise('/dashboard/user/a');
     })
 
     .controller('DashboardCtrl', function ($scope, $timeout, $log, $q, $stateParams, $ionicModal, srvDataContainer, srvData, srvConfig) {

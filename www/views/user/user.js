@@ -8,7 +8,6 @@ angular.module('myAngularApp.views.user', [])
                 abstract: true,
                 templateUrl: 'views/user/configTabs.html'
             })
-
             .state('config.couple', {
                 url: '/couple',
                 cache: false,
@@ -249,7 +248,7 @@ angular.module('myAngularApp.views.user', [])
                 srvDataContainer
                     .logout()
                     .then(function () {
-                        if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
+                        if ($scope.navRedirect) $scope.navRedirect(srvDataContainer,'login');
                     });
             }
         };

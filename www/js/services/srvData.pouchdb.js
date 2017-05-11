@@ -173,7 +173,7 @@ var SrvDataPouchDB = (function () {
                     }
 
                     var respLength = response.rows.length;
-                    if (!respLength) return deferred.reject('srvData.pouchdb.User.findOneByEmail : No user list_');
+                    if (!respLength) return deferred.reject('srvData.pouchdb.User.findOneByEmail : No user list');
 
                     var respTested = 0;
                     var respFound = false;

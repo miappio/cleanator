@@ -24,7 +24,7 @@ msgstr "— choisissez une tâche —"
 msgid "01valid.email@required.com"
 msgstr "votre.email@requis.fr"
 
-#: chore/categoryChores.html:65
+#: chore/categoryChores.html:64
 msgid "AddOneChore.."
 msgstr "Rajouter une tâche"
 
@@ -52,27 +52,27 @@ msgstr "J’ai compris"
 msgid "Changing your email means logout and loosing this Cleanator session"
 msgstr "Changer d’email implique que vous allez être déconnecté."
 
-#: chore/categoryChores.html:80
+#: chore/categoryChores.html:79
 msgid "ChoreActivate"
 msgstr "Activer"
 
-#: chore/categoryChores.html:52
+#: chore/categoryChores.html:51
 msgid "ChoreDeactivate"
 msgstr "Désactiver"
 
-#: chore/choreDetail.html:78 chore/choreDetail.html:80
+#: chore/choreDetail.html:77 chore/choreDetail.html:79
 msgid "ChoreDescription"
 msgstr "Description"
 
-#: chore/choreDetail.html:130
+#: chore/choreDetail.html:125
 msgid "ChoreDetailRemove"
 msgstr "Supprimer cette tâche"
 
-#: chore/choreDetail.html:85
+#: chore/choreDetail.html:84
 msgid "ChoreEstimate"
 msgstr "Temps à passer"
 
-#: chore/choreDetail.html:93
+#: chore/choreDetail.html:92
 msgid "ChoreFrequency"
 msgstr "Fréquence"
 
@@ -171,10 +171,6 @@ msgstr "Choisir les catégories pertinentes"
 msgid "Guider_Swipe them to unactivate it"
 msgstr "et glisser sur le côté pour désactiver"
 
-#: dashboard/dashboardIndicator.html:68
-msgid "History of all done by"
-msgstr "Historique de"
-
 #: dashboard/dashboardIndicator.html:33
 msgid "Last reset:"
 msgstr "dernier reset :"
@@ -209,7 +205,7 @@ msgstr "Changer d’email implique de se déconnecter et de changer de session."
 msgid "Monday"
 msgstr "Lundi"
 
-#: chore/categoryChores.html:65
+#: chore/categoryChores.html:64
 msgid "New Item"
 msgstr "Nouvelle tâche"
 
@@ -228,6 +224,10 @@ msgstr "Insuffisant"
 #: chore/categoryChores.html:11 dashboard/dashboardUser.html:39
 msgid "PullToRefresh"
 msgstr "Rafraîchir "
+
+#: dashboard/dashboardIndicator.html:68
+msgid "Record of anything done by"
+msgstr "Historique de"
 
 #: dashboard/dashboardUser.html:71
 msgid "Report"
@@ -302,7 +302,7 @@ msgstr "Mardi"
 msgid "Unforeseen item :"
 msgstr "Tâche imprévue :"
 
-#: chore/categoryAll.html:112 chore/categoryChores.html:70
+#: chore/categoryAll.html:112 chore/categoryChores.html:69
 msgid "Unusefull list"
 msgstr "Tâches désactivées"
 
@@ -342,15 +342,15 @@ msgstr "Mercredi"
 msgid "You are in demo mode"
 msgstr "Vous êtes en mode démo"
 
-#: chore/choreDetail.html:109 chore/choreDetail.html:120
+#: chore/choreDetail.html:104 chore/choreDetail.html:115
 msgid "affinity for this item"
 msgstr "affinité pour cette tâche"
 
-#: chore/choreDetail.html:94
+#: chore/choreDetail.html:93
 msgid "day(s)"
 msgstr "jour(s)"
 
-#: chore/choreDetail.html:94
+#: chore/choreDetail.html:93
 msgid "each"
 msgstr "tous les"
 
@@ -390,7 +390,7 @@ msgstr "minutes moyen par jour"
 msgid "minutes,"
 msgstr "minutes,"
 
-#: chore/choreDetail.html:86 user/userCalendar.html:103
+#: chore/choreDetail.html:85 user/userCalendar.html:103
 #: user/userCalendar.html:109 user/userCalendar.html:115
 #: user/userCalendar.html:121 user/userCalendar.html:127
 #: user/userCalendar.html:149 user/userCalendar.html:155
