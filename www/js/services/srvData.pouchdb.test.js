@@ -423,7 +423,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
             timeout.flush(200);
         });
 
-        it('should compute by week - A & B are full available BUT history have same chores done', function (done) {
+        it('should compute by week - A & B of 4 days because 3 days done', function (done) {
 
             var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
             srv.init();
@@ -454,6 +454,55 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 expect(lstHistoByCalendar[1].userId).toBe(userB._id);
                 expect(lstHistoByCalendar[2].userId).toBe(userA._id);
                 expect(lstHistoByCalendar[3].userId).toBe(userB._id);
+            };
+            var failTest = function (error) {
+                console.log('computeHistoricsByCalendar err:' + error);
+                expect(error).toBeUndefined();
+            };
+            srv.computeHistoricsByCalendar(chores, histoDone, userA, userB, 7)
+                .then(testComputing)
+                .catch(failTest)
+                .finally(done);
+
+            $httpBackend.flush();
+        });
+
+        it('should compute by week - A & B of 4 days with chore done before yesterday by A', function (done) {
+
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            srv.init();
+            expect(srv.isInitDone()).toBe(true);
+
+            var oneChore = angular.copy(choreRefToCopy);
+            oneChore.frequencyDays = 4;
+            var chores = [oneChore];
+            var histoDone = [];
+            // fullish historic for both user
+            var histoA = angular.copy(histoRefToCopy);
+            histoA.userId = userA._id;
+            var beforeYesterday = new Date();
+            beforeYesterday.setDate(beforeYesterday.getDate() - (2+4+4));
+            histoA.actionDoneDate = angular.copy(beforeYesterday);
+            histoDone.push(histoA);
+            histoA = angular.copy(histoA);
+            histoA.userId = userB._id;
+            beforeYesterday.setDate(beforeYesterday.getDate() + 4);
+            histoA.actionDoneDate = angular.copy(beforeYesterday);
+            histoDone.push(histoA);
+            histoA = angular.copy(histoA);
+            histoA.userId = userA._id;
+            beforeYesterday.setDate(beforeYesterday.getDate() + 4);
+            histoA.actionDoneDate = angular.copy(beforeYesterday);
+            histoDone.push(histoA);
+
+            var testComputing = function (lstHistoByCalendar) {
+                expect(lstHistoByCalendar.length).toBe(2);
+                expect(lstHistoByCalendar[0].userId).toBe(userB._id);
+                beforeYesterday.setDate(beforeYesterday.getDate() + 4);
+                expect(lstHistoByCalendar[0].actionTodoDate.substring(7)).toBe('/'+beforeYesterday.getDate());
+                expect(lstHistoByCalendar[1].userId).toBe(userA._id);
+                beforeYesterday.setDate(beforeYesterday.getDate() + 4);
+                expect(lstHistoByCalendar[1].actionTodoDate.substring(7)).toBe('/'+beforeYesterday.getDate());
             };
             var failTest = function (error) {
                 console.log('computeHistoricsByCalendar err:' + error);

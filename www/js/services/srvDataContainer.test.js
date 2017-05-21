@@ -20,6 +20,13 @@ describe('myAngularApp.services.srvDataContainer', function () {
             "priorityComputed": 5,
             "desactivate": false
         };
+        var choreRefToCopy2 = angular.copy(choreRefToCopy);
+        choreRefToCopy2.percent_AB = "50";
+        choreRefToCopy2.frequencyDays = "1";
+        choreRefToCopy2.timeInMn = "10";
+        choreRefToCopy2.priority = "5";
+        choreRefToCopy2.priorityComputed = "5";
+        choreRefToCopy2.desactivate = "false";
         var histoRefToCopy = {
             "choreName": "Vacuum",
             "choreCategoryName": "01_Chambre",
@@ -39,6 +46,13 @@ describe('myAngularApp.services.srvDataContainer', function () {
             'internalWeight': '',
             'internalLate': ''
         };
+        var histoRefToCopy2 = angular.copy(histoRefToCopy);
+        histoRefToCopy2.percent_AB = "50";
+        histoRefToCopy2.frequencyDays = "1";
+        histoRefToCopy2.timeInMn = "10";
+        histoRefToCopy2.priority = "5";
+        histoRefToCopy2.priorityComputed = "5";
+        histoRefToCopy2.desactivate = "false";
         var userA = {
             _id: 'userA', timeInMnPerWeekTodo: 300,
             timeInMnPerMond: 35,
@@ -121,12 +135,16 @@ describe('myAngularApp.services.srvDataContainer', function () {
             expect(indicators.indicChoresFeasibility).toBe(0);
 
             //inject chores and historics
-            srv.chores = [choreRefToCopy, choreRefToCopy, choreRefToCopy, choreRefToCopy];
+            srv.chores = [choreRefToCopy, choreRefToCopy, choreRefToCopy2, choreRefToCopy];
             var historicsDone = [];
             for (var i = 0; i < 3; i++) {
                 var hist = angular.copy(histoRefToCopy);
+                hist.userId = userB._id;
+                if (i === 1) {
+                    hist = angular.copy(histoRefToCopy2);
+                    hist.userId = userA._id;
+                }
                 hist._id = i;
-                hist.userId = (i == 1) ? userA._id : userB._id;
                 historicsDone.push(hist);
             }
             srv.historicsDone = historicsDone;
@@ -157,12 +175,16 @@ describe('myAngularApp.services.srvDataContainer', function () {
             expect(time).toEqual(41);
 
             //inject chores and historics
-            srv.chores = [choreRefToCopy, choreRefToCopy, choreRefToCopy, choreRefToCopy];
+            srv.chores = [choreRefToCopy, choreRefToCopy, choreRefToCopy, choreRefToCopy2];
             var historicsDone = [];
             for (var i = 0; i < 4; i++) {
                 var hist = angular.copy(histoRefToCopy);
+                hist.userId = userA._id;
+                if (i === 1 || i === 2) {
+                    hist = angular.copy(histoRefToCopy2);
+                    hist.userId = userB._id;
+                }
                 hist._id = i;
-                hist.userId = (i == 1 || i == 2 ) ? userB._id : userA._id;
                 hist.actionTodoDate = new Date(Date.UTC(2016, 0, i));
                 hist.actionDoneDate = new Date(Date.UTC(2016, 0, i + 1));
                 historicsDone.push(hist);

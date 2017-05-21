@@ -15,7 +15,7 @@
 
             <h2 style='text-align: center;width: 100%;font-family: cleanator;' translate>for Better for Dust</h2>
 
-            <ion-list show-delete="true" ng-show="loginErrMsgs.length">
+            <ion-list show-delete="true" ng-show="loginErrCode || loginErrMsgs.length">
                 <ion-item class="item item-icon-left item-dark item-text-wrap">
                     <ion-delete-button class="ion-close-round"
                                        ng-click="loginErrMsgs.splice($index,1)"></ion-delete-button>
@@ -26,7 +26,7 @@
                     <span ng-show="loginErrCode == 'loginNoConnection'"
                           translate>No connection, please verify your network.</span>
                 </ion-item>
-                <ion-item class="item item-icon-left item-dark item-text-wrap">
+                <ion-item class="item item-icon-left item-dark item-text-wrap" ng-show="loginErrMsgs.length">
                     [
                     <small style="font-style: italic"
                            ng-repeat="msg in loginErrMsgs track by $index"> &nbsp {{msg}}

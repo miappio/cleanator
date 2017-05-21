@@ -581,18 +581,23 @@ var SrvDataPouchDB = (function () {
         //		Affectation du poids à la tache
         //         	Affectation du retard à la tache
         //		Remplissage de la liste L avec cette tâche
+        //if (chores) console.log('computeHistoricsByCalendar chores & historics length + maxDays : ', chores.length, historics.length, maxDays);
         for (i = 0; chores && (i < chores.length); i++) {
             var choreToCopy = chores[i];
             var dateLastDone = self.getDateOfLastChoreDoneByType(chores, historics, choreToCopy._id);
-            var freq = choreToCopy[self.choreColumns.frequencyDays];
+            var freq = parseInt(choreToCopy[self.choreColumns.frequencyDays]);
 
             for (var nbCopy = 1; nbCopy <= maxDays; nbCopy++) {
                 var historic = angular.copy(choreToCopy);
                 historic._id = null;
 
                 var late = 0;
-                var isAvailable = (historic[self.historicColumns.timeInMn] > 0);
-                isAvailable = !historic[self.historicColumns.desactivate];
+                var isAvailable = (parseInt(historic[self.historicColumns.timeInMn]) > 0);
+                var aa = (historic[self.historicColumns.desactivate] === 'false');
+                var ab = !!historic[self.historicColumns.desactivate];
+                var disactive = (aa && !ab);
+                isAvailable = !disactive;
+                //console.log('isAvailable ? ', aa, ab, disactive, isAvailable, historic)
 
                 if (dateLastDone) {
                     //dateLastDone = dateLastDone ? dateLastDone : new Date('2015/01/01');
@@ -605,13 +610,15 @@ var SrvDataPouchDB = (function () {
                     late = freq - (nbCopy * freq);
                 }
 
+                //console.log('late maxDays isAvailable : ', late, maxDays, isAvailable)
                 if (late >= -maxDays && isAvailable) {
                     var prioWeight = 1;
-                    if (historic[self.historicColumns.priority] < 3) prioWeight = 2;
+                    var prioH = parseInt(historic[self.historicColumns.priority]);
+                    if (prioH < 3) prioWeight = 2;
                     var weight = ((late + 40 - freq) / freq) * prioWeight;
-                    if (weight < 0) {
-                        console.log("weight" + weight);
-                    }
+                    //if (weight < 0) {
+                    //    console.log("weight" + weight);
+                    //}
                     historic[self.historicColumns.choreId] = choreToCopy._id;
                     historic[self.historicColumns.internalWeight] = weight;
                     historic[self.historicColumns.internalLate] = late;
@@ -622,6 +629,7 @@ var SrvDataPouchDB = (function () {
         }
 
         // 2) Ordonner la liste L par poids (decroissant)
+        //console.log('computeHistoricsByCalendar lstHistoLate.length : ', lstHistoLate.length);
         lstHistoLate.sort(function (histoA, histoB) {
             var a = histoA[self.historicColumns.internalWeight];
             var b = histoB[self.historicColumns.internalWeight];
@@ -640,7 +648,7 @@ var SrvDataPouchDB = (function () {
                 var historicToCopy = lstHistoLate[j];
                 angular.copy(historicToCopy, histo);
                 var lateInDays = histo[self.historicColumns.internalLate];
-                var histoTimeInMn = histo[self.historicColumns.timeInMn];
+                var histoTimeInMn = parseInt(histo[self.historicColumns.timeInMn]);
 
                 histo.iPreventNUID = "uid_" + j + "_" + day;
                 if (lateInDays >= (-day)) {
@@ -649,13 +657,13 @@ var SrvDataPouchDB = (function () {
                     // jour glissant
                     var dayOfWeek = now.getDay();
                     var slidingDayOfWeek = (day + dayOfWeek) % 7;
-                    var timeInMnPer = self.userColumns.timeInMnPerSund;
-                    if (slidingDayOfWeek == 1) timeInMnPer = self.userColumns.timeInMnPerMond;
-                    else if (slidingDayOfWeek == 2) timeInMnPer = self.userColumns.timeInMnPerTues;
-                    else if (slidingDayOfWeek == 3) timeInMnPer = self.userColumns.timeInMnPerWedn;
-                    else if (slidingDayOfWeek == 4) timeInMnPer = self.userColumns.timeInMnPerThur;
-                    else if (slidingDayOfWeek == 5) timeInMnPer = self.userColumns.timeInMnPerFrid;
-                    else if (slidingDayOfWeek == 6) timeInMnPer = self.userColumns.timeInMnPerSatu;
+                    var timeInMnPer = (self.userColumns.timeInMnPerSund);
+                    if (slidingDayOfWeek == 1) timeInMnPer = (self.userColumns.timeInMnPerMond);
+                    else if (slidingDayOfWeek == 2) timeInMnPer = (self.userColumns.timeInMnPerTues);
+                    else if (slidingDayOfWeek == 3) timeInMnPer = (self.userColumns.timeInMnPerWedn);
+                    else if (slidingDayOfWeek == 4) timeInMnPer = (self.userColumns.timeInMnPerThur);
+                    else if (slidingDayOfWeek == 5) timeInMnPer = (self.userColumns.timeInMnPerFrid);
+                    else if (slidingDayOfWeek == 6) timeInMnPer = (self.userColumns.timeInMnPerSatu);
 
                     // calcul du temps deja done pour le jour day
                     var dateTodo = new Date(now);
@@ -665,11 +673,11 @@ var SrvDataPouchDB = (function () {
                     var doneElapsed = 0;
                     if (typeof dispoA[day] == "undefined") {
                         doneElapsed = self.getDoneTimeElapsedByUser(historics, userA, dateTodo);
-                        dispoA[day] = userA[timeInMnPer] ? (userA[timeInMnPer] - doneElapsed) : 0;
+                        dispoA[day] = userA[timeInMnPer] ? (parseInt(userA[timeInMnPer]) - doneElapsed) : 0;
                     }
                     if (typeof dispoB[day] == "undefined") {
                         doneElapsed = self.getDoneTimeElapsedByUser(historics, userB, dateTodo);
-                        dispoB[day] = userB[timeInMnPer] ? (userB[timeInMnPer] - doneElapsed) : 0;
+                        dispoB[day] = userB[timeInMnPer] ? (parseInt(userB[timeInMnPer]) - doneElapsed) : 0;
                     }
 
                     // 			Si Dispo A = ok & Dispo B = ok
@@ -683,7 +691,7 @@ var SrvDataPouchDB = (function () {
                         nbA += nbATemp;
                         nbB += nbBTemp;
                         var rateA = (nbA + nbB) ? (nbA / (nbA + nbB) * 100) : 50;
-                        var affA = (100 - histo[self.historicColumns.percentAB]); //if percentAB == 0 --> A wants to do everytime : affA = 100
+                        var affA = (100 - parseInt(histo[self.historicColumns.percentAB])); //if percentAB == 0 --> A wants to do everytime : affA = 100
 
                         // Si taux de A > Affinité de A
                         // Remplissage de la liste de B (Nom de la tache + date J pour affichage)
@@ -755,6 +763,8 @@ var SrvDataPouchDB = (function () {
         // 			Sinon
         // 				Retard ++ (dans la liste, pas dans la bdd...)
         // Plus de place dispo chez A ou B : à traiter le jour suivant
+
+        //console.log('computeHistoricsByCalendar lstHistoByCalendar.length : ', lstHistoByCalendar.length);
         deferred.resolve(lstHistoByCalendar);
         return deferred.promise;
     };
@@ -971,6 +981,15 @@ var SrvDataPouchDB = (function () {
         this.dataFairIndicleanator = obj;
         return this.dataFairIndicleanator;
     };
+
+    /**
+     * @deprecated
+     * @param chores
+     * @param userA
+     * @param userB
+     * @param maxHistoric
+     * @returns {*|Function|promise}
+     */
     Service.prototype.computeHistoricsByPrior = function (chores, userA, userB, maxHistoric) {
         var i, self = this;
         var deferred = self.$q.defer();

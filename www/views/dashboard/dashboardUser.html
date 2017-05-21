@@ -116,7 +116,7 @@
                         <small ng-hide="dashboardShowLastHistoricDate(dashboardHistoricToDoNow)" translate>none</small>
                         <p>{{dashboardHistoricToDoNow[historicCols.description]}}</p>
                         <button class="button button-dark"
-                                ng-click="dashboardOpenModal(dashboardHistoricToDoNow); dashboardChoresCategoryFilter= null;"
+                                ng-click="dashboardOpenModal(dashboardHistoricToDoNow); dashboardSetCategoryToDoNow(null);dashboardSetHistoricToDoNow(null);"
                                 style="margin-top:20px;">
                             <small translate>Terminated</small>
                         </button>

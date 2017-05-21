@@ -91,7 +91,8 @@ var SrvDataContainer = (function () {
         ];
 
         self.$rootScope.navAppInitLevel = function () {
-            return self.getAppFirstInitLevel();
+            var level = self.getAppFirstInitLevel();
+            return level;
         };
 
         self.$rootScope.navSetAppInitLevel = function (level) {
@@ -205,7 +206,8 @@ var SrvDataContainer = (function () {
     };
 
     Service.prototype.getAppFirstInitLevel = function () {
-        return this.srvConfig.getAppFirstInitLevel();
+        var level = this.srvConfig.getAppFirstInitLevel();
+        return level;
     };
     Service.prototype.isAppFirstInitCompleted = function () {
         return this.srvConfig.isAppFirstInitCompleted();
@@ -511,8 +513,8 @@ var SrvDataContainer = (function () {
         var choresIndicFeasibility = 0;
         var userATimeSpent = 0;
         var userBTimeSpent = 0;
-        var userATimeAvailable = self.userA ? self.userA[self.userCols.timeInMnPerWeekTodo] : 0;
-        var userBTimeAvailable = self.userB ? self.userB[self.userCols.timeInMnPerWeekTodo] : 0;
+        var userATimeAvailable = self.userA ? parseInt(self.userA[self.userCols.timeInMnPerWeekTodo]) : 0;
+        var userBTimeAvailable = self.userB ? parseInt(self.userB[self.userCols.timeInMnPerWeekTodo]) : 0;
 
 
         // compute Average availability for the couple on a week
@@ -521,9 +523,10 @@ var SrvDataContainer = (function () {
         // compute chores Required time
         for (var j = 0; self.chores && j < self.chores.length; j++) {
             var chore = self.chores[j];
-            if (!chore[self.choreCols.desactivate]) {
-                var mn = chore[self.choreCols.timeInMn];
-                var freq = chore[self.choreCols.frequencyDays];
+            var desactive = (chore[self.choreCols.desactivate] == 'false');
+            if (!chore[self.choreCols.desactivate] || desactive) {
+                var mn = parseInt(chore[self.choreCols.timeInMn]);
+                var freq = parseInt(chore[self.choreCols.frequencyDays]);
                 if (mn && freq)
                     choresIndicTimeRequired += parseFloat( mn / freq);
                 else {
@@ -537,11 +540,11 @@ var SrvDataContainer = (function () {
         var period = 12; //TODO find vs reset
         for (var i = 0; i < self.historicsDone.length; i++) {
             var historic = self.historicsDone[i];
-            if (historic[self.historicCols.userId] == self.userA._id) {
-                userATimeSpent += historic[self.historicCols.timeInMn];
+            if (historic[self.historicCols.userId] === self.userA._id) {
+                userATimeSpent += parseInt(historic[self.historicCols.timeInMn]);
             }
             else {
-                userBTimeSpent += historic[self.historicCols.timeInMn];
+                userBTimeSpent += parseInt(historic[self.historicCols.timeInMn]);
             }
         }
         var indicA = userATimeAvailable ? (Math.round((userATimeSpent * period / userATimeAvailable) * 10) / 10) : 0;

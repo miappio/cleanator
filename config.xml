@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget xmlns:cdv="http://cordova.apache.org/ns/1.0" id="io.miapp.cleanatordemo" version="17.4.19" xmlns="http://www.w3.org/ns/widgets">
-    <name>cleanator (demo)</name>
-    <description>smart couple organizer (demo)</description>
+<widget xmlns:cdv="http://cordova.apache.org/ns/1.0" id="io.miapp.cleanator" version="17.5.20" xmlns="http://www.w3.org/ns/widgets">
+    <name>cleanator</name>
+    <description>smart couple organizer</description>
     <author email="mlefree" href="https://miapp.github.io/cleanator">mlefree</author>
     <content src="index.html"/>
     <access origin="*"/>

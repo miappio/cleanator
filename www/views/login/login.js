@@ -10,6 +10,11 @@ angular
                 templateUrl: 'views/login/loginIn.html',
                 controller: 'LoginCtrl'
             })
+            .state('loading', {
+                url: '/loading',
+                templateUrl: 'views/login/loading.html',
+                controller: 'LoadingCtrl'
+            })
         ;
 
     })
@@ -50,35 +55,6 @@ angular
         $scope.loginErrCode = '';
         $scope.loginErrMsgs = [];
 
-        /**
-         * @deprecated
-         * @param user
-         */
-        $scope.loginSetLogin = function (user) {
-
-            srvDataContainer.login(user)
-                .then(function (user) {
-
-                    $ionicNavBarDelegate.showBackButton(true);
-                    $scope.navRedirect(srvDataContainer, 'config.couple');
-
-                })
-                .catch(function (err) {
-                    //console.log('loginErr : ', err);
-                    if (err && err.name === '408') {
-                        $scope.loginErrCode = 'loginBadConnection';
-                        $scope.loginErrMsgs.push(err.name);
-                    } else if (err && err.name === '0') {
-                        $scope.loginErrCode = 'loginNoConnection';
-                        $scope.loginErrMsgs.push('Timeout');
-                    } else {
-                        $scope.loginErrCode = 'loginBadCredential';
-                        if (err && err.name) $scope.loginErrMsgs.push(err.name);
-                    }
-                    $scope.loginErrMsgs.push(err.message ? err.message : err);
-                });
-        };
-
         $scope.loginSignupANewUser = function (newUser) {
 
             $scope.loginInitSpinnerStopped = false;
@@ -90,10 +66,27 @@ angular
                 .then(function (err) {
                     if (err) return $q.reject(err);
 
+                    $scope.loginInitSpinnerStopped = true;
+                    $scope.loginWaitForLoginRequest = false;
+
+                    // reset Errors
+                    delete $scope.loginErrCode;
+                    $scope.loginErrMsgs = [];
+
                     $ionicNavBarDelegate.showBackButton(true);
-                    $scope.navRedirect(srvDataContainer, 'config.couple');
+                    return $scope.navRedirect(srvDataContainer, 'config.couple');
+
+                    // Stop the ion-refresher from spinning
+                    //$scope.$broadcast('scroll.refreshComplete');
                 })
+                //.then(function (msg) {
+                //    $state.reload();
+                //})
                 .catch(function (err) {
+
+                    $scope.loginInitSpinnerStopped = true;
+                    $scope.loginWaitForLoginRequest = false;
+
                     console.log('loginErr : ', err);
                     if (err && err.name === '408') {
                         $scope.loginErrCode = 'loginBadConnection';
@@ -107,13 +100,9 @@ angular
                         if (err && err.name) $scope.loginErrMsgs.push(err.name);
                         else if (err && err.message) $scope.loginErrMsgs.push(err.message);
                     }
-                })
-                .finally(function (msg) {
-                    $scope.loginInitSpinnerStopped = true;
-                    $scope.loginWaitForLoginRequest = false;
+
                     // Stop the ion-refresher from spinning
-                    $scope.$broadcast('scroll.refreshComplete');
-                    return $q.resolve();
+                    //$scope.$broadcast('scroll.refreshComplete');
                 });
 
         };
@@ -141,4 +130,22 @@ angular
         $scope.loginInit();
         //if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
 
-    });
+    })
+
+    .controller('LoadingCtrl', function ($scope, $log, $q, $timeout, srvDataContainer) {
+        'use strict';
+
+        $scope.$on( "$ionicView.enter", function( scopes, states ) {
+            //if( states.fromCache && states.stateName == "your view" ) {
+                // do whatever
+
+                console.log('LoadingCtrl view ... ');
+            //}
+        });
+
+        console.log('LoadingCtrl ... ');
+
+        if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
+
+    })
+;

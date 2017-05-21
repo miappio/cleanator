@@ -90,11 +90,11 @@ msgstr ""
 msgid "Comments"
 msgstr ""
 
-#: dashboard/modals.html:53
+#: dashboard/modals.html:42
 msgid "DashboardModalCancel"
 msgstr ""
 
-#: dashboard/modals.html:48
+#: dashboard/modals.html:37
 msgid "DashboardModalDidIt"
 msgstr ""
 
@@ -115,7 +115,7 @@ msgstr ""
 msgid "Feasibility"
 msgstr ""
 
-#: user/userAll.html:72
+#: user/userAll.html:68
 msgid "Footer_ButtonWhen"
 msgstr ""
 
@@ -166,13 +166,13 @@ msgstr ""
 msgid "Last reset:"
 msgstr ""
 
-#: user/userAll.html:71
+#: user/userAll.html:67
 msgid "Level0_You’ve set your profiles ? Ready for the next part : setting all the chores you have to deal with."
 msgstr ""
 
 #: login/loginIn.html:61
 #: login/loginIn.html:96
-#: user/userAll.html:82
+#: user/userAll.html:78
 msgid "LoginLanguage"
 msgstr ""
 
@@ -221,7 +221,7 @@ msgstr ""
 msgid "PullToRefresh"
 msgstr ""
 
-#: dashboard/dashboardIndicator.html:68
+#: dashboard/dashboardIndicator.html:87
 msgid "Record of anything done by"
 msgstr ""
 
@@ -251,27 +251,27 @@ msgstr ""
 msgid "Sunday"
 msgstr ""
 
-#: user/configTabs.html:30
+#: user/configTabs.html:31
 msgid "TabWhat"
 msgstr ""
 
-#: user/configTabs.html:18
+#: user/configTabs.html:19
 msgid "TabWhatDetailled"
 msgstr ""
 
-#: user/configTabs.html:27
+#: user/configTabs.html:28
 msgid "TabWhen"
 msgstr ""
 
-#: user/configTabs.html:13
+#: user/configTabs.html:14
 msgid "TabWhenDetailled"
 msgstr ""
 
-#: user/configTabs.html:24
+#: user/configTabs.html:25
 msgid "TabWho"
 msgstr ""
 
-#: user/configTabs.html:8
+#: user/configTabs.html:9
 msgid "TabWhoDetailled"
 msgstr ""
 
@@ -318,11 +318,11 @@ msgstr ""
 msgid "UserBackToSession"
 msgstr ""
 
-#: user/userAll.html:97
+#: user/userAll.html:93
 msgid "UserEmail"
 msgstr ""
 
-#: user/userAll.html:95
+#: user/userAll.html:91
 msgid "UserEmailCouple"
 msgstr ""
 
@@ -330,11 +330,11 @@ msgstr ""
 msgid "UserLogout"
 msgstr ""
 
-#: user/userAll.html:41
+#: user/userAll.html:37
 msgid "UserPseudoA"
 msgstr ""
 
-#: user/userAll.html:56
+#: user/userAll.html:52
 msgid "UserPseudoB"
 msgstr ""
 

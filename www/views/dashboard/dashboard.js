@@ -18,14 +18,13 @@ angular
                 controller: 'DashboardIndicatorCtrl'
             });
 
-        //$stateProvider.otherwise('dashboard-user');
-
         $urlRouterProvider.otherwise('/dashboard/user/a');
     })
 
     .controller('DashboardCtrl', function ($scope, $timeout, $log, $q, $stateParams, $ionicModal, srvDataContainer, srvData, srvConfig) {
         'use strict';
 
+        console.log('DashboardCtrl launched');
         $scope.dashboardHistorics = [];
         $scope.dashboardSearch = {};
         $scope.dashboardHistoricDisplay = "week";
@@ -34,15 +33,10 @@ angular
 
         $scope.dashboardInit = function () {
 
-            // var url = $location.url();
-            // if (url.indexOf("dashboard-user")>=0){
-            //   $scope.dashboardViewTitle = "b";
-            // }
-            // else
-            //   $scope.dashboardViewTitle = "a";
-
-
             var userId = $stateParams.userId;
+            if ($scope.dashboardSearch.userId)
+                return;
+
             //var url = $location.url();
             $scope.dashboardSearch.userId = $scope.userA ? $scope.userA._id : userId;
             //if(url.indexOf("dashboard-user") >= 0 && $scope.userB) $scope.dashboardSearch.userId = $scope.userB._id;
@@ -80,8 +74,10 @@ angular
         $scope.afterNavigationInitSpinnerShow = function () {
             $scope.dashboardInitSpinnerStopped = false;
             $timeout(function () {
-                if (!srvConfig.isLoggedIn())
+                if (!srvConfig.isLoggedIn()) {
                     $scope.dashboardStopSpinnerWithMessage();
+                    if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
+                }
                 else {
                     $scope.navDataSync(srvDataContainer)
                         .then(function (err) {
@@ -89,6 +85,7 @@ angular
                             return $scope.dashboardDataBind();
                         })
                         .then(function (err) {
+                            $scope.dashboardInit();
                             return $scope.dashboardStopSpinnerWithMessage(err);
                         })
                         .catch(function (err) {
@@ -218,6 +215,7 @@ angular
 
             return $q(function (resolve, reject) {
                 historicToAdd = angular.copy(historic);
+                console.log('dashboardTerminateHistoric : ', historic);
 
                 // historize what's done
                 srvData.terminateHistoric($scope.chores, historicToAdd)
@@ -255,7 +253,7 @@ angular
         };
         $scope.dashboardTerminateHistoricNow = function (historic) {
             $scope.dashboardTerminateHistoric(historic)
-                .finally(function () {
+                .then(function () {
                     $scope.dashboardSetCategoryToDoNow(null);
                     $scope.dashboardSetHistoricToDoNow(null);
                 });
@@ -482,7 +480,7 @@ angular
         $scope.dashboardOpenModal = function (historic) {
             if ($scope.modal) {
                 $scope.dashboardModalHistoric = historic;
-                $scope.dashboardModalOriginalTimeInMn = historic[$scope.historicCols.timeInMn];
+                $scope.dashboardModalOriginalTimeInMn = parseInt(historic[$scope.historicCols.timeInMn]);
                 $scope.modal.show();
             }
         };
@@ -493,7 +491,7 @@ angular
             if (!historic) return;
             $scope.dashboardTerminateHistoric(historic)
                 .then(function () {
-
+                    //dashboardSetHistoricToDoNow
                 });
         };
 

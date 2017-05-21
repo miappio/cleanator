@@ -1,4 +1,4 @@
-describe('myAngularApp.views.login', function () {
+xdescribe('myAngularApp.views.login', function () {
     'use strict';
     var _httpBackend, _scope, _log, _q, _rootScope, _timeout, _routeParams, _srvData, _controller, _createController, _authRequestHandler;
     var _http, _location, _cookieStore, _authorization, _api, _srvCordova, _srvConfig;

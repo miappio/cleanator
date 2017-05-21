@@ -45,12 +45,9 @@ var srvNavigation = (function () {
             self.$rootScope.navErrMsgs.push(text);
         };
 
-        self.$rootScope.navHiddenWho = false;
-
-        self.$rootScope.navHiddenWhat = true;
-
-        self.$rootScope.navHiddenWhen = true;
-
+        //self.$rootScope.navHiddenWho = false;
+        //self.$rootScope.navHiddenWhat = true;
+        //self.$rootScope.navHiddenWhen = true;
 
         self.$rootScope.navBack = function () {
             //if (history) history.back();
@@ -75,15 +72,21 @@ var srvNavigation = (function () {
 
             console.log('navRedirect : ', pathToGo, loggedIn, level, completed, args);
 
-            self.$rootScope.navHiddenWho = !completed && (level != 0);
-            self.$rootScope.navHiddenWhat = !completed && (level != 1);
-            self.$rootScope.navHiddenWhen = !completed && (level != 2);
+            //self.$rootScope.navHiddenWho = !completed && (level != 0);
+            //self.$rootScope.navHiddenWhat = !completed && (level != 1);
+            //self.$rootScope.navHiddenWhen = !completed && (level != 2);
+            //var options = {location : true, inherit : true,notify : true, reload : true};
 
-            if (!loggedIn) self.$state.go('login');
-            else if (level == 0) self.$state.go('config.couple');
-            else if (level == 1 && pathToGo != 'choreDetail')self.$state.go('config.category'); //&& (self.$state.current !== 'config.category' && self.$state.current !== 'config.categorychores')
-            else if (level == 2) self.$state.go('config.cal');
-            else if (pathToGo) self.$state.go(pathToGo, args);
+            if (!loggedIn) return self.$state.go('login');
+            else if (level === 0) { // && pathToGo != 'loading') {
+                return self.$state.go('config.couple');//,null,options);
+                    //.then(function (evt) {
+                    //    return self.$state.go('config.couple');
+                    //});
+            }
+            else if (level === 1 && pathToGo != 'choreDetail')return self.$state.go('config.category'); //&& (self.$state.current !== 'config.category' && self.$state.current !== 'config.categorychores')
+            else if (level === 2) return self.$state.go('config.cal');
+            else if (pathToGo) return self.$state.go(pathToGo, args);
         };
 
         self.$rootScope.navDataSync = function (srvDataContainer) {
