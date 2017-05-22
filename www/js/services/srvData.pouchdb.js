@@ -595,7 +595,7 @@ var SrvDataPouchDB = (function () {
                 var isAvailable = (parseInt(historic[self.historicColumns.timeInMn]) > 0);
                 var aa = (historic[self.historicColumns.desactivate] === 'false');
                 var ab = !!historic[self.historicColumns.desactivate];
-                var disactive = (aa && !ab);
+                var disactive = aa ? false : ab;
                 isAvailable = !disactive;
                 //console.log('isAvailable ? ', aa, ab, disactive, isAvailable, historic)
 

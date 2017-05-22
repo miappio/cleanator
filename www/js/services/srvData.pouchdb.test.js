@@ -516,6 +516,46 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
             $httpBackend.flush();
         });
 
+        it('should compute by week - a A/B dispatch with many chores', function (done) {
+
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            srv.init();
+            expect(srv.isInitDone()).toBe(true);
+
+            var chores = [];
+            for (var i = 0; i < 10; i++) {
+                var oneChore = angular.copy(choreRefToCopy);
+                oneChore._id += ''+i;
+                oneChore.frequencyDays = i % 2 ? 2 : "3";
+                oneChore.percent_AB = i % 2 ? "70" : 30;
+                oneChore.timeInMn = i % 2 ? 20 : "10";
+                oneChore.desactivate = i % 2 ? "false" : true;
+                console.log('oneChore : ',oneChore);
+                chores.push(oneChore);
+            }
+            var histoDone = [];
+            var testComputing = function (lstHistoByCalendar) {
+                expect(lstHistoByCalendar.length).toBe(7 * 2);
+                expect(lstHistoByCalendar[0].userId).toBe(userB._id);
+                expect(lstHistoByCalendar[1].userId).toBe(userA._id);
+                expect(lstHistoByCalendar[2].userId).toBe(userB._id);
+                expect(lstHistoByCalendar[3].userId).toBe(userA._id);
+                expect(lstHistoByCalendar[4].userId).toBe(userB._id);
+                // so on ...
+            };
+            var failTest = function (error) {
+                console.log('computeHistoricsByCalendar err:' + error);
+                expect(error).toBeUndefined();
+            };
+            srv.computeHistoricsByCalendar(chores, histoDone, userA, userB, 7)
+                .then(testComputing)
+                .catch(failTest)
+                .finally(done);
+
+            //$httpBackend.flush();
+            timeout.flush(200);
+        });
+
     });
 
 });
