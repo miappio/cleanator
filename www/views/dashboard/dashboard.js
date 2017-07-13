@@ -39,7 +39,7 @@ angular
         $scope.dashboardInit = function () {
 
             var userId = $stateParams.userId;
-            if (!$scope.userA || !$scope.userB ) {
+            if (!$scope.userA || !$scope.userB) {
                 $scope.dashboardSearch.userId = userId;
                 return;
             }
@@ -271,10 +271,16 @@ angular
                 });
         };
 
-        $scope.dashboardNotForMe = function (historic) {
+        $scope.dashboardNotForMe = function (historic, list, index) {
             if (!historic) return;
 
             var self = this;
+
+            // remove from UX list
+            if (list && index >= 0) {
+                list.splice(index, 1);
+            }
+
             var choreId = historic[$scope.historicCols.choreId];
             var choreToChange = null;
             // retrieve chore
@@ -292,23 +298,24 @@ angular
 
             // change chore percent_AB
             if ($scope.dashboardSearch.userId === $scope.userA._id) {
-                if (choreToChange) choreToChange[$scope.choreCols.percentAB] = 100;
+                if (choreToChange) choreToChange[$scope.choreCols.percentAB] = 0;
             }
             else {
-                if (choreToChange) choreToChange[$scope.choreCols.percentAB] = 0;
+                if (choreToChange) choreToChange[$scope.choreCols.percentAB] = 100;
             }
 
             // Save chore & Sync db
-            srvData.Chore.set(choreToChange).then(function (choreSaved) {
-                srvData.sync().then(function (msg) {
-                    console.log('pb sync : ' + msg);
-                })
-                    .catch(function (msg) {
-                        $scope.dashboardErrorMsg = msg;
-                    });
-            }).catch(function (msg) {
-                $scope.dashboardErrorMsg = msg;
-            });
+            return srvData.Chore.set(choreToChange);
+            /*srvData.Chore.set(choreToChange).then(function (choreSaved) {
+             srvData.sync().then(function (msg) {
+             console.log('pb sync : ' + msg);
+             })
+             .catch(function (msg) {
+             $scope.dashboardErrorMsg = msg;
+             });
+             }).catch(function (msg) {
+             $scope.dashboardErrorMsg = msg;
+             });*/
 
         };
 
@@ -348,6 +355,7 @@ angular
                 });
         };
 
+
         $scope.dashboardAvailability = function (dateISO, userId) {
 
             var date = null;
@@ -355,8 +363,18 @@ angular
             else if (dateISO && dateISO instanceof Date) date = new Date(Date.UTC(dateISO.getFullYear(), dateISO.getMonth(), dateISO.getDate()));
             else date = new Date();
             //var res = date.toISOString().slice(0, 10).replace(/-/g, "/");
-            var min = srvDataContainer.getHistoricsDoneTimeRemaining($scope.dashboardSearch.userId, date);
+            var min = srvDataContainer.getHistoricsDoneTimeRemaining(userId, date);
             return min;
+        };
+        $scope.dashboardAvailabilityMax = function (dateISO, userId) {
+
+            var date = null;
+            if (typeof dateISO === "string") date = new Date(dateISO);
+            else if (dateISO && dateISO instanceof Date) date = new Date(Date.UTC(dateISO.getFullYear(), dateISO.getMonth(), dateISO.getDate()));
+            else date = new Date();
+            //var res = date.toISOString().slice(0, 10).replace(/-/g, "/");
+            var max = srvDataContainer.getTimePerDay(userId, date);
+            return max;
         };
 
         $scope.dashboardDisplayHistoricDate = function (dateISO) {

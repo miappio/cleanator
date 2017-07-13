@@ -81,10 +81,12 @@
             <!-- Now - BEGIN -->
             <div>
                 <ion-list>
-                    <div class="item item-divider">
+                    <ion-item class="item item-divider">
                         <span ng-bind-html="dashboardDisplayHistoricCalendar()"></span>
-                        </span>
-                    </div>
+                        <span class="badge">NOW ? {{dashboardAvailability(historicGroup, dashboardSearch.userId)}}
+                            &nbsp;/&nbsp;{{dashboardAvailabilityMax(historicGroup, dashboardSearch.userId)}}&nbsp;
+                        <span translate>mn</span></span>
+                    </ion-item>
                     <label class="item item-input item-select" style="border:0">
                         <div class="input-label" translate>Unforeseen item :</div>
                         <select ng-model="dashboardChoresCategoryFilter"
@@ -103,8 +105,8 @@
                         </select>
                     </label>
 
-                    <div class="item item-avatar item-button-right" ng-if="dashboardHistoricToDoNow"
-                         style="border-top:0">
+                    <ion-item class="item item-avatar" ng-if="dashboardHistoricToDoNow"
+                              style="border-top:0">
 
                         <img ng-src="{{dashboardGetChoreCategoryThumbPath(dashboardHistoricToDoNow[historicCols.category])}}"/>
                         <small>{{dashboardHistoricToDoNow[historicCols.timeInMn]}}</small>
@@ -115,13 +117,20 @@
                         </small>
                         <small ng-hide="dashboardShowLastHistoricDate(dashboardHistoricToDoNow)" translate>none</small>
                         <p>{{dashboardHistoricToDoNow[historicCols.description]}}</p>
-                        <button class="button button-dark"
+
+                        <!--<button class="button button-dark"
                                 ng-click="dashboardOpenModal(dashboardHistoricToDoNow); dashboardSetCategoryToDoNow(null);dashboardSetHistoricToDoNow(null);"
                                 style="margin-top:20px;">
                             <small translate>Terminated</small>
-                        </button>
+                        </button>-->
 
-                    </div>
+                        <ion-option-button class="button-dark"
+                                           ng-click="dashboardOpenModal(dashboardHistoricToDoNow); dashboardSetCategoryToDoNow(null);dashboardSetHistoricToDoNow(null);"
+                                           translate>
+                            Terminated
+                        </ion-option-button>
+
+                    </ion-item>
                 </ion-list>
             </div>
             <!-- Now - END -->
@@ -130,14 +139,15 @@
             canSwipe : {{canSwipe}}
             <div ng-repeat="(historicGroup, historicList) in (dashboardHistorics| filter : {userId : dashboardSearch.userId}) | orderBy:'actionTodoDate' | groupBy : 'actionTodoDate'"
                  ng-init="isTodayGroup = dashboardIsItToday(historicGroup);">
-                <ion-list can-swipe="canSwipe" show-delete="showDelete" show-reorder="showReorder" class="animate-ripple">
+                <ion-list can-swipe="canSwipe" show-delete="showDelete" show-reorder="showReorder"
+                          class="animate-ripple">
                     <ion-item class="item item-divider" ng-hide="isTodayGroup">
                         <span ng-bind-html="dashboardDisplayHistoricCalendar(historicGroup)"></span>
-                        <!--<span class="badge">{{dashboardAvailability(historicGroup, dashboardSearch.userId)}}&nbsp;
-                        <span translate>mn</span></span>-->
+                        <span class="badge">{{dashboardAvailabilityMax(historicGroup, dashboardSearch.userId)}}&nbsp;
+                        <span translate>mn</span></span>
                     </ion-item>
-                    <ion-item class="item item-avatar item-button-right"
-                         ng-repeat="historic in historicList">
+                    <ion-item class="item item-avatar"
+                              ng-repeat="historic in historicList">
 
                         <img ng-src="{{dashboardGetChoreCategoryThumbPath(historic[historicCols.category])}}"/>
                         {{historic[historicCols.name]}}<br>
@@ -150,14 +160,19 @@
                         <small ng-hide="dashboardShowLastHistoricDate(historic)" translate>none</small>
                         <p>{{historic[historicCols.description]}}</p>
 
-                        <button ng-show="isTodayGroup" class="button button-dark"
+                        <!--<button ng-show="isTodayGroup" class="button button-dark"
                                 ng-click="dashboardOpenModal(historic);"
                                 style="margin-top:20px;">
                             <small translate>Terminated</small>
-                        </button>
+                        </button>-->
 
-                        <ion-option-button class="button-info" ng-click="catDeactivate(category)" translate>
-                            CatDeactivate
+                        <ion-option-button class="button-dark" ng-show="isTodayGroup"
+                                           ng-click="dashboardOpenModal(historic);" translate>
+                            Terminated
+                        </ion-option-button>
+                        <ion-option-button class="button-info" ng-show="isTodayGroup"
+                                           ng-click="dashboardNotForMe(historic, historicList, $index);" translate>
+                            historicLater
                         </ion-option-button>
 
                     </ion-item>

@@ -311,6 +311,14 @@ var SrvDataContainer = (function () {
 
         var timeElapsed = self.getHistoricsDoneTimeElapsedByUser(userId, date);
 
+        var timeRemain = self.getTimePerDay(userId, date);
+        timeRemain = timeRemain - timeElapsed;
+        return (timeRemain > 0) ? timeRemain : 0;
+    };
+
+    Service.prototype.getTimePerDay = function (userId, date) {
+        var self = this;
+
         var dayOfWeek = date.getDay();
         var col = self.srvData.userColumns.timeInMnPerSund;
         if (dayOfWeek == 1) col = self.srvData.userColumns.timeInMnPerMond;
@@ -322,9 +330,9 @@ var SrvDataContainer = (function () {
 
         var user = self.userB;
         if (self.userA._id == userId) user = self.userA;
-        var timeRemain = parseInt(user[col]);
-        timeRemain = timeRemain - timeElapsed;
-        return (timeRemain > 0) ? timeRemain : 0;
+        var timePerDay = parseInt(user[col]);
+
+        return timePerDay;
     };
 
     Service.prototype.putInDB = function (dataModel, dataToPut) {
