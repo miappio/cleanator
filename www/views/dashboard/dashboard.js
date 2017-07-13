@@ -25,6 +25,11 @@ angular
         'use strict';
 
         console.log('DashboardCtrl launched');
+
+        $scope.showDelete = false;
+        $scope.showReorder = false;
+        $scope.canSwipe = true;
+
         $scope.dashboardHistorics = [];
         $scope.dashboardSearch = {};
         $scope.dashboardHistoricDisplay = "week";
@@ -34,19 +39,27 @@ angular
         $scope.dashboardInit = function () {
 
             var userId = $stateParams.userId;
-            if ($scope.dashboardSearch.userId)
+            if (!$scope.userA || !$scope.userB ) {
+                $scope.dashboardSearch.userId = userId;
                 return;
+            }
 
-            //var url = $location.url();
-            $scope.dashboardSearch.userId = $scope.userA ? $scope.userA._id : userId;
-            //if(url.indexOf("dashboard-user") >= 0 && $scope.userB) $scope.dashboardSearch.userId = $scope.userB._id;
-            if ($scope.userB && $scope.userB._id == userId) $scope.dashboardSearch.userId = $scope.userB._id;
+            if ($scope.dashboardSearch.userId === $scope.userA._id || $scope.dashboardSearch.userId === $scope.userB._id) {
+                return;
+            }
+
+            $scope.dashboardSearch.userId = $scope.userA._id;
+            if ($scope.userB._id === userId) {
+                $scope.dashboardSearch.userId = $scope.userB._id;
+            }
 
         };
 
         $scope.dashboardGetTextIdentifier = function (text) {
 
-            if (!text) return 'na';
+            if (!text) {
+                return 'na';
+            }
 
             var map = {
                 //'&': '&amp;',
@@ -74,11 +87,7 @@ angular
         $scope.afterNavigationInitSpinnerShow = function () {
             $scope.dashboardInitSpinnerStopped = false;
             $timeout(function () {
-                if (!srvConfig.isLoggedIn()) {
-                    $scope.dashboardStopSpinnerWithMessage();
-                    if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
-                }
-                else {
+                if (srvConfig.isLoggedIn()) {
                     $scope.navDataSync(srvDataContainer)
                         .then(function (err) {
                             if (err) return $scope.dashboardStopSpinnerWithMessage(err);
@@ -91,6 +100,9 @@ angular
                         .catch(function (err) {
                             return $scope.dashboardStopSpinnerWithMessage(err);
                         });
+                } else {
+                    $scope.dashboardStopSpinnerWithMessage();
+                    if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
                 }
             }, 1500);
         };
@@ -195,7 +207,7 @@ angular
                         return a[$scope.historicCols.actionTodoDate] > b[$scope.historicCols.actionTodoDate];
                     });
                     //miapp.safeApply($scope, function () {
-                        $scope.dashboardHistorics = historics;
+                    $scope.dashboardHistorics = historics;
                     //});
                     deferred.resolve();
                 })
@@ -279,7 +291,7 @@ angular
             }
 
             // change chore percent_AB
-            if ($scope.dashboardSearch.userId == $scope.userA._id) {
+            if ($scope.dashboardSearch.userId === $scope.userA._id) {
                 if (choreToChange) choreToChange[$scope.choreCols.percentAB] = 100;
             }
             else {
@@ -395,9 +407,10 @@ angular
             if (!dateText) return dateT;
 
             var date = new Date(dateText);
-            dateT = '' + padInteger(date.getDate(), 2) + '/' + padInteger(date.getMonth(), 2) + '/' + padInteger(date.getFullYear(), 4) + ' ' + padInteger(date.getHours(), 2) + ':' + padInteger(date.getMinutes(), 2);
+            dateT = '' + padInteger(date.getDate(), 2) + '/' + padInteger(date.getMonth() + 1, 2) + '/' + padInteger(date.getFullYear(), 4) + ' ' + padInteger(date.getHours(), 2) + ':' + padInteger(date.getMinutes(), 2);
             return dateT;
         }
+
         function padInteger(num, size) {
             if (!size) size = 10;
             var s = "000000000" + num;
@@ -543,7 +556,7 @@ angular
             if (!dateText) return dateT;
 
             var date = new Date(dateText);
-            dateT = '' + padInteger(date.getDate(), 2) + '/' + padInteger(date.getMonth(), 2) + '/' + padInteger(date.getFullYear(), 4) + ' ' + padInteger(date.getHours(), 2) + ':' + padInteger(date.getMinutes(), 2);
+            dateT = '' + padInteger(date.getDate(), 2) + '/' + padInteger(date.getMonth() + 1, 2) + '/' + padInteger(date.getFullYear(), 4) + ' ' + padInteger(date.getHours(), 2) + ':' + padInteger(date.getMinutes(), 2);
             return dateT;
         }
 
