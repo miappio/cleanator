@@ -201,7 +201,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 expect(lstHistoByCalendar[6].userId).toBe(userA._id);
             };
             var failTest = function (error) {
-                console.log('computeHistoricsByCalendar err:' + error);
+                //console.log('computeHistoricsByCalendar err:' + error);
                 expect(error).toBeUndefined();
             };
             srv.computeHistoricsByCalendar(chores, histoDone, userA, userB, 7)
@@ -235,7 +235,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 expect(lstHistoByCalendar[6].userId).toBe(userA._id);
             };
             var failTest = function (error) {
-                console.log('computeHistoricsByCalendar err:' + error);
+                //console.log('computeHistoricsByCalendar err:' + error);
                 expect(error).toBeUndefined();
             };
             srv.computeHistoricsByCalendar(chores, histoDone, userA, userB, 7)
@@ -269,7 +269,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 expect(lstHistoByCalendar[6].userId).toBe(userB._id);
             };
             var failTest = function (error) {
-                console.log('computeHistoricsByCalendar err:' + error);
+                //console.log('computeHistoricsByCalendar err:' + error);
                 expect(error).toBeUndefined();
             };
             srv.computeHistoricsByCalendar(chores, histoDone, userA, userB, 7)
@@ -303,7 +303,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 expect(lstHistoByCalendar[6].userId).toBe(userB._id);
             };
             var failTest = function (error) {
-                console.log('computeHistoricsByCalendar err:' + error);
+                //console.log('computeHistoricsByCalendar err:' + error);
                 expect(error).toBeUndefined();
             };
             srv.computeHistoricsByCalendar(chores, histoDone, userA, userB, 7)
@@ -332,7 +332,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 expect(lstHistoByCalendar.length).toBe(0);
             };
             var failTest = function (error) {
-                console.log('computeHistoricsByCalendar err:' + error);
+                //console.log('computeHistoricsByCalendar err:' + error);
                 expect(error).toBeUndefined();
             };
             srv.computeHistoricsByCalendar(chores, histoDone, userA_, userB_, 7)
@@ -364,7 +364,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 //expect(lstHistoByCalendar.length).toBe(4);
             };
             var failTest = function (error) {
-                console.log('computeHistoricsByCalendar err:' + error);
+                //console.log('computeHistoricsByCalendar err:' + error);
                 expect(error).toBeUndefined();
             };
             srv.computeHistoricsByCalendar(chores, histoDone, userA_, userB_, 7)
@@ -411,7 +411,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 expect(lstHistoByCalendar.length).toBe(0);
             };
             var failTest = function (error) {
-                console.log('computeHistoricsByCalendar err:' + error);
+                //console.log('computeHistoricsByCalendar err:' + error);
                 expect(error).toBeUndefined();
             };
             srv.computeHistoricsByCalendar(chores, histoDone, userA_, userB_, 7)
@@ -456,7 +456,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 expect(lstHistoByCalendar[3].userId).toBe(userB._id);
             };
             var failTest = function (error) {
-                console.log('computeHistoricsByCalendar err:' + error);
+                //console.log('computeHistoricsByCalendar err:' + error);
                 expect(error).toBeUndefined();
             };
             srv.computeHistoricsByCalendar(chores, histoDone, userA, userB, 7)
@@ -481,7 +481,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
             var histoA = angular.copy(histoRefToCopy);
             histoA.userId = userA._id;
             var beforeYesterday = new Date();
-            beforeYesterday.setDate(beforeYesterday.getDate() - (2+4+4));
+            beforeYesterday.setDate(beforeYesterday.getDate() - (2 + 4 + 4));
             histoA.actionDoneDate = angular.copy(beforeYesterday);
             histoDone.push(histoA);
             histoA = angular.copy(histoA);
@@ -499,13 +499,13 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 expect(lstHistoByCalendar.length).toBe(2);
                 expect(lstHistoByCalendar[0].userId).toBe(userB._id);
                 beforeYesterday.setDate(beforeYesterday.getDate() + 4);
-                expect(lstHistoByCalendar[0].actionTodoDate.substring(7)).toBe('/'+beforeYesterday.getDate());
+                expect(lstHistoByCalendar[0].actionTodoDate.substring(7)).toBe('/' + beforeYesterday.getDate());
                 expect(lstHistoByCalendar[1].userId).toBe(userA._id);
                 beforeYesterday.setDate(beforeYesterday.getDate() + 4);
-                expect(lstHistoByCalendar[1].actionTodoDate.substring(7)).toBe('/'+beforeYesterday.getDate());
+                expect(lstHistoByCalendar[1].actionTodoDate.substring(7)).toBe('/' + beforeYesterday.getDate());
             };
             var failTest = function (error) {
-                console.log('computeHistoricsByCalendar err:' + error);
+                //console.log('computeHistoricsByCalendar err:' + error);
                 expect(error).toBeUndefined();
             };
             srv.computeHistoricsByCalendar(chores, histoDone, userA, userB, 7)
@@ -525,12 +525,12 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
             var chores = [];
             for (var i = 0; i < 10; i++) {
                 var oneChore = angular.copy(choreRefToCopy);
-                oneChore._id += ''+i;
+                oneChore._id += '' + i;
                 oneChore.frequencyDays = i % 2 ? 2 : "3";
                 oneChore.percent_AB = i % 2 ? "70" : 30;
                 oneChore.timeInMn = i % 2 ? 20 : "10";
                 oneChore.desactivate = i % 2 ? "false" : true;
-                console.log('oneChore : ',oneChore);
+                //console.log('oneChore : ',oneChore);
                 chores.push(oneChore);
             }
             var histoDone = [];
@@ -544,7 +544,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 // so on ...
             };
             var failTest = function (error) {
-                console.log('computeHistoricsByCalendar err:' + error);
+                //console.log('computeHistoricsByCalendar err:' + error);
                 expect(error).toBeUndefined();
             };
             srv.computeHistoricsByCalendar(chores, histoDone, userA, userB, 7)
@@ -556,6 +556,111 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
             timeout.flush(200);
         });
 
+        it('should compute by week - a A/B dispatch with many chores and many historic in the past', function (done) {
+
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            srv.init();
+            expect(srv.isInitDone()).toBe(true);
+
+            var chores = [];
+            for (var i = 0; i < 10; i++) {
+                var oneChore = angular.copy(choreRefToCopy);
+                oneChore._id += '' + i;
+                oneChore.frequencyDays = i % 2 ? 1 : "1";
+                oneChore.percent_AB = i % 2 ? "70" : 30;
+                oneChore.timeInMn = i % 2 ? 10 : "10";
+                //console.log('oneChore : ',oneChore);
+                chores.push(oneChore);
+            }
+
+            //fullish histo : each 10 chores 10 times
+            var histoDone = [];
+            var now = new Date();
+            for (var i = 0; i < 100; i++) {
+                var oneHisto = angular.copy(histoRefToCopy);
+                oneHisto._id += '' + i;
+                oneHisto.choreId = '' + (i % 10);
+                oneHisto.userId = i % 2 ? userB._id : userA._id;
+                var date = new Date(now);
+                date.setDate(now.getDate() - (1 + (i % 7)));
+                oneHisto.actionDoneDate = angular.copy(date);
+                oneHisto.actionTodoDate = angular.copy(date);
+                histoDone.push(oneHisto);
+            }
+
+            var testComputing = function (lstHistoByCalendar) {
+                expect(lstHistoByCalendar.length).toBe(42); // (10 + 10 + 10) = 6 * 6 days
+                expect(lstHistoByCalendar[0].userId).toBe(userA._id);
+                expect(lstHistoByCalendar[1].userId).toBe(userB._id);
+                expect(lstHistoByCalendar[2].userId).toBe(userA._id);
+                expect(lstHistoByCalendar[3].userId).toBe(userB._id);
+                // so on ...
+            };
+            var failTest = function (error) {
+                //console.log('computeHistoricsByCalendar err:' + error);
+                expect(error).toBeUndefined();
+            };
+            srv.computeHistoricsByCalendar(chores, histoDone, userA, userB, 7)
+                .then(testComputing)
+                .catch(failTest)
+                .finally(done);
+
+            //$httpBackend.flush();
+            timeout.flush(200);
+        });
+
+
+        it('should compute by week - a A/B dispatch with many chores and historics already done today', function (done) {
+
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            srv.init();
+            expect(srv.isInitDone()).toBe(true);
+
+            var chores = [];
+            for (var i = 0; i < 10; i++) {
+                var oneChore = angular.copy(choreRefToCopy);
+                oneChore._id += '' + i;
+                oneChore.frequencyDays = i % 2 ? 1 : "1";
+                oneChore.percent_AB = i % 2 ? "70" : 30;
+                oneChore.timeInMn = i % 2 ? 10 : "10";
+                //console.log('oneChore : ',oneChore);
+                chores.push(oneChore);
+            }
+
+            //histo done today
+            var histoDone = [];
+            var now = new Date();
+            for (var i = 0; i < 4; i++) {
+                var oneHisto = angular.copy(histoRefToCopy);
+                oneHisto._id += '' + i;
+                oneHisto.choreId = '' + (i % 10);
+                oneHisto.userId = i % 2 ? userB._id : userA._id;
+                var date = new Date(now);
+                oneHisto.actionDoneDate = angular.copy(date);
+                oneHisto.actionTodoDate = angular.copy(date);
+                histoDone.push(oneHisto);
+            }
+
+            var testComputing = function (lstHistoByCalendar) {
+                expect(lstHistoByCalendar.length).toBe(38); // (10 + 10 + 10) = 6 * 6 days - 4 done today
+                expect(lstHistoByCalendar[0].userId).toBe(userA._id);
+                expect(lstHistoByCalendar[1].userId).toBe(userB._id);
+                expect(lstHistoByCalendar[2].userId).toBe(userA._id);
+                expect(lstHistoByCalendar[3].userId).toBe(userB._id);
+                // so on ...
+            };
+            var failTest = function (error) {
+                //console.log('computeHistoricsByCalendar err:' + error);
+                expect(error).toBeUndefined();
+            };
+            srv.computeHistoricsByCalendar(chores, histoDone, userA, userB, 7)
+                .then(testComputing)
+                .catch(failTest)
+                .finally(done);
+
+            //$httpBackend.flush();
+            timeout.flush(200);
+        });
     });
 
 });

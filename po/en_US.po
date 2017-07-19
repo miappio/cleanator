@@ -12,11 +12,11 @@ msgstr ""
 "X-Generator: Poedit 2.0\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: dashboard/dashboardUser.html:93
+#: dashboard/dashboardUser.html:95
 msgid "-- choose category --"
 msgstr "-- choose category --"
 
-#: dashboard/dashboardUser.html:102
+#: dashboard/dashboardUser.html:104
 msgid "-- choose chore --"
 msgstr "-- choose chore --"
 
@@ -92,25 +92,21 @@ msgstr "Type"
 msgid "Clean History"
 msgstr "Clean history."
 
-#: dashboard/modals.html:32
+#: dashboard/modals.html:33
 msgid "Comments"
 msgstr "Comment"
 
-#: dashboard/modals.html:53
+#: dashboard/modals.html:43
 msgid "DashboardModalCancel"
 msgstr "Cancel"
 
-#: dashboard/modals.html:48
+#: dashboard/modals.html:38
 msgid "DashboardModalDidIt"
 msgstr "Did it"
 
 #: dashboard/modals.html:5
 msgid "DashboardModalDone"
 msgstr "Done"
-
-#: dashboard/modals.html:22
-msgid "DashboardModalTimesSpent"
-msgstr "Time spent"
 
 #: dashboard/dashboardUser.html:78
 msgid "DashboardPleasePullToRefreshYourDashboard"
@@ -131,6 +127,10 @@ msgstr "Compute"
 #: commons/footer.html:5
 msgid "Footer_ComputeDetailled"
 msgstr "Ready to go !"
+
+#: login/loginIn.html:110 login/loginIn.html:75
+msgid "Forgot your login/password ?"
+msgstr "Forgot your login/password ?"
 
 #: user/userCalendar.html:112 user/userCalendar.html:170
 msgid "Friday"
@@ -177,7 +177,7 @@ msgid ""
 "chores you have to deal with."
 msgstr "Next"
 
-#: login/loginIn.html:61 login/loginIn.html:96 user/userAll.html:78
+#: login/loginIn.html:100 login/loginIn.html:61 user/userAll.html:78
 msgid "LoginLanguage"
 msgstr "choose your language"
 
@@ -185,7 +185,7 @@ msgstr "choose your language"
 msgid "LoginNewPassword"
 msgstr "choose a password"
 
-#: login/loginIn.html:102 login/loginIn.html:72
+#: login/loginIn.html:106 login/loginIn.html:72
 msgid "LoginSignin"
 msgstr "sign in"
 
@@ -223,7 +223,7 @@ msgstr "Looks not relevant"
 msgid "PullToRefresh"
 msgstr "Pull to refresh …"
 
-#: dashboard/dashboardIndicator.html:68
+#: dashboard/dashboardIndicator.html:87
 msgid "Record of anything done by"
 msgstr "All done by"
 
@@ -251,31 +251,31 @@ msgstr "Seems not Fair"
 msgid "Sunday"
 msgstr "Sunday"
 
-#: user/configTabs.html:30
+#: user/configTabs.html:31
 msgid "TabWhat"
 msgstr "What"
 
-#: user/configTabs.html:18
+#: user/configTabs.html:19
 msgid "TabWhatDetailled"
 msgstr "What to do ?"
 
-#: user/configTabs.html:27
+#: user/configTabs.html:28
 msgid "TabWhen"
 msgstr "When"
 
-#: user/configTabs.html:13
+#: user/configTabs.html:14
 msgid "TabWhenDetailled"
 msgstr "When ?"
 
-#: user/configTabs.html:24
+#: user/configTabs.html:25
 msgid "TabWho"
 msgstr "Who"
 
-#: user/configTabs.html:8
+#: user/configTabs.html:9
 msgid "TabWhoDetailled"
 msgstr "Who are you ?"
 
-#: dashboard/dashboardUser.html:121 dashboard/dashboardUser.html:155
+#: dashboard/dashboardUser.html:127 dashboard/dashboardUser.html:172
 msgid "Terminated"
 msgstr "Finished"
 
@@ -296,7 +296,7 @@ msgstr "average time required :"
 msgid "Tuesday"
 msgstr "Tuesday"
 
-#: dashboard/dashboardUser.html:89
+#: dashboard/dashboardUser.html:91
 msgid "Unforeseen item :"
 msgstr "Unforeseen item :"
 
@@ -336,7 +336,7 @@ msgstr "Pseudo"
 msgid "Wednesday"
 msgstr "Wednesday"
 
-#: login/loginIn.html:93
+#: login/loginIn.html:97
 msgid "You are in demo mode"
 msgstr "You are in demo mode"
 
@@ -360,9 +360,13 @@ msgstr "for Better for Dust !"
 msgid "front of all todos"
 msgstr "by day front of all to do ?"
 
-#: dashboard/dashboardUser.html:112 dashboard/dashboardUser.html:145
+#: dashboard/dashboardUser.html:168
+msgid "historicLater"
+msgstr "Later"
+
+#: dashboard/dashboardUser.html:114 dashboard/dashboardUser.html:155
 msgid "latest item :"
-msgstr "latest item :"
+msgstr "latest :"
 
 #: chore/categoryAll.html:61 user/userCalendar.html:59
 msgid "min / day ?"
@@ -384,11 +388,12 @@ msgstr "minutes"
 msgid "minutes av./day"
 msgstr "minutes av./day"
 
-#: dashboard/dashboardUser.html:111 dashboard/dashboardUser.html:144
+#: dashboard/dashboardUser.html:113 dashboard/dashboardUser.html:154
 msgid "minutes,"
-msgstr "minutes,"
+msgstr "mn,"
 
-#: chore/choreDetail.html:85 user/userCalendar.html:103
+#: chore/choreDetail.html:85 dashboard/dashboardUser.html:146
+#: dashboard/dashboardUser.html:88 user/userCalendar.html:103
 #: user/userCalendar.html:109 user/userCalendar.html:115
 #: user/userCalendar.html:121 user/userCalendar.html:127
 #: user/userCalendar.html:149 user/userCalendar.html:155
@@ -399,9 +404,12 @@ msgstr "minutes,"
 msgid "mn"
 msgstr "mn"
 
-#: dashboard/dashboardUser.html:116 dashboard/dashboardUser.html:149
+#: dashboard/dashboardUser.html:118 dashboard/dashboardUser.html:159
 msgid "none"
 msgstr "none"
+
+#~ msgid "DashboardModalTimesSpent"
+#~ msgstr "Time spent"
 
 #~ msgid "ChoreAffinity"
 #~ msgstr "Your affinity"

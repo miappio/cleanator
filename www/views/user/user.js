@@ -46,7 +46,7 @@ angular.module('myAngularApp.views.user', [])
 
         $scope.userInitSpinnerStopped = false;
         $scope.afterNavigationInitSpinnerShow = function () {
-            console.log('user : afterNavigationInitSpinnerShow');
+            //console.log('user : afterNavigationInitSpinnerShow');
             $timeout(function () {
 
                 if (srvDataContainer.getAppFirstInitLevel() === 0) {
@@ -94,7 +94,7 @@ angular.module('myAngularApp.views.user', [])
             var uid = user._id;
 
             if (typeof $scope.userSaveEnable[uid] !== "undefined" && $scope.userSaveEnable[uid] === false) {
-                console.log("already saving");
+                //console.log("already saving");
                 return;
             }
             $scope.userSaveEnable[uid] = false;
@@ -105,7 +105,7 @@ angular.module('myAngularApp.views.user', [])
             // store & save user data
             srvData.User.set(user)
                 .then(function (user_) {
-                    if (!$scope.userSaved) console.log("user saved");
+                    //if (!$scope.userSaved) console.log("user saved");
                     $scope.userSaved = true;
                     $scope.userSaveEnable[uid] = true;
                     //indicators
@@ -257,10 +257,10 @@ angular.module('myAngularApp.views.user', [])
             //if( states.fromCache && states.stateName == "your view" ) {
                 // do whatever
 
-                console.log('user : navRedirect view ... ');
+                //console.log('user : navRedirect view ... ');
             //}
         });
         if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
-        console.log('user : navRedirect done');
+        //console.log('user : navRedirect done');
 
     });

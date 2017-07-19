@@ -4,14 +4,14 @@ angular.module('srvData.pouchdb', ['MiappService'])
 
     })
 
-    .factory('srvData', function ($q, $log, $http, $timeout, MiappService) {
-        return new SrvDataPouchDB($q, $log, $http, $timeout, MiappService);
+    .factory('srvData', function ($q, $log, $http, $timeout, MiappService, srvArray) {
+        return new SrvDataPouchDB($q, $log, $http, $timeout, MiappService, srvArray);
     });
 
 var SrvDataPouchDB = (function () {
     'use strict';
 
-    function Service($q, $log, $http, $timeout, MiappService) {
+    function Service($q, $log, $http, $timeout, MiappService, srvArray) {
 
         var self = this;
         self.$q = $q;
@@ -20,6 +20,7 @@ var SrvDataPouchDB = (function () {
         self.$timeout = $timeout;
         self.db = null;
         self.srvMiapp = MiappService;
+        self.srvArray = srvArray;
         self.initDone = false;
         self.dataLastResetDate = null;
 
@@ -117,7 +118,7 @@ var SrvDataPouchDB = (function () {
                 var users = [];
                 self.db.allDocs({include_docs: true, descending: true}, function (err, response) {
                     if (err) {
-                        self.$log.log(err);
+                        self.$log.error(err);
                     }
                     if (response) {
                         var results = response.rows.map(function (r) {
@@ -216,7 +217,7 @@ var SrvDataPouchDB = (function () {
                 var couples = [];
                 self.db.allDocs({include_docs: true, descending: true}, function (err, response) {
                     if (err) {
-                        self.$log.log(err);
+                        self.$log.error(err);
                     }
                     if (response) {
                         var results = response.rows.map(function (r) {
@@ -241,7 +242,7 @@ var SrvDataPouchDB = (function () {
                 var couples = [];
                 self.db.allDocs({include_docs: true, descending: true}, function (err, response) {
                     if (err) {
-                        self.$log.log(err);
+                        self.$log.error(err);
                     }
                     if (response) {
                         var results = response.rows.map(function (r) {
@@ -267,19 +268,19 @@ var SrvDataPouchDB = (function () {
                 var couple = null;
                 self.db.allDocs({include_docs: true, descending: true}, function (err, response) {
                     if (err) {
-                        self.$log.log(err);
+                        self.$log.error(err);
                     }
                     if (response) {
                         var responseLength = response.rows.length;
                         if (responseLength <= 0) return deferred.reject("No couple found");
                         var responseComputed = 0;
-                        console.log('srvData.pouchdb.Couple.findOne results: ' + response.rows.length);
+                        //console.log('srvData.pouchdb.Couple.findOne results: ' + response.rows.length);
                         var results = response.rows.map(function (r) {
                             // Get the first couple //TODO criterias ??
                             var isCouple = (r && r.doc && r.doc[self.coupleColumns.type] == self.coupleType);
                             var isOwnBy = (r && r.doc && (r.doc[self.coupleColumns.userAId] == user._id || r.doc[self.coupleColumns.userBId] == user._id));
-                            if (isCouple) console.log('srvData.pouchdb.Couple.findOne isCouple: ' + r.doc[self.coupleColumns.userAId] + ' == ' + user._id), console.log(r.doc);
-                            if (isOwnBy) console.log('srvData.pouchdb.Couple.findOne isOwnBy: ' + r.doc);
+                            //if (isCouple) console.log('srvData.pouchdb.Couple.findOne isCouple: ' + r.doc[self.coupleColumns.userAId] + ' == ' + user._id), console.log(r.doc);
+                            //if (isOwnBy) console.log('srvData.pouchdb.Couple.findOne isOwnBy: ' + r.doc);
 
                             if (!couple && isCouple && isOwnBy) {
                                 couple = r.doc;
@@ -317,7 +318,7 @@ var SrvDataPouchDB = (function () {
                 var categories = [];
                 self.db.allDocs({include_docs: true, descending: true}, function (err, response) {
                     if (err) {
-                        self.$log.log(err);
+                        self.$log.error(err);
                     }
                     if (response) {
                         var results = response.rows.map(function (r) {
@@ -346,7 +347,7 @@ var SrvDataPouchDB = (function () {
                 //NO defered ? var deferred = self.$q.defer();
                 self.db.allDocs({include_docs: true, descending: true}, function (err, response) {
                     if (err) {
-                        self.$log.log(err);
+                        self.$log.error(err);
                     }
                     if (response) {
                         var results = response.rows.map(function (r) {
@@ -375,7 +376,7 @@ var SrvDataPouchDB = (function () {
                 var chores = [];
                 self.db.allDocs({include_docs: true, descending: true}, function (err, response) {
                     if (err) {
-                        self.$log.log(err);
+                        self.$log.error(err);
                     }
                     if (response) {
                         var results = response.rows.map(function (r) {
@@ -457,7 +458,7 @@ var SrvDataPouchDB = (function () {
 
                 self.db.allDocs({include_docs: true, descending: true}, function (err, response) {
                     if (err) {
-                        self.$log.log(err);
+                        self.$log.error(err);
                     }
                     if (response) {
                         var lastResetDate = self.getLastHistoricsResetDate();
@@ -507,23 +508,23 @@ var SrvDataPouchDB = (function () {
     Service.prototype.init = function () {
         var bok = true;
         var self = this;
-        this.$log.log('srvData.pouchdb.init');
+        //this.$log.log('srvData.pouchdb.init');
         //var deferred = self.$q.defer();
         if (this.isInitDone()) return;
 
-        this.$log.log('srvData.pouchdb.init : check _db');
+        //this.$log.log('srvData.pouchdb.init : check _db');
         if (this.srvMiapp && this.srvMiapp.miappService && this.srvMiapp.miappService._db)
         //this.db = new PouchDB('cltorDB', {adapter : 'websql'});
             this.db = this.srvMiapp.miappService._db;
 
-        this.$log.log('srvData.pouchdb.init : check _db..');
-        this.$log.log(this.srvMiapp);
+        //this.$log.log('srvData.pouchdb.init : check _db..');
+        //this.$log.log(this.srvMiapp);
         if (!this.db) {
             this.$log.error('srvData.pouchdb.init : PB => NO DB !');
             return;
         }
 
-        this.$log.log('srvData.pouchdb.init : done.');
+        //this.$log.log('srvData.pouchdb.init : done.');
         self.initDone = true;
     };
 
@@ -533,11 +534,11 @@ var SrvDataPouchDB = (function () {
         var deferred = self.$q.defer();
         if (!couple) return self.$q.reject(null);
         var userId = couple.userA_id;
-        console.log('srvData.pouchdb.getUserAFromCouple : ' + userId);
+        //console.log('srvData.pouchdb.getUserAFromCouple : ' + userId);
 
         self.db.get(userId).then(function (resp) {
             //if (err) return deferred.reject(err);
-            console.log('srvData.pouchdb.getUserAFromCouple resp : ' + resp);
+            //console.log('srvData.pouchdb.getUserAFromCouple resp : ' + resp);
             if (resp) {
                 return deferred.resolve(resp);
             }
@@ -552,10 +553,10 @@ var SrvDataPouchDB = (function () {
         var deferred = self.$q.defer();
         if (!couple) return self.$q.reject(null);
         var userId = couple.userB_id;
-        console.log('srvData.pouchdb.getUserBFromCouple : ' + userId);
+        //console.log('srvData.pouchdb.getUserBFromCouple : ' + userId);
 
         self.db.get(userId).then(function (resp) {
-            console.log('srvData.pouchdb.getUserBFromCouple resp : ' + resp);
+            //console.log('srvData.pouchdb.getUserBFromCouple resp : ' + resp);
             //if (err) return deferred.reject(err);
             if (resp) {
                 return deferred.resolve(resp);
@@ -568,7 +569,6 @@ var SrvDataPouchDB = (function () {
 
     Service.prototype.computeHistoricsByCalendar = function (chores, historics, userA, userB, maxDayx) {
         var i, self = this;
-        var deferred = self.$q.defer();
         var lstHistoLate = [];
         var lstHistoByCalendar = [];
         var maxDays = maxDayx ? maxDayx : 7;
@@ -588,8 +588,7 @@ var SrvDataPouchDB = (function () {
             var freq = parseInt(choreToCopy[self.choreColumns.frequencyDays]);
 
             for (var nbCopy = 1; nbCopy <= maxDays; nbCopy++) {
-                var historic = angular.copy(choreToCopy);
-                historic._id = null;
+                var historic = self.createHistoricFromChore(choreToCopy);
 
                 var late = 0;
                 var isAvailable = (parseInt(historic[self.historicColumns.timeInMn]) > 0);
@@ -619,7 +618,6 @@ var SrvDataPouchDB = (function () {
                     //if (weight < 0) {
                     //    console.log("weight" + weight);
                     //}
-                    historic[self.historicColumns.choreId] = choreToCopy._id;
                     historic[self.historicColumns.internalWeight] = weight;
                     historic[self.historicColumns.internalLate] = late;
                     lstHistoLate.push(historic);
@@ -644,13 +642,12 @@ var SrvDataPouchDB = (function () {
         for (var j = 0; j < lstHistoLate.length; j++) {
             for (var day = 0; day < maxDays; day++) {
 
-                var histo = {};
                 var historicToCopy = lstHistoLate[j];
-                angular.copy(historicToCopy, histo);
-                var lateInDays = histo[self.historicColumns.internalLate];
-                var histoTimeInMn = parseInt(histo[self.historicColumns.timeInMn]);
+                var historic = angular.copy(historicToCopy);
+                var lateInDays = historic[self.historicColumns.internalLate];
+                var histoTimeInMn = parseInt(historic[self.historicColumns.timeInMn]);
 
-                histo.iPreventNUID = "uid_" + j + "_" + day;
+                historic.iPreventNUID = "uid_" + j + "_" + day;
                 if (lateInDays >= (-day)) {
                     // 			Dispo A = Calcul dispo de A pour J
                     // 			Dispo B = Calcul dispo de B pour J
@@ -680,60 +677,70 @@ var SrvDataPouchDB = (function () {
                         dispoB[day] = userB[timeInMnPer] ? (parseInt(userB[timeInMnPer]) - doneElapsed) : 0;
                     }
 
-                    // 			Si Dispo A = ok & Dispo B = ok
+                    // 	Si Dispo A = ok & Dispo B = ok
                     var todoAdd = false;
-                    if ((dispoA[day] - histoTimeInMn) >= 0 && (dispoB[day] - histoTimeInMn) >= 0) {
+
+                    // Si deja existant dans la journee, future ou passée
+                    var found = false;
+                    var dateTxt = "" + dateTodo.getFullYear() + "/" + padInteger(dateTodo.getMonth() + 1, 2) + '/' + padInteger(dateTodo.getDate(), 2);
+
+                    for (var x = 0; (x < lstHistoByCalendar.length) && !found; x++) {
+                        var h1 = lstHistoByCalendar[x];
+                        if (h1[self.historicColumns.actionTodoDate] === dateTxt &&
+                            h1[self.historicColumns.choreId] === historic[self.historicColumns.choreId])
+                            found = true;
+                    }
+                    for (var y = 0; (y < historics.length) && !found; y++) {
+                        var h2 = historics[y];
+                        var h2Date = new Date(h2[self.historicColumns.actionDoneDate]);
+                        if (h2Date.getDate() === dateTodo.getDate() &&
+                            h2Date.getMonth() === dateTodo.getMonth() &&
+                            h2Date.getFullYear() === dateTodo.getFullYear() &&
+                            h2.choreId === historic.choreId)
+                            found = true;
+                    }
+
+
+                    if (!found && (dispoA[day] - histoTimeInMn) >= 0 && (dispoB[day] - histoTimeInMn) >= 0) {
                         // Calcul du taux de réalisation par A de la tâche / B
-                        var nbA = self.getChoresNbDoneByUser(historics, userA, histo[self.historicColumns.choreId]);
-                        var nbB = self.getChoresNbDoneByUser(historics, userB, histo[self.historicColumns.choreId]);
-                        var nbATemp = self.getChoresNbDoneByUser(lstHistoByCalendar, userA, histo[self.historicColumns.choreId]);
-                        var nbBTemp = self.getChoresNbDoneByUser(lstHistoByCalendar, userB, histo[self.historicColumns.choreId]);
+                        var nbA = self.getChoresNbDoneByUser(historics, userA, historic[self.historicColumns.choreId]);
+                        var nbB = self.getChoresNbDoneByUser(historics, userB, historic[self.historicColumns.choreId]);
+                        var nbATemp = self.getChoresNbDoneByUser(lstHistoByCalendar, userA, historic[self.historicColumns.choreId]);
+                        var nbBTemp = self.getChoresNbDoneByUser(lstHistoByCalendar, userB, historic[self.historicColumns.choreId]);
                         nbA += nbATemp;
                         nbB += nbBTemp;
                         var rateA = (nbA + nbB) ? (nbA / (nbA + nbB) * 100) : 50;
-                        var affA = (100 - parseInt(histo[self.historicColumns.percentAB])); //if percentAB == 0 --> A wants to do everytime : affA = 100
+                        var affA = (100 - parseInt(historic[self.historicColumns.percentAB])); //if percentAB == 0 --> A wants to do everytime : affA = 100
 
                         // Si taux de A > Affinité de A
                         // Remplissage de la liste de B (Nom de la tache + date J pour affichage)
                         if ((rateA > affA || affA === 0)) {
-                            histo[self.historicColumns.userId] = userB._id;
+                            historic[self.historicColumns.userId] = userB._id;
                             dispoB[day] = dispoB[day] - histoTimeInMn;
                         }
                         else {
-                            histo[self.historicColumns.userId] = userA._id;
+                            historic[self.historicColumns.userId] = userA._id;
                             dispoA[day] = dispoA[day] - histoTimeInMn;
                         }
                         todoAdd = true;
                     }
-                    else if ((dispoA[day] - histoTimeInMn) >= 0) {
-                        histo[self.historicColumns.userId] = userA._id;
+                    else if (!found && (dispoA[day] - histoTimeInMn) >= 0) {
+                        historic[self.historicColumns.userId] = userA._id;
                         dispoA[day] = dispoA[day] - histoTimeInMn;
                         todoAdd = true;
                     }
-                    else if ((dispoB[day] - histoTimeInMn) >= 0) {
-                        histo[self.historicColumns.userId] = userB._id;
+                    else if (!found && (dispoB[day] - histoTimeInMn) >= 0) {
+                        historic[self.historicColumns.userId] = userB._id;
                         dispoB[day] = dispoB[day] - histoTimeInMn;
                         todoAdd = true;
                     }
+                    else {
+                        todoAdd = false;
+                    }
 
                     if (todoAdd) {
-                        var dateTxt = "" + dateTodo.getFullYear() + "/" + padInteger(dateTodo.getMonth() + 1, 2) + '/' + padInteger(dateTodo.getDate(), 2);
-                        histo[self.historicColumns.actionTodoDate] = dateTxt;
-
-                        // add to Todo List if not already put for this day
-                        var found = false;
-                        for (var x = 0; (x < lstHistoByCalendar.length) && !found; x++) {
-                            var h1 = lstHistoByCalendar[x];
-                            if (h1.actionTodoDate === dateTxt && h1.choreId === histo.choreId) found = true;
-                        }
-                        for (var y = 0; (y < historics.length) && !found; y++) {
-                            var h2 = historics[y];
-                            var h2Date = new Date(h2.actionDoneDate);
-                            if (h2Date.getDate() === dateTodo.getDate() && h2Date.getMonth() === dateTodo.getMonth() && h2Date.getFullYear() === dateTodo.getFullYear() &&
-                                h2.choreId === histo.choreId)
-                                found = true;
-                        }
-                        if (!found) lstHistoByCalendar.push(histo);
+                        historic[self.historicColumns.actionTodoDate] = dateTxt;
+                        lstHistoByCalendar.push(historic);
                         break;
                     }
                     else {
@@ -765,8 +772,9 @@ var SrvDataPouchDB = (function () {
         // Plus de place dispo chez A ou B : à traiter le jour suivant
 
         //console.log('computeHistoricsByCalendar lstHistoByCalendar.length : ', lstHistoByCalendar.length);
-        deferred.resolve(lstHistoByCalendar);
-        return deferred.promise;
+        return new self.$q(function (resolve, reject) {
+            resolve(lstHistoByCalendar);
+        });
     };
 
     Service.prototype.terminateHistoric = function (chores, historic) {
@@ -871,13 +879,13 @@ var SrvDataPouchDB = (function () {
             var isSameDay = false;
             if (dayDate) {
                 var dateToCheck = new Date(hist[this.historicColumns.actionDoneDate]);
-                isSameDay = ( dateToCheck.getDate() == dayDate.getDate() &&
-                dateToCheck.getMonth() == dayDate.getMonth() &&
-                dateToCheck.getFullYear() == dayDate.getFullYear());
+                isSameDay = ( dateToCheck.getDate() === dayDate.getDate() &&
+                dateToCheck.getMonth() === dayDate.getMonth() &&
+                dateToCheck.getFullYear() === dayDate.getFullYear());
             }
 
             if (!dayDate || isSameDay) {
-                if (hist[this.historicColumns.userId] == user._id) timeE += parseInt(hist[this.historicColumns.timeInMn]);
+                if (hist[this.historicColumns.userId] === user._id) timeE += parseInt(hist[this.historicColumns.timeInMn]);
             }
         }
 
@@ -983,14 +991,14 @@ var SrvDataPouchDB = (function () {
     };
 
     /**
-     * @deprecated
+     *
      * @param chores
      * @param userA
      * @param userB
      * @param maxHistoric
      * @returns {*|Function|promise}
-     */
-    Service.prototype.computeHistoricsByPrior = function (chores, userA, userB, maxHistoric) {
+
+     Service.prototype.computeHistoricsByPrior = function (chores, userA, userB, maxHistoric) {
         var i, self = this;
         var deferred = self.$q.defer();
         var lstChores = [];
@@ -999,7 +1007,7 @@ var SrvDataPouchDB = (function () {
         var rand = new Chance(Math.random);
         rand = rand.year();
         for (i = 0; userA && userB && chores && i < chores.length && i < maxHistoric; i++) {
-            var historic = {};
+
             var j = (rand + i) % chores.length;
             var choreToCopy = chores[j];
 
@@ -1008,7 +1016,7 @@ var SrvDataPouchDB = (function () {
             }
 
             if (choreToCopy[self.historicColumns.timeInMn] > 0) {
-                angular.copy(choreToCopy, historic);
+                var historic = angular.copy(choreToCopy);
                 historic._id = null;
                 historic[self.historicColumns.choreId] = choreToCopy._id;
                 var uId = new Chance(Math.random).bool() ? userB._id : userA._id; //choreToCopy.percent_AB > 50 ? userB._id : userA._id;
@@ -1023,6 +1031,27 @@ var SrvDataPouchDB = (function () {
         deferred.resolve(lstChores);
         return deferred.promise;
     };
+     */
+
+    Service.prototype.createHistoricFromChore = function (choreToCopy, refHistoric) {
+        var historic = angular.copy(choreToCopy);
+
+        // get all data from previous ref
+        if (refHistoric) {
+            for (var key in this.historicColumns) {
+                if (refHistoric[key] && !historic[key]) {
+                    historic[key] = refHistoric[key];
+                    //console.log('historic[key] ',key, historic[key]);
+                }
+            }
+        }
+        // force some properties
+        historic._id = null;
+        historic[this.historicColumns.choreId] = choreToCopy._id;
+
+        return historic;
+    };
+
 
     // private
     function padInteger(num, size) {

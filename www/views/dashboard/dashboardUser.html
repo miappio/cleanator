@@ -83,7 +83,7 @@
                 <ion-list>
                     <ion-item class="item item-divider">
                         <span ng-bind-html="dashboardDisplayHistoricCalendar()"></span>
-                        <span class="badge">NOW ? {{dashboardAvailability(historicGroup, dashboardSearch.userId)}}
+                        <span class="badge">{{dashboardAvailability(historicGroup, dashboardSearch.userId)}}
                             &nbsp;/&nbsp;{{dashboardAvailabilityMax(historicGroup, dashboardSearch.userId)}}&nbsp;
                         <span translate>mn</span></span>
                     </ion-item>
@@ -136,7 +136,6 @@
             <!-- Now - END -->
 
             <!-- Historics - BEGIN -->
-            canSwipe : {{canSwipe}}
             <div ng-repeat="(historicGroup, historicList) in (dashboardHistorics| filter : {userId : dashboardSearch.userId}) | orderBy:'actionTodoDate' | groupBy : 'actionTodoDate'"
                  ng-init="isTodayGroup = dashboardIsItToday(historicGroup);">
                 <ion-list can-swipe="canSwipe" show-delete="showDelete" show-reorder="showReorder"
@@ -166,13 +165,13 @@
                             <small translate>Terminated</small>
                         </button>-->
 
-                        <ion-option-button class="button-dark" ng-show="isTodayGroup"
-                                           ng-click="dashboardOpenModal(historic);" translate>
-                            Terminated
-                        </ion-option-button>
                         <ion-option-button class="button-info" ng-show="isTodayGroup"
                                            ng-click="dashboardNotForMe(historic, historicList, $index);" translate>
                             historicLater
+                        </ion-option-button>
+                        <ion-option-button class="button-dark" ng-show="isTodayGroup"
+                                           ng-click="dashboardOpenModal(historic);" translate>
+                            Terminated
                         </ion-option-button>
 
                     </ion-item>

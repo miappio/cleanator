@@ -39,8 +39,7 @@ var SrvConfig = (function () {
     service.prototype.setUserLoggedIn = function (user) {
         var self = this;
         delete self.configUserLoggedIn;
-        self.configUserLoggedIn = {};
-        angular.copy(user, self.configUserLoggedIn);
+        self.configUserLoggedIn = angular.copy(user);
         setObjectFromLocalStorage('configUserLoggedIn', self.configUserLoggedIn);
     };
     service.prototype.getUserLoggedIn = function () {

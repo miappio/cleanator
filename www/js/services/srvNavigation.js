@@ -21,7 +21,7 @@ var srvNavigation = (function () {
     Service.prototype.init = function ($rootScope, $state, $ionicHistory) {
 
         var self = this;
-        console.log('srvNavigation init');
+        //console.log('srvNavigation init');
         if (self.initDone) return;
         self.$rootScope = $rootScope;
         //self.$location = $location;
@@ -70,7 +70,7 @@ var srvNavigation = (function () {
             var level = srvDataContainer ? srvDataContainer.getAppFirstInitLevel() : 3;
             var completed = srvDataContainer ? srvDataContainer.isAppFirstInitCompleted() : false;
 
-            console.log('navRedirect : ', pathToGo, loggedIn, level, completed, args);
+            //console.log('navRedirect : ', pathToGo, loggedIn, level, completed, args);
 
             //self.$rootScope.navHiddenWho = !completed && (level != 0);
             //self.$rootScope.navHiddenWhat = !completed && (level != 1);
@@ -115,7 +115,7 @@ var srvNavigation = (function () {
                 .then(function () {
                     srvDataContainer.sync()
                         .catch(function (err) {
-                            self.$log.log('Maybe a first sync failed because we need to check remote before ?');
+                            console.log('Maybe a first sync failed because we need to check remote before ?');
                             return srvDataContainer.sync();
                         })
                         .catch(errFn)

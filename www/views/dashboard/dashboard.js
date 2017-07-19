@@ -21,10 +21,10 @@ angular
         $urlRouterProvider.otherwise('/dashboard/user/a');
     })
 
-    .controller('DashboardCtrl', function ($scope, $timeout, $log, $q, $stateParams, $ionicModal, srvDataContainer, srvData, srvConfig) {
+    .controller('DashboardCtrl', function ($scope, $timeout, $log, $q, $stateParams, $ionicModal, srvDataContainer, srvData, srvConfig, srvArray) {
         'use strict';
 
-        console.log('DashboardCtrl launched');
+        //console.log('DashboardCtrl launched');
 
         $scope.showDelete = false;
         $scope.showReorder = false;
@@ -227,7 +227,7 @@ angular
 
             return $q(function (resolve, reject) {
                 historicToAdd = angular.copy(historic);
-                console.log('dashboardTerminateHistoric : ', historic);
+                //console.log('dashboardTerminateHistoric : ', historic);
 
                 // historize what's done
                 srvData.terminateHistoric($scope.chores, historicToAdd)
@@ -258,8 +258,8 @@ angular
         $scope.dashboardSetHistoricToDoNow = function (choreToDoNow) {
             $scope.dashboardHistoricToDoNow = null;
             if (!choreToDoNow) return;
-            $scope.dashboardHistoricToDoNow = angular.copy(choreToDoNow);
-            $scope.dashboardHistoricToDoNow[$scope.historicCols.choreId] = choreToDoNow._id;
+            $scope.dashboardHistoricToDoNow = srvData.createHistoricFromChore(choreToDoNow);
+            //$scope.dashboardHistoricToDoNow[$scope.historicCols.choreId] = choreToDoNow._id;
             $scope.dashboardHistoricToDoNow[$scope.historicCols.userId] = $scope.dashboardSearch.userId;
             $scope.dashboardHistoricToDoNow._id = null;
         };
@@ -272,51 +272,64 @@ angular
         };
 
         $scope.dashboardNotForMe = function (historic, list, index) {
+            var deleted = false;
             if (!historic) return;
 
-            var self = this;
-
-            // remove from UX list
-            if (list && index >= 0) {
-                list.splice(index, 1);
-            }
+            //console.log('dashboardNotForMe : ', historic, list);
 
             var choreId = historic[$scope.historicCols.choreId];
-            var choreToChange = null;
-            // retrieve chore
-            for (var i = 0; (i < $scope.chores.length) && !choreToChange; i++) {
+            var choreToChange, possibleChore;
+            // retrieve chore and find a chore that doesn't exist in list
+            for (var i = 0; (i < $scope.chores.length); i++) {
                 var c = $scope.chores[i];
-                if (c._id == choreId) choreToChange = c;
+                var currentChoreId = c._id;
+                if (!choreToChange && currentChoreId === choreId)
+                    choreToChange = c;
+
+                if (list) {
+                    var found = srvArray.find(list, function (element) {
+                        var b = (element[$scope.historicCols.choreId] === currentChoreId);
+                        //console.log('compare : ', b, element.choreName, c.choreName);
+                        return b;
+                    });
+                    if (!found) {
+                        // randomize chore
+                        var randomOK = (Math.random() > 0.9);
+                        //console.log('randomOK ? ', randomOK, possibleChore);
+                        if (!possibleChore || randomOK )
+                            possibleChore = c;
+                    }
+                }
             }
 
-            // retrieve Historic in List
+            // replace UX list with the new historicToTake
             var hi = $scope.dashboardHistorics.indexOf(historic);
             if (hi >= 0) {
-                // remove from list
-                $scope.dashboardHistorics.splice(hi, 1);
+                if (!possibleChore) {
+                    //console.log('remove from UX list');
+                    $scope.dashboardHistorics.splice(hi, 1);
+                }
+                else {
+                    //console.log('replace UX list with the new historicToTake ...');
+                    $scope.dashboardHistorics[hi] = srvData.createHistoricFromChore(possibleChore, historic);
+                }
             }
 
             // change chore percent_AB
-            if ($scope.dashboardSearch.userId === $scope.userA._id) {
-                if (choreToChange) choreToChange[$scope.choreCols.percentAB] = 0;
+            /*if ($scope.dashboardSearch.userId === $scope.userA._id) {
+                if (choreToChange && choreToChange[$scope.choreCols.percentAB] >= 5) {
+                    choreToChange[$scope.choreCols.percentAB] = choreToChange[$scope.choreCols.percentAB] - 5;
+                }
             }
             else {
-                if (choreToChange) choreToChange[$scope.choreCols.percentAB] = 100;
-            }
+                if (choreToChange && choreToChange[$scope.choreCols.percentAB] <= 95) {
+                    choreToChange[$scope.choreCols.percentAB] = choreToChange[$scope.choreCols.percentAB] + 5;
+                }
+            }*/
 
             // Save chore & Sync db
             return srvData.Chore.set(choreToChange);
-            /*srvData.Chore.set(choreToChange).then(function (choreSaved) {
-             srvData.sync().then(function (msg) {
-             console.log('pb sync : ' + msg);
-             })
-             .catch(function (msg) {
-             $scope.dashboardErrorMsg = msg;
-             });
-             }).catch(function (msg) {
-             $scope.dashboardErrorMsg = msg;
-             });*/
-
+            //return deleted;
         };
 
         $scope.dashboardNotForUs = function (historic) {
@@ -348,7 +361,7 @@ angular
                     return srvData.sync();
                 })
                 .then(function (msg) {
-                    console.log('pb sync : ' + msg);
+                    //console.log('pb sync : ' + msg);
                 })
                 .catch(function (msg) {
                     $scope.dashboardErrorMsg = msg;

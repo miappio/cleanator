@@ -71,6 +71,10 @@
                                         ng-disabled="!userLoginEmail || !userLoginPassword"
                                         ng-click="navGAClick('login_'+userLoginEmail)">{{'LoginSignin'|translate}}
                                 </button>
+                                <div>
+                                    <a class="button button-full button-clear button-positive" href="https://miapp.io/forgot"
+                                       target="_blank" translate>Forgot your login/password ?</a>
+                                </div>
                             </div>
 
                             <br><br><span style="float:right;font-size:10px;"><span app-version></span> {{navAppOnlineLevel()}}</span>
@@ -102,6 +106,10 @@
                             <button class='button button-block button-positive' ng-click="loginInDemoMode()"
                                     translate>LoginSignin
                             </button>
+                            <div>
+                                <a class="button button-full button-clear button-positive" href="https://miapp.io/forgot"
+                                   target="_blank" translate>Forgot your login/password ?</a>
+                            </div>
                         </form>
                     </div>
                 </div>

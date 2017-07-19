@@ -13,15 +13,16 @@
                 <div class="item item-avatar">
                     <img ng-src="{{dashboardGetChoreCategoryThumbPath(dashboardModalHistoric[historicCols.category])}}"/>
                     <h2>{{dashboardModalHistoric[historicCols.name]}}</h2>
-                    <p>{{dashboardModalHistoric[historicCols.description]}}</p>
-                    <a class="subdued">Todo in {{dashboardModalOriginalTimeInMn}} mn</a>
+                    <!--<p>{{dashboardModalHistoric[historicCols.description]}}</p>
+                    <a class="subdued">Todo in {{dashboardModalOriginalTimeInMn}} mn</a>-->
+                    <p>{{dashboardModalHistoric[historicCols.timeInMn]}} mn</p>
                 </div>
 
                 <div class="item item-body">
-                    <label class="item">
+                    <!--<label class="item">
                         <span translate>DashboardModalTimesSpent</span>
                         <span class="badge">{{dashboardModalHistoric[historicCols.timeInMn]}} mn</span>
-                    </label>
+                    </label>-->
                     <div class="item range range-positive" style="border-top:0;">
 
                         <i class="icon ion-ios-time"></i>

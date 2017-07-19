@@ -87,7 +87,7 @@ angular
                     $scope.loginInitSpinnerStopped = true;
                     $scope.loginWaitForLoginRequest = false;
 
-                    console.log('loginErr : ', err);
+                    //console.log('loginErr : ', err);
                     if (err && err.name === '408') {
                         $scope.loginErrCode = 'loginBadConnection';
                         $scope.loginErrMsgs.push(err.name);
@@ -139,11 +139,11 @@ angular
             //if( states.fromCache && states.stateName == "your view" ) {
                 // do whatever
 
-                console.log('LoadingCtrl view ... ');
+                //console.log('LoadingCtrl view ... ');
             //}
         });
 
-        console.log('LoadingCtrl ... ');
+        //console.log('LoadingCtrl ... ');
 
         if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
 

@@ -372,7 +372,7 @@ describe('myAngularApp.services.srvDataContainer', function () {
                 };
                 _pouchDBMockFull = {
                     allDocs: function (filter, callback) {
-                        console.log('srvDataContainer.test.pouchDBMock.allDocs');
+                        //console.log('srvDataContainer.test.pouchDBMock.allDocs');
                         var response = {};
                         response.total_rows = 8;
                         response.rows = [];
@@ -474,7 +474,7 @@ describe('myAngularApp.services.srvDataContainer', function () {
                     done.fail(err);
                 })
                 .catch(function (err) {
-                    console.log('bad init > sync');
+                    //console.log('bad init > sync');
                     expect(err).toBe('srvDataContainer.sync : Need one user logged in.');
 
                     //Launch another sync with a login but not db
@@ -490,7 +490,7 @@ describe('myAngularApp.services.srvDataContainer', function () {
                     done.fail(err);
                 })
                 .catch(function (err) {
-                    console.log('bad init > catched');
+                    //console.log('bad init > catched');
                     expect(err).toBe('miapp.sdk.service.miappSync : DB pb with getting data (first data creation pb : miapp.sdk.service.miappPutInDb : DB put impossible. Need a user logged in. ([object Object]))');
                     done();
                 });

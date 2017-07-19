@@ -86,6 +86,8 @@ angular.module('myAngularApp.views.chore', [])
             srvData.Chore.findOneById($scope.choreId)
                 .then(function (chore) {
                     $scope.choreToEdit = chore;
+
+                    $scope.chorePriority = parseInt($scope.choreToEdit[$scope.choreCols.priority]) < 3 ? true : false;
                     $scope.choreSetPriority($scope.choreToEdit[$scope.choreCols.priority]);
                     $scope.choresDetailSyncroThumb();
 
@@ -124,11 +126,11 @@ angular.module('myAngularApp.views.chore', [])
 
             srvData.Chore.set($scope.choreToEdit)
                 .then(function (res) {
-                    console.log('saved');
+                    //console.log('saved');
                     $scope.choreFindDetail();
                 })
                 .catch(function (err) {
-                    console.log('pb :' + err);
+                    //console.log('pb :' + err);
                     $scope.choreFindDetail();
                 });
         };
@@ -175,14 +177,15 @@ angular.module('myAngularApp.views.chore', [])
             var total = (AUserAffinity && BUserAffinity) ? (parseInt(AUserAffinity) + parseInt(BUserAffinity)) : 0;
             var percent = (total && total > 0) ? (parseInt(BUserAffinity) * 100 / total) : 50;
             $scope.choreToEdit[$scope.choreCols.percentAB] = Math.round(percent);
-            console.log('choreDetailComputeAffinity : ', AUserAffinity, BUserAffinity, total, percent, $scope.choreToEdit);
+            //console.log('choreDetailComputeAffinity : ', AUserAffinity, BUserAffinity, total, percent, $scope.choreToEdit);
         };
+
 
         $scope.chorePriority = false;
         $scope.choreSetPriority = function (bool) {
             var priorityLevel = !!bool ? 0 : 5;
             $scope.choreToEdit[$scope.choreCols.priority] = priorityLevel;
-            console.log('choreSetPriority : ', bool, priorityLevel, $scope.choreToEdit);
+            //console.log('choreSetPriority : ', bool, priorityLevel, $scope.choreToEdit);
         };
 
         // Initialization
@@ -277,7 +280,7 @@ angular.module('myAngularApp.views.chore', [])
             //  $ionicHistory.nextViewOptions({
             //      disableBack: false
             //  });
-            console.log('categoryInit');
+            //console.log('categoryInit');
         };
 
         // Synchronise DB
@@ -306,12 +309,12 @@ angular.module('myAngularApp.views.chore', [])
         // Execute action on chore state
         $scope.$on('chore.added', function () {
             // Execute action
-            console.log('chore.added');
+            //console.log('chore.added');
         });
         // Execute action on chore state
         $scope.$on('category.changed', function () {
             // Execute action
-            console.log('category.changed');
+            //console.log('category.changed');
             $scope.categoryDataSync();
         });
 
@@ -334,7 +337,7 @@ angular.module('myAngularApp.views.chore', [])
         $scope.categoryChoresFilter[$scope.choreCols.category] = 'empty';
         $scope.categoryChoresInit = function () {
 
-            console.log('categoryChoresInit');
+            //console.log('categoryChoresInit');
             $scope.categoryChoresCategoryId = $stateParams.categoryId;
             $scope.categoryChoresFilter[$scope.choreCols.category] = $stateParams.categoryId;
             $scope.categoryChoresCategoryName = srvDataContainer.getChoreCategoryName($stateParams.categoryId);
@@ -348,7 +351,7 @@ angular.module('myAngularApp.views.chore', [])
                     if (chore[$scope.choreCols.category] == $scope.categoryChoresCategoryId)
                         $scope.categoryChores.push(chore);
                 }
-                console.log('categoryChoresInit :', $scope.categoryChores.length);
+                //console.log('categoryChoresInit :', $scope.categoryChores.length);
             }, 200);
         };
 
