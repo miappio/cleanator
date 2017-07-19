@@ -1010,7 +1010,7 @@
       "frequencyDays": 1,
       "timeInMn": 20,
       "choreDescriptionCat": "typeTable",
-      "priority": 1,
+      "priority": 5,
       "priorityComputed": 5,
       "desactivate" : false
     },
@@ -1023,7 +1023,7 @@
       "frequencyDays": 1,
       "timeInMn": 20,
       "choreDescriptionCat": "typeTable",
-      "priority": 1,
+      "priority": 5,
       "priorityComputed": 5,
       "desactivate" : false
     },
@@ -1075,7 +1075,7 @@
       "frequencyDays": 1,
       "timeInMn": 20,
       "choreDescriptionCat": "typeTable",
-      "priority": 1,
+      "priority": 5,
       "priorityComputed": 5,
       "desactivate": true
     },

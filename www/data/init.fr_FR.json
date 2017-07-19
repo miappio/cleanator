@@ -134,7 +134,7 @@
       "frequencyDays": 1,
       "timeInMn": 10,
       "choreDescriptionCat": "choreVide",
-      "priority": 1,
+      "priority": 5,
       "priorityComputed": 5,
       "desactivate" : false
     },
@@ -147,7 +147,7 @@
       "frequencyDays": 3,
       "timeInMn": 5,
       "choreDescriptionCat": "choreVide",
-      "priority": 1,
+      "priority": 5,
       "priorityComputed": 5,
       "desactivate" : false
     },
@@ -264,7 +264,7 @@
       "frequencyDays": 1,
       "timeInMn": 10,
       "choreDescriptionCat": "choreVide",
-      "priority": 1,
+      "priority": 5,
       "priorityComputed": 5,
       "desactivate" : false
     },
@@ -277,7 +277,7 @@
       "frequencyDays": 1,
       "timeInMn": 10,
       "choreDescriptionCat": "choreVide",
-      "priority": 1,
+      "priority": 5,
       "priorityComputed": 5,
       "desactivate" : false
     },
@@ -290,7 +290,7 @@
       "frequencyDays": 1,
       "timeInMn": 10,
       "choreDescriptionCat": "choreVide",
-      "priority": 1,
+      "priority": 5,
       "priorityComputed": 5,
       "desactivate" : false
     },
@@ -342,7 +342,7 @@
       "frequencyDays": 1,
       "timeInMn": 15,
       "choreDescriptionCat": "choreVide",
-      "priority": 1,
+      "priority": 5,
       "priorityComputed": 5,
       "desactivate" : false
     },
@@ -355,7 +355,7 @@
       "frequencyDays": 1,
       "timeInMn": 15,
       "choreDescriptionCat": "choreVide",
-      "priority": 1,
+      "priority": 5,
       "priorityComputed": 5,
       "desactivate" : false
     },
@@ -368,7 +368,7 @@
       "frequencyDays": 1,
       "timeInMn": 15,
       "choreDescriptionCat": "choreVide",
-      "priority": 1,
+      "priority": 5,
       "priorityComputed": 5,
       "desactivate" : false
     },
@@ -381,7 +381,7 @@
       "frequencyDays": 7,
       "timeInMn": 5,
       "choreDescriptionCat": "choreVide",
-      "priority": 1,
+      "priority": 5,
       "priorityComputed": 5,
       "desactivate" : false
     },
@@ -537,7 +537,7 @@
       "frequencyDays": 7,
       "timeInMn": 5,
       "choreDescriptionCat": "choreVide",
-      "priority": 1,
+      "priority": 5,
       "priorityComputed": 5,
       "desactivate" : false
     },

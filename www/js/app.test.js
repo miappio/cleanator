@@ -16,7 +16,7 @@ describe('myAngularApp', function () {
 
         beforeEach(module('myFakeApp'));
         afterEach(function () {
-            console.log('after');
+            //console.log('after');
         });
 
         it('should provide a version', inject(function (version) {

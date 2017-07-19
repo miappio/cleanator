@@ -2,7 +2,7 @@ angular
 
     .module('myAngularApp.views.dashboard', [])
 
-    .config(function ($stateProvider) {
+    .config(function ($stateProvider, $urlRouterProvider) {
 
         $stateProvider
             .state('dashboard-user', {
@@ -18,11 +18,17 @@ angular
                 controller: 'DashboardIndicatorCtrl'
             });
 
-        //$urlRouterProvider.otherwise('/dashboard/user/a');
+        $urlRouterProvider.otherwise('/dashboard/user/a');
     })
 
-    .controller('DashboardCtrl', function ($scope, $timeout, $log, $q, $stateParams, $ionicModal, srvDataContainer, srvData, srvConfig) {
+    .controller('DashboardCtrl', function ($scope, $timeout, $log, $q, $stateParams, $ionicModal, srvDataContainer, srvData, srvConfig, srvArray) {
         'use strict';
+
+        //console.log('DashboardCtrl launched');
+
+        $scope.showDelete = false;
+        $scope.showReorder = false;
+        $scope.canSwipe = true;
 
         $scope.dashboardHistorics = [];
         $scope.dashboardSearch = {};
@@ -32,25 +38,28 @@ angular
 
         $scope.dashboardInit = function () {
 
-            // var url = $location.url();
-            // if (url.indexOf("dashboard-user")>=0){
-            //   $scope.dashboardViewTitle = "b";
-            // }
-            // else
-            //   $scope.dashboardViewTitle = "a";
-
-
             var userId = $stateParams.userId;
-            //var url = $location.url();
-            $scope.dashboardSearch.userId = $scope.userA ? $scope.userA._id : userId;
-            //if(url.indexOf("dashboard-user") >= 0 && $scope.userB) $scope.dashboardSearch.userId = $scope.userB._id;
-            if ($scope.userB && $scope.userB._id == userId) $scope.dashboardSearch.userId = $scope.userB._id;
+            if (!$scope.userA || !$scope.userB) {
+                $scope.dashboardSearch.userId = userId;
+                return;
+            }
+
+            if ($scope.dashboardSearch.userId === $scope.userA._id || $scope.dashboardSearch.userId === $scope.userB._id) {
+                return;
+            }
+
+            $scope.dashboardSearch.userId = $scope.userA._id;
+            if ($scope.userB._id === userId) {
+                $scope.dashboardSearch.userId = $scope.userB._id;
+            }
 
         };
 
         $scope.dashboardGetTextIdentifier = function (text) {
 
-            if (!text) return 'na';
+            if (!text) {
+                return 'na';
+            }
 
             var map = {
                 //'&': '&amp;',
@@ -78,20 +87,22 @@ angular
         $scope.afterNavigationInitSpinnerShow = function () {
             $scope.dashboardInitSpinnerStopped = false;
             $timeout(function () {
-                if (!srvConfig.isLoggedIn())
-                    $scope.dashboardStopSpinnerWithMessage();
-                else {
+                if (srvConfig.isLoggedIn()) {
                     $scope.navDataSync(srvDataContainer)
                         .then(function (err) {
                             if (err) return $scope.dashboardStopSpinnerWithMessage(err);
                             return $scope.dashboardDataBind();
                         })
                         .then(function (err) {
+                            $scope.dashboardInit();
                             return $scope.dashboardStopSpinnerWithMessage(err);
                         })
                         .catch(function (err) {
                             return $scope.dashboardStopSpinnerWithMessage(err);
                         });
+                } else {
+                    $scope.dashboardStopSpinnerWithMessage();
+                    if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
                 }
             }, 1500);
         };
@@ -196,7 +207,7 @@ angular
                         return a[$scope.historicCols.actionTodoDate] > b[$scope.historicCols.actionTodoDate];
                     });
                     //miapp.safeApply($scope, function () {
-                        $scope.dashboardHistorics = historics;
+                    $scope.dashboardHistorics = historics;
                     //});
                     deferred.resolve();
                 })
@@ -216,6 +227,7 @@ angular
 
             return $q(function (resolve, reject) {
                 historicToAdd = angular.copy(historic);
+                //console.log('dashboardTerminateHistoric : ', historic);
 
                 // historize what's done
                 srvData.terminateHistoric($scope.chores, historicToAdd)
@@ -246,58 +258,78 @@ angular
         $scope.dashboardSetHistoricToDoNow = function (choreToDoNow) {
             $scope.dashboardHistoricToDoNow = null;
             if (!choreToDoNow) return;
-            $scope.dashboardHistoricToDoNow = angular.copy(choreToDoNow);
-            $scope.dashboardHistoricToDoNow[$scope.historicCols.choreId] = choreToDoNow._id;
+            $scope.dashboardHistoricToDoNow = srvData.createHistoricFromChore(choreToDoNow);
+            //$scope.dashboardHistoricToDoNow[$scope.historicCols.choreId] = choreToDoNow._id;
             $scope.dashboardHistoricToDoNow[$scope.historicCols.userId] = $scope.dashboardSearch.userId;
             $scope.dashboardHistoricToDoNow._id = null;
         };
         $scope.dashboardTerminateHistoricNow = function (historic) {
             $scope.dashboardTerminateHistoric(historic)
-                .finally(function () {
+                .then(function () {
                     $scope.dashboardSetCategoryToDoNow(null);
                     $scope.dashboardSetHistoricToDoNow(null);
                 });
         };
 
-        $scope.dashboardNotForMe = function (historic) {
+        $scope.dashboardNotForMe = function (historic, list, index) {
+            var deleted = false;
             if (!historic) return;
 
-            var self = this;
+            //console.log('dashboardNotForMe : ', historic, list);
+
             var choreId = historic[$scope.historicCols.choreId];
-            var choreToChange = null;
-            // retrieve chore
-            for (var i = 0; (i < $scope.chores.length) && !choreToChange; i++) {
+            var choreToChange, possibleChore;
+            // retrieve chore and find a chore that doesn't exist in list
+            for (var i = 0; (i < $scope.chores.length); i++) {
                 var c = $scope.chores[i];
-                if (c._id == choreId) choreToChange = c;
+                var currentChoreId = c._id;
+                if (!choreToChange && currentChoreId === choreId)
+                    choreToChange = c;
+
+                if (list) {
+                    var found = srvArray.find(list, function (element) {
+                        var b = (element[$scope.historicCols.choreId] === currentChoreId);
+                        //console.log('compare : ', b, element.choreName, c.choreName);
+                        return b;
+                    });
+                    if (!found) {
+                        // randomize chore
+                        var randomOK = (Math.random() > 0.9);
+                        //console.log('randomOK ? ', randomOK, possibleChore);
+                        if (!possibleChore || randomOK )
+                            possibleChore = c;
+                    }
+                }
             }
 
-            // retrieve Historic in List
+            // replace UX list with the new historicToTake
             var hi = $scope.dashboardHistorics.indexOf(historic);
             if (hi >= 0) {
-                // remove from list
-                $scope.dashboardHistorics.splice(hi, 1);
+                if (!possibleChore) {
+                    //console.log('remove from UX list');
+                    $scope.dashboardHistorics.splice(hi, 1);
+                }
+                else {
+                    //console.log('replace UX list with the new historicToTake ...');
+                    $scope.dashboardHistorics[hi] = srvData.createHistoricFromChore(possibleChore, historic);
+                }
             }
 
             // change chore percent_AB
-            if ($scope.dashboardSearch.userId == $scope.userA._id) {
-                if (choreToChange) choreToChange[$scope.choreCols.percentAB] = 100;
+            /*if ($scope.dashboardSearch.userId === $scope.userA._id) {
+                if (choreToChange && choreToChange[$scope.choreCols.percentAB] >= 5) {
+                    choreToChange[$scope.choreCols.percentAB] = choreToChange[$scope.choreCols.percentAB] - 5;
+                }
             }
             else {
-                if (choreToChange) choreToChange[$scope.choreCols.percentAB] = 0;
-            }
+                if (choreToChange && choreToChange[$scope.choreCols.percentAB] <= 95) {
+                    choreToChange[$scope.choreCols.percentAB] = choreToChange[$scope.choreCols.percentAB] + 5;
+                }
+            }*/
 
             // Save chore & Sync db
-            srvData.Chore.set(choreToChange).then(function (choreSaved) {
-                srvData.sync().then(function (msg) {
-                    console.log('pb sync : ' + msg);
-                })
-                    .catch(function (msg) {
-                        $scope.dashboardErrorMsg = msg;
-                    });
-            }).catch(function (msg) {
-                $scope.dashboardErrorMsg = msg;
-            });
-
+            return srvData.Chore.set(choreToChange);
+            //return deleted;
         };
 
         $scope.dashboardNotForUs = function (historic) {
@@ -329,12 +361,13 @@ angular
                     return srvData.sync();
                 })
                 .then(function (msg) {
-                    console.log('pb sync : ' + msg);
+                    //console.log('pb sync : ' + msg);
                 })
                 .catch(function (msg) {
                     $scope.dashboardErrorMsg = msg;
                 });
         };
+
 
         $scope.dashboardAvailability = function (dateISO, userId) {
 
@@ -343,8 +376,18 @@ angular
             else if (dateISO && dateISO instanceof Date) date = new Date(Date.UTC(dateISO.getFullYear(), dateISO.getMonth(), dateISO.getDate()));
             else date = new Date();
             //var res = date.toISOString().slice(0, 10).replace(/-/g, "/");
-            var min = srvDataContainer.getHistoricsDoneTimeRemaining($scope.dashboardSearch.userId, date);
+            var min = srvDataContainer.getHistoricsDoneTimeRemaining(userId, date);
             return min;
+        };
+        $scope.dashboardAvailabilityMax = function (dateISO, userId) {
+
+            var date = null;
+            if (typeof dateISO === "string") date = new Date(dateISO);
+            else if (dateISO && dateISO instanceof Date) date = new Date(Date.UTC(dateISO.getFullYear(), dateISO.getMonth(), dateISO.getDate()));
+            else date = new Date();
+            //var res = date.toISOString().slice(0, 10).replace(/-/g, "/");
+            var max = srvDataContainer.getTimePerDay(userId, date);
+            return max;
         };
 
         $scope.dashboardDisplayHistoricDate = function (dateISO) {
@@ -395,9 +438,10 @@ angular
             if (!dateText) return dateT;
 
             var date = new Date(dateText);
-            dateT = '' + padInteger(date.getDate(), 2) + '/' + padInteger(date.getMonth(), 2) + '/' + padInteger(date.getFullYear(), 4) + ' ' + padInteger(date.getHours(), 2) + ':' + padInteger(date.getMinutes(), 2);
+            dateT = '' + padInteger(date.getDate(), 2) + '/' + padInteger(date.getMonth() + 1, 2) + '/' + padInteger(date.getFullYear(), 4) + ' ' + padInteger(date.getHours(), 2) + ':' + padInteger(date.getMinutes(), 2);
             return dateT;
         }
+
         function padInteger(num, size) {
             if (!size) size = 10;
             var s = "000000000" + num;
@@ -480,7 +524,7 @@ angular
         $scope.dashboardOpenModal = function (historic) {
             if ($scope.modal) {
                 $scope.dashboardModalHistoric = historic;
-                $scope.dashboardModalOriginalTimeInMn = historic[$scope.historicCols.timeInMn];
+                $scope.dashboardModalOriginalTimeInMn = parseInt(historic[$scope.historicCols.timeInMn]);
                 $scope.modal.show();
             }
         };
@@ -491,7 +535,7 @@ angular
             if (!historic) return;
             $scope.dashboardTerminateHistoric(historic)
                 .then(function () {
-
+                    //dashboardSetHistoricToDoNow
                 });
         };
 
@@ -543,7 +587,7 @@ angular
             if (!dateText) return dateT;
 
             var date = new Date(dateText);
-            dateT = '' + padInteger(date.getDate(), 2) + '/' + padInteger(date.getMonth(), 2) + '/' + padInteger(date.getFullYear(), 4) + ' ' + padInteger(date.getHours(), 2) + ':' + padInteger(date.getMinutes(), 2);
+            dateT = '' + padInteger(date.getDate(), 2) + '/' + padInteger(date.getMonth() + 1, 2) + '/' + padInteger(date.getFullYear(), 4) + ' ' + padInteger(date.getHours(), 2) + ':' + padInteger(date.getMinutes(), 2);
             return dateT;
         }
 

@@ -4,11 +4,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: \n"
 
-#: dashboard/dashboardUser.html:93
+#: dashboard/dashboardUser.html:95
 msgid "-- choose category --"
 msgstr ""
 
-#: dashboard/dashboardUser.html:102
+#: dashboard/dashboardUser.html:104
 msgid "-- choose chore --"
 msgstr ""
 
@@ -86,24 +86,20 @@ msgstr ""
 msgid "Clean History"
 msgstr ""
 
-#: dashboard/modals.html:32
+#: dashboard/modals.html:33
 msgid "Comments"
 msgstr ""
 
-#: dashboard/modals.html:53
+#: dashboard/modals.html:43
 msgid "DashboardModalCancel"
 msgstr ""
 
-#: dashboard/modals.html:48
+#: dashboard/modals.html:38
 msgid "DashboardModalDidIt"
 msgstr ""
 
 #: dashboard/modals.html:5
 msgid "DashboardModalDone"
-msgstr ""
-
-#: dashboard/modals.html:22
-msgid "DashboardModalTimesSpent"
 msgstr ""
 
 #: dashboard/dashboardUser.html:78
@@ -125,6 +121,11 @@ msgstr ""
 
 #: commons/footer.html:5
 msgid "Footer_ComputeDetailled"
+msgstr ""
+
+#: login/loginIn.html:110
+#: login/loginIn.html:75
+msgid "Forgot your login/password ?"
 msgstr ""
 
 #: user/userCalendar.html:112
@@ -170,8 +171,8 @@ msgstr ""
 msgid "Level0_You’ve set your profiles ? Ready for the next part : setting all the chores you have to deal with."
 msgstr ""
 
+#: login/loginIn.html:100
 #: login/loginIn.html:61
-#: login/loginIn.html:96
 #: user/userAll.html:78
 msgid "LoginLanguage"
 msgstr ""
@@ -180,7 +181,7 @@ msgstr ""
 msgid "LoginNewPassword"
 msgstr ""
 
-#: login/loginIn.html:102
+#: login/loginIn.html:106
 #: login/loginIn.html:72
 msgid "LoginSignin"
 msgstr ""
@@ -221,7 +222,7 @@ msgstr ""
 msgid "PullToRefresh"
 msgstr ""
 
-#: dashboard/dashboardIndicator.html:68
+#: dashboard/dashboardIndicator.html:87
 msgid "Record of anything done by"
 msgstr ""
 
@@ -251,32 +252,32 @@ msgstr ""
 msgid "Sunday"
 msgstr ""
 
-#: user/configTabs.html:30
+#: user/configTabs.html:31
 msgid "TabWhat"
 msgstr ""
 
-#: user/configTabs.html:18
+#: user/configTabs.html:19
 msgid "TabWhatDetailled"
 msgstr ""
 
-#: user/configTabs.html:27
+#: user/configTabs.html:28
 msgid "TabWhen"
 msgstr ""
 
-#: user/configTabs.html:13
+#: user/configTabs.html:14
 msgid "TabWhenDetailled"
 msgstr ""
 
-#: user/configTabs.html:24
+#: user/configTabs.html:25
 msgid "TabWho"
 msgstr ""
 
-#: user/configTabs.html:8
+#: user/configTabs.html:9
 msgid "TabWhoDetailled"
 msgstr ""
 
-#: dashboard/dashboardUser.html:121
-#: dashboard/dashboardUser.html:155
+#: dashboard/dashboardUser.html:127
+#: dashboard/dashboardUser.html:172
 msgid "Terminated"
 msgstr ""
 
@@ -301,7 +302,7 @@ msgstr ""
 msgid "Tuesday"
 msgstr ""
 
-#: dashboard/dashboardUser.html:89
+#: dashboard/dashboardUser.html:91
 msgid "Unforeseen item :"
 msgstr ""
 
@@ -343,7 +344,7 @@ msgstr ""
 msgid "Wednesday"
 msgstr ""
 
-#: login/loginIn.html:93
+#: login/loginIn.html:97
 msgid "You are in demo mode"
 msgstr ""
 
@@ -368,8 +369,12 @@ msgstr ""
 msgid "front of all todos"
 msgstr ""
 
-#: dashboard/dashboardUser.html:112
-#: dashboard/dashboardUser.html:145
+#: dashboard/dashboardUser.html:168
+msgid "historicLater"
+msgstr ""
+
+#: dashboard/dashboardUser.html:114
+#: dashboard/dashboardUser.html:155
 msgid "latest item :"
 msgstr ""
 
@@ -396,12 +401,14 @@ msgstr ""
 msgid "minutes av./day"
 msgstr ""
 
-#: dashboard/dashboardUser.html:111
-#: dashboard/dashboardUser.html:144
+#: dashboard/dashboardUser.html:113
+#: dashboard/dashboardUser.html:154
 msgid "minutes,"
 msgstr ""
 
 #: chore/choreDetail.html:85
+#: dashboard/dashboardUser.html:146
+#: dashboard/dashboardUser.html:88
 #: user/userCalendar.html:103
 #: user/userCalendar.html:109
 #: user/userCalendar.html:115
@@ -419,7 +426,7 @@ msgstr ""
 msgid "mn"
 msgstr ""
 
-#: dashboard/dashboardUser.html:116
-#: dashboard/dashboardUser.html:149
+#: dashboard/dashboardUser.html:118
+#: dashboard/dashboardUser.html:159
 msgid "none"
 msgstr ""

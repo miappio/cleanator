@@ -12,11 +12,11 @@ msgstr ""
 "X-Generator: Poedit 2.0\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: dashboard/dashboardUser.html:93
+#: dashboard/dashboardUser.html:95
 msgid "-- choose category --"
 msgstr "— choisissez une catégorie —"
 
-#: dashboard/dashboardUser.html:102
+#: dashboard/dashboardUser.html:104
 msgid "-- choose chore --"
 msgstr "— choisissez une tâche —"
 
@@ -24,7 +24,7 @@ msgstr "— choisissez une tâche —"
 msgid "01valid.email@required.com"
 msgstr "votre.email@requis.fr"
 
-#: chore/categoryChores.html:65
+#: chore/categoryChores.html:64
 msgid "AddOneChore.."
 msgstr "Rajouter une tâche"
 
@@ -52,27 +52,27 @@ msgstr "J’ai compris"
 msgid "Changing your email means logout and loosing this Cleanator session"
 msgstr "Changer d’email implique que vous allez être déconnecté."
 
-#: chore/categoryChores.html:80
+#: chore/categoryChores.html:79
 msgid "ChoreActivate"
 msgstr "Activer"
 
-#: chore/categoryChores.html:52
+#: chore/categoryChores.html:51
 msgid "ChoreDeactivate"
 msgstr "Désactiver"
 
-#: chore/choreDetail.html:78 chore/choreDetail.html:80
+#: chore/choreDetail.html:77 chore/choreDetail.html:79
 msgid "ChoreDescription"
 msgstr "Description"
 
-#: chore/choreDetail.html:130
+#: chore/choreDetail.html:125
 msgid "ChoreDetailRemove"
 msgstr "Supprimer cette tâche"
 
-#: chore/choreDetail.html:85
+#: chore/choreDetail.html:84
 msgid "ChoreEstimate"
 msgstr "Temps à passer"
 
-#: chore/choreDetail.html:93
+#: chore/choreDetail.html:92
 msgid "ChoreFrequency"
 msgstr "Fréquence"
 
@@ -92,25 +92,21 @@ msgstr "Type"
 msgid "Clean History"
 msgstr "Vider l’historique"
 
-#: dashboard/modals.html:32
+#: dashboard/modals.html:33
 msgid "Comments"
 msgstr "Commentaires"
 
-#: dashboard/modals.html:53
+#: dashboard/modals.html:43
 msgid "DashboardModalCancel"
 msgstr "Revenir"
 
-#: dashboard/modals.html:48
+#: dashboard/modals.html:38
 msgid "DashboardModalDidIt"
 msgstr "Terminer"
 
 #: dashboard/modals.html:5
 msgid "DashboardModalDone"
 msgstr "Fait !"
-
-#: dashboard/modals.html:22
-msgid "DashboardModalTimesSpent"
-msgstr "Temps passé :"
 
 #: dashboard/dashboardUser.html:78
 msgid "DashboardPleasePullToRefreshYourDashboard"
@@ -131,6 +127,10 @@ msgstr "Calculer"
 #: commons/footer.html:5
 msgid "Footer_ComputeDetailled"
 msgstr "Au travail !"
+
+#: login/loginIn.html:110 login/loginIn.html:75
+msgid "Forgot your login/password ?"
+msgstr "Oubli du login/mdp ?"
 
 #: user/userCalendar.html:112 user/userCalendar.html:170
 msgid "Friday"
@@ -171,10 +171,6 @@ msgstr "Choisir les catégories pertinentes"
 msgid "Guider_Swipe them to unactivate it"
 msgstr "et glisser sur le côté pour désactiver"
 
-#: dashboard/dashboardIndicator.html:68
-msgid "History of all done by"
-msgstr "Historique de"
-
 #: dashboard/dashboardIndicator.html:33
 msgid "Last reset:"
 msgstr "dernier reset :"
@@ -185,7 +181,7 @@ msgid ""
 "chores you have to deal with."
 msgstr "Suivant"
 
-#: login/loginIn.html:61 login/loginIn.html:96 user/userAll.html:78
+#: login/loginIn.html:100 login/loginIn.html:61 user/userAll.html:78
 msgid "LoginLanguage"
 msgstr "langue"
 
@@ -193,7 +189,7 @@ msgstr "langue"
 msgid "LoginNewPassword"
 msgstr "mot de passe"
 
-#: login/loginIn.html:102 login/loginIn.html:72
+#: login/loginIn.html:106 login/loginIn.html:72
 msgid "LoginSignin"
 msgstr "Entrer"
 
@@ -209,7 +205,7 @@ msgstr "Changer d’email implique de se déconnecter et de changer de session."
 msgid "Monday"
 msgstr "Lundi"
 
-#: chore/categoryChores.html:65
+#: chore/categoryChores.html:64
 msgid "New Item"
 msgstr "Nouvelle tâche"
 
@@ -228,6 +224,10 @@ msgstr "Insuffisant"
 #: chore/categoryChores.html:11 dashboard/dashboardUser.html:39
 msgid "PullToRefresh"
 msgstr "Rafraîchir "
+
+#: dashboard/dashboardIndicator.html:87
+msgid "Record of anything done by"
+msgstr "Historique de"
 
 #: dashboard/dashboardUser.html:71
 msgid "Report"
@@ -253,31 +253,31 @@ msgstr "Semble non équitable"
 msgid "Sunday"
 msgstr "Dimanche"
 
-#: user/configTabs.html:30
+#: user/configTabs.html:31
 msgid "TabWhat"
 msgstr "Quoi"
 
-#: user/configTabs.html:18
+#: user/configTabs.html:19
 msgid "TabWhatDetailled"
 msgstr "Vos tâches ménagères ?"
 
-#: user/configTabs.html:27
+#: user/configTabs.html:28
 msgid "TabWhen"
 msgstr "Quand"
 
-#: user/configTabs.html:13
+#: user/configTabs.html:14
 msgid "TabWhenDetailled"
 msgstr "Vos disponibilités ?"
 
-#: user/configTabs.html:24
+#: user/configTabs.html:25
 msgid "TabWho"
 msgstr "Qui"
 
-#: user/configTabs.html:8
+#: user/configTabs.html:9
 msgid "TabWhoDetailled"
 msgstr "Qui êtes vous ?"
 
-#: dashboard/dashboardUser.html:121 dashboard/dashboardUser.html:155
+#: dashboard/dashboardUser.html:127 dashboard/dashboardUser.html:172
 msgid "Terminated"
 msgstr "Fini"
 
@@ -298,11 +298,11 @@ msgstr "en moyenne pour faire ces tâches :"
 msgid "Tuesday"
 msgstr "Mardi"
 
-#: dashboard/dashboardUser.html:89
+#: dashboard/dashboardUser.html:91
 msgid "Unforeseen item :"
 msgstr "Tâche imprévue :"
 
-#: chore/categoryAll.html:112 chore/categoryChores.html:70
+#: chore/categoryAll.html:112 chore/categoryChores.html:69
 msgid "Unusefull list"
 msgstr "Tâches désactivées"
 
@@ -338,19 +338,19 @@ msgstr "Pseudo"
 msgid "Wednesday"
 msgstr "Mercredi"
 
-#: login/loginIn.html:93
+#: login/loginIn.html:97
 msgid "You are in demo mode"
 msgstr "Vous êtes en mode démo"
 
-#: chore/choreDetail.html:109 chore/choreDetail.html:120
+#: chore/choreDetail.html:104 chore/choreDetail.html:115
 msgid "affinity for this item"
 msgstr "affinité pour cette tâche"
 
-#: chore/choreDetail.html:94
+#: chore/choreDetail.html:93
 msgid "day(s)"
 msgstr "jour(s)"
 
-#: chore/choreDetail.html:94
+#: chore/choreDetail.html:93
 msgid "each"
 msgstr "tous les"
 
@@ -362,9 +362,13 @@ msgstr "pour le Meilleur et la Poussière"
 msgid "front of all todos"
 msgstr "pour rester en couple"
 
-#: dashboard/dashboardUser.html:112 dashboard/dashboardUser.html:145
+#: dashboard/dashboardUser.html:168
+msgid "historicLater"
+msgstr "Plus tard"
+
+#: dashboard/dashboardUser.html:114 dashboard/dashboardUser.html:155
 msgid "latest item :"
-msgstr "dernier item :"
+msgstr "dernier :"
 
 #: chore/categoryAll.html:61 user/userCalendar.html:59
 msgid "min / day ?"
@@ -386,11 +390,12 @@ msgstr "min de dispo / jour"
 msgid "minutes av./day"
 msgstr "minutes moyen par jour"
 
-#: dashboard/dashboardUser.html:111 dashboard/dashboardUser.html:144
+#: dashboard/dashboardUser.html:113 dashboard/dashboardUser.html:154
 msgid "minutes,"
-msgstr "minutes,"
+msgstr "mn,"
 
-#: chore/choreDetail.html:86 user/userCalendar.html:103
+#: chore/choreDetail.html:85 dashboard/dashboardUser.html:146
+#: dashboard/dashboardUser.html:88 user/userCalendar.html:103
 #: user/userCalendar.html:109 user/userCalendar.html:115
 #: user/userCalendar.html:121 user/userCalendar.html:127
 #: user/userCalendar.html:149 user/userCalendar.html:155
@@ -401,9 +406,12 @@ msgstr "minutes,"
 msgid "mn"
 msgstr "min"
 
-#: dashboard/dashboardUser.html:116 dashboard/dashboardUser.html:149
+#: dashboard/dashboardUser.html:118 dashboard/dashboardUser.html:159
 msgid "none"
 msgstr "na"
+
+#~ msgid "DashboardModalTimesSpent"
+#~ msgstr "Temps passé :"
 
 #~ msgid "ChoreAffinity"
 #~ msgstr "Affinité"

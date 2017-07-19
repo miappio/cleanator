@@ -8,10 +8,8 @@ angular.module('myAngularApp.views.user', [])
                 abstract: true,
                 templateUrl: 'views/user/configTabs.html'
             })
-
             .state('config.couple', {
                 url: '/couple',
-                cache: false,
                 views: {
                     'config-couple': {
                         templateUrl: 'views/user/userAll.html',
@@ -48,56 +46,39 @@ angular.module('myAngularApp.views.user', [])
 
         $scope.userInitSpinnerStopped = false;
         $scope.afterNavigationInitSpinnerShow = function () {
+            //console.log('user : afterNavigationInitSpinnerShow');
             $timeout(function () {
 
                 if (srvDataContainer.getAppFirstInitLevel() === 0) {
                     //One First sync needed just after login
                     $scope.navDataSync(srvDataContainer)
-                        .then(function (msg) {
-                            // Followed by a real binding
-                            $scope.userDataSync()
-                                .finally(function () {
-                                    // save all userS
-                                    if ($scope.userA) $scope.userSave($scope.userA);
-                                    if ($scope.userB) $scope.userSave($scope.userB);
-                                    $scope.userSaved = false;
-                                })
-                                .catch(function (err) {
-                                    $log.error(err);
-                                });
+                        .then(function () {
+                            // save all userS
+                            if ($scope.userA) $scope.userSave($scope.userA);
+                            if ($scope.userB) $scope.userSave($scope.userB);
+                            $scope.userSaved = false;
+                            $scope.userStopSpinnerWithMessage();
                         })
                         .catch(function (err) {
                             $log.error(err);
+                            $scope.userStopSpinnerWithMessage(err);
                         });
                 }
                 else {
-                    $scope.userDataSync()
+                    $scope.navDataSync(srvDataContainer)
                         .then(function () {
                             //indicators
                             //$scope.userUpdateIndicleanator();
                             $scope.userIndicators = srvDataContainer.computeIndicators();
-                        }).catch(function (err) {
-                        $log.error(err);
-                    });
+                            $scope.userStopSpinnerWithMessage();
+                        })
+                        .catch(function (err) {
+                            $log.error(err);
+                            $scope.userStopSpinnerWithMessage(err);
+                        });
                 }
 
             }, 1000);
-        };
-
-        // Synchronise DB
-        $scope.userDataSync = function () {
-            var self = this;
-            var deferred = $q.defer();
-            $scope.navDataSync(srvDataContainer)
-                .then(function (msg) {
-                    $scope.userStopSpinnerWithMessage(msg);
-                    deferred.resolve();
-                })
-                .catch(function (err) {
-                    $log.error(err);
-                });
-
-            return deferred.promise;
         };
 
         $scope.userStopSpinnerWithMessage = function (msg) {
@@ -113,7 +94,7 @@ angular.module('myAngularApp.views.user', [])
             var uid = user._id;
 
             if (typeof $scope.userSaveEnable[uid] !== "undefined" && $scope.userSaveEnable[uid] === false) {
-                console.log("already saving");
+                //console.log("already saving");
                 return;
             }
             $scope.userSaveEnable[uid] = false;
@@ -123,8 +104,8 @@ angular.module('myAngularApp.views.user', [])
 
             // store & save user data
             srvData.User.set(user)
-                .then(function (userSaved) {
-                    if (!$scope.userSaved) console.log("user saved");
+                .then(function (user_) {
+                    //if (!$scope.userSaved) console.log("user saved");
                     $scope.userSaved = true;
                     $scope.userSaveEnable[uid] = true;
                     //indicators
@@ -155,7 +136,7 @@ angular.module('myAngularApp.views.user', [])
         $scope.userUpdateTimePerWeek = function (user, forceSameValue) {
             if (!user) return;
 
-            var defaultValuePerDay = Math.round(user[$scope.userCols.timeInMnPerWeekTodo] / 7);
+            var defaultValuePerDay = Math.round(parseInt(user[$scope.userCols.timeInMnPerWeekTodo]) / 7);
 
             // same value each days
             var shouldPutSameValueInEachDays = false;
@@ -163,13 +144,13 @@ angular.module('myAngularApp.views.user', [])
             else if ($scope.userB && $scope.userB._id == user._id && $scope.userBHasSameTimeEachDay) shouldPutSameValueInEachDays = true;
 
             // synthetise timeInMnPerWeekTodo
-            var mond = user[$scope.userCols.timeInMnPerMond] >= 0 ? Math.round(user[$scope.userCols.timeInMnPerMond]) : defaultValuePerDay;
-            var tues = user[$scope.userCols.timeInMnPerTues] >= 0 ? Math.round(user[$scope.userCols.timeInMnPerTues]) : defaultValuePerDay;
-            var wedn = user[$scope.userCols.timeInMnPerWedn] >= 0 ? Math.round(user[$scope.userCols.timeInMnPerWedn]) : defaultValuePerDay;
-            var thur = user[$scope.userCols.timeInMnPerThur] >= 0 ? Math.round(user[$scope.userCols.timeInMnPerThur]) : defaultValuePerDay;
-            var frid = user[$scope.userCols.timeInMnPerFrid] >= 0 ? Math.round(user[$scope.userCols.timeInMnPerFrid]) : defaultValuePerDay;
-            var satu = user[$scope.userCols.timeInMnPerSatu] >= 0 ? Math.round(user[$scope.userCols.timeInMnPerSatu]) : defaultValuePerDay;
-            var sund = user[$scope.userCols.timeInMnPerSund] >= 0 ? Math.round(user[$scope.userCols.timeInMnPerSund]) : defaultValuePerDay;
+            var mond = parseInt(user[$scope.userCols.timeInMnPerMond]) >= 0 ? Math.round(parseInt(user[$scope.userCols.timeInMnPerMond])) : defaultValuePerDay;
+            var tues = parseInt(user[$scope.userCols.timeInMnPerTues]) >= 0 ? Math.round(parseInt(user[$scope.userCols.timeInMnPerTues])) : defaultValuePerDay;
+            var wedn = parseInt(user[$scope.userCols.timeInMnPerWedn]) >= 0 ? Math.round(parseInt(user[$scope.userCols.timeInMnPerWedn])) : defaultValuePerDay;
+            var thur = parseInt(user[$scope.userCols.timeInMnPerThur]) >= 0 ? Math.round(parseInt(user[$scope.userCols.timeInMnPerThur])) : defaultValuePerDay;
+            var frid = parseInt(user[$scope.userCols.timeInMnPerFrid]) >= 0 ? Math.round(parseInt(user[$scope.userCols.timeInMnPerFrid])) : defaultValuePerDay;
+            var satu = parseInt(user[$scope.userCols.timeInMnPerSatu]) >= 0 ? Math.round(parseInt(user[$scope.userCols.timeInMnPerSatu])) : defaultValuePerDay;
+            var sund = parseInt(user[$scope.userCols.timeInMnPerSund]) >= 0 ? Math.round(parseInt(user[$scope.userCols.timeInMnPerSund])) : defaultValuePerDay;
             var weekSum = mond + tues + wedn + thur + frid + satu + sund;
 
             if (shouldPutSameValueInEachDays || (forceSameValue === true)) {
@@ -206,12 +187,12 @@ angular.module('myAngularApp.views.user', [])
             for (var i = 0; i < $scope.chores.length; i++) {
                 var chore = $scope.chores[i];
                 if (!chore.desactivate) {
-                    var nbPerWeek = Math.round(7 / chore[$scope.choreCols.frequencyDays]);
+                    var nbPerWeek = Math.round(7 / parseInt(chore[$scope.choreCols.frequencyDays]));
                     nbPerWeek = (nbPerWeek === 0) ? 1 : nbPerWeek;
-                    var timePerWeek = Math.round(nbPerWeek * chore[$scope.choreCols.timeInMn]);
+                    var timePerWeek = Math.round(nbPerWeek * parseInt(chore[$scope.choreCols.timeInMn]));
                     $scope.userAllTasksNb += nbPerWeek;
                     $scope.userAllTasksTime += timePerWeek;
-                    if (chore[$scope.choreCols.priority] < 3) {
+                    if (parseInt(chore[$scope.choreCols.priority]) < 3) {
                         //priority : Required estimation
                         $scope.userRequiredTasksNb += nbPerWeek;
                         $scope.userRequiredTasksTime += timePerWeek;
@@ -249,7 +230,7 @@ angular.module('myAngularApp.views.user', [])
                 srvDataContainer
                     .logout()
                     .then(function () {
-                        if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
+                        if ($scope.navRedirect) $scope.navRedirect(srvDataContainer, 'login');
                     });
             }
         };
@@ -271,6 +252,15 @@ angular.module('myAngularApp.views.user', [])
 
         //------------------
         // Initialization
+
+        $scope.$on( "$ionicView.enter", function( scopes, states ) {
+            //if( states.fromCache && states.stateName == "your view" ) {
+                // do whatever
+
+                //console.log('user : navRedirect view ... ');
+            //}
+        });
         if ($scope.navRedirect) $scope.navRedirect(srvDataContainer);
+        //console.log('user : navRedirect done');
 
     });

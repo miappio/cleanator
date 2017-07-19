@@ -95,12 +95,18 @@ xdescribe('myAngularApp.views.login', function () {
             };
 
             // Custo
+            _httpBackend.whenGET(/views.*/).respond(200, '');
             _srvMiapp.miappService.logger = console;
             _srvDataContainer.$log = console;
             _srvDataContainer.logout().finally(done);
             _rootScope.$apply();
             //_httpBackend.flush();
         })
+    });
+
+    afterEach(function () {
+        _httpBackend.verifyNoOutstandingExpectation(false);
+        _httpBackend.verifyNoOutstandingRequest();
     });
 
     //var _originalTimeout;
@@ -112,7 +118,7 @@ xdescribe('myAngularApp.views.login', function () {
     //    jasmine.DEFAULT_TIMEOUT_INTERVAL = _originalTimeout;
     //});
 
-    it('should set loginNoConnection error msg from Internet Connection Pb (a fake site unreachable)', function (done) {
+    xit('should set loginNoConnection error msg from Internet Connection Pb (a fake site unreachable)', function (done) {
         var controller = _createController();
         expect(controller).toBeDefined();
         expect(_srvDataContainer.isLoggedIn()).toBe(false);
@@ -121,7 +127,6 @@ xdescribe('myAngularApp.views.login', function () {
         expect(_scope.loginErrMsgs.length).toBe(0);
 
         // mocks :
-        _httpBackend.whenGET(/views.*/).respond(200, '');
         _scope.navDataSync = function () {
             return _q.resolve();
         };
@@ -159,7 +164,7 @@ xdescribe('myAngularApp.views.login', function () {
         });
 
 
-        describe('with timeout', function () {
+        describe('should set loginBadConnection msg from /api/users : On Timeout (miapp is down)', function () {
 
             beforeEach(function () {
                 jasmine.clock().install();
@@ -169,7 +174,7 @@ xdescribe('myAngularApp.views.login', function () {
                 jasmine.clock().uninstall();
             });
 
-            it('should set loginBadConnection msg from /api/users : On Timeout (miapp is down)', function (done) {
+            it('408', function (done) {
                 var controller = _createController();
                 expect(controller).toBeDefined();
                 expect(_srvDataContainer.isLoggedIn()).toBe(false);

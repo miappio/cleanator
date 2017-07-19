@@ -111,7 +111,7 @@ describe('myAngularApp.services.srvConfig', function () {
 
             srvDataContainer.logout()
                 .then(function (err) {
-                    console.log('db destroy');
+                    //console.log('db destroy');
                     expect(err).toBeUndefined(err);
                     //todo more test on logout ?
                     done();

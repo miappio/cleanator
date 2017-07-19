@@ -16,6 +16,7 @@ if (!configModule) {
 
         // for backend
         .constant('demoMode', true)
+        .constant('demoHost', 'http://localhost:3000/api')
 
         // from google analytics
         .constant("appGAID", "UA-xxxxx");

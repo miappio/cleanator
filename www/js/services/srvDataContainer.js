@@ -30,12 +30,12 @@ var SrvDataContainer = (function () {
             // listen for Online event
             $rootScope.$on('$cordovaNetwork:online', function (event, networkState) {
                 self.isCordovaOnline = true;
-                console.log('self.isCordovaOnline ON');
+                //console.log('self.isCordovaOnline ON');
             });
             // listen for Offline event
             $rootScope.$on('$cordovaNetwork:offline', function (event, networkState) {
                 self.isCordovaOnline = false;
-                console.log('self.isCordovaOnline OFF');
+                //console.log('self.isCordovaOnline OFF');
             });
         }
 
@@ -58,7 +58,6 @@ var SrvDataContainer = (function () {
          */
         self.$rootScope.navigLangs = self.getConfigLangs();
         self.$rootScope.navigLang = self.getConfigLang();
-
 
         self.$rootScope.navChangeLang = function (lang) {
             self.setConfigLang(lang);
@@ -92,7 +91,8 @@ var SrvDataContainer = (function () {
         ];
 
         self.$rootScope.navAppInitLevel = function () {
-            return self.getAppFirstInitLevel();
+            var level = self.getAppFirstInitLevel();
+            return level;
         };
 
         self.$rootScope.navSetAppInitLevel = function (level) {
@@ -102,6 +102,14 @@ var SrvDataContainer = (function () {
         self.$rootScope.navAppOnlineLevel = function () {
             return self.isCordovaOnline ? 'o' : 'n';
         };
+
+        // BindFunction
+        self.bindDone = false;
+        self.bindData = bindData;
+        self.bindCategories = bindCategories;
+        self.bindChores = bindChores;
+        self.bindCouple = bindCouple;
+        self.bindHistoricsDone = bindHistoricsDone;
 
     }
 
@@ -118,12 +126,12 @@ var SrvDataContainer = (function () {
             password = user.password;
         }
 
-        self.$log.log('srvDataContainer.login : ', login, self.isCordovaOnline);
+        //self.$log.log('srvDataContainer.login : ', login, self.isCordovaOnline);
         return self.$q(function (resolve, reject) {
             self.srvMiapp.login(login, password, self.isCordovaOnline)
                 .then(function (miappUser) {
 
-                    self.$log.log('srvDataContainer.login srvMiapp received: ', miappUser);
+                    //self.$log.log('srvDataContainer.login srvMiapp received: ', miappUser);
                     if (user) for (var attrname in user) {
                         miappUser[attrname] = user[attrname];
                     }
@@ -136,7 +144,7 @@ var SrvDataContainer = (function () {
                     //   return self.putInDB(self.srvData.User, miappUser);
                     //})
                     //.then(function (miappUser) {
-                    self.$log.log('srvDataContainer.login srvConfig put : ', miappUser);
+                    //self.$log.log('srvDataContainer.login srvConfig put : ', miappUser);
                     self.srvConfig.setUserLoggedIn(miappUser);
                     resolve(miappUser);
                 })
@@ -153,22 +161,30 @@ var SrvDataContainer = (function () {
         var userMain = self.srvConfig.getUserLoggedIn();
         if (!userMain || !userMain.email) return self.$q.reject('srvDataContainer.sync : Need one user logged in.');
 
-        self.$log.log('srvDataContainer.sync');
+        //self.$log.log('srvDataContainer.sync');
+        var firstSyncDone = false;
         return new self.$q(function (resolve, reject) {
             self.srvMiapp
                 .sync(
                     function (miappSrv) {
-                        self.$log.log('srvDataContainer.sync first data');
+                        //self.$log.log('srvDataContainer.sync first data. ', firstSyncDone);
+                        firstSyncDone = true;
                         return self.initWithFirstData(lang, userMain);
                     },
                     self.isCordovaOnline
                 )
                 .then(function () {
-                    return bindData(self);
+                    return self.bindData();
                 })
                 .then(function (err) {
                     if (err) return reject(err);
-                    self.$log.log('srvDataContainer.sync resolved');
+                    //self.$log.log('srvDataContainer.sync resolved. ', firstSyncDone);
+                    if (!firstSyncDone && !self.bindDone) {
+                        // we have data
+                        self.srvConfig.setAppFirstInitLevel(3);
+                    }
+
+                    self.bindDone = true;
                     resolve();
                 })
                 .catch(function (err) {
@@ -184,13 +200,14 @@ var SrvDataContainer = (function () {
         var bc = this.srvConfig.isLoggedIn();
         var mi = this.srvMiapp.isLoggedIn();
 
-        console.log('srvDataContainer.isLoggedIn : ', userMain, bc, mi);
+        //console.log('srvDataContainer.isLoggedIn : ', userMain, bc, mi);
         var loggedIn = (userMain && userMain.email && bc && mi) ? true : false;
         return loggedIn;
     };
 
     Service.prototype.getAppFirstInitLevel = function () {
-        return this.srvConfig.getAppFirstInitLevel();
+        var level = this.srvConfig.getAppFirstInitLevel();
+        return level;
     };
     Service.prototype.isAppFirstInitCompleted = function () {
         return this.srvConfig.isAppFirstInitCompleted();
@@ -210,7 +227,7 @@ var SrvDataContainer = (function () {
     };
 
     Service.prototype.logout = function () {
-        console.log('srvDataContainer logout');
+        //console.log('srvDataContainer logout');
         this.srvConfig.logout();
         this.srvConfig.setAppFirstInitLevel(0);
         //return this.srvData.becarefulClean();
@@ -250,14 +267,14 @@ var SrvDataContainer = (function () {
         }
         else done = this.historicsDone;
 
-        console.log('srvDataContainer.getHistoricsDone :' + userId + ' (' + this.historicsDone.length + '/' + done.length + ') ', this.historicsDone);
+        //console.log('srvDataContainer.getHistoricsDone :' + userId + ' (' + this.historicsDone.length + '/' + done.length + ') ', this.historicsDone);
         return done;
     };
 
     Service.prototype.getHistoricsDoneTimeElapsedByUser = function (userId, date) {
         var self = this;
         var user = self.userB;
-        if (self.userA._id == userId) user = self.userA;
+        if (self.userA._id === userId) user = self.userA;
         var timeElapsed = self.srvData.getDoneTimeElapsedByUser(self.historicsDone, user, date);
         return timeElapsed;
     };
@@ -294,6 +311,14 @@ var SrvDataContainer = (function () {
 
         var timeElapsed = self.getHistoricsDoneTimeElapsedByUser(userId, date);
 
+        var timeRemain = self.getTimePerDay(userId, date);
+        timeRemain = timeRemain - timeElapsed;
+        return (timeRemain > 0) ? timeRemain : 0;
+    };
+
+    Service.prototype.getTimePerDay = function (userId, date) {
+        var self = this;
+
         var dayOfWeek = date.getDay();
         var col = self.srvData.userColumns.timeInMnPerSund;
         if (dayOfWeek == 1) col = self.srvData.userColumns.timeInMnPerMond;
@@ -305,9 +330,9 @@ var SrvDataContainer = (function () {
 
         var user = self.userB;
         if (self.userA._id == userId) user = self.userA;
-        var timeRemain = parseInt(user[col]);
-        timeRemain = timeRemain - timeElapsed;
-        return (timeRemain > 0) ? timeRemain : 0;
+        var timePerDay = parseInt(user[col]);
+
+        return timePerDay;
     };
 
     Service.prototype.putInDB = function (dataModel, dataToPut) {
@@ -320,17 +345,17 @@ var SrvDataContainer = (function () {
         var chanceBaseUser = 2345, chanceBaseCouple = 2645, chanceBaseChore = 2945;//Math.random
         //var deferred = self.$q.defer();
 
-        self.$log.log('srvDataContainer.initWithFirstData ' + langOfFile + ' firstUserLoggedIn._id: ' + firstUserLoggedIn._id);
+        //self.$log.log('srvDataContainer.initWithFirstData ' + langOfFile + ' firstUserLoggedIn._id: ' + firstUserLoggedIn._id);
         return new self.$q(function (resolve, reject) {
 
             var fileLang = langOfFile || 'fr';
             var fileURI = 'data/init.' + fileLang + '.json';
-            self.$log.log('srvDataContainer.initWithFirstData ready to init : ' + fileURI);
+            //self.$log.log('srvDataContainer.initWithFirstData ready to init : ' + fileURI);
             self.$http.get(fileURI)
                 .success(function (data) {
 
-                    self.$log.log('srvDataContainer.initWithFirstData data/init read :' + data);
-                    self.$log.log(data);
+                    //self.$log.log('srvDataContainer.initWithFirstData data/init read :' + data);
+                    //self.$log.log(data);
                     if (!data || !data.chores) return reject();
 
                     // Users first init
@@ -338,7 +363,7 @@ var SrvDataContainer = (function () {
 
                     var users = data.users;
 
-                    self.$log.log(users);
+                    //self.$log.log(users);
                     var userA = {}, userB = {};
                     angular.extend(userA, firstUserLoggedIn);
                     angular.extend(userA, users[0]);
@@ -346,11 +371,11 @@ var SrvDataContainer = (function () {
 
                     self.putInDB(self.srvData.User, userA)
                         .then(function (newUserA) {
-                            self.$log.log('srvDataContainer.initWithFirstData put A :', newUserA);
+                            //self.$log.log('srvDataContainer.initWithFirstData put A :', newUserA);
                             return self.putInDB(self.srvData.User, userB);
                         })
                         .then(function (newUserB) {
-                            self.$log.log('srvDataContainer.initWithFirstData put B :', newUserB);
+                            //self.$log.log('srvDataContainer.initWithFirstData put B :', newUserB);
 
                             var couple = {};
                             //var chanceCouple = new Chance(chanceBaseCouple + i);
@@ -364,7 +389,7 @@ var SrvDataContainer = (function () {
                             return self.putInDB(self.srvData.Couple, couple);
                         })
                         .then(function (coupleSaved) {
-                            self.$log.log('srvDataContainer.initWithFirstData coupleSaved :', coupleSaved);
+                            //self.$log.log('srvDataContainer.initWithFirstData coupleSaved :', coupleSaved);
 
                             // Categories first init
                             var categories = data.categories;
@@ -377,7 +402,7 @@ var SrvDataContainer = (function () {
                             return self.$q.all(promiseArray);
                         })
                         .then(function (allCategories) {
-                            self.$log.log('srvDataContainer.initWithFirstData allCategories :' + allCategories.length);
+                            //self.$log.log('srvDataContainer.initWithFirstData allCategories :' + allCategories.length);
                             var chores = data.chores;
                             var choresLength = chores.length;
                             var promiseArray = [];
@@ -388,7 +413,7 @@ var SrvDataContainer = (function () {
                             return self.$q.all(promiseArray);
                         })
                         .then(function (allChores) {
-                            self.$log.log('srvDataContainer.initWithFirstData allChores :' + allChores.length);
+                            //self.$log.log('srvDataContainer.initWithFirstData allChores :' + allChores.length);
                             return resolve();
                         })
                         .catch(function (err) {
@@ -432,8 +457,8 @@ var SrvDataContainer = (function () {
 
     /**
      * @deprecated ???
-     */
-    Service.prototype.computeTodoForOneUser = function (userId) {
+
+     Service.prototype.computeTodoForOneUser = function (userId) {
 
         var self = this;
         var deferred = self.$q.defer();
@@ -469,24 +494,27 @@ var SrvDataContainer = (function () {
             });
 
         return deferred.promise;
-    };
+    };*/
 
+    /**
+     *
+     * @returns {*}
+     */
     Service.prototype.computeTodoForAllUsers = function () {
         var self = this;
-        var deferred = self.$q.defer();
         if (!self.userA || !self.userB) return self.$q.reject('data not initialized...');
 
         // compute base on all historics done
-        self.srvData.computeHistoricsByCalendar(self.chores, self.historicsDone, self.userA, self.userB, 7)
-            .then(function (allHistoricsTodo) {
-                self.historicsTodo2 = allHistoricsTodo;
-                deferred.resolve(allHistoricsTodo);
-            })
-            .catch(function (err) {
-                deferred.reject(err);
-            });
-
-        return deferred.promise;
+        return new self.$q(function (resolve, reject) {
+            self.srvData.computeHistoricsByCalendar(self.chores, self.historicsDone, self.userA, self.userB, 7)
+                .then(function (allHistoricsTodo) {
+                    self.historicsTodo2 = allHistoricsTodo;
+                    resolve(allHistoricsTodo);
+                })
+                .catch(function (err) {
+                    reject(err);
+                });
+        });
     };
 
     Service.prototype.computeIndicators = function () {
@@ -496,8 +524,8 @@ var SrvDataContainer = (function () {
         var choresIndicFeasibility = 0;
         var userATimeSpent = 0;
         var userBTimeSpent = 0;
-        var userATimeAvailable = self.userA ? self.userA[self.userCols.timeInMnPerWeekTodo] : 0;
-        var userBTimeAvailable = self.userB ? self.userB[self.userCols.timeInMnPerWeekTodo] : 0;
+        var userATimeAvailable = self.userA ? parseInt(self.userA[self.userCols.timeInMnPerWeekTodo]) : 0;
+        var userBTimeAvailable = self.userB ? parseInt(self.userB[self.userCols.timeInMnPerWeekTodo]) : 0;
 
 
         // compute Average availability for the couple on a week
@@ -506,13 +534,14 @@ var SrvDataContainer = (function () {
         // compute chores Required time
         for (var j = 0; self.chores && j < self.chores.length; j++) {
             var chore = self.chores[j];
-            if (!chore[self.choreCols.desactivate]) {
-                var mn = chore[self.choreCols.timeInMn];
-                var freq = chore[self.choreCols.frequencyDays];
+            var desactive = (chore[self.choreCols.desactivate] == 'false');
+            if (!chore[self.choreCols.desactivate] || desactive) {
+                var mn = parseInt(chore[self.choreCols.timeInMn]);
+                var freq = parseInt(chore[self.choreCols.frequencyDays]);
                 if (mn && freq)
-                    choresIndicTimeRequired += parseFloat( mn / freq);
+                    choresIndicTimeRequired += parseFloat(mn / freq);
                 else {
-                    console.log('chore pb to remove : ', chore);
+                    //console.log('chore pb to remove : ', chore);
                     self.srvMiapp.remove(chore);
                 }
             }
@@ -522,11 +551,11 @@ var SrvDataContainer = (function () {
         var period = 12; //TODO find vs reset
         for (var i = 0; i < self.historicsDone.length; i++) {
             var historic = self.historicsDone[i];
-            if (historic[self.historicCols.userId] == self.userA._id) {
-                userATimeSpent += historic[self.historicCols.timeInMn];
+            if (historic[self.historicCols.userId] === self.userA._id) {
+                userATimeSpent += parseInt(historic[self.historicCols.timeInMn]);
             }
             else {
-                userBTimeSpent += historic[self.historicCols.timeInMn];
+                userBTimeSpent += parseInt(historic[self.historicCols.timeInMn]);
             }
         }
         var indicA = userATimeAvailable ? (Math.round((userATimeSpent * period / userATimeAvailable) * 10) / 10) : 0;
@@ -536,7 +565,7 @@ var SrvDataContainer = (function () {
         var indicBPer = indicAB ? (Math.round((indicB * 100 / (indicAB)))) : 50;
         choresIndicFeasibility = choresIndicTimeRequired ? (usersIndicTimeAvailabity * 2 / choresIndicTimeRequired) : 0;
 
-        console.log('computeIndicators :', indicAPer, indicBPer, userATimeSpent, userBTimeSpent, usersIndicTimeAvailabity, choresIndicTimeRequired, choresIndicFeasibility);
+        //console.log('computeIndicators :', indicAPer, indicBPer, userATimeSpent, userBTimeSpent, usersIndicTimeAvailabity, choresIndicTimeRequired, choresIndicFeasibility);
 
         return {
             indicPercent: [indicAPer, indicBPer],
@@ -550,36 +579,36 @@ var SrvDataContainer = (function () {
     // --------------------------
     // Private functions
     // --------------------------
+    var bindData = function () {
 
-    var bindData = function (self) {
-
-        self.$log.log('srvDataContainer.bindData');
+        var self = this;
+        //self.$log.log('srvDataContainer.bindData');
         var deferred = self.$q.defer();
         var userMain = self.srvConfig.getUserLoggedIn();
         if (!userMain || !userMain.email)
             deferred.reject("Need one logged in user");
         else {
 
-            self.$log.log('srvDataContainer.bindData findOneByEmail: ' + userMain.email);
+            //self.$log.log('srvDataContainer.bindData findOneByEmail: ' + userMain.email);
             self.srvData.User.findOneByEmail(userMain.email)
                 .then(function (user) {
-                    self.$log.log('srvDataContainer.bindData user:' + user.email);
-                    return bindCouple(self);
+                    //self.$log.log('srvDataContainer.bindData user:' + user.email);
+                    return self.bindCouple();
                 })
                 .then(function (couple) {
-                    self.$log.log('srvDataContainer.bindData couple:' + couple);
-                    return bindCategories(self);
+                    //self.$log.log('srvDataContainer.bindData couple:' + couple);
+                    return self.bindCategories();
                 })
                 .then(function (categories) {
-                    self.$log.log('srvDataContainer.bindData categories:' + categories.length);
-                    return bindChores(self);
+                    //self.$log.log('srvDataContainer.bindData categories:' + categories.length);
+                    return self.bindChores();
                 })
                 .then(function (chores) {
-                    self.$log.log('srvDataContainer.bindData chores:' + chores.length);
-                    return bindHistoricsDone(self);
+                    //self.$log.log('srvDataContainer.bindData chores:' + chores.length);
+                    return self.bindHistoricsDone();
                 })
                 .then(function (historics) {
-                    self.$log.log('srvDataContainer.bindData historics:' + historics.length);
+                    //self.$log.log('srvDataContainer.bindData historics:' + historics.length);
                     return deferred.resolve(); //OK
                 })
                 .catch(function (err) {
@@ -591,8 +620,8 @@ var SrvDataContainer = (function () {
         return deferred.promise;
     };
 
-    var bindCouple = function (self) {
-        //var self = this;
+    var bindCouple = function () {
+        var self = this;
         var deferred = self.$q.defer();
 
         var userMain = self.srvConfig.getUserLoggedIn();
@@ -617,8 +646,8 @@ var SrvDataContainer = (function () {
         return deferred.promise;
     };
 
-    var bindChores = function (self) {
-        //var self = this;
+    var bindChores = function () {
+        var self = this;
         var deferred = self.$q.defer();
         //deferred.resolve(this.chores);
         //deferred.reject(err);
@@ -637,8 +666,8 @@ var SrvDataContainer = (function () {
         return deferred.promise;
     };
 
-    var bindCategories = function (self) {
-        //var self = this;
+    var bindCategories = function () {
+        var self = this;
         var deferred = self.$q.defer();
         self.srvData.Category.findAll().then(function (categories) {
             self.categories = categories;
@@ -648,8 +677,8 @@ var SrvDataContainer = (function () {
     };
 
     // Find and bind historics marked as "done" in db
-    var bindHistoricsDone = function (self) {
-        //var self = this;
+    var bindHistoricsDone = function () {
+        var self = this;
         var deferred = self.$q.defer();
 
         self.srvData.Historic.findAll(true)

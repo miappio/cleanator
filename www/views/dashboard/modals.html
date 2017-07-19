@@ -13,15 +13,16 @@
                 <div class="item item-avatar">
                     <img ng-src="{{dashboardGetChoreCategoryThumbPath(dashboardModalHistoric[historicCols.category])}}"/>
                     <h2>{{dashboardModalHistoric[historicCols.name]}}</h2>
-                    <p>{{dashboardModalHistoric[historicCols.description]}}</p>
-                    <a class="subdued">Todo in {{dashboardModalOriginalTimeInMn}} mn</a>
+                    <!--<p>{{dashboardModalHistoric[historicCols.description]}}</p>
+                    <a class="subdued">Todo in {{dashboardModalOriginalTimeInMn}} mn</a>-->
+                    <p>{{dashboardModalHistoric[historicCols.timeInMn]}} mn</p>
                 </div>
 
                 <div class="item item-body">
-                    <label class="item">
+                    <!--<label class="item">
                         <span translate>DashboardModalTimesSpent</span>
                         <span class="badge">{{dashboardModalHistoric[historicCols.timeInMn]}} mn</span>
-                    </label>
+                    </label>-->
                     <div class="item range range-positive" style="border-top:0;">
 
                         <i class="icon ion-ios-time"></i>
@@ -29,20 +30,9 @@
                         <i class="icon ion-ios-time-outline"></i>
                     </div>
                     <label class="item item-input">
-                        <textarea placeholder="{{'Comments'|translate}}" ng-model="dashboardModalHistoric[historicCols.histoComment]"></textarea>
+                        <textarea placeholder="{{'Comments'|translate}}"
+                                  ng-model="dashboardModalHistoric[historicCols.histoComment]"></textarea>
                     </label>
-                    <!--
-                    <label class="item">
-                        <span translate>DashboardModalHowDidYouFeel</span>
-                    </label>
-
-                    <div class="item range range-assertive" style="border-top:0;">
-                        <i class="icon ion-sad"></i>
-                        <input type="range" min="0" max="100"
-                               ng-model="dashboardModalHistoric[historicCols.AUserAffinity]">
-                        <i class="icon ion-happy-outline"></i>
-                    </div>
-                    -->
                 </div>
 
                 <button type="button" class="button button-block button-assertive"

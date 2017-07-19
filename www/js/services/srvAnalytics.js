@@ -10,10 +10,10 @@ angular.module('srvAnalytics', [])
 
 
 function successHandler(data) {
-    console.log('Analytics '+"initialization success : "+data);
+    //console.log('Analytics '+"initialization success : "+data);
 }
 function errorHandler(data) {
-    console.log('Analytics '+"initialization pb : "+data);
+    //console.log('Analytics '+"initialization pb : "+data);
 }
 
 var SrvAnalytics = (function() {
@@ -55,11 +55,11 @@ var SrvAnalytics = (function() {
       //alert("analytics init");
         if (this.initDone) return;
 
-        this.$log.log('init');
+        //this.$log.log('init');
 
         // GA Official queue
         if(typeof ga !== 'undefined') {
-          this.$log.log('_gaq');
+          //this.$log.log('_gaq');
           //a4p.InternalLog.log('Analytics', 'googleAnalytics official launched.');
           //this.gaQueue = _gaq || [];
           //_gaq('create', 'UA-XXXXXXXX-X', 'auto');

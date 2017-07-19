@@ -22,11 +22,12 @@ angular
 
         //console.log('myAngularApp config');
         $ionicConfigProvider.tabs.position('top'); // other values: top
-        $ionicConfigProvider.views.forwardCache(true);
+        //$ionicConfigProvider.views.forwardCache(true);
+        $ionicConfigProvider.views.maxCache(0);
 
     })
 
-    .run(function ($ionicPlatform, $rootScope, $state, $ionicHistory, gettextCatalog, MiappService, srvNavigation, srvData, miappId, miappSalt, demoMode) {
+    .run(function ($ionicPlatform, $rootScope, $state, $ionicHistory, gettextCatalog, MiappService, srvNavigation, srvData, miappId, miappSalt, demoMode, demoHost) {
 
         $ionicPlatform.ready(function () {
 
@@ -46,7 +47,7 @@ angular
             gettextCatalog.debug = demoMode;
 
             // miapp.io
-            MiappService.init(miappId, miappSalt, !demoMode);
+            MiappService.init(miappId, miappSalt, !demoMode, demoHost);
 
             // app services
             srvData.init();

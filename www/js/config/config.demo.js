@@ -8,7 +8,7 @@ if (!configModule) {
 
         // from package.json : extract from gulp config task
         .constant("appName", "cleanator")
-        .constant("appVersion", "17.4.19")
+        .constant("appVersion", "17.7.15")
 
         // from miapp.io
         .constant("miappId", "demo")
@@ -16,6 +16,7 @@ if (!configModule) {
 
         // for backend
         .constant('demoMode', true)
+        .constant('demoHost', 'http://localhost:3000/api')
 
         // from google analytics
         .constant("appGAID", "UA-xxxxx");
