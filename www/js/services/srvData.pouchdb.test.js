@@ -464,7 +464,8 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 .catch(failTest)
                 .finally(done);
 
-            $httpBackend.flush();
+            //$httpBackend.flush();
+            timeout.flush(200);
         });
 
         it('should compute by week - A & B of 4 days with chore done before yesterday by A', function (done) {
@@ -513,7 +514,8 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 .catch(failTest)
                 .finally(done);
 
-            $httpBackend.flush();
+            //$httpBackend.flush();
+            timeout.flush(200);
         });
 
         it('should compute by week - a A/B dispatch with many chores', function (done) {
