@@ -72,7 +72,8 @@
                                         ng-click="navGAClick('login_'+userLoginEmail)">{{'LoginSignin'|translate}}
                                 </button>
                                 <div>
-                                    <a class="button button-full button-clear button-positive" href="https://miapp.io/forgot"
+                                    <a class="button button-full button-clear button-positive"
+                                       href="https://miapp.io/forgot"
                                        target="_blank" translate>Forgot your login/password ?</a>
                                 </div>
                             </div>
@@ -106,15 +107,33 @@
                             <button class='button button-block button-positive' ng-click="loginInDemoMode()"
                                     translate>LoginSignin
                             </button>
-                            <div>
-                                <a class="button button-full button-clear button-positive" href="https://miapp.io/forgot"
-                                   target="_blank" translate>Forgot your login/password ?</a>
-                            </div>
                         </form>
+                        <div>
+                            <button class="button button-block" ng-click="loginSetLocalSettings = true">need a local settings...</button>
+                            <form name="loginDemoSettings" ng-show="loginSetLocalSettings">
+                                <div class="list">
+                                    <label class="item item-input">
+                                        <input type="text" placeholder="dbhost" ng-model="demoDbHost">
+                                    </label>
+                                    <label class="item item-input">
+                                        <input type="text" placeholder="Last Name" ng-model="demoDbName">
+                                    </label>
+                                </div>
+                                <button class="button" ng-click="loginSetDemoSettings(demoDbHost,demoDbName); loginSetLocalSettings = false">
+                                    Set
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
                 <div class="col hidden-xs">&nbsp;</div>
             </div>
+
+
+            <footer style="text-align: center">
+                <span style="font-size:8px;opacity:0.2"><span app-version></span></span>
+                <span style="font-size:8px;opacity:0.2">{{navAppOnlineLevel()}}</span>
+            </footer>
 
         </article>
     </ion-content>
