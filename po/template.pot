@@ -123,7 +123,6 @@ msgstr ""
 msgid "Footer_ComputeDetailled"
 msgstr ""
 
-#: login/loginIn.html:110
 #: login/loginIn.html:75
 msgid "Forgot your login/password ?"
 msgstr ""
@@ -171,7 +170,7 @@ msgstr ""
 msgid "Level0_You’ve set your profiles ? Ready for the next part : setting all the chores you have to deal with."
 msgstr ""
 
-#: login/loginIn.html:100
+#: login/loginIn.html:101
 #: login/loginIn.html:61
 #: user/userAll.html:78
 msgid "LoginLanguage"
@@ -181,7 +180,7 @@ msgstr ""
 msgid "LoginNewPassword"
 msgstr ""
 
-#: login/loginIn.html:106
+#: login/loginIn.html:107
 #: login/loginIn.html:72
 msgid "LoginSignin"
 msgstr ""
@@ -344,7 +343,7 @@ msgstr ""
 msgid "Wednesday"
 msgstr ""
 
-#: login/loginIn.html:97
+#: login/loginIn.html:98
 msgid "You are in demo mode"
 msgstr ""
 

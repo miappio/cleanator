@@ -12522,14 +12522,20 @@ miapp.angularService = (function () {
     /**
      * Init the service with miapp.io IDs
      * @param miappId {String} given miapp.io appId
-     * @param miappSalt {String} given miapp.io appId
-     * @param forceOnline {boolean} force connection to miapp.io hub
+     * @param miappSalt {String} given miapp.io appSalt
+     * @param options Optional settings
+     * @param options._forceOnline {boolean} optional force connection to miapp.io hub
+     * @param options._forceEndpoint {String} optional auth endpoint
+     * @param options._forceDBEndpoint {String} optional db endpoint
      * @memberof miapp.angularService
      */
-    Service.prototype.init = function (miappId, miappSalt, _forceOnline, _forceEndpoint) {
+    Service.prototype.init = function (miappId, miappSalt, options) {
         if (this.miappService) return this.promise.reject('miapp.sdk.angular.init : already initialized.');
         this.miappService = new SrvMiapp(this.logger, this.promise);
-        if (_forceEndpoint) this.miappService.setAuthEndpoint(_forceEndpoint);
+        if (options && options._forceEndpoint) this.miappService.setAuthEndpoint(options._forceEndpoint);
+        if (options && options._forceDBEndpoint) this.miappService.setDBEndpoint(options._forceDBEndpoint);
+        var _forceOnline = false;
+        if (options && options._forceOnline === true) _forceOnline = true;
         return this.miappService.miappInit(miappId, miappSalt, _forceOnline);
     };
 
