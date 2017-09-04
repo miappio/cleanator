@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget xmlns:cdv="http://cordova.apache.org/ns/1.0" id="io.miapp.cleanatordemo" version="17.7.15" xmlns="http://www.w3.org/ns/widgets">
+<widget id="io.miapp.cleanatordemo" version="17.9.04" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>cleanator (demo)</name>
     <description>smart couple organizer (demo)</description>
     <author email="mlefree" href="https://miapp.github.io/cleanator">mlefree</author>
@@ -15,7 +15,7 @@
     <preference name="BackupWebStorage" value="none"/>
     <preference name="SplashScreen" value="screen"/>
     <feature name="StatusBar">
-        <param name="ios-package" value="CDVStatusBar" onload="true"/>
+        <param name="ios-package" onload="true" value="CDVStatusBar"/>
     </feature>
     <platform name="ios">
         <icon height="57" src="resources/ios/icon/icon.png" width="57"/>

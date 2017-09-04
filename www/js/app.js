@@ -27,7 +27,7 @@ angular
 
     })
 
-    .run(function ($ionicPlatform, $rootScope, $state, $ionicHistory, gettextCatalog, MiappService, srvNavigation, srvData, miappId, miappSalt, demoMode, demoHost) {
+    .run(function ($ionicPlatform, $rootScope, $state, $ionicHistory, gettextCatalog, MiappService, srvNavigation, srvData, miappId, miappSalt, demoMode) {
 
         $ionicPlatform.ready(function () {
 
@@ -47,7 +47,14 @@ angular
             gettextCatalog.debug = demoMode;
 
             // miapp.io
-            MiappService.init(miappId, miappSalt, !demoMode, demoHost);
+            var demoHost = window.localStorage.getItem('cleanDemoHost'),
+                demoDBHost = window.localStorage.getItem('cleanDemoDBHost'),
+                options = {};
+            if (!demoMode) options._forceOnline = true;
+            if (demoHost) options._forceEndpoint = demoHost;
+            if (demoDBHost) options._forceDBEndpoint = demoHost;
+
+            MiappService.init(miappId, miappSalt, options);
 
             // app services
             srvData.init();

@@ -8,7 +8,7 @@ if (!configModule) {
 
         // from package.json : extract from gulp config task
         .constant("appName", "cleanator")
-        .constant("appVersion", "17.7.15")
+        .constant("appVersion", "17.9.04")
 
         // from miapp.io
         .constant("miappId", "demo")

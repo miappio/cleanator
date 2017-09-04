@@ -116,6 +116,7 @@ angular
 
         $scope.loginSetDemoSettings = function(dbhost, dbname) {
 
+            window.localStorage.setItem('cleanDemoDBHost',dbhost);
             console.log(dbhost, dbname);
         };
 

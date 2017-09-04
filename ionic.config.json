@@ -10,5 +10,9 @@
     "scss/**/*.scss",
     "package.json",
     ".config.js"
-  ]
+  ],
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "ionic1"
 }

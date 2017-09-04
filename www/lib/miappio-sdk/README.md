@@ -10,6 +10,8 @@
 Thank you for building great app. 
 Miapp.io will support you to manager auth, session storage.
 
+Like described in this blog post : https://goo.gl/P9fXQH 
+
 ### Install
 
 With NPM :

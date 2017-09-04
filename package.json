@@ -1,6 +1,6 @@
 {
   "name": "cleanator",
-  "version": "17.7.15",
+  "version": "17.9.04",
   "id": "io.miapp.cleanator",
   "description": "smart couple organizer",
   "author": "mlefree",
@@ -8,6 +8,8 @@
   "main": "www/index.html",
   "dependencies": {
     "bower": "*",
+    "cordova-plugin-google-analytics": "^1.8.3",
+    "express": "^4.15.4",
     "gulp": "^3.9.0",
     "gulp-angular-gettext": "^2.2.0",
     "gulp-bump": "^2.4.0",
@@ -18,23 +20,21 @@
     "gulp-rename": "^1.2.0",
     "gulp-sass": "^2.0.4",
     "gulp-util": "^2.2.20",
+    "http-server": "^0.9.0",
+    "jasmine-ajax": "^3.3.1",
     "jasmine-core": "^2.4.1",
     "karma": "^1.1.1",
     "karma-chrome-launcher": "^1.0.1",
     "karma-coverage": "^1.1.0",
     "karma-html-reporter": "*",
     "karma-jasmine": "^1.0.2",
+    "karma-jasmine-ajax": "^0.1.13",
     "karma-jasmine-html-reporter-livereload": "*",
     "karma-phantomjs-launcher": "^1.0.1",
     "phantomjs": "*",
-    "shelljs": "^0.7.5",
-    "http-server": "^0.9.0",
-    "express": "^4.15.4",
-    "jasmine-ajax": "^3.3.1",
-    "karma-jasmine-ajax": "^0.1.13"
+    "shelljs": "^0.7.5"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "cordovaPlugins": [
     "cordova-plugin-device",
     "cordova-plugin-console",
