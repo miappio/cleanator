@@ -114,6 +114,11 @@ angular
             return $scope.loginSignupANewUser(newUser);
         };
 
+        $scope.loginSetDemoSettings = function(dbhost, dbname) {
+
+            console.log(dbhost, dbname);
+        };
+
 
         $scope.loginSubmit = function (email, password, validForm) {
             if (!validForm) return;

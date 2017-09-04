@@ -18,7 +18,6 @@
     "gulp-rename": "^1.2.0",
     "gulp-sass": "^2.0.4",
     "gulp-util": "^2.2.20",
-    "http-server": "^0.9.0",
     "jasmine-core": "^2.4.1",
     "karma": "^1.1.1",
     "karma-chrome-launcher": "^1.0.1",
@@ -31,6 +30,8 @@
     "shelljs": "^0.7.5"
   },
   "devDependencies": {
+    "http-server": "^0.9.0",
+    "express": "^4.15.4",
     "jasmine-ajax": "^3.3.1",
     "karma-jasmine-ajax": "^0.1.13"
   },
@@ -58,10 +59,9 @@
     "build:add-demo": "./node_modules/.bin/gulp config-as-demo-js",
     "build:demo": "npm run build:prod && npm run build:add-demo && npm run build:device-demo",
     "test": "npm run build:demo && node_modules/.bin/karma start tests/karma.unit-tests.conf.js",
-    "start": "npm run build:demo && node_modules/.bin/http-server -a 0.0.0.0 -p 8080 www/",
+    "start": "npm run build:demo && node web.js",
     "android": "npm run build:prod && ionic platform add android && ionic build android && ionic run android --device",
     "android:demo": "npm run build:demo && ionic platform add android && ionic build android && ionic run android --device",
     "ios": "npm run build:prod && ionic platform add ios && ionic build ios"
-
   }
 }

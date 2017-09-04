@@ -500,10 +500,12 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 expect(lstHistoByCalendar.length).toBe(2);
                 expect(lstHistoByCalendar[0].userId).toBe(userB._id);
                 beforeYesterday.setDate(beforeYesterday.getDate() + 4);
-                expect(lstHistoByCalendar[0].actionTodoDate.substring(7)).toBe('/' + beforeYesterday.getDate());
+                var dateDay = '/' + beforeYesterday.getDate().toString().padStart(2,'0');
+                expect(lstHistoByCalendar[0].actionTodoDate.substring(7)).toBe(dateDay);
                 expect(lstHistoByCalendar[1].userId).toBe(userA._id);
                 beforeYesterday.setDate(beforeYesterday.getDate() + 4);
-                expect(lstHistoByCalendar[1].actionTodoDate.substring(7)).toBe('/' + beforeYesterday.getDate());
+                dateDay = '/' + beforeYesterday.getDate().toString().padStart(2,'0');
+                expect(lstHistoByCalendar[1].actionTodoDate.substring(7)).toBe(dateDay);
             };
             var failTest = function (error) {
                 //console.log('computeHistoricsByCalendar err:' + error);

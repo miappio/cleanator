@@ -35,6 +35,7 @@ module.exports = function (config) {
             'www/lib/angular-chart.js/dist/angular-chart.min.js',
             //'www/lib/crypto-js/crypto-js.js',
             'www/lib/miappio-sdk/dist/miappio.sdk.min.js',
+            'www/lib/string.polyfill.js',
 
             'www/js/app.js',
             'www/js/app.test.js',
