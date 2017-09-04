@@ -27,13 +27,13 @@
     "karma-jasmine-html-reporter-livereload": "*",
     "karma-phantomjs-launcher": "^1.0.1",
     "phantomjs": "*",
-    "shelljs": "^0.7.5"
-  },
-  "devDependencies": {
+    "shelljs": "^0.7.5",
     "http-server": "^0.9.0",
     "express": "^4.15.4",
     "jasmine-ajax": "^3.3.1",
     "karma-jasmine-ajax": "^0.1.13"
+  },
+  "devDependencies": {
   },
   "cordovaPlugins": [
     "cordova-plugin-device",
