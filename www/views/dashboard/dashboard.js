@@ -21,11 +21,12 @@ angular
         $urlRouterProvider.otherwise('/dashboard/user/a');
     })
 
-    .controller('DashboardCtrl', function ($scope, $timeout, $log, $q, $stateParams, $ionicModal, srvDataContainer, srvData, srvConfig, srvArray) {
+    .controller('DashboardCtrl', function ($scope, $timeout, $log, $q, $stateParams, $ionicModal, demoMode, srvDataContainer, srvData, srvConfig, srvArray) {
         'use strict';
 
         //console.log('DashboardCtrl launched');
 
+        $scope.demoMode = demoMode;
         $scope.showDelete = false;
         $scope.showReorder = false;
         $scope.canSwipe = true;
@@ -374,7 +375,7 @@ angular
             var date = null;
             if (typeof dateISO === "string") date = new Date(dateISO);
             else if (dateISO && dateISO instanceof Date) date = new Date(Date.UTC(dateISO.getFullYear(), dateISO.getMonth(), dateISO.getDate()));
-            else date = new Date();
+            else date = srvConfig.getDateNow();
             //var res = date.toISOString().slice(0, 10).replace(/-/g, "/");
             var min = srvDataContainer.getHistoricsDoneTimeRemaining(userId, date);
             return min;
@@ -384,7 +385,7 @@ angular
             var date = null;
             if (typeof dateISO === "string") date = new Date(dateISO);
             else if (dateISO && dateISO instanceof Date) date = new Date(Date.UTC(dateISO.getFullYear(), dateISO.getMonth(), dateISO.getDate()));
-            else date = new Date();
+            else date = srvConfig.getDateNow();
             //var res = date.toISOString().slice(0, 10).replace(/-/g, "/");
             var max = srvDataContainer.getTimePerDay(userId, date);
             return max;
@@ -395,7 +396,7 @@ angular
             var date = null;
             if (typeof dateISO === "string") date = new Date(dateISO);
             else if (dateISO && dateISO instanceof Date) date = new Date(Date.UTC(dateISO.getFullYear(), dateISO.getMonth(), dateISO.getDate()));
-            else date = new Date();
+            else date = srvConfig.getDateNow();
 
             var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -403,7 +404,7 @@ angular
             var day = days[date.getDay()];
             var month = months[date.getMonth()];
 
-            var now = new Date();
+            var now = srvConfig.getDateNow();
             var tomorrow = new Date(now);
             tomorrow.setDate(now.getDate() + 1);
             var isToday = ((date.getDate() == now.getDate()) && (date.getMonth() == now.getMonth()) && (date.getFullYear() == now.getFullYear()));
@@ -419,14 +420,14 @@ angular
             var date = null;
             if (typeof dateISO === "string") date = new Date(dateISO);
             else if (dateISO && dateISO instanceof Date) date = new Date(Date.UTC(dateISO.getFullYear(), dateISO.getMonth(), dateISO.getDate()));
-            else date = new Date();
-            var now = new Date();
+            else date = srvConfig.getDateNow();
+            var now = srvConfig.getDateNow();
             var isToday = ((date.getDate() == now.getDate()) && (date.getMonth() == now.getMonth()) && (date.getFullYear() == now.getFullYear()));
             return isToday;
         };
 
         $scope.dashboardCheckTodayIsEmpty = function () {
-            var now = new Date();
+            var now = srvConfig.getDateNow();
             var t = srvDataContainer.getHistoricsTodo($scope.dashboardSearch.userId, now);
             return (t && (t.length === 0));
 
@@ -468,7 +469,7 @@ angular
             var date = null;
             if (typeof dateISO === "string") date = new Date(dateISO);
             else if (dateISO && dateISO instanceof Date) date = new Date(Date.UTC(dateISO.getFullYear(), dateISO.getMonth(), dateISO.getDate()));
-            else date = new Date();
+            else date = srvConfig.getDateNow();
             var res = '' + date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);//.toISOString();//.slice(0, 10).replace(/-/g, "/");
 
             var display = "" + $scope.dashboardDisplayHistoricDate(dateISO) + " <span class='small'>" + res + "</span>";
@@ -550,6 +551,24 @@ angular
         $scope.$on('modal.removed', function () {
             // Execute action
         });
+
+
+        $scope.dashboardDemoDidThatDay= function () {
+
+            var now = srvConfig.getDateNow();
+            for (var i = 0; i < $scope.dashboardHistorics.length; i++) {
+                var historic = $scope.dashboardHistorics[i];
+                var actionTodoDate = new Date(historic.actionTodoDate);
+                if (actionTodoDate.getFullYear() === now.getFullYear() &&
+                    actionTodoDate.getMonth() === now.getMonth() &&
+                    actionTodoDate.getDate() === now.getDate()) {
+                    $scope.dashboardTerminateHistoric(historic);
+                }
+            }
+            var tomorrow = new Date(now);
+            tomorrow.setDate(now.getDate() + 1);
+            srvConfig.setDateNow(tomorrow);
+        };
 
         // Initialization
         $scope.dashboardInit();
