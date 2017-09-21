@@ -12532,10 +12532,13 @@ miapp.angularService = (function () {
     Service.prototype.init = function (miappId, miappSalt, options) {
         if (this.miappService) return this.promise.reject('miapp.sdk.angular.init : already initialized.');
         this.miappService = new SrvMiapp(this.logger, this.promise);
-        if (options && options._forceEndpoint) this.miappService.setAuthEndpoint(options._forceEndpoint);
-        if (options && options._forceDBEndpoint) this.miappService.setDBEndpoint(options._forceDBEndpoint);
         var _forceOnline = false;
         if (options && options._forceOnline === true) _forceOnline = true;
+        if (options && options._forceEndpoint) this.miappService.setAuthEndpoint(options._forceEndpoint);
+        if (options && options._forceDBEndpoint) {
+            this.miappService.setDBEndpoint(options._forceDBEndpoint);
+            _forceOnline = false;
+        }
         return this.miappService.miappInit(miappId, miappSalt, _forceOnline);
     };
 
@@ -16518,6 +16521,14 @@ var SrvMiapp = (function () {
         var self = this;
         return new self.promise(function (resolve, reject) {
                 if (!self.miappClient && !self.miappIsOffline) {
+
+                    //MLE
+                    if (self.miappDBURL) {
+
+                        resolve(self.currentUser);
+                        return;
+                    }
+
                     reject('miapp.sdk.service.loginInternal : not initialized. Did you miapp.sdk.service.miappInit() ?');
                     return;
                 }
@@ -16674,9 +16685,9 @@ var SrvMiapp = (function () {
         var self = this;
         self.logger.log('miapp.sdk.service.syncDb');
 
-        if (self.miappIsOffline) {
-            return self.promise.resolve();
-        }
+        //MLE if (self.miappIsOffline) {
+        //MLE    return self.promise.resolve();
+        //MLE }
 
         var pouchdbEndpoint = self.miappDBURL;
         var getendpoint = self.miappClient ? self.miappClient.getEndpoint() : null;
