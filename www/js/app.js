@@ -48,11 +48,15 @@ angular
 
             // miapp.io
             var demoHost = window.localStorage.getItem('cleanDemoHost'),
-                demoDBHost = window.localStorage.getItem('cleanDemoDBHost'),
-                options = {};
+                demoDBHost = window.localStorage.getItem('cleanDemoDBHost');
+
+            options = {};
             if (!demoMode) options._forceOnline = true;
             if (demoHost) options._forceEndpoint = demoHost;
-            if (demoDBHost) options._forceDBEndpoint = demoHost;
+            if (demoDBHost) {
+                options._forceDBEndpoint = demoHost;
+                options._forceOnline = false;
+            }
 
             MiappService.init(miappId, miappSalt, options);
 
