@@ -7,7 +7,7 @@ angular.module('srvConfig', [])
 var SrvConfig = (function () {
 //'use strict';
 
-    function service($log, $q, gettextCatalog) {
+    function SrvConfig($log, $q, gettextCatalog) {
 
         this.$log = $log;
         this.$q = $q;
@@ -27,35 +27,44 @@ var SrvConfig = (function () {
         ];
         var lang = this.getConfigLang() ? this.getConfigLang().code : 'en_US';
         this.setConfigLang(lang);
+
+        this.dateNow = this.getDateNow();
     }
 
     // used in srvDataContainer.logout()
-    service.prototype.logout = function () {
+    SrvConfig.prototype.logout = function () {
 
         this.configUserLoggedIn = null;
         var ret = removeObjectFromLocalStorage('configUserLoggedIn');
     }
 
-    service.prototype.setUserLoggedIn = function (user) {
+    SrvConfig.prototype.setUserLoggedIn = function (user) {
         var self = this;
         delete self.configUserLoggedIn;
         self.configUserLoggedIn = angular.copy(user);
         setObjectFromLocalStorage('configUserLoggedIn', self.configUserLoggedIn);
     };
-    service.prototype.getUserLoggedIn = function () {
+    SrvConfig.prototype.getUserLoggedIn = function () {
         var self = this;
         var obj = getObjectFromLocalStorage('configUserLoggedIn');
         self.configUserLoggedIn = obj || null;
         return self.configUserLoggedIn;
     };
-    service.prototype.isLoggedIn = function () {
+    SrvConfig.prototype.isLoggedIn = function () {
         var user = this.getUserLoggedIn();
         var b = false;
         if (user) b = true;
         return b;
     };
 
-    service.prototype.getAppFirstInitLevel = function () {
+    SrvConfig.prototype.isLoggedIn = function () {
+        var user = this.getUserLoggedIn();
+        var b = false;
+        if (user) b = true;
+        return b;
+    };
+
+    SrvConfig.prototype.getAppFirstInitLevel = function () {
         //var obj = getObjectFromLocalStorage('configAppFirstInitLevel');
         //this.configAppFirstInitLevel = obj || 0;
 
@@ -64,28 +73,45 @@ var SrvConfig = (function () {
 
         return level;
     };
-    service.prototype.setAppFirstInitLevel = function (level) {
+    SrvConfig.prototype.setAppFirstInitLevel = function (level) {
         this.configAppFirstInitLevel = level;
         setObjectFromLocalStorage('configAppFirstInitLevel', this.configAppFirstInitLevel);
     };
-    service.prototype.isAppFirstInitCompleted = function () {
+    SrvConfig.prototype.isAppFirstInitCompleted = function () {
         var level = this.getAppFirstInitLevel();
         var b = false;
         if (level == this.configAppFirstInitLevelMax) b = true;
         return b;
     };
 
+
+    SrvConfig.prototype.getDateNow = function () {
+        if (!this.dateNow) {
+            var obj = getObjectFromLocalStorage('configDateNow');
+            if (!obj)
+                this.dateNow = new Date();
+            else
+                this.dateNow = new Date(obj);
+        }
+        return this.dateNow;
+    };
+
+    SrvConfig.prototype.setDateNow = function (now) {
+        this.dateNow = now;
+        setObjectFromLocalStorage('configDateNow', this.dateNow);
+    };
+
     // @return langs formatted as [{title:'English', code:'en_US'},{}...]
-    service.prototype.getConfigLangs = function () {
+    SrvConfig.prototype.getConfigLangs = function () {
         return this.configLangs;
     };
     // @return lang formatted as {title:'English', code:'en_US'}
-    service.prototype.getConfigLang = function () {
+    SrvConfig.prototype.getConfigLang = function () {
         var lang = getObjectFromLocalStorage('configLang');
         if (!lang) lang = this.configLangs[0];
         return lang;
     };
-    service.prototype.setConfigLang = function (lang) {
+    SrvConfig.prototype.setConfigLang = function (lang) {
         //var langCode = 'en_US';
         var langObj = null;
         for (var i = 0; i < this.configLangs.length && !langObj; i++) {
@@ -129,5 +155,5 @@ var SrvConfig = (function () {
     }
 
 
-    return service;
+    return SrvConfig;
 })();

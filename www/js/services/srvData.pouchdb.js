@@ -4,14 +4,14 @@ angular.module('srvData.pouchdb', ['MiappService'])
 
     })
 
-    .factory('srvData', function ($q, $log, $http, $timeout, MiappService, srvArray) {
-        return new SrvDataPouchDB($q, $log, $http, $timeout, MiappService, srvArray);
+    .factory('srvData', function ($q, $log, $http, $timeout, MiappService, srvArray, srvConfig) {
+        return new SrvDataPouchDB($q, $log, $http, $timeout, MiappService, srvArray, srvConfig);
     });
 
 var SrvDataPouchDB = (function () {
     'use strict';
 
-    function Service($q, $log, $http, $timeout, MiappService, srvArray) {
+    function Service($q, $log, $http, $timeout, MiappService, srvArray, srvConfig) {
 
         var self = this;
         self.$q = $q;
@@ -21,6 +21,7 @@ var SrvDataPouchDB = (function () {
         self.db = null;
         self.srvMiapp = MiappService;
         self.srvArray = srvArray;
+        self.srvConfig = srvConfig;
         self.initDone = false;
         self.dataLastResetDate = null;
 
@@ -199,12 +200,12 @@ var SrvDataPouchDB = (function () {
                 var deferred = self.$q.defer();
 
                 user[self.userColumns.type] = self.userType;
-                user[self.userColumns.lastModified] = new Date();
+                user[self.userColumns.lastModified] = self.srvConfig.getDateNow();
 
                 return self.srvMiapp.put(user);
             },
             lastModified: function () {
-                return new Date();
+                return self.srvConfig.getDateNow();
             }
         };
         self.Couple = {
@@ -299,13 +300,13 @@ var SrvDataPouchDB = (function () {
                 var deferred = self.$q.defer();
 
                 couple[self.coupleColumns.type] = self.coupleType;
-                couple[self.coupleColumns.lastModified] = new Date();
+                couple[self.coupleColumns.lastModified] = self.srvConfig.getDateNow();
                 var name = couple[self.coupleColumns.name];
 
                 return self.srvMiapp.put(couple);
             },
             lastModified: function () {
-                return new Date();
+                return self.srvConfig.getDateNow();
             }
         };
         self.Category = {
@@ -338,7 +339,7 @@ var SrvDataPouchDB = (function () {
                 var deferred = self.$q.defer();
 
                 category[self.categoryColumns.type] = self.categoryType;
-                category[self.categoryColumns.lastModified] = new Date();
+                category[self.categoryColumns.lastModified] = self.srvConfig.getDateNow();
                 category[self.categoryColumns.desactivate] = category[self.categoryColumns.desactivate] ? category[self.categoryColumns.desactivate] : false;
 
                 return self.srvMiapp.put(category);
@@ -363,7 +364,7 @@ var SrvDataPouchDB = (function () {
 
 
             lastModified: function () {
-                return new Date();
+                return self.srvConfig.getDateNow();
             }
         };
         self.Chore = {
@@ -426,7 +427,7 @@ var SrvDataPouchDB = (function () {
                 var deferred = self.$q.defer();
 
                 chore[self.choreColumns.type] = self.choreType;
-                chore[self.choreColumns.lastModified] = new Date();
+                chore[self.choreColumns.lastModified] = self.srvConfig.getDateNow();
                 chore[self.choreColumns.desactivate] = chore[self.categoryColumns.desactivate] ? chore[self.choreColumns.desactivate] : false;
 
                 return self.srvMiapp.put(chore);
@@ -444,7 +445,7 @@ var SrvDataPouchDB = (function () {
                 return deferred.promise;
             },
             lastModified: function () {
-                return new Date();
+                return self.srvConfig.getDateNow();
             }
         };
         self.Historic = {
@@ -489,13 +490,13 @@ var SrvDataPouchDB = (function () {
                 var deferred = self.$q.defer();
 
                 historic[self.historicColumns.type] = self.historicType;
-                historic[self.historicColumns.lastModified] = new Date();
+                historic[self.historicColumns.lastModified] = self.srvConfig.getDateNow();
                 historic[self.historicColumns.desactivate] = historic[self.historicColumns.desactivate] ? historic[self.historicColumns.desactivate] : false;
 
                 return self.srvMiapp.put(historic);
             },
             lastModified: function () {
-                return new Date();
+                return self.srvConfig.getDateNow();
             }
         };
 
@@ -572,7 +573,7 @@ var SrvDataPouchDB = (function () {
         var lstHistoLate = [];
         var lstHistoByCalendar = [];
         var maxDays = maxDayx ? maxDayx : 7;
-        var now = new Date();
+        var now = self.srvConfig.getDateNow();
 
         // 1) Pour chaque tâche existante
         //	Retard (en jours) = Date actuelle - Date de dernière réalisation - (nbCopy * fréq)
@@ -780,7 +781,7 @@ var SrvDataPouchDB = (function () {
     Service.prototype.terminateHistoric = function (chores, historic) {
         var i, self = this;
         var deferred = self.$q.defer();
-        var now = new Date();
+        var now = self.srvConfig.getDateNow();
 
         // retrieve chore and set lastTimeDone
         var historicChoreId = historic[self.historicColumns.choreId];
@@ -818,7 +819,7 @@ var SrvDataPouchDB = (function () {
 
     Service.prototype.resetHistorics = function () {
         //if (!this.dataCoupleLoggedIn) return null;
-        this.dataLastResetDate = new Date();
+        this.dataLastResetDate = self.srvConfig.getDateNow();
         setObjectFromLocalStorage('dataLastResetDate', this.dataLastResetDate);
         //this.dataCoupleLoggedIn.lastResetDate = this.dataLastResetDate;
         //store couple

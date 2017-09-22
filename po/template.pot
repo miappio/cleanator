@@ -4,11 +4,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: \n"
 
-#: dashboard/dashboardUser.html:95
+#: dashboard/dashboardUser.html:100
 msgid "-- choose category --"
 msgstr ""
 
-#: dashboard/dashboardUser.html:104
+#: dashboard/dashboardUser.html:109
 msgid "-- choose chore --"
 msgstr ""
 
@@ -275,8 +275,8 @@ msgstr ""
 msgid "TabWhoDetailled"
 msgstr ""
 
-#: dashboard/dashboardUser.html:127
-#: dashboard/dashboardUser.html:172
+#: dashboard/dashboardUser.html:132
+#: dashboard/dashboardUser.html:177
 msgid "Terminated"
 msgstr ""
 
@@ -301,7 +301,7 @@ msgstr ""
 msgid "Tuesday"
 msgstr ""
 
-#: dashboard/dashboardUser.html:91
+#: dashboard/dashboardUser.html:96
 msgid "Unforeseen item :"
 msgstr ""
 
@@ -368,12 +368,12 @@ msgstr ""
 msgid "front of all todos"
 msgstr ""
 
-#: dashboard/dashboardUser.html:168
+#: dashboard/dashboardUser.html:173
 msgid "historicLater"
 msgstr ""
 
-#: dashboard/dashboardUser.html:114
-#: dashboard/dashboardUser.html:155
+#: dashboard/dashboardUser.html:119
+#: dashboard/dashboardUser.html:160
 msgid "latest item :"
 msgstr ""
 
@@ -400,14 +400,14 @@ msgstr ""
 msgid "minutes av./day"
 msgstr ""
 
-#: dashboard/dashboardUser.html:113
-#: dashboard/dashboardUser.html:154
+#: dashboard/dashboardUser.html:118
+#: dashboard/dashboardUser.html:159
 msgid "minutes,"
 msgstr ""
 
 #: chore/choreDetail.html:85
-#: dashboard/dashboardUser.html:146
-#: dashboard/dashboardUser.html:88
+#: dashboard/dashboardUser.html:151
+#: dashboard/dashboardUser.html:93
 #: user/userCalendar.html:103
 #: user/userCalendar.html:109
 #: user/userCalendar.html:115
@@ -425,7 +425,7 @@ msgstr ""
 msgid "mn"
 msgstr ""
 
-#: dashboard/dashboardUser.html:118
-#: dashboard/dashboardUser.html:159
+#: dashboard/dashboardUser.html:123
+#: dashboard/dashboardUser.html:164
 msgid "none"
 msgstr ""

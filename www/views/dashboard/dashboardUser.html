@@ -78,6 +78,11 @@
             <h3 class="padding" ng-hide="dashboardHistorics.length" translate>
                 DashboardPleasePullToRefreshYourDashboard</h3>
 
+            <!-- Amelie Button -->
+            <button ng-show="demoMode" class="button button-block button-royal" ng-click="dashboardDemoDidThatDay()">
+                Did that day!
+            </button>
+
             <!-- Now - BEGIN -->
             <div>
                 <ion-list>
@@ -164,7 +169,7 @@
                                 style="margin-top:20px;">
                             <small translate>Terminated</small>
                         </button>-->
-
+                        isTodayGroup : {{isTodayGroup}}
                         <ion-option-button class="button-info" ng-show="isTodayGroup"
                                            ng-click="dashboardNotForMe(historic, historicList, $index);" translate>
                             historicLater
