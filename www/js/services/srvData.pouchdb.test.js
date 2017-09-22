@@ -7,6 +7,8 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
     var timeout;
     var $httpBackend;
     var miappService;
+    var srvArray;
+    var srvConfig;
 
     //this.choreColumns     = {type:'docType',appVendorId:'app_Id',appVendorVersion:'app_version',appUserId:'appUser_Id', name:'choreName',category:'choreCategoryName',description:'description',percentAB:'percent_AB',frequencyDays:'frequencyDays',timeInMn:'timeInMn',choreDescriptionCat:'choreDescriptionCat',priority:'priority',priorityComputed:'priorityComputed',lastTimeDone:'lastTimeDone',desactivate:'desactivate', lastModified:'lastModified'};
     //this.historicColumns  = {type:'docType',appVendorId:'app_Id',appVendorVersion:'app_version',appUserId:'appUser_Id', name:'choreName',category:'choreCategoryName',description:'description',percentAB:'percent_AB',frequencyDays:'frequencyDays',timeInMn:'timeInMn',choreDescriptionCat:'choreDescriptionCat',priority:'priority',priorityComputed:'priorityComputed',lastTimeDone:'lastTimeDone',desactivate:'desactivate',choreId:'choreId',userId:'userId',action:'action',actionTodoDate:'actionTodoDate',actionDoneDate:'actionDoneDate',internalWeight:'internalWeight',internalLate:'internalLate', lastModified:'lastModified' };
@@ -92,7 +94,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
         it('should be correctly initialized', function () {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService, srvArray, srvConfig);
             expect(srv.isInitDone()).toBe(false);
             srv.init();
             expect(srv.isInitDone()).toBe(true);
@@ -103,7 +105,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
         it('should retrieve couple for one user', function () {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService, srvArray, srvConfig);
             srv.init();
 
             srv.getUserAFromCouple(null)
@@ -136,6 +138,12 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 $httpBackend = $injector.get('$httpBackend');
                 miappService = new miapp.angularService(log, q);//$injector.get('MiappService');
                 miappService.init('miappId', 'miappSalt', true);
+                var now = new Date();
+                srvConfig = {
+                    getDateNow: function () {
+                        return now;
+                    }
+                };
                 //var fakedMainResponse = {};
                 //$httpBackend.when('GET', 'views/user/userCalendar.html').respond(fakedMainResponse);
                 //$httpBackend.when('GET', 'views/user/userAll.html').respond(fakedMainResponse);
@@ -157,7 +165,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
         it('should compute by week - with empty values', function (done) {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService, srvArray, srvConfig);
             expect(srv.isInitDone()).toBe(false);
             srv.init();
             expect(srv.isInitDone()).toBe(true);
@@ -183,7 +191,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
         it('should compute by week - a A/B dispatch with one chore', function (done) {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService, srvArray, srvConfig);
             srv.init();
             expect(srv.isInitDone()).toBe(true);
 
@@ -215,7 +223,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
         it('should compute by week - a A dispatch with one chore with affinity 100% to A', function (done) {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService, srvArray, srvConfig);
             srv.init();
             expect(srv.isInitDone()).toBe(true);
 
@@ -249,7 +257,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
         it('should compute by week - a B dispatch with one chore with affinity 100% to B', function (done) {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService, srvArray, srvConfig);
             srv.init();
             expect(srv.isInitDone()).toBe(true);
 
@@ -283,7 +291,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
         it('should compute by week - a A/B dispatch with one chore with affinity 70% to B', function (done) {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService, srvArray, srvConfig);
             srv.init();
             expect(srv.isInitDone()).toBe(true);
 
@@ -317,7 +325,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
         it('should compute by week - without any time per user should return empty list', function (done) {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService, srvArray, srvConfig);
             srv.init();
             expect(srv.isInitDone()).toBe(true);
 
@@ -346,7 +354,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
         it('should compute by week - A is available only during we / B only 2 days', function (done) {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService, srvArray, srvConfig);
             srv.init();
             expect(srv.isInitDone()).toBe(true);
 
@@ -378,7 +386,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
         it('should compute by week - A is available only during we / B only 2 days AND done history is full of same chores', function (done) {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService, srvArray, srvConfig);
             srv.init();
             expect(srv.isInitDone()).toBe(true);
 
@@ -425,7 +433,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
         it('should compute by week - A & B of 4 days because 3 days done', function (done) {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService, srvArray, srvConfig);
             srv.init();
             expect(srv.isInitDone()).toBe(true);
 
@@ -470,7 +478,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
         it('should compute by week - A & B of 4 days with chore done before yesterday by A', function (done) {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService, srvArray, srvConfig);
             srv.init();
             expect(srv.isInitDone()).toBe(true);
 
@@ -500,11 +508,11 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 expect(lstHistoByCalendar.length).toBe(2);
                 expect(lstHistoByCalendar[0].userId).toBe(userB._id);
                 beforeYesterday.setDate(beforeYesterday.getDate() + 4);
-                var dateDay = '/' + beforeYesterday.getDate().toString().padStart(2,'0');
+                var dateDay = '/' + beforeYesterday.getDate().toString().padStart(2, '0');
                 expect(lstHistoByCalendar[0].actionTodoDate.substring(7)).toBe(dateDay);
                 expect(lstHistoByCalendar[1].userId).toBe(userA._id);
                 beforeYesterday.setDate(beforeYesterday.getDate() + 4);
-                dateDay = '/' + beforeYesterday.getDate().toString().padStart(2,'0');
+                dateDay = '/' + beforeYesterday.getDate().toString().padStart(2, '0');
                 expect(lstHistoByCalendar[1].actionTodoDate.substring(7)).toBe(dateDay);
             };
             var failTest = function (error) {
@@ -522,7 +530,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
         it('should compute by week - a A/B dispatch with many chores', function (done) {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService, srvArray, srvConfig);
             srv.init();
             expect(srv.isInitDone()).toBe(true);
 
@@ -562,7 +570,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
         it('should compute by week - a A/B dispatch with many chores and many historic in the past', function (done) {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService, srvArray, srvConfig);
             srv.init();
             expect(srv.isInitDone()).toBe(true);
 
@@ -616,7 +624,7 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
 
         it('should compute by week - a A/B dispatch with many chores and historics already done today', function (done) {
 
-            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService);
+            var srv = new SrvDataPouchDB(q, log, http, timeout, miappService, srvArray, srvConfig);
             srv.init();
             expect(srv.isInitDone()).toBe(true);
 
