@@ -12,20 +12,22 @@
     <link href="css/ionic.app.css" rel="stylesheet"/>
     <link href="lib/angular-chart.js/dist/angular-chart.css" rel="stylesheet"/>
 
-    <!-- ionic/ng/cordova -->
-    <script src="lib/ionic/js/ionic.bundle.min.js"></script>
-    <script src="lib/ngCordova/dist/ng-cordova.min.js"></script>
+    <!-- cordova -->
     <script src="cordova.js"></script>
 
     <!-- angular & modules -->
+    <script src="lib/ionic/js/ionic.bundle.min.js"></script>
+    <script src="lib/ngCordova/dist/ng-cordova.min.js"></script>
     <script src="lib/angular-gettext/dist/angular-gettext.min.js"></script>
-    <script src="lib/pouchdb/dist/pouchdb.min.js"></script>
     <script src="lib/angular-filter/dist/angular-filter.min.js"></script>
+    <script src="lib/pouchdb/dist/pouchdb.min.js"></script>
     <script src="lib/Chart.js/Chart.min.js"></script>
     <script src="lib/angular-chart.js/dist/angular-chart.min.js"></script>
 
-    <!-- miapp.io sdk -->
-    <script src="lib/miappio-sdk/dist/miappio.sdk.min.js"></script>
+
+    <!-- require.js -->
+    <script src="js/main.js"></script>
+    <script src="lib/requirejs/require.js"></script>
 
     <!-- your app's js -->
     <script src="js/app.js"></script>
@@ -52,7 +54,7 @@
     <script src="views/user/user.js"></script>
 
 </head>
-<body ng-app="myAngularApp">
+<body>
 <!-- ng-app="myAngularApp"
 
 <div ng-controller="ctrlNavigation">

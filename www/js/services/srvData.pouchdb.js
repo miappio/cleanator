@@ -515,8 +515,7 @@ var SrvDataPouchDB = (function () {
 
         //this.$log.log('srvData.pouchdb.init : check _db');
         if (this.srvMiapp && this.srvMiapp.miappService && this.srvMiapp.miappService._db)
-        //this.db = new PouchDB('cltorDB', {adapter : 'websql'});
-            this.db = this.srvMiapp.miappService._db;
+            this.db = this.srvMiapp.miappService.session.db;
 
         //this.$log.log('srvData.pouchdb.init : check _db..');
         //this.$log.log(this.srvMiapp);
@@ -524,9 +523,11 @@ var SrvDataPouchDB = (function () {
             this.$log.error('srvData.pouchdb.init : PB => NO DB !');
             return;
         }
+        if (this.srvMiapp && this.srvMiapp.isLoggedIn())
+            self.initDone = true;
 
         //this.$log.log('srvData.pouchdb.init : done.');
-        self.initDone = true;
+         self.initDone = true;
     };
 
     //todo : set in srvDataContainer or srvComputing

@@ -3,29 +3,32 @@
 
 [![Build Status](https://travis-ci.org/miappio/miappio-sdk.svg?branch=master)](https://travis-ci.org/miappio/miappio-sdk) [![NPM version](https://badge.fury.io/js/miappio-sdk.svg)](https://www.npmjs.com/package/miappio-sdk) [![Bower version](https://badge.fury.io/bo/miappio-sdk.svg)](https://libraries.io/bower/miappio-sdk)
 
-> [Install](https://github.com/miappio/miappio-sdk#install) | [APIs](https://github.com/miappio/miappio-sdk#api) | [Support](https://github.com/miappio/miappio-sdk#develop) | [Thanks!](https://github.com/miappio/miappio-sdk#thanks)
+> [Install](https://github.com/miappio/miappio-sdk#install) | [APIs](https://miappio.github.io/miappio-sdk/miapp.html) | [Support](https://github.com/miappio/miappio-sdk#develop) | [Thanks!](https://github.com/miappio/miappio-sdk#thanks)
 
 
 # 1) You're an app builder
 Thank you for building great app. 
 Miapp.io will support you to manager auth, session storage.
 
-Like described in this blog post : https://goo.gl/P9fXQH 
+### Easiest way
 
-### Install
+From scratch, with *yeoman* like described in this blog post : **[TODO]** https://goo.gl/P9fXQH 
 
-With NPM :
+### Normal way
+
+Install with NPM :
 ```bash
 npm install miappio-sdk --save-dev
 ```
-With Bower :
+Or Bower :
 ```bash
 bower install miappio-sdk
 ```
 
-### API
-
-All apis describe in [https://miappio.github.io/miappio-sdk/](https://miappio.github.io/miappio-sdk/)
+Then look at APIs and integration patterns described in [https://miappio.github.io/miappio-sdk/](https://miappio.github.io/miappio-sdk/miapp.html)
+- like with [Angular.js](https://miappio.github.io/miappio-sdk/miapp.angularService.html)
+- with [Angular 5](https://miappio.github.io/miappio-sdk/miapp.angularService.html)
+- ...
 
 # 2) You're a miapp.io dev
 Thank you for your support !
@@ -93,7 +96,7 @@ https://app.swaggerhub.com/api/mlefree/miapp-io_rest_api/
 
 # Thanks
 
-[@miapp.io](https://miapp.io) @mat_cloud @gandhi @dalai_lama
+[@miapp.io](https://miapp.io) @mat_cloud 
 
                                               proudly supported by miapp.io
                      _|                                    _|            

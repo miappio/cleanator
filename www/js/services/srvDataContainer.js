@@ -231,7 +231,7 @@ var SrvDataContainer = (function () {
         this.srvConfig.logout();
         this.srvConfig.setAppFirstInitLevel(0);
         //return this.srvData.becarefulClean();
-        return this.srvMiapp.logoff();
+        return this.srvMiapp.logout();
     };
 
     Service.prototype.reset = function () {

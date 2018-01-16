@@ -136,8 +136,8 @@ describe('myAngularApp.services.srvData.pouchdb', function () {
                 myRootScope = $injector.get('$rootScope');
                 timeout = $injector.get('$timeout');
                 $httpBackend = $injector.get('$httpBackend');
-                miappService = new miapp.angularService(log, q);//$injector.get('MiappService');
-                miappService.init('miappId', 'miappSalt', true);
+                miappService = new MiappAngularjsService(log, q);//$injector.get('MiappService');
+                miappService.init('miappId'); // todo , 'miappSalt', true);
                 var now = new Date();
                 srvConfig = {
                     getDateNow: function () {

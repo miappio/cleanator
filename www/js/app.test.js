@@ -11,7 +11,8 @@ describe('myAngularApp', function () {
             })
             .run(function (MiappService) {
                 //if (appIsTest && appEndpointTest) srvMiapp.setEndpoint(appEndpointTest);
-                MiappService.init('miappId', 'miappSalt', false);
+                MiappService.init('miappId');
+
             });
 
         beforeEach(module('myFakeApp'));

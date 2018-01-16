@@ -57,7 +57,7 @@ xdescribe('myAngularApp.views.login', function () {
             window.localStorage.removeItem('miappURL');
             window.localStorage.removeItem('miappDBURL');
 
-            MiappService.init('myLoginApp', 'salt', true, 'http://fakesite.com/api');
+            MiappService.init('myLoginApp'); // todo , 'salt', true, 'http://fakesite.com/api');
         })
         .config(function () {
             //console.log('myAngularApp config');

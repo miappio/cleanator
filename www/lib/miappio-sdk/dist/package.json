@@ -1,0 +1,51 @@
+{
+  "name": "miappio-sdk",
+  "version": "2.0.1",
+  "description": "miapp.io client SDK",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miappio/miappio-sdk.git"
+  },
+  "keywords": [
+    "miapp.io",
+    "mobile",
+    "angular",
+    "ng",
+    "ionic",
+    "integration"
+  ],
+  "author": "miapp.io",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/miappio/miappio-sdk/issues"
+  },
+  "homepage": "https://github.com/miappio/miappio-sdk#readme",
+  "dependencies": {
+    "ajv": "^5.5.1",
+    "pouchdb": "^6.4.1"
+  },
+  "peerDependencies": {},
+  "oldDependencies": {
+    "angular": "^1.5.8",
+    "angular-mocks": "^1.5.8"
+  },
+  "ignore": [
+    "**/.*",
+    "*.sh",
+    "src",
+    "docs",
+    "node_modules",
+    "bower_components",
+    "test",
+    "gulpfile.js",
+    "ng-package.json",
+    "tsconfig.json",
+    "tslint.json"
+  ],
+  "mainAngularjs": "miapp.angularjs.js",
+  "main": "bundles/miappio-sdk.umd.js",
+  "module": "miappio-sdk.es5.js",
+  "es2015": "miappio-sdk.js",
+  "typings": "miappio-sdk.d.ts",
+  "metadata": "miappio-sdk.metadata.json"
+}
